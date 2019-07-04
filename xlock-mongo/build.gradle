@@ -1,4 +1,4 @@
 dependencies {
-  compile project(':module-api')
-  compile project(':module-common')
+  compile project(':xlock-api')
+  compile project(':xlock-common')
 }
