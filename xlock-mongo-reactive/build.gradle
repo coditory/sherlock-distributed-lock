@@ -1,5 +1,5 @@
 dependencies {
   compile project(':xlock-api')
   compile project(':xlock-common')
-  compile 'org.mongodb:mongodb-driver-sync:3.10.2'
+  compile('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
 }
