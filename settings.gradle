@@ -1,4 +1,6 @@
 rootProject.name = 'xlock'
 include 'xlock-api'
-include 'xlock-mongo'
 include 'xlock-common'
+include 'xlock-mongo'
+include 'xlock-postgres'
+include 'xlock-client'

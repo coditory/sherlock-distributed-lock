@@ -1,11 +1,24 @@
+buildscript {
+  repositories {
+    mavenCentral()
+  }
+}
+
+plugins {
+  id 'jacoco'
+  id 'pl.allegro.tech.build.axion-release' version '1.10.1'
+  id 'com.github.kt3k.coveralls' version '2.8.4'
+}
+
 allprojects {
   group = 'com.coditory.xlock'
-  version = '0.1.0-SNAPSHOT'
+  version = scmVersion.version
 }
 
 subprojects {
   apply plugin: 'java'
-  sourceCompatibility = 1.8
+  apply plugin: 'groovy'
+  sourceCompatibility = JavaVersion.VERSION_11
 
   repositories {
     mavenCentral()
@@ -15,4 +28,55 @@ subprojects {
     testCompile 'junit:junit:4.12'
     testCompile 'org.assertj:assertj-core:3.2.0'
   }
+}
+
+scmVersion {
+  versionCreator 'versionWithBranch'
+  tag {
+    prefix = project.name
+  }
+  hooks {
+    pre 'fileUpdate', [file: 'readme.md', pattern: { v, p -> /'$v'/ }, replacement: {v, p -> "'$v'" }]
+    pre 'commit'
+  }
+}
+
+// Only report code coverage for projects that are distributed
+def publishedProjects = subprojects.findAll { it.path != ':xlock-client' }
+
+task jacocoMerge(type: JacocoMerge) {
+  publishedProjects.each { subproject ->
+    executionData subproject.tasks.withType(Test)
+  }
+  doFirst {
+    executionData = files(executionData.findAll { it.exists() })
+  }
+}
+
+task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+  description = 'Generates an aggregate report from all subprojects'
+  dependsOn publishedProjects.test, jacocoMerge
+
+  additionalSourceDirs = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  sourceDirectories = files(publishedProjects.sourceSets.main.allSource.srcDirs)
+  classDirectories = files(publishedProjects.sourceSets.main.output)
+  executionData jacocoMerge.destinationFile
+
+  reports {
+    html.enabled = true // human readable
+    xml.enabled = true // required by coveralls
+  }
+}
+
+coveralls {
+  sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
+  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
+}
+
+tasks.coveralls {
+  group = 'Coverage reports'
+  description = 'Uploads the aggregated coverage report to Coveralls'
+
+  dependsOn jacocoRootReport
+  onlyIf { System.env.'CI' && !JavaVersion.current().isJava9Compatible() }
 }
