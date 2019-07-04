@@ -1,8 +1,8 @@
 package com.coditory.xlock.common.driver;
 
-import com.coditory.xlock.common.InstanceId;
+import com.coditory.xlock.common.LockInstanceId;
+import com.coditory.xlock.common.ServiceInstanceId;
 import com.coditory.xlock.common.LockId;
-import com.coditory.xlock.common.util.XLockPreconditions;
 
 import java.time.Duration;
 import java.time.Instant;
@@ -14,21 +14,31 @@ import static com.coditory.xlock.common.util.XLockPreconditions.expectNonNull;
 
 public class LockRequest {
   private final LockId lockId;
-  private final InstanceId instanceId;
+  private final LockInstanceId lockInstanceId;
+  private final ServiceInstanceId serviceInstanceId;
   private final Duration duration;
 
-  public LockRequest(LockId lockId, InstanceId instanceId, Duration duration) {
+  public LockRequest(LockId lockId, LockInstanceId lockInstanceId, ServiceInstanceId serviceInstanceId, Duration duration) {
     this.lockId = expectNonNull(lockId);
-    this.instanceId = expectNonNull(instanceId);
+    this.lockInstanceId = expectNonNull(lockInstanceId);
+    this.serviceInstanceId = expectNonNull(serviceInstanceId);
     this.duration = duration;
+  }
+
+  public LockRequest(LockId lockId, LockInstanceId lockInstanceId, ServiceInstanceId serviceInstanceId) {
+    this(lockId, lockInstanceId, serviceInstanceId, null);
   }
 
   public LockId getLockId() {
     return lockId;
   }
 
-  public InstanceId getInstanceId() {
-    return instanceId;
+  public ServiceInstanceId getServiceInstanceId() {
+    return serviceInstanceId;
+  }
+
+  public LockInstanceId getLockInstanceId() {
+    return lockInstanceId;
   }
 
   public Optional<Duration> getDuration() {
@@ -45,7 +55,8 @@ public class LockRequest {
   public String toString() {
     return "LockRequest{" +
         "lockId=" + lockId +
-        ", instanceId=" + instanceId +
+        ", lockInstanceId=" + lockInstanceId +
+        ", serviceInstanceId=" + serviceInstanceId +
         ", duration=" + duration +
         '}';
   }
@@ -58,14 +69,15 @@ public class LockRequest {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    LockRequest that = (LockRequest) o;
-    return Objects.equals(lockId, that.lockId) &&
-        Objects.equals(instanceId, that.instanceId) &&
-        Objects.equals(duration, that.duration);
+    LockRequest request = (LockRequest) o;
+    return Objects.equals(lockId, request.lockId) &&
+        Objects.equals(lockInstanceId, request.lockInstanceId) &&
+        Objects.equals(serviceInstanceId, request.serviceInstanceId) &&
+        Objects.equals(duration, request.duration);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lockId, instanceId, duration);
+    return Objects.hash(lockId, lockInstanceId, serviceInstanceId, duration);
   }
 }

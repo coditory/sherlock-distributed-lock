@@ -1,22 +1,42 @@
 package com.coditory.xlock.common;
 
+import com.coditory.xlock.common.driver.LockRequest;
+
 import java.time.Instant;
 import java.util.Objects;
+import java.util.Optional;
 
 import static com.coditory.xlock.common.util.XLockPreconditions.expectNonNull;
 
 public class LockState {
+  public static LockState fromLockRequest(LockRequest lockRequest, Instant acquiredAt) {
+    expectNonNull(lockRequest);
+    expectNonNull(acquiredAt);
+    Instant releaseAt = lockRequest.getDuration()
+        .map(acquiredAt::plus)
+        .orElse(null);
+    return new LockState(
+        lockRequest.getLockId(),
+        lockRequest.getLockInstanceId(),
+        lockRequest.getServiceInstanceId(),
+        acquiredAt,
+        releaseAt
+    );
+  }
+
   private final LockId lockId;
-  private final AcquisitionId acquisitionId;
-  private final InstanceId instanceId;
-  private final Instant acquireAt;
+  private final LockInstanceId lockInstanceId;
+  private final ServiceInstanceId serviceInstanceId;
+  private final Instant acquiredAt;
   private final Instant releaseAt;
 
-  public LockState(LockId lockId, AcquisitionId acquisitionId, InstanceId instanceId, Instant createdAt, Instant expiresAt) {
+  public LockState(
+      LockId lockId, LockInstanceId lockInstanceId, ServiceInstanceId serviceInstanceId,
+      Instant createdAt, Instant expiresAt) {
     this.lockId = expectNonNull(lockId);
-    this.acquisitionId = expectNonNull(acquisitionId);
-    this.instanceId = expectNonNull(instanceId);
-    this.acquireAt = expectNonNull(createdAt);
+    this.lockInstanceId = expectNonNull(lockInstanceId);
+    this.serviceInstanceId = expectNonNull(serviceInstanceId);
+    this.acquiredAt = expectNonNull(createdAt);
     this.releaseAt = expiresAt;
   }
 
@@ -24,29 +44,29 @@ public class LockState {
     return lockId;
   }
 
-  public AcquisitionId getAcquisitionId() {
-    return acquisitionId;
+  public LockInstanceId getLockInstanceId() {
+    return lockInstanceId;
   }
 
-  public InstanceId getInstanceId() {
-    return instanceId;
+  public ServiceInstanceId getServiceInstanceId() {
+    return serviceInstanceId;
   }
 
-  public Instant getAcquireAt() {
-    return acquireAt;
+  public Instant getAcquiredAt() {
+    return acquiredAt;
   }
 
-  public Instant getReleaseAt() {
-    return releaseAt;
+  public Optional<Instant> getReleaseAt() {
+    return Optional.ofNullable(releaseAt);
   }
 
   @Override
   public String toString() {
     return "LockState{" +
         "lockId=" + lockId +
-        ", acquisitionId=" + acquisitionId +
-        ", instanceId=" + instanceId +
-        ", acquireAt=" + acquireAt +
+        ", lockInstanceId=" + lockInstanceId +
+        ", serviceInstanceId=" + serviceInstanceId +
+        ", acquiredAt=" + acquiredAt +
         ", releaseAt=" + releaseAt +
         '}';
   }
@@ -61,14 +81,14 @@ public class LockState {
     }
     LockState lockState = (LockState) o;
     return Objects.equals(lockId, lockState.lockId) &&
-        Objects.equals(acquisitionId, lockState.acquisitionId) &&
-        Objects.equals(instanceId, lockState.instanceId) &&
-        Objects.equals(acquireAt, lockState.acquireAt) &&
+        Objects.equals(lockInstanceId, lockState.lockInstanceId) &&
+        Objects.equals(serviceInstanceId, lockState.serviceInstanceId) &&
+        Objects.equals(acquiredAt, lockState.acquiredAt) &&
         Objects.equals(releaseAt, lockState.releaseAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lockId, acquisitionId, instanceId, acquireAt, releaseAt);
+    return Objects.hash(lockId, lockInstanceId, serviceInstanceId, acquiredAt, releaseAt);
   }
 }

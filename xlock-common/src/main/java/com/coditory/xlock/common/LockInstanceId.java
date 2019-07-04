@@ -1,20 +1,23 @@
 package com.coditory.xlock.common;
 
 import java.util.Objects;
-import java.util.UUID;
 
+import static com.coditory.xlock.common.util.UuidGenerator.uuid;
 import static com.coditory.xlock.common.util.XLockPreconditions.expectNonEmpty;
 
-public class AcquisitionId {
-  public static AcquisitionId unqueLockAcquisitionId(LockId lockId) {
-    String uuid = UUID.randomUUID().toString();
-    return new AcquisitionId(lockId.getValue() + uuid);
+public class LockInstanceId {
+  public static LockInstanceId uniqueLockInstanceId() {
+    return new LockInstanceId(uuid());
+  }
+
+  public static LockInstanceId of(String value) {
+    return new LockInstanceId(value);
   }
 
   private final String id;
 
-  public AcquisitionId(String id) {
-    this.id = expectNonEmpty(id, "Expected non empty acquisitionId");
+  LockInstanceId(String id) {
+    this.id = expectNonEmpty(id, "Expected non empty lockInstanceId");
   }
 
   public String getValue() {
@@ -23,7 +26,7 @@ public class AcquisitionId {
 
   @Override
   public String toString() {
-    return "AcquisitionId{" +
+    return "LockInstanceId{" +
         "id='" + id + '\'' +
         '}';
   }
@@ -36,8 +39,8 @@ public class AcquisitionId {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    AcquisitionId that = (AcquisitionId) o;
-    return Objects.equals(id, that.id);
+    LockInstanceId lockId = (LockInstanceId) o;
+    return Objects.equals(id, lockId.id);
   }
 
   @Override

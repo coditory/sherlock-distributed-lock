@@ -5,9 +5,13 @@ import com.coditory.xlock.common.util.XLockPreconditions;
 import java.util.Objects;
 
 public class LockId {
+  public static LockId of(String value) {
+    return new LockId(value);
+  }
+
   private final String id;
 
-  public LockId(String id) {
+  private LockId(String id) {
     this.id = XLockPreconditions.expectNonEmpty(id, "Expected non empty lockId");
   }
 

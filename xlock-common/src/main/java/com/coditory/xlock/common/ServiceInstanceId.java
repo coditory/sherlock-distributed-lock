@@ -1,14 +1,18 @@
 package com.coditory.xlock.common;
 
-import com.coditory.xlock.common.util.XLockPreconditions;
-
 import java.util.Objects;
 
-public class InstanceId {
+import static com.coditory.xlock.common.util.XLockPreconditions.expectNonEmpty;
+
+public class ServiceInstanceId {
+  public static ServiceInstanceId of(String value) {
+    return new ServiceInstanceId(value);
+  }
+
   private final String id;
 
-  public InstanceId(String id) {
-    this.id = XLockPreconditions.expectNonEmpty(id, "Expected non empty instance id");
+  private ServiceInstanceId(String id) {
+    this.id = expectNonEmpty(id, "Expected non empty instance id");
   }
 
   public String getValue() {
@@ -17,7 +21,7 @@ public class InstanceId {
 
   @Override
   public String toString() {
-    return "InstanceId{" +
+    return "ServiceInstanceId{" +
         "id='" + id + '\'' +
         '}';
   }
@@ -30,7 +34,7 @@ public class InstanceId {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InstanceId lockId = (InstanceId) o;
+    ServiceInstanceId lockId = (ServiceInstanceId) o;
     return Objects.equals(id, lockId.id);
   }
 

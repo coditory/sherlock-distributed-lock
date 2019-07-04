@@ -1,50 +1,27 @@
 package com.coditory.xlock.common.driver;
 
-import com.coditory.xlock.common.AcquisitionId;
-import com.coditory.xlock.common.LockId;
-
 import java.util.Objects;
-import java.util.Optional;
-
-import static com.coditory.xlock.common.util.XLockPreconditions.expectNonNull;
 
 public class LockResult {
-  public static LockResult lockGranted(LockId lockId, AcquisitionId acquisitionId) {
-    return new LockResult(
-        expectNonNull(lockId),
-        expectNonNull(acquisitionId));
+  private static LockResult lockGrantedInstance = new LockResult(true);
+  private static LockResult lockRefusedInstance = new LockResult(false);
+
+  public static LockResult lockGranted() {
+    return lockGrantedInstance;
   }
 
-  public static LockResult lockRefused(LockId lockId) {
-    return new LockResult(expectNonNull(lockId), null);
+  public static LockResult lockRefused() {
+    return lockRefusedInstance;
   }
 
-  private final LockId lockId;
-  private final AcquisitionId acquisitionId;
+  private final boolean lockGranted;
 
-  private LockResult(LockId lockId, AcquisitionId acquisitionId) {
-    this.lockId = expectNonNull(lockId);
-    this.acquisitionId = acquisitionId;
+  private LockResult(boolean lockGranted) {
+    this.lockGranted = lockGranted;
   }
 
-  public LockId getLockId() {
-    return lockId;
-  }
-
-  public Optional<AcquisitionId> getAcquisitionId() {
-    return Optional.ofNullable(acquisitionId);
-  }
-
-  public boolean isLocked() {
-    return acquisitionId != null;
-  }
-
-  @Override
-  public String toString() {
-    return "XlockSuccessfulLockResult{" +
-        "lockId=" + lockId +
-        ", acquisitionId=" + acquisitionId +
-        '}';
+  public boolean isLockGranted() {
+    return lockGranted;
   }
 
   @Override
@@ -56,13 +33,11 @@ public class LockResult {
       return false;
     }
     LockResult that = (LockResult) o;
-    return Objects.equals(lockId, that.lockId) &&
-        Objects.equals(acquisitionId, that.acquisitionId);
+    return lockGranted == that.lockGranted;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lockId, acquisitionId);
+    return Objects.hash(lockGranted);
   }
-
 }
