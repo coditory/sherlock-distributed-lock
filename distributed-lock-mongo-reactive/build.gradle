@@ -1,0 +1,5 @@
+dependencies {
+  compile project(':distributed-lock-api')
+  compile project(':distributed-lock-common')
+  compile('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
+}

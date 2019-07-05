@@ -1,6 +1,6 @@
 dependencies {
-  compile project(':xlock-api')
-  compile project(':xlock-common')
+  compile project(':distributed-lock-api')
+  compile project(':distributed-lock-common')
   compile 'org.mongodb:mongodb-driver-sync:3.10.2'
   integrationCompile "org.testcontainers:spock:1.11.3"
 }

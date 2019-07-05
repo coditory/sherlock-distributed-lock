@@ -1,4 +1,0 @@
-dependencies {
-  compile project(':xlock-api')
-  compile project(':xlock-common')
-}
