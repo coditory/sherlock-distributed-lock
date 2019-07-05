@@ -1,10 +1,10 @@
 package com.coditory.xlock.common;
 
-import com.coditory.xlock.common.util.XLockPreconditions;
-
 import java.util.Objects;
 
-public class LockId {
+import static com.coditory.xlock.common.util.Preconditions.expectNonEmpty;
+
+public final class LockId {
   public static LockId of(String value) {
     return new LockId(value);
   }
@@ -12,7 +12,7 @@ public class LockId {
   private final String id;
 
   private LockId(String id) {
-    this.id = XLockPreconditions.expectNonEmpty(id, "Expected non empty lockId");
+    this.id = expectNonEmpty(id, "Expected non empty id");
   }
 
   public String getValue() {
@@ -21,9 +21,7 @@ public class LockId {
 
   @Override
   public String toString() {
-    return "LockId{" +
-        "id='" + id + '\'' +
-        '}';
+    return "LockId{id='" + id + "'}";
   }
 
   @Override

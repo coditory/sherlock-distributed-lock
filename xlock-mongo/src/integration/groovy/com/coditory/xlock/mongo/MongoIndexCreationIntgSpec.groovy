@@ -1,12 +1,12 @@
 package com.coditory.xlock.mongo
 
-import com.coditory.xlock.api.LockFactory
+import com.coditory.xlock.api.DistributedLocks
 import com.coditory.xlock.common.LockId
 
 class MongoIndexCreationIntgSpec extends MongoIntgSpec {
   String otherCollectionName = "otherCollection"
-  XLockMongoDriver driver = new XLockMongoDriver(mongoClient, locksDatabaseName, otherCollectionName, fixedClock)
-  LockFactory lockFactory = new LockFactory(driver, serviceInstanceId)
+  MongoDistributedLockDriver driver = new MongoDistributedLockDriver(mongoClient, locksDatabaseName, otherCollectionName, fixedClock)
+  DistributedLocks lockFactory = new DistributedLocks(driver, serviceInstanceId)
 
   def "should create mongo indexes on first lock"() {
     expect:

@@ -1,6 +1,6 @@
 package com.coditory.xlock.common.util;
 
-public class XLockPreconditions {
+public class Preconditions {
   public static <T> T expectNonNull(T value) {
     return expectNonNull(value, "Expected non null value");
   }

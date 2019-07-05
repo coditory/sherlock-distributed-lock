@@ -2,7 +2,6 @@ package com.coditory.xlock.mongo
 
 import com.coditory.xlock.api.CrossServiceLockOperations
 import com.coditory.xlock.common.LockId
-import com.coditory.xlock.common.LockState
 
 class GetLockStateIntgSpec extends MongoIntgSpec {
   LockId lockId = LockId.of("some-lock")
@@ -15,10 +14,10 @@ class GetLockStateIntgSpec extends MongoIntgSpec {
       LockState lockState = lockOperations.getLockState().get()
     then:
       lockState.lockId == lockId
-      lockState.serviceInstanceId == lockFactory.serviceInstanceId
+      lockState.serviceInstanceId == lockFactory.getInstanceId
       lockState.lockInstanceId != null
       lockState.acquiredAt == fixedClock.instant()
-      lockState.releaseAt.get() == fixedClock.instant() + lockFactory.defaultDuration
+      lockState.expiresAt.get() == fixedClock.instant() + lockFactory.defaultDuration
   }
 
   def "should not retrieve state of never acquired lock"() {

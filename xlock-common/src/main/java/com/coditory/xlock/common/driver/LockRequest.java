@@ -1,64 +1,45 @@
 package com.coditory.xlock.common.driver;
 
-import com.coditory.xlock.common.LockInstanceId;
-import com.coditory.xlock.common.ServiceInstanceId;
+import com.coditory.xlock.common.InstanceId;
 import com.coditory.xlock.common.LockId;
 
 import java.time.Duration;
-import java.time.Instant;
 import java.util.Objects;
-import java.util.Optional;
 
-import static com.coditory.xlock.common.util.XLockPreconditions.expectNonEmpty;
-import static com.coditory.xlock.common.util.XLockPreconditions.expectNonNull;
+import static com.coditory.xlock.common.util.Preconditions.expectNonNull;
 
 public class LockRequest {
   private final LockId lockId;
-  private final LockInstanceId lockInstanceId;
-  private final ServiceInstanceId serviceInstanceId;
+  private final InstanceId instanceId;
   private final Duration duration;
 
-  public LockRequest(LockId lockId, LockInstanceId lockInstanceId, ServiceInstanceId serviceInstanceId, Duration duration) {
+  public LockRequest(
+      LockId lockId,
+      InstanceId instanceId,
+      Duration duration) {
     this.lockId = expectNonNull(lockId);
-    this.lockInstanceId = expectNonNull(lockInstanceId);
-    this.serviceInstanceId = expectNonNull(serviceInstanceId);
+    this.instanceId = expectNonNull(instanceId);
     this.duration = duration;
   }
 
-  public LockRequest(LockId lockId, LockInstanceId lockInstanceId, ServiceInstanceId serviceInstanceId) {
-    this(lockId, lockInstanceId, serviceInstanceId, null);
+  public LockRequest(
+      LockId lockId,
+      InstanceId instanceId) {
+    this.lockId = expectNonNull(lockId);
+    this.instanceId = expectNonNull(instanceId);
+    this.duration = null;
   }
 
   public LockId getLockId() {
     return lockId;
   }
 
-  public ServiceInstanceId getServiceInstanceId() {
-    return serviceInstanceId;
+  public InstanceId getInstanceId() {
+    return instanceId;
   }
 
-  public LockInstanceId getLockInstanceId() {
-    return lockInstanceId;
-  }
-
-  public Optional<Duration> getDuration() {
-    return Optional.ofNullable(duration);
-  }
-
-  public Optional<Instant> expireAt(Instant now) {
-    expectNonNull(now, "Expected non null now");
-    return getDuration()
-        .map(now::plus);
-  }
-
-  @Override
-  public String toString() {
-    return "LockRequest{" +
-        "lockId=" + lockId +
-        ", lockInstanceId=" + lockInstanceId +
-        ", serviceInstanceId=" + serviceInstanceId +
-        ", duration=" + duration +
-        '}';
+  public Duration getDuration() {
+    return duration;
   }
 
   @Override
@@ -71,13 +52,21 @@ public class LockRequest {
     }
     LockRequest request = (LockRequest) o;
     return Objects.equals(lockId, request.lockId) &&
-        Objects.equals(lockInstanceId, request.lockInstanceId) &&
-        Objects.equals(serviceInstanceId, request.serviceInstanceId) &&
+        Objects.equals(instanceId, request.instanceId) &&
         Objects.equals(duration, request.duration);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lockId, lockInstanceId, serviceInstanceId, duration);
+    return Objects.hash(lockId, instanceId, duration);
+  }
+
+  @Override
+  public String toString() {
+    return "LockRequest{" +
+        "lockId=" + lockId +
+        ", instanceId=" + instanceId +
+        ", duration=" + duration +
+        '}';
   }
 }

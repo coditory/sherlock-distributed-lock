@@ -2,7 +2,7 @@ package com.coditory.xlock.mongo
 
 import com.coditory.xlock.api.CrossServiceLock
 import com.coditory.xlock.api.CrossServiceLockOperations
-import com.coditory.xlock.api.CrossServiceLockResult
+import com.coditory.xlock.api.AcquireLockResult
 
 import java.time.Duration
 
@@ -11,8 +11,8 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
 
   def "the same lock instance may acquire lock multiple times"() {
     when:
-      CrossServiceLockResult firstResult = lock.lock()
-      CrossServiceLockResult secondResult = lock.lock()
+      AcquireLockResult firstResult = lock.lock()
+      AcquireLockResult secondResult = lock.lock()
     then:
       firstResult.lockGranted
     and:
@@ -21,9 +21,9 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
 
   def "only one of lock instances should acquire lock"() {
     when:
-      CrossServiceLockResult firstResult = lock.lock()
-      CrossServiceLockResult secondResult = createLock("sample-lock").lock()
-      CrossServiceLockResult thirdResult = lock.newInstance().lock()
+      AcquireLockResult firstResult = lock.lock()
+      AcquireLockResult secondResult = createLock("sample-lock").lock()
+      AcquireLockResult thirdResult = lock.newInstance().lock()
     then:
       firstResult.lockGranted
     and:
@@ -36,8 +36,8 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
     given:
       CrossServiceLock otherLock = createLock("other-lock")
     when:
-      CrossServiceLockResult firstResult = lock.lock()
-      CrossServiceLockResult secondResult = otherLock.lock()
+      AcquireLockResult firstResult = lock.lock()
+      AcquireLockResult secondResult = otherLock.lock()
     then:
       firstResult.lockGranted
     and:
@@ -48,7 +48,7 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
     given:
       lock.lock().unlock()
     when:
-      CrossServiceLockResult lockResult = lock.newInstance().lock()
+      AcquireLockResult lockResult = lock.newInstance().lock()
     then:
       lockResult.lockGranted
   }
@@ -58,7 +58,7 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
       lock.lock()
     when:
       fixedClock.tick(lock.duration)
-      CrossServiceLockResult lockResult = lock.newInstance().lock()
+      AcquireLockResult lockResult = lock.newInstance().lock()
     then:
       lockResult.lockGranted
   }
@@ -69,7 +69,7 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
       lock.lock(duration)
     when:
       fixedClock.tick(lock.duration)
-      CrossServiceLockResult lockResult = lock.newInstance().lock()
+      AcquireLockResult lockResult = lock.newInstance().lock()
     then:
       lockResult.lockGranted
   }
@@ -79,7 +79,7 @@ class AcquireLockIntgSpec extends MongoIntgSpec {
       lock.lockInfinitely()
     when:
       fixedClock.tick(lock.duration)
-      CrossServiceLockResult lockResult = lock.newInstance().lock()
+      AcquireLockResult lockResult = lock.newInstance().lock()
     then:
       !lockResult.lockGranted
   }
