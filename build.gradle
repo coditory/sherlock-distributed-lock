@@ -1,4 +1,16 @@
 buildscript {
+  ext {
+    versions = [
+        reactor        : '3.2.10.RELEASE',
+        mongodb        : '3.10.2',
+        mongodbReactive: '1.11.0',
+        logback        : '1.2.3',
+        // test dependencies:
+        testContainers : '1.11.3',
+        groovy         : '2.5.5',
+        spock          : '1.2-groovy-2.5'
+    ]
+  }
   repositories {
     mavenCentral()
   }
@@ -17,20 +29,20 @@ allprojects {
 }
 
 subprojects {
-  apply plugin: 'java'
+  apply plugin: 'java-library'
   apply plugin: 'groovy'
   apply plugin: 'com.coditory.integration-test'
-  sourceCompatibility = JavaVersion.VERSION_11
+  sourceCompatibility = 11
 
   repositories {
     mavenCentral()
   }
 
   dependencies {
-    testCompile "ch.qos.logback:logback-core:1.2.3"
-    testCompile "ch.qos.logback:logback-classic:1.2.3"
-    testCompile "org.codehaus.groovy:groovy-all:2.5.5"
-    testCompile "org.spockframework:spock-core:1.2-groovy-2.5"
+    testCompile "ch.qos.logback:logback-core:$versions.logback"
+    testCompile "ch.qos.logback:logback-classic:$versions.logback"
+    testCompile "org.codehaus.groovy:groovy-all:$versions.groovy"
+    testCompile "org.spockframework:spock-core:$versions.spcok"
   }
 
   tasks.withType(Test) {

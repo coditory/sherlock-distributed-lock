@@ -1,7 +1,7 @@
 dependencies {
-  compile project(':distributed-lock-api')
-  compile project(':distributed-lock-mongo:distributed-lock-mongo-common')
-  compile 'org.mongodb:mongodb-driver-sync:3.10.2'
-  integrationCompile "org.testcontainers:spock:1.11.3"
+  api project(':distributed-lock-api')
+  api "org.mongodb:mongodb-driver-sync:$versions.mongodb"
+  implementation project(':distributed-lock-mongo:distributed-lock-mongo-common')
   integrationCompile project(':distributed-lock-tests')
+  integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

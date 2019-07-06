@@ -1,4 +1,0 @@
-dependencies {
-  compile project(':distributed-lock-api')
-  compile project(':distributed-lock-common')
-}
