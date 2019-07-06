@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo;
+package com.coditory.distributed.lock.mongo.reactive;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
@@ -11,12 +11,12 @@ import java.util.Objects;
 import java.util.Optional;
 
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
-import static com.coditory.distributed.lock.mongo.MongoDistributedLock.Fields.ACQUIRED_AT_FIELD;
-import static com.coditory.distributed.lock.mongo.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
-import static com.coditory.distributed.lock.mongo.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
-import static com.coditory.distributed.lock.mongo.MongoDistributedLock.Fields.LOCK_ID_FIELD;
+import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.ACQUIRED_AT_FIELD;
+import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
+import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
+import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.LOCK_ID_FIELD;
 
-class MongoDistributedLock {
+final class MongoDistributedLock {
   interface Fields {
     String LOCK_ID_FIELD = "_id";
     String ACQUIRED_BY_FIELD = "acquiredBy";

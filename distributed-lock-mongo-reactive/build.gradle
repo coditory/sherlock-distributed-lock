@@ -1,5 +1,7 @@
 dependencies {
-  compile project(':distributed-lock-api')
+  compile project(':distributed-lock-api-reactive')
   compile project(':distributed-lock-common')
   compile('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
+  compile('org.reactivestreams:reactive-streams:1.0.2')
+  compile('org.reactivestreams:reactive-streams-flow-adapters:1.0.2')
 }

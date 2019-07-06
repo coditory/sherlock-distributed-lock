@@ -1,24 +1,28 @@
-package com.coditory.distributed.lock;
+package com.coditory.distributed.lock.reactive;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
 import com.coditory.distributed.lock.common.LockRequest;
+import com.coditory.distributed.lock.reactive.driver.LockResult;
+import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver;
+import com.coditory.distributed.lock.reactive.driver.UnlockResult;
 
 import java.time.Duration;
+import java.util.concurrent.Flow.Publisher;
 
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
-class DistributedSingleEntrantLock implements DistributedLock {
+class ReactiveDistributedReentrantLock implements ReactiveDistributedLock {
   private final LockId lockId;
   private final InstanceId instanceId;
   private final Duration duration;
-  private final DistributedLockDriver driver;
+  private final ReactiveDistributedLockDriver driver;
 
-  DistributedSingleEntrantLock(
+  ReactiveDistributedReentrantLock(
       LockId lockId,
       InstanceId instanceId,
       Duration duration,
-      DistributedLockDriver driver) {
+      ReactiveDistributedLockDriver driver) {
     this.lockId = expectNonNull(lockId);
     this.instanceId = expectNonNull(instanceId);
     this.duration = expectNonNull(duration);
@@ -31,28 +35,28 @@ class DistributedSingleEntrantLock implements DistributedLock {
   }
 
   @Override
-  public boolean lock() {
+  public Publisher<LockResult> lock() {
     return tryLock(duration);
   }
 
   @Override
-  public boolean lock(Duration duration) {
+  public Publisher<LockResult> lock(Duration duration) {
     expectNonNull(duration, "Expected non null duration");
     return tryLock(duration);
   }
 
   @Override
-  public boolean lockInfinitely() {
+  public Publisher<LockResult> lockInfinitely() {
     return tryLock(null);
   }
 
-  private boolean tryLock(Duration duration) {
+  private Publisher<LockResult> tryLock(Duration duration) {
     LockRequest lockRequest = new LockRequest(lockId, instanceId, duration);
-    return driver.lock(lockRequest);
+    return driver.lockOrRelock(lockRequest);
   }
 
   @Override
-  public boolean unlock() {
+  public Publisher<UnlockResult> unlock() {
     return driver.unlock(lockId, instanceId);
   }
 }

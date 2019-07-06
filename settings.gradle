@@ -1,5 +1,6 @@
 rootProject.name = 'distributed-lock'
 include 'distributed-lock-api'
+include 'distributed-lock-api-reactive'
 include 'distributed-lock-common'
 include 'distributed-lock-mongo'
 include 'distributed-lock-mongo-reactive'

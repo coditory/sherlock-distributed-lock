@@ -1,7 +1,5 @@
-package com.coditory.distributed.lock.common.driver;
+package com.coditory.distributed.lock.common;
 
-import com.coditory.distributed.lock.common.InstanceId;
-import com.coditory.distributed.lock.common.LockId;
 import com.coditory.distributed.lock.common.util.Preconditions;
 
 import java.time.Duration;

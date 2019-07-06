@@ -2,7 +2,7 @@ package com.coditory.distributed.lock.mongo.base
 
 import com.coditory.distributed.lock.common.InstanceId
 import com.coditory.distributed.lock.common.LockId
-import com.coditory.distributed.lock.common.driver.LockRequest
+import com.coditory.distributed.lock.common.LockRequest
 import groovy.transform.CompileStatic
 
 import java.time.Duration

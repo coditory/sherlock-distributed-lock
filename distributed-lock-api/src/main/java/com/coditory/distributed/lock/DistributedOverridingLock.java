@@ -2,8 +2,7 @@ package com.coditory.distributed.lock;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
-import com.coditory.distributed.lock.common.driver.DistributedLockDriver;
-import com.coditory.distributed.lock.common.driver.LockRequest;
+import com.coditory.distributed.lock.common.LockRequest;
 
 import java.time.Duration;
 

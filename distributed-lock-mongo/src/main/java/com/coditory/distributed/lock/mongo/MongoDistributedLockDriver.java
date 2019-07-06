@@ -2,8 +2,8 @@ package com.coditory.distributed.lock.mongo;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
-import com.coditory.distributed.lock.common.driver.DistributedLockDriver;
-import com.coditory.distributed.lock.common.driver.LockRequest;
+import com.coditory.distributed.lock.DistributedLockDriver;
+import com.coditory.distributed.lock.common.LockRequest;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;

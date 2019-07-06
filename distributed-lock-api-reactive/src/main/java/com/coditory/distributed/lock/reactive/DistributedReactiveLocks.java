@@ -1,20 +1,21 @@
-package com.coditory.distributed.lock;
+package com.coditory.distributed.lock.reactive;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
+import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver;
 
 import java.time.Duration;
 
 import static com.coditory.distributed.lock.common.InstanceId.uniqueInstanceId;
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
-public final class DistributedLocks {
-  private final DistributedLockDriver driver;
+public final class DistributedReactiveLocks {
+  private final ReactiveDistributedLockDriver driver;
   private final Duration defaultDuration;
   private final InstanceId instanceId;
 
-  DistributedLocks(
-      DistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
+  DistributedReactiveLocks(
+      ReactiveDistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
     this.driver = expectNonNull(driver, "Expected non null driver");
     this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
     this.defaultDuration = expectNonNull(defaultDuration, "Expected non null defaultDuration");
@@ -28,40 +29,41 @@ public final class DistributedLocks {
     return defaultDuration;
   }
 
-  public DistributedLock createReentrantLock(String lockId) {
+  public ReactiveDistributedLock createReentrantLock(String lockId) {
     return createReentrantLock(lockId, defaultDuration);
   }
 
-  public DistributedLock createReentrantLock(String lockId, Duration duration) {
-    return new DistributedReentrantLock(LockId.of(lockId), instanceId, duration, driver);
+  public ReactiveDistributedLock createReentrantLock(String lockId, Duration duration) {
+    return new ReactiveDistributedReentrantLock(LockId.of(lockId), instanceId, duration, driver);
   }
 
-  public DistributedLock createLock(String lockId) {
+  public ReactiveDistributedLock createLock(String lockId) {
     return createLock(lockId, defaultDuration);
   }
 
-  public DistributedLock createLock(String lockId, Duration duration) {
-    return new DistributedSingleEntrantLock(LockId.of(lockId), instanceId, duration, driver);
+  public ReactiveDistributedLock createLock(String lockId, Duration duration) {
+    return new ReactiveDistributedSingleEntrantLock(
+        LockId.of(lockId), instanceId, duration, driver);
   }
 
-  public DistributedLock createOverridingLock(String lockId) {
+  public ReactiveDistributedLock createOverridingLock(String lockId) {
     return createOverridingLock(lockId, defaultDuration);
   }
 
-  public DistributedLock createOverridingLock(String lockId, Duration duration) {
-    return new DistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
+  public ReactiveDistributedLock createOverridingLock(String lockId, Duration duration) {
+    return new ReactiveDistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
   }
 
-  public static DistributedLocksBuilder builder(DistributedLockDriver driver) {
+  public static DistributedLocksBuilder builder(ReactiveDistributedLockDriver driver) {
     return new DistributedLocksBuilder(driver);
   }
 
   public static final class DistributedLocksBuilder {
-    private final DistributedLockDriver driver;
+    private final ReactiveDistributedLockDriver driver;
     private Duration defaultDuration = Duration.ofMinutes(5);
     private InstanceId instanceId = uniqueInstanceId();
 
-    private DistributedLocksBuilder(DistributedLockDriver driver) {
+    private DistributedLocksBuilder(ReactiveDistributedLockDriver driver) {
       this.driver = expectNonNull(driver, "Expected non null distributed locks driver");
     }
 
@@ -77,8 +79,8 @@ public final class DistributedLocks {
       return this;
     }
 
-    public DistributedLocks build() {
-      return new DistributedLocks(driver, instanceId, defaultDuration);
+    public DistributedReactiveLocks build() {
+      return new DistributedReactiveLocks(driver, instanceId, defaultDuration);
     }
   }
 }
