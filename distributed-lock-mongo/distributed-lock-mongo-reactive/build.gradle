@@ -1,0 +1,8 @@
+dependencies {
+  compile project(':distributed-lock-api-reactive')
+  compile project(':distributed-lock-mongo:distributed-lock-mongo-common')
+  compile('org.mongodb:mongodb-driver-reactivestreams:1.11.0')
+  compile('io.projectreactor:reactor-core:3.2.10.RELEASE')
+  integrationCompile project(':distributed-lock-tests')
+  integrationCompile "org.testcontainers:spock:1.11.3"
+}
