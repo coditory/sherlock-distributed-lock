@@ -2,17 +2,16 @@ package com.coditory.distributed.lock.mongo.infrastructure
 
 import com.coditory.distributed.lock.DistributedLocks
 import com.coditory.distributed.lock.mongo.MongoDistributedLockDriver
-import com.coditory.distributed.lock.mongo.MongoIntgSpec
-import com.coditory.distributed.lock.mongo.MongoLocksIntgSpec
+import com.coditory.distributed.lock.mongo.UsesMongo
+import spock.lang.Specification
 
-import static com.coditory.distributed.lock.mongo.base.JsonAssert.assertJsonEqual
+import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
+import static com.coditory.distributed.lock.tests.base.UpdatableFixedClock.defaultUpdatableFixedClock
 
-class MongoIndexCreationIntgSpec extends MongoLocksIntgSpec {
+class MongoIndexCreationSpec extends Specification implements UsesMongo {
   String otherCollectionName = "otherCollection"
-  MongoDistributedLockDriver driver = new MongoDistributedLockDriver(MongoIntgSpec.mongoClient, MongoIntgSpec.databaseName, otherCollectionName, MongoLocksIntgSpec.fixedClock)
+  MongoDistributedLockDriver driver = new MongoDistributedLockDriver(mongoClient, databaseName, otherCollectionName, defaultUpdatableFixedClock())
   DistributedLocks locks = DistributedLocks.builder(driver)
-      .withDefaultLockDurationd(MongoLocksIntgSpec.defaultLockDuration)
-      .withServiceInstanceId(MongoLocksIntgSpec.sampleInstanceId)
       .build()
 
   def "should create mongo indexes on first lock"() {
@@ -29,7 +28,7 @@ class MongoIndexCreationIntgSpec extends MongoLocksIntgSpec {
   }
 
   private String getCollectionIndexes() {
-    List<String> indexes = MongoIntgSpec.mongoClient.getDatabase(MongoIntgSpec.databaseName)
+    List<String> indexes = mongoClient.getDatabase(databaseName)
         .getCollection(otherCollectionName)
         .listIndexes()
         .asList()

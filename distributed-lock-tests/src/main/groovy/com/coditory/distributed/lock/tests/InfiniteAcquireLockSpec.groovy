@@ -1,12 +1,12 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock.tests
 
 import com.coditory.distributed.lock.DistributedLock
 import spock.lang.Unroll
 
-import static com.coditory.distributed.lock.mongo.base.LockTypes.REENTRANT
-import static com.coditory.distributed.lock.mongo.base.LockTypes.allLockTypes
+import static com.coditory.distributed.lock.tests.base.LockTypes.REENTRANT
+import static com.coditory.distributed.lock.tests.base.LockTypes.allLockTypes
 
-class InfiniteAcquireLockIntgSpec extends MongoLocksIntgSpec {
+abstract class InfiniteAcquireLockSpec extends LocksBaseSpec {
   String otherInstanceId = "other-instance-id"
 
   @Unroll

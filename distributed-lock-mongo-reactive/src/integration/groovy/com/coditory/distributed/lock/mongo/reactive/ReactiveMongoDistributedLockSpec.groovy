@@ -1,0 +1,14 @@
+package com.coditory.distributed.lock.mongo.reactive
+
+import com.coditory.distributed.lock.tests.AcquireLockMultipleTimesSpec
+import com.coditory.distributed.lock.tests.AcquireLockSpec
+import com.coditory.distributed.lock.tests.InfiniteAcquireLockSpec
+import com.coditory.distributed.lock.tests.ReleaseLockSpec
+
+class ReactiveMongoReleaseLockSpec extends ReleaseLockSpec implements UsesReactiveMongoLockDriver {}
+
+class ReactiveMongoAcquireLockSpec extends AcquireLockSpec implements UsesReactiveMongoLockDriver {}
+
+class ReactiveMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec implements UsesReactiveMongoLockDriver {}
+
+class ReactiveMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec implements UsesReactiveMongoLockDriver {}

@@ -1,17 +1,15 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock.tests
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.mongo.base.LockTypes
+import com.coditory.distributed.lock.tests.base.LockTypes
 import spock.lang.Unroll
 
-import static com.coditory.distributed.lock.mongo.base.LockTypes.OVERRIDING
-import static com.coditory.distributed.lock.mongo.base.LockTypes.REENTRANT
-import static com.coditory.distributed.lock.mongo.base.LockTypes.allLockTypes
+import static com.coditory.distributed.lock.tests.base.LockTypes.OVERRIDING
+import static com.coditory.distributed.lock.tests.base.LockTypes.REENTRANT
+import static com.coditory.distributed.lock.tests.base.LockTypes.allLockTypes
 
-class AcquireLockMultipleTimesIntgSpec extends MongoLocksIntgSpec {
-  static String otherInstanceId = "other-instance-id"
+abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
   static List<LockTypes> mayAcquireMultipleTimes = [REENTRANT, OVERRIDING]
-
 
   @Unroll
   def "the same instance may acquire lock multiple times - #type"() {

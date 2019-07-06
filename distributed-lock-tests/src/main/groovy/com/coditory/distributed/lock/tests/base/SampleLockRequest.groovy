@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo.base
+package com.coditory.distributed.lock.tests.base
 
 import com.coditory.distributed.lock.common.InstanceId
 import com.coditory.distributed.lock.common.LockId

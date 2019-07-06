@@ -1,0 +1,7 @@
+dependencies {
+  compile project(':distributed-lock-api')
+  compile project(':distributed-lock-api-reactive')
+  compile('io.projectreactor:reactor-core:3.2.10.RELEASE')
+  compile "org.codehaus.groovy:groovy-all:2.5.5"
+  compile "org.spockframework:spock-core:1.2-groovy-2.5"
+}

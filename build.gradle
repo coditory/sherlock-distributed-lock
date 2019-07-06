@@ -47,13 +47,15 @@ scmVersion {
     prefix = project.name
   }
   hooks {
-    pre 'fileUpdate', [file: 'readme.md', pattern: { v, p -> /'$v'/ }, replacement: {v, p -> "'$v'" }]
+    pre 'fileUpdate', [file: 'readme.md', pattern: { v, p -> /'$v'/ }, replacement: { v, p -> "'$v'" }]
     pre 'commit'
   }
 }
 
 // Only report code coverage for projects that are distributed
-def publishedProjects = subprojects.findAll { it.path != ':xlock-client' }
+def publishedProjects = subprojects.findAll {
+  ![':distributed-lock-client', ':distributed-lock-tests'].contains(it.path)
+}
 
 task jacocoMerge(type: JacocoMerge) {
   publishedProjects.each { subproject ->

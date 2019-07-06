@@ -7,17 +7,17 @@ import com.coditory.distributed.lock.reactive.driver.InitializationResult;
 import com.coditory.distributed.lock.reactive.driver.LockResult;
 import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver;
 import com.coditory.distributed.lock.reactive.driver.UnlockResult;
-import com.mongodb.Function;
+import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import com.mongodb.client.model.ReturnDocument;
-import com.mongodb.client.result.DeleteResult;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -26,9 +26,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
-import static com.coditory.distributed.lock.mongo.reactive.FlowOperators.emptyPublisher;
-import static com.coditory.distributed.lock.mongo.reactive.FlowOperators.flatMap;
-import static com.coditory.distributed.lock.mongo.reactive.FlowOperators.map;
 import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.ACQUIRED_AT_FIELD;
 import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
 import static com.coditory.distributed.lock.mongo.reactive.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
@@ -37,7 +34,7 @@ import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Filters.or;
-import static org.reactivestreams.FlowAdapters.toFlowPublisher;
+import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
 public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDriver {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
@@ -60,83 +57,96 @@ public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLo
 
   @Override
   public Publisher<InitializationResult> initialize() {
-    boolean shouldCreateIndexes = indexesCreated.compareAndSet(false, true);
-    return shouldCreateIndexes
-        ? map(createIndexes(), InitializationResult::new)
-        : emptyPublisher();
+    return publisherToFlowPublisher(createIndexes().map(InitializationResult::new));
   }
 
   @Override
   public Publisher<LockResult> lock(LockRequest lockRequest) {
     Instant now = now();
-    Publisher<Boolean> publisher = upsert(
+    return publisherToFlowPublisher(upsert(
         queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
-    );
-    return map(publisher, LockResult::new);
+    ).map(LockResult::new));
   }
 
   @Override
   public Publisher<LockResult> lockOrRelock(LockRequest lockRequest) {
     Instant now = now();
-    Publisher<Boolean> publisher = upsert(
+    return publisherToFlowPublisher(upsert(
         queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
-    );
-    return map(publisher, LockResult::new);
+    ).map(LockResult::new));
   }
 
   @Override
   public Publisher<LockResult> forceLock(LockRequest lockRequest) {
-    Publisher<Boolean> publisher = upsert(
+    return publisherToFlowPublisher(upsert(
         queryAcquired(lockRequest.getLockId()),
         MongoDistributedLock.fromLockRequest(lockRequest, now())
-    );
-    return map(publisher, LockResult::new);
+    ).map(LockResult::new));
   }
 
   @Override
   public Publisher<UnlockResult> unlock(LockId lockId, InstanceId instanceId) {
-    return map(delete(queryAcquired(lockId, instanceId)), UnlockResult::new);
+    return publisherToFlowPublisher(delete(queryAcquired(lockId, instanceId))
+        .map(UnlockResult::new));
   }
 
   @Override
   public Publisher<UnlockResult> forceUnlock(LockId lockId) {
-    return map(delete(queryAcquired(lockId)), UnlockResult::new);
+    return publisherToFlowPublisher(delete(queryAcquired(lockId))
+        .map(UnlockResult::new));
   }
 
   @Override
   public Publisher<UnlockResult> forceUnlockAll() {
-    return map(deleteAll(), UnlockResult::new);
+    return publisherToFlowPublisher(deleteAll()
+        .map(UnlockResult::new));
   }
 
-  private Publisher<Boolean> delete(Bson query) {
-    Publisher<Document> publisher = execute(collection ->
-        collection.findOneAndDelete(query));
-    return map(publisher, document -> true);
+  private Mono<Boolean> delete(Bson query) {
+    return getLockCollection()
+        .map(collection -> collection.findOneAndDelete(query))
+        .flatMap(Mono::from)
+        .map(result -> true)
+        .defaultIfEmpty(false);
   }
 
-  private Publisher<Boolean> deleteAll() {
-    Publisher<DeleteResult> publisher = execute(collection ->
-        collection.deleteMany(new BsonDocument()));
-    return map(publisher, result -> result.getDeletedCount() > 0);
+  private Mono<Boolean> deleteAll() {
+    return getLockCollection()
+        .map(collection -> collection.deleteMany(new BsonDocument()))
+        .flatMap(Mono::from)
+        .map(result -> result.getDeletedCount() > 0);
   }
 
-  private Publisher<Boolean> upsert(Bson query, MongoDistributedLock lock) {
-    Publisher<Document> publisher = execute(collection ->
-        collection.findOneAndReplace(query, lock.toDocument(), upsertOptions));
-    return map(
-        publisher,
-        document -> document != null && MongoDistributedLock.fromDocument(document).equals(lock));
+  private Mono<Boolean> upsert(Bson query, MongoDistributedLock lock) {
+    return getLockCollection()
+        .map(collection -> collection.findOneAndReplace(query, lock.toDocument(), upsertOptions))
+        .flatMap(Mono::from)
+        .map(document -> document != null
+            && MongoDistributedLock.fromDocument(document).equals(lock))
+        .onErrorResume(MongoCommandException.class, exception ->
+            exception.getErrorCode() == DUPLICATE_KEY_ERROR_CODE
+                ? Mono.just(false)
+                : Mono.error(exception)
+        );
   }
 
-  private Publisher<Boolean> createIndexes() {
-    indexesCreated.set(true);
-    Publisher<String> publisher = execute(collection ->
-        collection.createIndex(
-            Indexes.ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, ACQUIRED_AT_FIELD),
-            new IndexOptions().background(true)));
-    return map(publisher, result -> true);
+  private Mono<Boolean> createIndexes() {
+    boolean shouldCreateIndexes = indexesCreated.compareAndSet(false, true);
+    if (!shouldCreateIndexes) {
+      return Mono.just(false);
+    }
+    return Mono.fromCallable(() ->
+        mongoClient
+            .getDatabase(databaseName)
+            .getCollection(collectionName))
+        .map(collection ->
+            collection.createIndex(
+                Indexes.ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, ACQUIRED_AT_FIELD),
+                new IndexOptions().background(true))
+        )
+        .map(Mono::from).map(result -> true);
   }
 
   private Bson queryAcquiredAndReleased(LockId lockId, InstanceId instanceId, Instant now) {
@@ -173,15 +183,9 @@ public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLo
     return clock.instant();
   }
 
-  private <R> Publisher<R> execute(
-      Function<MongoCollection<Document>, org.reactivestreams.Publisher<? extends R>> action) {
-    return flatMap(getLockCollection(), collection -> toFlowPublisher(action.apply(collection)));
-  }
-
-  private Publisher<MongoCollection<Document>> getLockCollection() {
-    return map(
-        initialize(),
-        result -> mongoClient.getDatabase(databaseName)
-            .getCollection(collectionName));
+  private Mono<MongoCollection<Document>> getLockCollection() {
+    return createIndexes()
+        .map(it -> mongoClient.getDatabase(databaseName))
+        .map(db -> db.getCollection(collectionName));
   }
 }

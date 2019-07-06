@@ -1,12 +1,13 @@
 package com.coditory.distributed.lock.mongo.infrastructure
 
-import com.coditory.distributed.lock.mongo.MongoIntgSpec
+import com.coditory.distributed.lock.mongo.UsesMongo
 import com.mongodb.client.MongoCollection
 import org.bson.Document
+import spock.lang.Specification
 
 import static com.mongodb.client.model.Filters.eq
 
-class MongoTestContainerSetupIntgSpec extends MongoIntgSpec {
+class MongoTestContainerSetupSpec extends Specification implements UsesMongo {
   def "should start mongo test container"() {
     given:
       MongoCollection<Document> collection = getCollection("test-collection")

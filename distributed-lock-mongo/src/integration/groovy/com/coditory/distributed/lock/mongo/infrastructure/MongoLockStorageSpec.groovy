@@ -1,17 +1,17 @@
 package com.coditory.distributed.lock.mongo.infrastructure
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.mongo.base.LockTypes
-import com.coditory.distributed.lock.mongo.MongoIntgSpec
-import com.coditory.distributed.lock.mongo.MongoLocksIntgSpec
+import com.coditory.distributed.lock.mongo.UsesMongoLockDriver
+import com.coditory.distributed.lock.tests.LocksBaseSpec
+import com.coditory.distributed.lock.tests.base.LockTypes
 import org.bson.BsonDocument
 import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.distributed.lock.mongo.base.JsonAssert.assertJsonEqual
+import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
 
-class MongoLockStorageIntgSpec extends MongoLocksIntgSpec {
+class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoLockDriver {
   @Unroll
   def "should preserve lock state for acquired lock - #type"() {
     given:
@@ -21,10 +21,10 @@ class MongoLockStorageIntgSpec extends MongoLocksIntgSpec {
     then:
       assertJsonEqual(getLockDocument(), """
       {
-        "_id": "$MongoLocksIntgSpec.sampleLockId",
-        "acquiredBy": "$MongoLocksIntgSpec.sampleInstanceId",
+        "_id": "$sampleLockId",
+        "acquiredBy": "$sampleInstanceId",
         "acquiredAt": { "\$date": ${epochMillis()} },
-        "expiresAt": { "\$date": ${epochMillis(MongoLocksIntgSpec.defaultLockDuration)} }
+        "expiresAt": { "\$date": ${epochMillis(defaultLockDuration)} }
       }""")
     where:
       type << LockTypes.allLockTypes()
@@ -40,8 +40,8 @@ class MongoLockStorageIntgSpec extends MongoLocksIntgSpec {
     then:
       assertJsonEqual(getLockDocument(), """
       {
-        "_id": "$MongoLocksIntgSpec.sampleLockId",
-        "acquiredBy": "$MongoLocksIntgSpec.sampleInstanceId", 
+        "_id": "$sampleLockId",
+        "acquiredBy": "$sampleInstanceId", 
         "acquiredAt": { "\$date": ${epochMillis()} },
         "expiresAt": { "\$date": ${epochMillis(duration)} }
       }""")
@@ -58,8 +58,8 @@ class MongoLockStorageIntgSpec extends MongoLocksIntgSpec {
     then:
       assertJsonEqual(getLockDocument(), """
       {
-        "_id": "$MongoLocksIntgSpec.sampleLockId",
-        "acquiredBy": "$MongoLocksIntgSpec.sampleInstanceId",
+        "_id": "$sampleLockId",
+        "acquiredBy": "$sampleInstanceId",
         "acquiredAt": { "\$date": ${epochMillis()} },
       }""")
     where:
@@ -79,16 +79,16 @@ class MongoLockStorageIntgSpec extends MongoLocksIntgSpec {
       type << LockTypes.allLockTypes()
   }
 
-  private String getLockDocument(String lockId = MongoLocksIntgSpec.sampleLockId) {
-    return MongoIntgSpec.mongoClient.getDatabase(MongoIntgSpec.databaseName)
-        .getCollection(MongoLocksIntgSpec.locksCollectionName)
+  private String getLockDocument(String lockId = sampleLockId) {
+    return mongoClient.getDatabase(databaseName)
+        .getCollection(locksCollectionName)
         .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
         .first()
         ?.toJson()
   }
 
   private long epochMillis(Duration duration = Duration.ZERO) {
-    return MongoLocksIntgSpec.fixedClock.instant()
+    return fixedClock.instant()
         .plus(duration)
         .toEpochMilli()
   }

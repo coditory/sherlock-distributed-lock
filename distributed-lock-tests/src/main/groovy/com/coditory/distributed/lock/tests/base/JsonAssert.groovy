@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo.base
+package com.coditory.distributed.lock.tests.base
 
 import groovy.json.JsonSlurper
 

@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock.tests
 
 import com.coditory.distributed.lock.DistributedLock
 import spock.lang.Unroll
@@ -6,12 +6,12 @@ import spock.lang.Unroll
 import java.time.Duration
 import java.time.Instant
 
-import static com.coditory.distributed.lock.mongo.base.LockTypes.OVERRIDING
-import static com.coditory.distributed.lock.mongo.base.LockTypes.REENTRANT
-import static com.coditory.distributed.lock.mongo.base.LockTypes.SINGLE_ENTRANT
-import static com.coditory.distributed.lock.mongo.base.LockTypes.allLockTypes
+import static com.coditory.distributed.lock.tests.base.LockTypes.OVERRIDING
+import static com.coditory.distributed.lock.tests.base.LockTypes.REENTRANT
+import static com.coditory.distributed.lock.tests.base.LockTypes.SINGLE_ENTRANT
+import static com.coditory.distributed.lock.tests.base.LockTypes.allLockTypes
 
-class AcquireLockIntgSpec extends MongoLocksIntgSpec {
+abstract class AcquireLockSpec extends LocksBaseSpec {
   String lockId = "lock-id"
   String instanceId = "instance-id"
   String otherInstanceId = "other-instance-id"
@@ -32,7 +32,7 @@ class AcquireLockIntgSpec extends MongoLocksIntgSpec {
       type << [REENTRANT, SINGLE_ENTRANT]
   }
 
-  def "overriding lock may acquire lock acquired by a different instance - #type"() {
+  def "overriding lock may acquire lock acquired by a different instance"() {
     given:
       DistributedLock lock = createLock(REENTRANT, lockId, instanceId)
       DistributedLock overridingLock = createLock(OVERRIDING, lockId, otherInstanceId)

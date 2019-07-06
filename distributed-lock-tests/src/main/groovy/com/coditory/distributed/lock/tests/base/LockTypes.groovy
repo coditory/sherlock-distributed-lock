@@ -1,8 +1,8 @@
-package com.coditory.distributed.lock.mongo.base
+package com.coditory.distributed.lock.tests.base
 
 import com.coditory.distributed.lock.DistributedLock
+import com.coditory.distributed.lock.DistributedLockDriver
 import com.coditory.distributed.lock.DistributedLocks
-import com.coditory.distributed.lock.common.driver.DistributedLockDriver
 import groovy.transform.CompileStatic
 
 import java.time.Duration

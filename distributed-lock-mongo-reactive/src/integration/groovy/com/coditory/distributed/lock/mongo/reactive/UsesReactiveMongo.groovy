@@ -1,15 +1,14 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock.mongo.reactive
 
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoClients
-import com.mongodb.client.MongoCollection
+import com.mongodb.reactivestreams.client.MongoClient
+import com.mongodb.reactivestreams.client.MongoClients
+import com.mongodb.reactivestreams.client.MongoCollection
 import groovy.transform.CompileStatic
 import org.bson.Document
 import org.testcontainers.containers.GenericContainer
-import spock.lang.Specification
 
 @CompileStatic
-abstract class MongoIntgSpec extends Specification {
+trait UsesReactiveMongo {
   static final String databaseName = "distributed-lock-mongo"
   static final MongoClient mongoClient = startMongo()
 
@@ -26,4 +25,3 @@ abstract class MongoIntgSpec extends Specification {
     return MongoClients.create("mongodb://localhost:${mongo.firstMappedPort}/$databaseName")
   }
 }
-
