@@ -24,7 +24,7 @@ plugins {
 }
 
 allprojects {
-  group = 'com.coditory.xlock'
+  group = 'com.coditory.distributed-lock'
   version = scmVersion.version
 }
 
@@ -37,6 +37,9 @@ subprojects {
   repositories {
     mavenCentral()
   }
+
+  archivesBaseName = (rootProject.name + path)
+      .replaceAll(':', '-').toLowerCase()
 
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"
@@ -66,7 +69,7 @@ scmVersion {
 
 // Only report code coverage for projects that are distributed
 def publishedProjects = subprojects.findAll {
-  ![':distributed-lock-client', ':distributed-lock-tests'].contains(it.path)
+  ![':client', ':tests'].contains(it.path)
 }
 
 task jacocoMerge(type: JacocoMerge) {

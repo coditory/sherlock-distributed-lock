@@ -1,8 +1,8 @@
 dependencies {
-  api project(':distributed-lock-api-reactive')
+  api project(':api-reactive')
   api "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
-  implementation project(':distributed-lock-mongo:distributed-lock-mongo-common')
+  implementation project(':mongo:shared')
   implementation "io.projectreactor:reactor-core:$versions.reactor"
-  integrationCompile project(':distributed-lock-tests')
+  integrationCompile project(':tests')
   integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

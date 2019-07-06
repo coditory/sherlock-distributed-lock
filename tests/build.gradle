@@ -1,7 +1,7 @@
 dependencies {
-  compile project(':distributed-lock-api')
-  compile project(':distributed-lock-api-reactive')
-  compile project(':distributed-lock-common')
+  compile project(':api')
+  compile project(':api-reactive')
+  compile project(':common')
   compile "io.projectreactor:reactor-core:$versions.reactor"
   compile "org.codehaus.groovy:groovy-all:$versions.groovy"
   compile "org.spockframework:spock-core:$versions.spock"
