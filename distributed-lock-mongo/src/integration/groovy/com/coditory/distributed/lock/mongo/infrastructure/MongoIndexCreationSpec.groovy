@@ -2,13 +2,14 @@ package com.coditory.distributed.lock.mongo.infrastructure
 
 import com.coditory.distributed.lock.DistributedLocks
 import com.coditory.distributed.lock.mongo.MongoDistributedLockDriver
-import com.coditory.distributed.lock.mongo.UsesMongo
 import spock.lang.Specification
 
+import static com.coditory.distributed.lock.mongo.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.mongo.MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
 import static com.coditory.distributed.lock.tests.base.UpdatableFixedClock.defaultUpdatableFixedClock
 
-class MongoIndexCreationSpec extends Specification implements UsesMongo {
+class MongoIndexCreationSpec extends Specification {
   String otherCollectionName = "otherCollection"
   MongoDistributedLockDriver driver = new MongoDistributedLockDriver(mongoClient, databaseName, otherCollectionName, defaultUpdatableFixedClock())
   DistributedLocks locks = DistributedLocks.builder(driver)

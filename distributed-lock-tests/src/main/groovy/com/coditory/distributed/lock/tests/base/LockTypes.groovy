@@ -1,48 +1,33 @@
 package com.coditory.distributed.lock.tests.base
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.DistributedLockDriver
-import com.coditory.distributed.lock.DistributedLocks
 import groovy.transform.CompileStatic
-
-import java.time.Duration
 
 @CompileStatic
 enum LockTypes {
   REENTRANT{
     @Override
-    DistributedLock createLock(DistributedLockDriver driver, String lockId, String instanceId, Duration duration) {
-      return distributedLocks(driver, instanceId, duration)
+    DistributedLock createLock(TestableDistributedLocks distributedLocks, String lockId) {
+      return distributedLocks
           .createReentrantLock(lockId)
     }
   },
   SINGLE_ENTRANT{
     @Override
-    DistributedLock createLock(DistributedLockDriver driver, String lockId, String instanceId, Duration duration) {
-      return distributedLocks(driver, instanceId, duration)
+    DistributedLock createLock(TestableDistributedLocks distributedLocks, String lockId) {
+      return distributedLocks
           .createLock(lockId)
     }
   },
   OVERRIDING{
     @Override
-    DistributedLock createLock(DistributedLockDriver driver, String lockId, String instanceId, Duration duration) {
-      return distributedLocks(driver, instanceId, duration)
+    DistributedLock createLock(TestableDistributedLocks distributedLocks, String lockId) {
+      return distributedLocks
           .createOverridingLock(lockId)
     }
   };
 
-  abstract DistributedLock createLock(
-      DistributedLockDriver driver,
-      String lockId,
-      String instanceId,
-      Duration duration);
-
-  DistributedLocks distributedLocks(DistributedLockDriver driver, String instanceId, Duration duration) {
-    return DistributedLocks.builder(driver)
-        .withDefaultLockDurationd(duration)
-        .withServiceInstanceId(instanceId)
-        .build()
-  }
+  abstract DistributedLock createLock(TestableDistributedLocks distributedLocks, String lockId);
 
   static List<LockTypes> allLockTypes() {
     return values().toList()

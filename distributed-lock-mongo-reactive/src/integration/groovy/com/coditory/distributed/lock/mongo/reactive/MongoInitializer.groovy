@@ -1,14 +1,13 @@
 package com.coditory.distributed.lock.mongo.reactive
 
+
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
 import com.mongodb.reactivestreams.client.MongoCollection
-import groovy.transform.CompileStatic
 import org.bson.Document
 import org.testcontainers.containers.GenericContainer
 
-@CompileStatic
-trait UsesReactiveMongo {
+class MongoInitializer {
   static final String databaseName = "distributed-lock-mongo"
   static final MongoClient mongoClient = startMongo()
 

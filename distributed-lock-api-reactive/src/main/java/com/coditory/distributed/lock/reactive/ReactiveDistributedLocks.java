@@ -9,12 +9,12 @@ import java.time.Duration;
 import static com.coditory.distributed.lock.common.InstanceId.uniqueInstanceId;
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
-public final class DistributedReactiveLocks {
+public final class ReactiveDistributedLocks {
   private final ReactiveDistributedLockDriver driver;
   private final Duration defaultDuration;
   private final InstanceId instanceId;
 
-  DistributedReactiveLocks(
+  ReactiveDistributedLocks(
       ReactiveDistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
     this.driver = expectNonNull(driver, "Expected non null driver");
     this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
@@ -79,8 +79,8 @@ public final class DistributedReactiveLocks {
       return this;
     }
 
-    public DistributedReactiveLocks build() {
-      return new DistributedReactiveLocks(driver, instanceId, defaultDuration);
+    public ReactiveDistributedLocks build() {
+      return new ReactiveDistributedLocks(driver, instanceId, defaultDuration);
     }
   }
 }

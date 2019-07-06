@@ -5,10 +5,10 @@ import com.coditory.distributed.lock.tests.AcquireLockSpec
 import com.coditory.distributed.lock.tests.InfiniteAcquireLockSpec
 import com.coditory.distributed.lock.tests.ReleaseLockSpec
 
-class ReactiveMongoReleaseLockSpec extends ReleaseLockSpec implements UsesReactiveMongoLockDriver {}
+class ReactiveMongoReleaseLockSpec extends ReleaseLockSpec implements UsesReactiveMongoDistributedLocks {}
 
-class ReactiveMongoAcquireLockSpec extends AcquireLockSpec implements UsesReactiveMongoLockDriver {}
+class ReactiveMongoAcquireLockSpec extends AcquireLockSpec implements UsesReactiveMongoDistributedLocks {}
 
-class ReactiveMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec implements UsesReactiveMongoLockDriver {}
+class ReactiveMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec implements UsesReactiveMongoDistributedLocks {}
 
-class ReactiveMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec implements UsesReactiveMongoLockDriver {}
+class ReactiveMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec implements UsesReactiveMongoDistributedLocks {}

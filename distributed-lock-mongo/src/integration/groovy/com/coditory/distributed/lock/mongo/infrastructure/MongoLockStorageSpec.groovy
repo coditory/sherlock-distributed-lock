@@ -1,7 +1,7 @@
 package com.coditory.distributed.lock.mongo.infrastructure
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.mongo.UsesMongoLockDriver
+import com.coditory.distributed.lock.mongo.UsesMongoDistributedLocks
 import com.coditory.distributed.lock.tests.LocksBaseSpec
 import com.coditory.distributed.lock.tests.base.LockTypes
 import org.bson.BsonDocument
@@ -9,9 +9,11 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
+import static com.coditory.distributed.lock.mongo.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.mongo.MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
 
-class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoLockDriver {
+class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributedLocks {
   @Unroll
   def "should preserve lock state for acquired lock - #type"() {
     given:
