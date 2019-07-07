@@ -9,26 +9,26 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 public final class Sherlock {
   private final DistributedLockDriver driver;
-  private final Duration defaultDuration;
+  private final Duration duration;
   private final InstanceId instanceId;
 
   Sherlock(
-      DistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
+      DistributedLockDriver driver, InstanceId instanceId, Duration duration) {
     this.driver = expectNonNull(driver, "Expected non null driver");
     this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
-    this.defaultDuration = expectNonNull(defaultDuration, "Expected non null defaultDuration");
+    this.duration = expectNonNull(duration, "Expected non null duration");
   }
 
   public InstanceId getInstanceId() {
     return instanceId;
   }
 
-  public Duration getDefaultDuration() {
-    return defaultDuration;
+  public Duration getLockDuration() {
+    return duration;
   }
 
   public DistributedLock createReentrantLock(String lockId) {
-    return createReentrantLock(lockId, defaultDuration);
+    return createReentrantLock(lockId, duration);
   }
 
   public DistributedLock createReentrantLock(String lockId, Duration duration) {
@@ -36,7 +36,7 @@ public final class Sherlock {
   }
 
   public DistributedLock createLock(String lockId) {
-    return createLock(lockId, defaultDuration);
+    return createLock(lockId, duration);
   }
 
   public DistributedLock createLock(String lockId, Duration duration) {
@@ -44,7 +44,7 @@ public final class Sherlock {
   }
 
   public DistributedLock createOverridingLock(String lockId) {
-    return createOverridingLock(lockId, defaultDuration);
+    return createOverridingLock(lockId, duration);
   }
 
   public DistributedLock createOverridingLock(String lockId, Duration duration) {

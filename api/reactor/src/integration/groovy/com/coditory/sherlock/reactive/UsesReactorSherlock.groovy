@@ -17,7 +17,7 @@ import static MongoInitializer.mongoClient
 import static ReactorTestableLocksWrapper.testableLocks
 
 trait UsesReactorSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "locks"
+  static final String locksCollectionName = "sherlock"
 
   @Override
   TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {

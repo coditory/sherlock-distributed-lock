@@ -10,26 +10,26 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 public final class ReactiveSherlock {
   private final ReactiveDistributedLockDriver driver;
-  private final Duration defaultDuration;
+  private final Duration duration;
   private final InstanceId instanceId;
 
   ReactiveSherlock(
       ReactiveDistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
     this.driver = expectNonNull(driver, "Expected non null driver");
     this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
-    this.defaultDuration = expectNonNull(defaultDuration, "Expected non null defaultDuration");
+    this.duration = expectNonNull(defaultDuration, "Expected non null duration");
   }
 
   public InstanceId getInstanceId() {
     return instanceId;
   }
 
-  public Duration getDefaultDuration() {
-    return defaultDuration;
+  public Duration getDuration() {
+    return duration;
   }
 
   public ReactiveDistributedLock createReentrantLock(String lockId) {
-    return createReentrantLock(lockId, defaultDuration);
+    return createReentrantLock(lockId, duration);
   }
 
   public ReactiveDistributedLock createReentrantLock(String lockId, Duration duration) {
@@ -37,7 +37,7 @@ public final class ReactiveSherlock {
   }
 
   public ReactiveDistributedLock createLock(String lockId) {
-    return createLock(lockId, defaultDuration);
+    return createLock(lockId, duration);
   }
 
   public ReactiveDistributedLock createLock(String lockId, Duration duration) {
@@ -46,7 +46,7 @@ public final class ReactiveSherlock {
   }
 
   public ReactiveDistributedLock createOverridingLock(String lockId) {
-    return createOverridingLock(lockId, defaultDuration);
+    return createOverridingLock(lockId, duration);
   }
 
   public ReactiveDistributedLock createOverridingLock(String lockId, Duration duration) {
