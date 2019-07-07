@@ -1,5 +1,5 @@
 # Sherlock - Distributed Lock
-*Name "Sherlock" comes from words "shared + lock"*
+*Distributed lock library for JVM*
 
 [![Join the chat at https://gitter.im/coditory/sherlock-distributed-lock](https://badges.gitter.im/coditory/sherlock-distributed-lock.svg)](https://gitter.im/coditory/sherlock-distributed-lock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 [![Build Status](https://travis-ci.org/coditory/sherlock-distributed-lock.svg?branch=master)](https://travis-ci.org/coditory/sherlock-distributed-lock)
@@ -242,3 +242,6 @@ take longer to finish than the lock duration. This problem is not trivial
 and well described by [Martin Kleppmann](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html).
 This library is not designed to solve it.
 Simply make the lock duration as long as possible and don't use it in a per request manner.
+
+## License
+**sherlock-distributed-lock** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
