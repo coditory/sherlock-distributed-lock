@@ -1,7 +1,7 @@
 dependencies {
-  api project(':api')
+  api project(':api:api-sync')
   api "org.mongodb:mongodb-driver-sync:$versions.mongodb"
-  implementation project(':mongo:shared')
+  implementation project(':mongo:mongo-common')
   integrationCompile project(':tests')
   integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

@@ -1,10 +1,19 @@
 rootProject.name = 'distributed-lock'
 include 'api'
-include 'api-reactive'
+include 'api:api-sync'
+include 'api:api-reactive'
+include 'client'
 include 'common'
 include 'mongo'
-include 'mongo:sync'
-include 'mongo:reactive'
-include 'mongo:shared'
-include 'client'
+include 'mongo:mongo-sync'
+include 'mongo:mongo-reactive'
+include 'mongo:mongo-common'
 include 'tests'
+
+// Alias node names so all are unique
+// Fix for https://github.com/gradle/gradle/issues/847
+project(':api:api-sync').projectDir = file('./api/sync')
+project(':api:api-reactive').projectDir = file('./api/reactive')
+project(':mongo:mongo-sync').projectDir = file('./mongo/sync')
+project(':mongo:mongo-reactive').projectDir = file('./mongo/reactive')
+project(':mongo:mongo-common').projectDir = file('./mongo/common')

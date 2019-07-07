@@ -1,6 +1,6 @@
 dependencies {
-  compile project(':api')
-  compile project(':api-reactive')
+  compile project(':api:api-sync')
+  compile project(':api:api-reactive')
   compile project(':common')
   compile "io.projectreactor:reactor-core:$versions.reactor"
   compile "org.codehaus.groovy:groovy-all:$versions.groovy"
