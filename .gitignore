@@ -2,7 +2,7 @@ build
 
 # Gradle
 .gradle
-gradle
+!gradle-wrapper.jar
 
 # IntelliJ
 *.iml
