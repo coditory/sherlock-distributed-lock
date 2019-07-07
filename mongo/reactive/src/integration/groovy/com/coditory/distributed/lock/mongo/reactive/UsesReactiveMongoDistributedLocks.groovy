@@ -26,7 +26,7 @@ trait UsesReactiveMongoDistributedLocks implements DistributedLocksCreator {
     ReactiveDistributedLockDriver driver = new ReactiveMongoDistributedLockDriver(mongoClient, databaseName, locksCollectionName, clock)
     ReactiveDistributedLocks reactiveLocks = ReactiveDistributedLocks.builder(driver)
         .withServiceInstanceId(instanceId)
-        .withDefaultLockDurationd(duration)
+        .withLockDuration(duration)
         .build()
     return testableLocks(reactiveLocks)
   }

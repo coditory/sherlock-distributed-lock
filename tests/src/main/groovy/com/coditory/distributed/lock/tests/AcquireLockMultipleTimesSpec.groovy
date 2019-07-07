@@ -16,8 +16,8 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     given:
       DistributedLock lock = createLock(type)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = lock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = lock.acquire()
     then:
       firstResult == true
       secondResult == true
@@ -30,8 +30,8 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     given:
       DistributedLock lock = createLock(type)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = lock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = lock.acquire()
     then:
       firstResult == true
       secondResult == false
@@ -45,8 +45,8 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type)
       DistributedLock otherObject = createLock(type)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = otherObject.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = otherObject.acquire()
     then:
       firstResult == true
       secondResult == true
@@ -60,8 +60,8 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type)
       DistributedLock otherLock = createLock(type)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = otherLock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
     and:

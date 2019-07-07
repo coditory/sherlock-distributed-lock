@@ -9,49 +9,49 @@ public interface DistributedLockDriver {
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.
    *
-   * If it is not executed explicitly, driver may execute it during first lock acquisition or
+   * If it is not executed explicitly, driver may execute it during first acquire acquisition or
    * release.
    */
   void initialize();
 
   /**
-   * Acquires a lock when there is no lock acquired with the same lockId.
+   * Acquires a acquire when there is no acquire acquired with the same lockId.
    *
-   * @return boolean - true if lock was acquired by this call
+   * @return boolean - true if acquire was acquired by this call
    */
-  boolean lock(LockRequest lockRequest);
+  boolean acquire(LockRequest lockRequest);
 
   /**
-   * Acquires a lock when there is no lock acquired with the same lockId. Prolongs the lock if it
+   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire if it
    * was already acquired by the same instance.
    *
-   * @return boolean - true if lock was acquired by this call
+   * @return boolean - true if acquire was acquired by this call
    */
-  boolean lockOrRelock(LockRequest lockRequest);
+  boolean acquireOrProlong(LockRequest lockRequest);
 
   /**
-   * Acquires a lock even if it was already acquired.
+   * Acquires a acquire even if it was already acquired.
    *
-   * @return boolean - true if lock was acquired by this call
+   * @return boolean - true if acquire was acquired by this call
    */
-  boolean forceLock(LockRequest lockRequest);
+  boolean forceAcquire(LockRequest lockRequest);
 
   /**
-   * Unlock previously acquired lock by the same instance.
+   * Unlock previously acquired acquire by the same instance.
    *
-   * @return boolean - true if lock was released by this call
+   * @return boolean - true if acquire was released by this call
    */
-  boolean unlock(LockId lockId, InstanceId instanceId);
+  boolean release(LockId lockId, InstanceId instanceId);
 
   /**
-   * Unlocks a lock without checking its owner or release date.
+   * Unlocks a acquire without checking its owner or release date.
    *
-   * @return boolean - true if lock was released by this call
+   * @return boolean - true if acquire was released by this call
    */
-  boolean forceUnlock(LockId lockId);
+  boolean forceRelease(LockId lockId);
 
   /**
    * Unlocks all previously acquired locks with out checking their state.
    */
-  void forceUnlockAll();
+  void forceReleaseAll();
 }

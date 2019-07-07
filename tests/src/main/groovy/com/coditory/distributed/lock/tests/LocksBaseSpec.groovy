@@ -19,7 +19,7 @@ abstract class LocksBaseSpec extends Specification implements DistributedLocksCr
   static final UpdatableFixedClock fixedClock = defaultUpdatableFixedClock()
   static final Duration defaultLockDuration = Duration.ofMinutes(10)
   static final String sampleInstanceId = "locks-test-instance"
-  static final String sampleLockId = "sample-lock-id"
+  static final String sampleLockId = "sample-acquire-id"
 
   @After
   void resetClock() {

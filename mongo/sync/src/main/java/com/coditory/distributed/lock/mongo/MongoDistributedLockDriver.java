@@ -54,7 +54,7 @@ public class MongoDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  public boolean lock(LockRequest lockRequest) {
+  public boolean acquire(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
         queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
@@ -63,7 +63,7 @@ public class MongoDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  public boolean lockOrRelock(LockRequest lockRequest) {
+  public boolean acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
         queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
@@ -72,7 +72,7 @@ public class MongoDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  public boolean forceLock(LockRequest lockRequest) {
+  public boolean forceAcquire(LockRequest lockRequest) {
     return upsert(
         queryAcquired(lockRequest.getLockId()),
         MongoDistributedLock.fromLockRequest(lockRequest, now())
@@ -80,17 +80,17 @@ public class MongoDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  public boolean unlock(LockId lockId, InstanceId instanceId) {
+  public boolean release(LockId lockId, InstanceId instanceId) {
     return delete(queryAcquired(lockId, instanceId));
   }
 
   @Override
-  public boolean forceUnlock(LockId lockId) {
+  public boolean forceRelease(LockId lockId) {
     return delete(queryAcquired(lockId));
   }
 
   @Override
-  public void forceUnlockAll() {
+  public void forceReleaseAll() {
     deleteAll();
   }
 

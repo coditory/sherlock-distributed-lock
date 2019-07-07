@@ -6,8 +6,8 @@ import com.coditory.distributed.lock.common.LockRequest;
 import com.coditory.distributed.lock.common.MongoDistributedLock;
 import com.coditory.distributed.lock.common.driver.InitializationResult;
 import com.coditory.distributed.lock.common.driver.LockResult;
-import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver;
 import com.coditory.distributed.lock.common.driver.UnlockResult;
+import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -53,51 +53,51 @@ public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLo
 
   @Override
   public Publisher<InitializationResult> initialize() {
-    return publisherToFlowPublisher(createIndexes().map(InitializationResult::new));
+    return publisherToFlowPublisher(createIndexes().map(InitializationResult::of));
   }
 
   @Override
-  public Publisher<LockResult> lock(LockRequest lockRequest) {
+  public Publisher<LockResult> acquire(LockRequest lockRequest) {
     Instant now = now();
     return publisherToFlowPublisher(upsert(
         queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
-    ).map(LockResult::new));
+    ).map(LockResult::of));
   }
 
   @Override
-  public Publisher<LockResult> lockOrRelock(LockRequest lockRequest) {
+  public Publisher<LockResult> acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return publisherToFlowPublisher(upsert(
         queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
-    ).map(LockResult::new));
+    ).map(LockResult::of));
   }
 
   @Override
-  public Publisher<LockResult> forceLock(LockRequest lockRequest) {
+  public Publisher<LockResult> forceAcquire(LockRequest lockRequest) {
     return publisherToFlowPublisher(upsert(
         queryAcquired(lockRequest.getLockId()),
         MongoDistributedLock.fromLockRequest(lockRequest, now())
-    ).map(LockResult::new));
+    ).map(LockResult::of));
   }
 
   @Override
-  public Publisher<UnlockResult> unlock(LockId lockId, InstanceId instanceId) {
+  public Publisher<UnlockResult> release(LockId lockId, InstanceId instanceId) {
     return publisherToFlowPublisher(delete(queryAcquired(lockId, instanceId))
-        .map(UnlockResult::new));
+        .map(UnlockResult::of));
   }
 
   @Override
-  public Publisher<UnlockResult> forceUnlock(LockId lockId) {
+  public Publisher<UnlockResult> forceRelease(LockId lockId) {
     return publisherToFlowPublisher(delete(queryAcquired(lockId))
-        .map(UnlockResult::new));
+        .map(UnlockResult::of));
   }
 
   @Override
-  public Publisher<UnlockResult> forceUnlockAll() {
+  public Publisher<UnlockResult> forceReleaseAll() {
     return publisherToFlowPublisher(deleteAll()
-        .map(UnlockResult::new));
+        .map(UnlockResult::of));
   }
 
   private Mono<Boolean> delete(Bson query) {

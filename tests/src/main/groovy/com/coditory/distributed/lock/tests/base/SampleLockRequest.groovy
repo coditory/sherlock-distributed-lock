@@ -10,8 +10,8 @@ import java.time.Duration
 @CompileStatic
 class SampleLockRequest {
   private static final Map<String, ?> DEFAULT_PROPERTIES = [
-      lockId    : LockId.of("sample-lock-id"),
-      instanceId: InstanceId.of("sample-lock-instance-id"),
+      lockId    : LockId.of("sample-acquire-id"),
+      instanceId: InstanceId.of("sample-acquire-instance-id"),
       duration  : Duration.ofMinutes(5)
   ]
 

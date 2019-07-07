@@ -7,28 +7,28 @@ import static com.coditory.distributed.lock.LockActionExecutor.executeAndUnlock;
 public interface DistributedLock {
   String getId();
 
-  boolean lock();
+  boolean acquire();
 
-  boolean lock(Duration duration);
+  boolean acquire(Duration duration);
 
-  boolean lockInfinitely();
+  boolean acquireForever();
 
-  boolean unlock();
+  boolean release();
 
-  default boolean lockAndExecute(Runnable onAcquired) {
-    return executeAndUnlock(lock(), onAcquired, this::unlock);
+  default boolean acquireAndExecute(Runnable onAcquired) {
+    return executeAndUnlock(acquire(), onAcquired, this::release);
   }
 
-  default boolean lockAndExecute(Duration duration, Runnable action) {
-    return executeAndUnlock(lock(duration), action, this::unlock);
+  default boolean acquireAndExecute(Duration duration, Runnable action) {
+    return executeAndUnlock(acquire(duration), action, this::release);
   }
 
-  default boolean lockInfinitelyAndExecute(Runnable action) {
-    return executeAndUnlock(lockInfinitely(), action, this::unlock);
+  default boolean acquireForeverAndExecute(Runnable action) {
+    return executeAndUnlock(acquireForever(), action, this::release);
   }
 
-  default boolean unlockAndExecute(Runnable action) {
-    boolean unlocked = unlock();
+  default boolean releaseAndExecute(Runnable action) {
+    boolean unlocked = release();
     if (unlocked) {
       action.run();
     }

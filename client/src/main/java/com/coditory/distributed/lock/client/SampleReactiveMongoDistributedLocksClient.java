@@ -25,7 +25,7 @@ public class SampleReactiveMongoDistributedLocksClient {
 
   void run() {
     ReactiveDistributedLocks locks = createLocks();
-    ReactiveDistributedLock lock = locks.createLock("sample-lock");
+    ReactiveDistributedLock lock = locks.createLock("sample-acquire");
     // ...
   }
 }

@@ -19,7 +19,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributed
     given:
       DistributedLock lock = createLock(type)
     when:
-      lock.lock()
+      lock.acquire()
     then:
       assertJsonEqual(getLockDocument(), """
       {
@@ -38,7 +38,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributed
       DistributedLock lock = createLock(type)
       Duration duration = Duration.ofDays(1)
     when:
-      lock.lock(duration)
+      lock.acquire(duration)
     then:
       assertJsonEqual(getLockDocument(), """
       {
@@ -56,7 +56,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributed
     given:
       DistributedLock lock = createLock(type)
     when:
-      lock.lockInfinitely()
+      lock.acquireForever()
     then:
       assertJsonEqual(getLockDocument(), """
       {
@@ -72,9 +72,9 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributed
   def "should not retrieve state of manually released lock - #type"() {
     given:
       DistributedLock lock = createLock(type)
-      lock.lock()
+      lock.acquire()
     when:
-      lock.unlock()
+      lock.release()
     then:
       getLockDocument() == null
     where:

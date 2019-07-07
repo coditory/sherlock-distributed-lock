@@ -12,7 +12,7 @@ import static com.coditory.distributed.lock.tests.base.LockTypes.SINGLE_ENTRANT
 import static com.coditory.distributed.lock.tests.base.LockTypes.allLockTypes
 
 abstract class AcquireLockSpec extends LocksBaseSpec {
-  String lockId = "lock-id"
+  String lockId = "acquire-id"
   String instanceId = "instance-id"
   String otherInstanceId = "other-instance-id"
 
@@ -22,8 +22,8 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type, lockId, instanceId)
       DistributedLock otherLock = createLock(type, lockId, otherInstanceId)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = otherLock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
     and:
@@ -37,8 +37,8 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(REENTRANT, lockId, instanceId)
       DistributedLock overridingLock = createLock(OVERRIDING, lockId, otherInstanceId)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = overridingLock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = overridingLock.acquire()
     then:
       firstResult == true
     and:
@@ -49,10 +49,10 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
   def "two locks with different lock ids should not block each other - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
-      DistributedLock otherLock = createLock(REENTRANT, "other-lock", otherInstanceId)
+      DistributedLock otherLock = createLock(REENTRANT, "other-acquire", otherInstanceId)
     when:
-      boolean firstResult = lock.lock()
-      boolean secondResult = otherLock.lock()
+      boolean firstResult = lock.acquire()
+      boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
     and:
@@ -68,17 +68,17 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
       Duration duration = Duration.ofHours(1)
 
     when:
-      lock.lock(duration)
+      lock.acquire(duration)
     then:
       assertLocked(lockId, duration)
 
     when:
-      lock.lockInfinitely()
+      lock.acquireForever()
     then:
       assertLockedInfinitely(lockId)
 
     when:
-      lock.lock()
+      lock.acquire()
     then:
       assertLocked(lock.id, defaultLockDuration)
 
@@ -88,20 +88,20 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
 
   void assertLockedInfinitely(String lockId) {
     DistributedLock otherLock = createLock(REENTRANT, lockId, "assert-instance")
-    assert otherLock.lock() == false
+    assert otherLock.acquire() == false
     Instant backup = fixedClock.instant()
     fixedClock.tick(Duration.ofDays(100_000))
-    assert otherLock.lock() == false
+    assert otherLock.acquire() == false
     fixedClock.setup(backup)
   }
 
   void assertLocked(String lockId, Duration duration = defaultLockDuration) {
     DistributedLock otherLock = createLock(REENTRANT, lockId, "assert-instance")
-    assert otherLock.lock() == false
+    assert otherLock.acquire() == false
     Instant backup = fixedClock.instant()
     fixedClock.tick(duration)
-    assert otherLock.lock() == true
-    otherLock.unlock()
+    assert otherLock.acquire() == true
+    otherLock.release()
     fixedClock.setup(backup)
   }
 }

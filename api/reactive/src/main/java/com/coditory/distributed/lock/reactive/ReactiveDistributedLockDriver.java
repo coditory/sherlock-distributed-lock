@@ -14,39 +14,39 @@ public interface ReactiveDistributedLockDriver {
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.
    *
-   * If it is not executed explicitly, driver may execute it during first lock acquisition or
+   * If it is not executed explicitly, driver may execute it during first acquire acquisition or
    * release.
    */
   Publisher<InitializationResult> initialize();
 
   /**
-   * Acquires a lock when there is no lock acquired with the same lockId.
+   * Acquires a acquire when there is no acquire acquired with the same lockId.
    */
-  Publisher<LockResult> lock(LockRequest lockRequest);
+  Publisher<LockResult> acquire(LockRequest lockRequest);
 
   /**
-   * Acquires a lock when there is no lock acquired with the same lockId. Prolongs the lock if it
+   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire if it
    * was already acquired by the same instance.
    */
-  Publisher<LockResult> lockOrRelock(LockRequest lockRequest);
+  Publisher<LockResult> acquireOrProlong(LockRequest lockRequest);
 
   /**
-   * Acquires a lock even if it was already acquired.
+   * Acquires a acquire even if it was already acquired.
    */
-  Publisher<LockResult> forceLock(LockRequest lockRequest);
+  Publisher<LockResult> forceAcquire(LockRequest lockRequest);
 
   /**
-   * Unlock previously acquired lock by the same instance.
+   * Unlock previously acquired acquire by the same instance.
    */
-  Publisher<UnlockResult> unlock(LockId lockId, InstanceId instanceId);
+  Publisher<UnlockResult> release(LockId lockId, InstanceId instanceId);
 
   /**
-   * Unlocks a lock without checking its owner or release date.
+   * Unlocks a acquire without checking its owner or release date.
    */
-  Publisher<UnlockResult> forceUnlock(LockId lockId);
+  Publisher<UnlockResult> forceRelease(LockId lockId);
 
   /**
    * Unlocks all previously acquired locks with out checking their state.
    */
-  Publisher<UnlockResult> forceUnlockAll();
+  Publisher<UnlockResult> forceReleaseAll();
 }

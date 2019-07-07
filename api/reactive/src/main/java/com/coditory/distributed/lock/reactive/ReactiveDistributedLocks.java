@@ -72,7 +72,7 @@ public final class ReactiveDistributedLocks {
       return this;
     }
 
-    public DistributedLocksBuilder withDefaultLockDurationd(
+    public DistributedLocksBuilder withLockDuration(
         Duration duration) {
       this.defaultDuration = expectNonNull(duration, "Expected non null duration");
       return this;

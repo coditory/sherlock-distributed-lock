@@ -3,9 +3,16 @@ package com.coditory.distributed.lock.common.driver;
 import java.util.Objects;
 
 public class UnlockResult {
+  private static final UnlockResult SUCCESS = new UnlockResult(true);
+  private static final UnlockResult FAILURE = new UnlockResult(false);
+
+  public static UnlockResult of(boolean value) {
+    return value ? SUCCESS : FAILURE;
+  }
+
   private boolean unlocked;
 
-  public UnlockResult(boolean unlocked) {
+  private UnlockResult(boolean unlocked) {
     this.unlocked = unlocked;
   }
 

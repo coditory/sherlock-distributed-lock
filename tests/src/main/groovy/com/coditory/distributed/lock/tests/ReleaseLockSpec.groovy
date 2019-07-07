@@ -19,15 +19,15 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
       DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
     and:
-      lock.lock()
+      lock.acquire()
 
     when:
-      boolean unlockResult = lock.unlock()
+      boolean unlockResult = lock.release()
     then:
       unlockResult == true
 
     when:
-      boolean lockResult = otherLock.lock()
+      boolean lockResult = otherLock.acquire()
     then:
       lockResult == true
 
@@ -41,11 +41,11 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
       DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
     and:
-      lock.lock()
+      lock.acquire()
 
     when:
       fixedClock.tick(defaultLockDuration)
-      boolean lockResult = otherLock.lock()
+      boolean lockResult = otherLock.acquire()
     then:
       lockResult == true
 
@@ -60,11 +60,11 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
     and:
       Duration duration = Duration.ofSeconds(5)
-      lock.lock(duration)
+      lock.acquire(duration)
 
     when:
       fixedClock.tick(duration)
-      boolean lockResult = otherLock.lock()
+      boolean lockResult = otherLock.acquire()
     then:
       lockResult == true
 
@@ -78,15 +78,15 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
       DistributedLock otherLock = createLock(type, sampleLockId, otherInstanceId)
     and:
-      otherLock.lock()
+      otherLock.acquire()
 
     when:
-      boolean unlockResult = lock.unlock()
+      boolean unlockResult = lock.release()
     then:
       unlockResult == false
 
     when:
-      boolean lockResult = otherLock.unlock()
+      boolean lockResult = otherLock.release()
     then:
       lockResult == true
 
@@ -99,10 +99,10 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(OVERRIDING, sampleLockId, sampleInstanceId)
       DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
     and:
-      otherLock.lock()
+      otherLock.acquire()
 
     when:
-      boolean unlockResult = lock.unlock()
+      boolean unlockResult = lock.release()
     then:
       unlockResult == true
   }

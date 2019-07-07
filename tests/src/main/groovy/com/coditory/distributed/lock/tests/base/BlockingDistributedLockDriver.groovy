@@ -26,38 +26,38 @@ class BlockingDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  boolean lock(LockRequest lockRequest) {
-    return flowPublisherToFlux(reactiveDriver.lock(lockRequest))
+  boolean acquire(LockRequest lockRequest) {
+    return flowPublisherToFlux(reactiveDriver.acquire(lockRequest))
         .single().block().isLocked()
   }
 
   @Override
-  boolean lockOrRelock(LockRequest lockRequest) {
-    return flowPublisherToFlux(reactiveDriver.lockOrRelock(lockRequest))
+  boolean acquireOrProlong(LockRequest lockRequest) {
+    return flowPublisherToFlux(reactiveDriver.acquireOrProlong(lockRequest))
         .single().block().isLocked()
   }
 
   @Override
-  boolean forceLock(LockRequest lockRequest) {
-    return flowPublisherToFlux(reactiveDriver.forceLock(lockRequest))
+  boolean forceAcquire(LockRequest lockRequest) {
+    return flowPublisherToFlux(reactiveDriver.forceAcquire(lockRequest))
         .single().block().isLocked()
   }
 
   @Override
-  boolean unlock(LockId lockId, InstanceId instanceId) {
-    return flowPublisherToFlux(reactiveDriver.unlock(lockId, instanceId))
+  boolean release(LockId lockId, InstanceId instanceId) {
+    return flowPublisherToFlux(reactiveDriver.release(lockId, instanceId))
         .single().block().isUnlocked()
   }
 
   @Override
-  boolean forceUnlock(LockId lockId) {
-    return flowPublisherToFlux(reactiveDriver.forceUnlock(lockId))
+  boolean forceRelease(LockId lockId) {
+    return flowPublisherToFlux(reactiveDriver.forceRelease(lockId))
         .single().block().isUnlocked()
   }
 
   @Override
-  void forceUnlockAll() {
-    flowPublisherToFlux(reactiveDriver.forceUnlockAll())
+  void forceReleaseAll() {
+    flowPublisherToFlux(reactiveDriver.forceReleaseAll())
         .single().block()
   }
 }

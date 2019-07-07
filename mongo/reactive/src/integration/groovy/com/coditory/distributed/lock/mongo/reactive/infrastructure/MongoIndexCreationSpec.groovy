@@ -22,12 +22,12 @@ class MongoIndexCreationSpec extends Specification {
     expect:
       assertJsonEqual(getCollectionIndexes(), "[]")
     when:
-      flowPublisherToFlux(locks.createLock("some-lock").lock())
+      flowPublisherToFlux(locks.createLock("some-acquire").acquire())
           .blockLast()
     then:
       assertJsonEqual(getCollectionIndexes(), """[
-        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "distributed-lock-mongo.otherCollection", "background": true},
-        {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "distributed-lock-mongo.otherCollection"}
+        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "distributed-acquire-mongo.otherCollection", "background": true},
+        {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "distributed-acquire-mongo.otherCollection"}
       ]""")
   }
 

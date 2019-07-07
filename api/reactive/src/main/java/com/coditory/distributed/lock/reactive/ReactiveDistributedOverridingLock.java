@@ -34,28 +34,28 @@ final class ReactiveDistributedOverridingLock implements ReactiveDistributedLock
   }
 
   @Override
-  public Publisher<LockResult> lock() {
+  public Publisher<LockResult> acquire() {
     return tryLock(duration);
   }
 
   @Override
-  public Publisher<LockResult> lock(Duration duration) {
+  public Publisher<LockResult> acquire(Duration duration) {
     expectNonNull(duration, "Expected non null duration");
     return tryLock(duration);
   }
 
   @Override
-  public Publisher<LockResult> lockInfinitely() {
+  public Publisher<LockResult> acquireForever() {
     return tryLock(null);
   }
 
   private Publisher<LockResult> tryLock(Duration duration) {
     LockRequest lockRequest = new LockRequest(lockId, instanceId, duration);
-    return driver.forceLock(lockRequest);
+    return driver.forceAcquire(lockRequest);
   }
 
   @Override
-  public Publisher<UnlockResult> unlock() {
-    return driver.forceUnlock(lockId);
+  public Publisher<UnlockResult> release() {
+    return driver.forceRelease(lockId);
   }
 }

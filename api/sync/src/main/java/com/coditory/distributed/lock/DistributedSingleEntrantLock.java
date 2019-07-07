@@ -31,28 +31,28 @@ final class DistributedSingleEntrantLock implements DistributedLock {
   }
 
   @Override
-  public boolean lock() {
+  public boolean acquire() {
     return tryLock(duration);
   }
 
   @Override
-  public boolean lock(Duration duration) {
+  public boolean acquire(Duration duration) {
     expectNonNull(duration, "Expected non null duration");
     return tryLock(duration);
   }
 
   @Override
-  public boolean lockInfinitely() {
+  public boolean acquireForever() {
     return tryLock(null);
   }
 
   private boolean tryLock(Duration duration) {
     LockRequest lockRequest = new LockRequest(lockId, instanceId, duration);
-    return driver.lock(lockRequest);
+    return driver.acquire(lockRequest);
   }
 
   @Override
-  public boolean unlock() {
-    return driver.unlock(lockId, instanceId);
+  public boolean release() {
+    return driver.release(lockId, instanceId);
   }
 }

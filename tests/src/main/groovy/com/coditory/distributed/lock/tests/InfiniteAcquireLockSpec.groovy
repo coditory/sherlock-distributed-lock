@@ -15,11 +15,11 @@ abstract class InfiniteAcquireLockSpec extends LocksBaseSpec {
       DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
       DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
     and:
-      lock.lockInfinitely()
+      lock.acquireForever()
 
     when:
       fixedClock.tick(defaultLockDuration)
-      boolean lockResult = otherLock.lock()
+      boolean lockResult = otherLock.acquire()
     then:
       lockResult == false
 

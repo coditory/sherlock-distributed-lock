@@ -24,26 +24,26 @@ class BlockingReactiveDistributedLock implements DistributedLock {
   }
 
   @Override
-  boolean lock() {
-    return flowPublisherToFlux(lock.lock())
+  boolean acquire() {
+    return flowPublisherToFlux(lock.acquire())
         .single().block().locked
   }
 
   @Override
-  boolean lock(Duration duration) {
-    return flowPublisherToFlux(lock.lock(duration))
+  boolean acquire(Duration duration) {
+    return flowPublisherToFlux(lock.acquire(duration))
         .single().block().locked
   }
 
   @Override
-  boolean lockInfinitely() {
-    return flowPublisherToFlux(lock.lockInfinitely())
+  boolean acquireForever() {
+    return flowPublisherToFlux(lock.acquireForever())
         .single().block().locked
   }
 
   @Override
-  boolean unlock() {
-    return flowPublisherToFlux(lock.unlock())
+  boolean release() {
+    return flowPublisherToFlux(lock.release())
         .single().block().unlocked
   }
 }

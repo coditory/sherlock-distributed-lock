@@ -3,9 +3,16 @@ package com.coditory.distributed.lock.common.driver;
 import java.util.Objects;
 
 public class LockResult {
+  private static final LockResult SUCCESS = new LockResult(true);
+  private static final LockResult FAILURE = new LockResult(false);
+
+  public static LockResult of(boolean value) {
+    return value ? SUCCESS : FAILURE;
+  }
+
   private boolean locked;
 
-  public LockResult(boolean locked) {
+  private LockResult(boolean locked) {
     this.locked = locked;
   }
 
