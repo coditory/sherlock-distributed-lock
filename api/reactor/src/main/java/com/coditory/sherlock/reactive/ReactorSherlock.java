@@ -6,7 +6,7 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.reactive.ReactorDistributedLock.reactorLock;
 
 public final class ReactorSherlock {
-  static ReactorSherlock reactorSherlock(ReactiveSherlock locks) {
+  public static ReactorSherlock reactorSherlock(ReactiveSherlock locks) {
     return new ReactorSherlock(locks);
   }
 

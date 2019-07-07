@@ -7,10 +7,10 @@ import com.mongodb.client.MongoClient;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.common.DistributedLockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.common.DistributedLockDefaults.DEFAULT_DB_TABLE_NAME;
-import static com.coditory.sherlock.common.DistributedLockDefaults.DEFAULT_INSTANCE_ID;
-import static com.coditory.sherlock.common.DistributedLockDefaults.DEFAULT_LOCK_DURATION;
+import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_CLOCK;
+import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_DB_TABLE_NAME;
+import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_INSTANCE_ID;
+import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
 
 public class MongoSherlock {
   private MongoClient mongoClient;

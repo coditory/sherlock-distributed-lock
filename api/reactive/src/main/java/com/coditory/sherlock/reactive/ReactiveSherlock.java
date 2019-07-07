@@ -4,6 +4,7 @@ import com.coditory.sherlock.common.InstanceId;
 import com.coditory.sherlock.common.LockId;
 
 import java.time.Duration;
+import java.util.function.Function;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
@@ -50,5 +51,9 @@ public final class ReactiveSherlock {
 
   public ReactiveDistributedLock createOverridingLock(String lockId, Duration duration) {
     return new ReactiveDistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
+  }
+
+  public <T> T map(Function<ReactiveSherlock, T> mapper) {
+    return mapper.apply(this);
   }
 }
