@@ -1,52 +1,25 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.InstanceId;
-
 import java.time.Duration;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
-import static com.coditory.sherlock.reactive.ReactorDistributedLock.reactorLock;
-
-public final class ReactorSherlock {
-  public static ReactorSherlock reactorSherlock(ReactiveSherlock locks) {
-    return new ReactorSherlock(locks);
+public interface ReactorSherlock {
+  static ReactorSherlock reactorSherlock(ReactiveSherlock locks) {
+    return new ReactorSherlockWithDriver(locks);
   }
 
-  private final ReactiveSherlock sherlock;
+  String getInstanceId();
 
-  private ReactorSherlock(ReactiveSherlock sherlock) {
-    this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
-  }
+  Duration getLockDuration();
 
-  public InstanceId getInstanceId() {
-    return sherlock.getInstanceId();
-  }
+  ReactorDistributedLock createReentrantLock(String lockId);
 
-  public Duration getLockDuration() {
-    return sherlock.getDuration();
-  }
+  ReactorDistributedLock createReentrantLock(String lockId, Duration duration);
 
-  public ReactorDistributedLock createReentrantLock(String lockId) {
-    return reactorLock(sherlock.createReentrantLock(lockId));
-  }
+  ReactorDistributedLock createLock(String lockId);
 
-  public ReactorDistributedLock createReentrantLock(String lockId, Duration duration) {
-    return reactorLock(sherlock.createReentrantLock(lockId, duration));
-  }
+  ReactorDistributedLock createLock(String lockId, Duration duration);
 
-  public ReactorDistributedLock createLock(String lockId) {
-    return reactorLock(sherlock.createLock(lockId));
-  }
+  ReactorDistributedLock createOverridingLock(String lockId);
 
-  public ReactorDistributedLock createLock(String lockId, Duration duration) {
-    return reactorLock(sherlock.createLock(lockId, duration));
-  }
-
-  public ReactorDistributedLock createOverridingLock(String lockId) {
-    return reactorLock(sherlock.createOverridingLock(lockId));
-  }
-
-  public ReactorDistributedLock createOverridingLock(String lockId, Duration duration) {
-    return reactorLock(sherlock.createOverridingLock(lockId, duration));
-  }
+  ReactorDistributedLock createOverridingLock(String lockId, Duration duration);
 }

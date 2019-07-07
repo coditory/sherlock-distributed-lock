@@ -32,7 +32,7 @@ class TestableDistributedLocksWrapper implements TestableDistributedLocks {
 
   @Override
   Duration getDefaultDuration() {
-    return locks.duration
+    return locks.lockDuration
   }
 
   @Override

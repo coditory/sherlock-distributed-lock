@@ -1,5 +1,7 @@
 package com.coditory.sherlock.common.util;
 
+import java.util.List;
+
 public final class Preconditions {
   private Preconditions() {
     throw new IllegalStateException("Do not instantiate utility class");
@@ -25,5 +27,16 @@ public final class Preconditions {
       throw new IllegalArgumentException(message);
     }
     return value;
+  }
+
+  public static <E> List<E> expectNonEmpty(List<E> list) {
+    return expectNonEmpty(list, "Expected non empty list. Got: " + list);
+  }
+
+  public static <E> List<E> expectNonEmpty(List<E> list, String message) {
+    if (list == null || list.isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
+    return list;
   }
 }

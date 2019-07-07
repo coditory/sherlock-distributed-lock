@@ -1,59 +1,26 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.InstanceId;
-import com.coditory.sherlock.common.LockId;
-
 import java.time.Duration;
 import java.util.function.Function;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+public interface ReactiveSherlock {
+  String getInstanceId();
 
-public final class ReactiveSherlock {
-  private final ReactiveDistributedLockDriver driver;
-  private final Duration duration;
-  private final InstanceId instanceId;
+  Duration getLockDuration();
 
-  ReactiveSherlock(
-      ReactiveDistributedLockDriver driver, InstanceId instanceId, Duration defaultDuration) {
-    this.driver = expectNonNull(driver, "Expected non null driver");
-    this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
-    this.duration = expectNonNull(defaultDuration, "Expected non null duration");
-  }
+  ReactiveDistributedLock createReentrantLock(String lockId);
 
-  public InstanceId getInstanceId() {
-    return instanceId;
-  }
+  ReactiveDistributedLock createReentrantLock(String lockId, Duration duration);
 
-  public Duration getDuration() {
-    return duration;
-  }
+  ReactiveDistributedLock createLock(String lockId);
 
-  public ReactiveDistributedLock createReentrantLock(String lockId) {
-    return createReentrantLock(lockId, duration);
-  }
+  ReactiveDistributedLock createLock(String lockId, Duration duration);
 
-  public ReactiveDistributedLock createReentrantLock(String lockId, Duration duration) {
-    return new ReactiveDistributedReentrantLock(LockId.of(lockId), instanceId, duration, driver);
-  }
+  ReactiveDistributedLock createOverridingLock(String lockId);
 
-  public ReactiveDistributedLock createLock(String lockId) {
-    return createLock(lockId, duration);
-  }
+  ReactiveDistributedLock createOverridingLock(String lockId, Duration duration);
 
-  public ReactiveDistributedLock createLock(String lockId, Duration duration) {
-    return new ReactiveDistributedSingleEntrantLock(
-        LockId.of(lockId), instanceId, duration, driver);
-  }
-
-  public ReactiveDistributedLock createOverridingLock(String lockId) {
-    return createOverridingLock(lockId, duration);
-  }
-
-  public ReactiveDistributedLock createOverridingLock(String lockId, Duration duration) {
-    return new ReactiveDistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
-  }
-
-  public <T> T map(Function<ReactiveSherlock, T> mapper) {
+  default <T> T map(Function<ReactiveSherlock, T> mapper) {
     return mapper.apply(this);
   }
 }

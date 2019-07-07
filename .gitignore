@@ -7,3 +7,4 @@ gradle
 # IntelliJ
 *.iml
 .idea
+.attach_pid*

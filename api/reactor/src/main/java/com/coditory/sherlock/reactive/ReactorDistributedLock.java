@@ -5,37 +5,35 @@ import com.coditory.sherlock.reactive.driver.UnlockResult;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
+import java.util.function.Supplier;
 
-import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux;
+import static com.coditory.sherlock.reactive.ReactorDistributedLockExecutor.executeOnAcquired;
+import static com.coditory.sherlock.reactive.ReactorDistributedLockExecutor.executeOnReleased;
 
-public final class ReactorDistributedLock {
-  static ReactorDistributedLock reactorLock(ReactiveDistributedLock lock) {
-    return new ReactorDistributedLock(lock);
+public interface ReactorDistributedLock {
+  String getId();
+
+  Mono<LockResult> acquire();
+
+  Mono<LockResult> acquire(Duration duration);
+
+  Mono<LockResult> acquireForever();
+
+  Mono<UnlockResult> release();
+
+  default <T> Mono<T> acquireAndExecute(Supplier<Mono<T>> action) {
+    return executeOnAcquired(acquire(), action, this::release);
   }
 
-  private final ReactiveDistributedLock lock;
-
-  private ReactorDistributedLock(ReactiveDistributedLock lock) {
-    this.lock = lock;
+  default <T> Mono<T> acquireAndExecute(Duration duration, Supplier<Mono<T>> action) {
+    return executeOnAcquired(acquire(duration), action, this::release);
   }
 
-  public String getId() {
-    return lock.getId();
+  default <T> Mono<T> acquireForeverAndExecute(Supplier<Mono<T>> action) {
+    return executeOnAcquired(acquireForever(), action, this::release);
   }
 
-  public Mono<LockResult> acquire() {
-    return flowPublisherToFlux(lock.acquire()).single();
-  }
-
-  public Mono<LockResult> acquire(Duration duration) {
-    return flowPublisherToFlux(lock.acquire(duration)).single();
-  }
-
-  public Mono<LockResult> acquireForever() {
-    return flowPublisherToFlux(lock.acquireForever()).single();
-  }
-
-  public Mono<UnlockResult> release() {
-    return flowPublisherToFlux(lock.release()).single();
+  default <T> Mono<T> releaseAndExecute(Supplier<Mono<T>> action) {
+    return executeOnReleased(release(), action);
   }
 }

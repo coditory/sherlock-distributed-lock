@@ -64,6 +64,6 @@ public class ReactiveMongoSherlock {
     expectNonEmpty(databaseName, "Expected non empty databaseName");
     ReactiveMongoDistributedLockDriver driver = new ReactiveMongoDistributedLockDriver(
         mongoClient, databaseName, collectionName, clock);
-    return new ReactiveSherlock(driver, instanceId, duration);
+    return new ReactiveSherlockWithDriver(driver, instanceId, duration);
   }
 }

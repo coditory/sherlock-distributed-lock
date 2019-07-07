@@ -94,6 +94,12 @@ lock.acquire()
   .block();
 ```
 
+...or shorter
+```java
+lock.acquireAndExecute(() -> Mono.just("Lock granted!"))
+  .block();
+```
+
 ## Lock duration
 
 There are 3 ways to acquire a lock:
@@ -189,16 +195,37 @@ Using mongo distributed lock implementation, acquired lock is stored a document:
 }
 ```
 
-## Stubbing locks in tests
+## Testability
 
-Let's production code like:
-```java
-DistributedLock lock = sherlock.createLock("some-lock");
-LockConsumer lockConsumer = new LockConsumer(lock);
-lockConsumer.singleInstanceOperation()
+For easy stubbing and mocking all most important
+types (like `Sherlock`, `ReactorSherlock`, `DistributedLock`, `ReactorDistributedLock`) are interfaces.
+
+Moreover all of them have stubs or mocks ready to be used. See:
+`SherlockStub`, `ReactorSherlockStub`, `DistributedLockMock` and `ReactorDistributedLockMock`.
+
+Sample usage in spock test:
+
+```groovy
+def "should release a lock after operation"() {
+  given: "there is an lock ready to be acquired"
+    DistributedLockMock lock = DistributedLockMock.alwaysOpenedLock()
+  when: "single instance action is executed"
+    boolean executed = singleInstanceAction(lock)
+  then: "action was executed"
+    executed == true
+  and: "action released the lock when finished"
+    lock.wasReleased == true
+}
+
+def "should not perform single instance action when lock is locked"() {
+  given: "there is an lock acquired by other instance"
+    DistributedLockMock lock = DistributedLockMock.alwaysClosedLock()
+  when: "single instance action is executed"
+    boolean executed = singleInstanceAction(lock)
+  then: "action was not executed"
+    executed == false
+}
 ```
-
-
 
 ## Disclaimer
 

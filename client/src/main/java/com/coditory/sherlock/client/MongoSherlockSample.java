@@ -38,8 +38,6 @@ public class MongoSherlockSample {
   void run2() {
     Sherlock sherlock = createSherlock();
     DistributedLock lock = sherlock.createLock("sample-acquire");
-    lock.acquireAndExecute(() -> {
-      System.out.println("Lock granted!");
-    });
+    lock.acquireAndExecute(() -> System.out.println("Lock granted!"));
   }
 }

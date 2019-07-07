@@ -65,6 +65,6 @@ public class MongoSherlock {
     Preconditions.expectNonEmpty(databaseName, "Expected non empty databaseName");
     MongoDistributedLockDriver driver = new MongoDistributedLockDriver(
         mongoClient, databaseName, collectionName, clock);
-    return new Sherlock(driver, instanceId, duration);
+    return new SherlockWithDriver(driver, instanceId, duration);
   }
 }
