@@ -1,0 +1,5 @@
+dependencies {
+  api project(':api:api-reactive')
+  api "io.projectreactor:reactor-core:$versions.reactor"
+  implementation project(':common')
+}

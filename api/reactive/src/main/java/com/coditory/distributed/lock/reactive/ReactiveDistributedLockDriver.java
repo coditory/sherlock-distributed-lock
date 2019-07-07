@@ -3,9 +3,9 @@ package com.coditory.distributed.lock.reactive;
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
 import com.coditory.distributed.lock.common.LockRequest;
-import com.coditory.distributed.lock.common.driver.InitializationResult;
-import com.coditory.distributed.lock.common.driver.LockResult;
-import com.coditory.distributed.lock.common.driver.UnlockResult;
+import com.coditory.distributed.lock.reactive.driver.InitializationResult;
+import com.coditory.distributed.lock.reactive.driver.LockResult;
+import com.coditory.distributed.lock.reactive.driver.UnlockResult;
 
 import java.util.concurrent.Flow.Publisher;
 
