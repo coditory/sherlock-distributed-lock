@@ -1,4 +1,4 @@
-rootProject.name = 'distributed-lock'
+rootProject.name = 'sherlock'
 include 'api'
 include 'api:api-sync'
 include 'api:api-reactive'

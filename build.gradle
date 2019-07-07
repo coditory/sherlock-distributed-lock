@@ -24,7 +24,7 @@ plugins {
 }
 
 allprojects {
-  group = 'com.coditory.distributed-lock'
+  group = 'com.coditory.sherlock'
   version = scmVersion.version
 }
 
@@ -38,14 +38,14 @@ subprojects {
     mavenCentral()
   }
 
-  archivesBaseName = (rootProject.name + path)
-      .replaceAll(':', '-').toLowerCase()
+  archivesBaseName = (rootProject.name + '-' + project.name)
+      .replaceAll('-api-', '-')
 
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"
     testCompile "ch.qos.logback:logback-classic:$versions.logback"
     testCompile "org.codehaus.groovy:groovy-all:$versions.groovy"
-    testCompile "org.spockframework:spock-core:$versions.spcok"
+    testCompile "org.spockframework:spock-core:$versions.spock"
   }
 
   tasks.withType(Test) {
