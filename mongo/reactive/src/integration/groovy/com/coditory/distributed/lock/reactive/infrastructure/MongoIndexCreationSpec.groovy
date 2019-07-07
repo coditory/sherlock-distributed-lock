@@ -1,26 +1,29 @@
-package com.coditory.distributed.lock.mongo.infrastructure
+package com.coditory.distributed.lock.reactive.infrastructure
 
-import com.coditory.distributed.lock.DistributedLocks
-import com.coditory.distributed.lock.mongo.MongoDistributedLockDriver
+import com.coditory.distributed.lock.reactive.ReactiveDistributedLocks
+import com.coditory.distributed.lock.reactive.ReactiveMongoDistributedLocks
+import reactor.core.publisher.Flux
 import spock.lang.Specification
 
-import static com.coditory.distributed.lock.mongo.MongoInitializer.databaseName
-import static com.coditory.distributed.lock.mongo.MongoInitializer.mongoClient
+import static com.coditory.distributed.lock.reactive.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.reactive.MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
-import static com.coditory.distributed.lock.tests.base.UpdatableFixedClock.defaultUpdatableFixedClock
+import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux
 
 class MongoIndexCreationSpec extends Specification {
   String otherCollectionName = "otherCollection"
-  MongoDistributedLockDriver driver = new MongoDistributedLockDriver(mongoClient, databaseName, otherCollectionName, defaultUpdatableFixedClock())
-  DistributedLocks locks = DistributedLocks.builder(driver)
+  ReactiveDistributedLocks locks = ReactiveMongoDistributedLocks.builder()
+      .withMongoClient(mongoClient)
+      .withDatabaseName(databaseName)
+      .withCollectionName(otherCollectionName)
       .build()
 
   def "should create mongo indexes on first lock"() {
     expect:
       assertJsonEqual(getCollectionIndexes(), "[]")
     when:
-      locks.createLock("some-acquire")
-          .acquire()
+      flowPublisherToFlux(locks.createLock("some-acquire").acquire())
+          .blockLast()
     then:
       assertJsonEqual(getCollectionIndexes(), """[
         {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "distributed-acquire-mongo.otherCollection", "background": true},
@@ -29,10 +32,11 @@ class MongoIndexCreationSpec extends Specification {
   }
 
   private String getCollectionIndexes() {
-    List<String> indexes = mongoClient.getDatabase(databaseName)
+    List<String> indexes = Flux.from(mongoClient.getDatabase(databaseName)
         .getCollection(otherCollectionName)
-        .listIndexes()
-        .asList()
+        .listIndexes())
+        .collectList()
+        .block()
         .collect { it.toJson() }
         .sort()
     return "[" + indexes.join(",\n") + "]"

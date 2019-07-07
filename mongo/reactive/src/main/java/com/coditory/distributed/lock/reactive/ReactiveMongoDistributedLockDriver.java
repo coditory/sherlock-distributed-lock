@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo.reactive;
+package com.coditory.distributed.lock.reactive;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
@@ -7,7 +7,6 @@ import com.coditory.distributed.lock.common.MongoDistributedLock;
 import com.coditory.distributed.lock.common.driver.InitializationResult;
 import com.coditory.distributed.lock.common.driver.LockResult;
 import com.coditory.distributed.lock.common.driver.UnlockResult;
-import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -32,7 +31,7 @@ import static com.coditory.distributed.lock.common.util.Preconditions.expectNonE
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
-public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDriver {
+class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDriver {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
       .upsert(true)
@@ -43,7 +42,7 @@ public class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLo
   private final Clock clock;
   private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
 
-  public ReactiveMongoDistributedLockDriver(
+  ReactiveMongoDistributedLockDriver(
       MongoClient client, String databaseName, String collectionName, Clock clock) {
     this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
     this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");

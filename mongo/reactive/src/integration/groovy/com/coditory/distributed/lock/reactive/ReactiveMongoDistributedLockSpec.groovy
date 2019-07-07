@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo.reactive
+package com.coditory.distributed.lock.reactive
 
 import com.coditory.distributed.lock.tests.AcquireLockMultipleTimesSpec
 import com.coditory.distributed.lock.tests.AcquireLockSpec

@@ -9,7 +9,7 @@ import com.coditory.distributed.lock.common.driver.UnlockResult;
 
 import java.util.concurrent.Flow.Publisher;
 
-public interface ReactiveDistributedLockDriver {
+interface ReactiveDistributedLockDriver {
   /**
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.
@@ -25,8 +25,8 @@ public interface ReactiveDistributedLockDriver {
   Publisher<LockResult> acquire(LockRequest lockRequest);
 
   /**
-   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire if it
-   * was already acquired by the same instance.
+   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire
+   * if it was already acquired by the same instance.
    */
   Publisher<LockResult> acquireOrProlong(LockRequest lockRequest);
 

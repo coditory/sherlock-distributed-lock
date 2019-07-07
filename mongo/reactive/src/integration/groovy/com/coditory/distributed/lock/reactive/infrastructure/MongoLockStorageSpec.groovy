@@ -1,7 +1,7 @@
-package com.coditory.distributed.lock.mongo.reactive.infrastructure
+package com.coditory.distributed.lock.reactive.infrastructure
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.mongo.reactive.UsesReactiveMongoDistributedLocks
+import com.coditory.distributed.lock.reactive.UsesReactiveMongoDistributedLocks
 import com.coditory.distributed.lock.tests.LocksBaseSpec
 import com.coditory.distributed.lock.tests.base.LockTypes
 import org.bson.BsonDocument
@@ -10,8 +10,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.distributed.lock.mongo.reactive.MongoInitializer.databaseName
-import static com.coditory.distributed.lock.mongo.reactive.MongoInitializer.mongoClient
+import static com.coditory.distributed.lock.reactive.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.reactive.MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoDistributedLocks {

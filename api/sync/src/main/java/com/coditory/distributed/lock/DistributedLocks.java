@@ -5,7 +5,6 @@ import com.coditory.distributed.lock.common.LockId;
 
 import java.time.Duration;
 
-import static com.coditory.distributed.lock.common.InstanceId.uniqueInstanceId;
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
 public final class DistributedLocks {
@@ -50,35 +49,5 @@ public final class DistributedLocks {
 
   public DistributedLock createOverridingLock(String lockId, Duration duration) {
     return new DistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
-  }
-
-  public static DistributedLocksBuilder builder(DistributedLockDriver driver) {
-    return new DistributedLocksBuilder(driver);
-  }
-
-  public static final class DistributedLocksBuilder {
-    private final DistributedLockDriver driver;
-    private Duration defaultDuration = Duration.ofMinutes(5);
-    private InstanceId instanceId = uniqueInstanceId();
-
-    private DistributedLocksBuilder(DistributedLockDriver driver) {
-      this.driver = expectNonNull(driver, "Expected non null distributed locks driver");
-    }
-
-    public DistributedLocksBuilder withServiceInstanceId(
-        String instanceId) {
-      this.instanceId = InstanceId.of(instanceId);
-      return this;
-    }
-
-    public DistributedLocksBuilder withDefaultLockDurationd(
-        Duration duration) {
-      this.defaultDuration = expectNonNull(duration, "Expected non null duration");
-      return this;
-    }
-
-    public DistributedLocks build() {
-      return new DistributedLocks(driver, instanceId, defaultDuration);
-    }
   }
 }

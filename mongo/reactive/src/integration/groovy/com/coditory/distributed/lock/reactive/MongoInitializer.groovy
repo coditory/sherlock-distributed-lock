@@ -1,7 +1,7 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock.reactive
 
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoClients
+import com.mongodb.reactivestreams.client.MongoClient
+import com.mongodb.reactivestreams.client.MongoClients
 import org.testcontainers.containers.GenericContainer
 
 class MongoInitializer {

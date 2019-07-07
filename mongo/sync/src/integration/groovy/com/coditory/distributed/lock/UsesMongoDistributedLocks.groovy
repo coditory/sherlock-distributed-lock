@@ -1,7 +1,6 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock
 
-import com.coditory.distributed.lock.DistributedLockDriver
-import com.coditory.distributed.lock.DistributedLocks
+
 import com.coditory.distributed.lock.tests.base.DistributedLocksCreator
 import com.coditory.distributed.lock.tests.base.TestableDistributedLocks
 import com.mongodb.client.MongoCollection
@@ -12,18 +11,21 @@ import org.junit.After
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.distributed.lock.mongo.MongoInitializer.databaseName
-import static com.coditory.distributed.lock.mongo.MongoInitializer.mongoClient
+import static com.coditory.distributed.lock.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.MongoInitializer.mongoClient
 
 trait UsesMongoDistributedLocks implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
   TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
-    DistributedLockDriver driver = new MongoDistributedLockDriver(mongoClient, databaseName, locksCollectionName, clock)
-    DistributedLocks locks = DistributedLocks.builder(driver)
+    DistributedLocks locks = MongoDistributedLocks.builder()
+        .withMongoClient(mongoClient)
+        .withDatabaseName(databaseName)
+        .withCollectionName(locksCollectionName)
         .withServiceInstanceId(instanceId)
-        .withDefaultLockDurationd(duration)
+        .withLockDuration(duration)
+        .withClock(clock)
         .build()
     return locks as TestableDistributedLocks
   }

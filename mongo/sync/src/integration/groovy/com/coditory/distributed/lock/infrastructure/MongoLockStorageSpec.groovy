@@ -1,7 +1,7 @@
-package com.coditory.distributed.lock.mongo.infrastructure
+package com.coditory.distributed.lock.infrastructure
 
 import com.coditory.distributed.lock.DistributedLock
-import com.coditory.distributed.lock.mongo.UsesMongoDistributedLocks
+import com.coditory.distributed.lock.UsesMongoDistributedLocks
 import com.coditory.distributed.lock.tests.LocksBaseSpec
 import com.coditory.distributed.lock.tests.base.LockTypes
 import org.bson.BsonDocument
@@ -9,8 +9,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.distributed.lock.mongo.MongoInitializer.databaseName
-import static com.coditory.distributed.lock.mongo.MongoInitializer.mongoClient
+import static com.coditory.distributed.lock.MongoInitializer.databaseName
+import static com.coditory.distributed.lock.MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.JsonAssert.assertJsonEqual
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoDistributedLocks {

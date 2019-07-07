@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo;
+package com.coditory.distributed.lock;
 
 import com.coditory.distributed.lock.DistributedLockDriver;
 import com.coditory.distributed.lock.common.InstanceId;
@@ -26,7 +26,7 @@ import static com.coditory.distributed.lock.common.MongoDistributedLockQueries.q
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
-public class MongoDistributedLockDriver implements DistributedLockDriver {
+class MongoDistributedLockDriver implements DistributedLockDriver {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
       .upsert(true)

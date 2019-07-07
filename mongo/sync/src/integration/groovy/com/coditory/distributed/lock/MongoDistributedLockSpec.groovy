@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.mongo
+package com.coditory.distributed.lock
 
 import com.coditory.distributed.lock.tests.AcquireLockMultipleTimesSpec
 import com.coditory.distributed.lock.tests.AcquireLockSpec

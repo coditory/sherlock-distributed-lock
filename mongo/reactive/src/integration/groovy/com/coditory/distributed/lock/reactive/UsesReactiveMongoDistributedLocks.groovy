@@ -1,8 +1,6 @@
-package com.coditory.distributed.lock.mongo.reactive
+package com.coditory.distributed.lock.reactive
 
 
-import com.coditory.distributed.lock.reactive.ReactiveDistributedLocks
-import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver
 import com.coditory.distributed.lock.tests.base.DistributedLocksCreator
 import com.coditory.distributed.lock.tests.base.TestableDistributedLocks
 import com.mongodb.reactivestreams.client.MongoCollection
@@ -14,8 +12,8 @@ import reactor.core.publisher.Flux
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.distributed.lock.mongo.reactive.MongoInitializer.databaseName
-import static com.coditory.distributed.lock.mongo.reactive.MongoInitializer.mongoClient
+import static MongoInitializer.databaseName
+import static MongoInitializer.mongoClient
 import static com.coditory.distributed.lock.tests.base.TestableDistributedLocksWrapper.testableLocks
 
 trait UsesReactiveMongoDistributedLocks implements DistributedLocksCreator {
@@ -23,10 +21,13 @@ trait UsesReactiveMongoDistributedLocks implements DistributedLocksCreator {
 
   @Override
   TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
-    ReactiveDistributedLockDriver driver = new ReactiveMongoDistributedLockDriver(mongoClient, databaseName, locksCollectionName, clock)
-    ReactiveDistributedLocks reactiveLocks = ReactiveDistributedLocks.builder(driver)
+    ReactiveDistributedLocks reactiveLocks = ReactiveMongoDistributedLocks.builder()
+        .withMongoClient(mongoClient)
+        .withDatabaseName(databaseName)
+        .withCollectionName(locksCollectionName)
         .withServiceInstanceId(instanceId)
         .withLockDuration(duration)
+        .withClock(clock)
         .build()
     return testableLocks(reactiveLocks)
   }
