@@ -1,7 +1,7 @@
 package com.coditory.distributed.lock.reactive;
 
-import com.coditory.distributed.lock.reactive.driver.LockResult;
-import com.coditory.distributed.lock.reactive.driver.UnlockResult;
+import com.coditory.distributed.lock.common.driver.LockResult;
+import com.coditory.distributed.lock.common.driver.UnlockResult;
 
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;

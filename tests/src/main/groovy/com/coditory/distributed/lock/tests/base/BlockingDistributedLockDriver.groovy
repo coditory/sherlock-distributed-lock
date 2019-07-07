@@ -4,7 +4,7 @@ import com.coditory.distributed.lock.DistributedLockDriver
 import com.coditory.distributed.lock.common.InstanceId
 import com.coditory.distributed.lock.common.LockId
 import com.coditory.distributed.lock.common.LockRequest
-import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver
+import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver
 
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux
 

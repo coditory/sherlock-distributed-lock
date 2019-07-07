@@ -2,7 +2,6 @@ package com.coditory.distributed.lock.reactive;
 
 import com.coditory.distributed.lock.common.InstanceId;
 import com.coditory.distributed.lock.common.LockId;
-import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver;
 
 import java.time.Duration;
 

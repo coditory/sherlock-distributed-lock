@@ -1,10 +1,12 @@
 package com.coditory.distributed.lock.common;
 
-import com.coditory.distributed.lock.common.MongoDistributedLock.Fields;
 import org.bson.conversions.Bson;
 
 import java.time.Instant;
 
+import static com.coditory.distributed.lock.common.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
+import static com.coditory.distributed.lock.common.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
+import static com.coditory.distributed.lock.common.MongoDistributedLock.Fields.LOCK_ID_FIELD;
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
 import static com.mongodb.client.model.Filters.lte;
@@ -17,31 +19,31 @@ public final class MongoDistributedLockQueries {
 
   public static Bson queryAcquiredAndReleased(LockId lockId, InstanceId instanceId, Instant now) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        eq(Fields.ACQUIRED_BY_FIELD, instanceId.getValue()),
-        lte(Fields.EXPIRES_AT_FIELD, now)
+        eq(LOCK_ID_FIELD, lockId.getValue()),
+        eq(ACQUIRED_BY_FIELD, instanceId.getValue()),
+        lte(EXPIRES_AT_FIELD, now)
     );
   }
 
   public static Bson queryAcquired(LockId lockId, InstanceId instanceId) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        eq(Fields.ACQUIRED_BY_FIELD, instanceId.getValue())
+        eq(LOCK_ID_FIELD, lockId.getValue()),
+        eq(ACQUIRED_BY_FIELD, instanceId.getValue())
     );
   }
 
   public static Bson queryAcquiredOrReleased(
       LockId lockId, InstanceId instanceId, Instant now) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+        eq(LOCK_ID_FIELD, lockId.getValue()),
         or(
-            eq(Fields.ACQUIRED_BY_FIELD, instanceId.getValue()),
-            lte(Fields.EXPIRES_AT_FIELD, now)
+            eq(ACQUIRED_BY_FIELD, instanceId.getValue()),
+            lte(EXPIRES_AT_FIELD, now)
         )
     );
   }
 
   public static Bson queryAcquired(LockId lockId) {
-    return eq(Fields.LOCK_ID_FIELD, lockId.getValue());
+    return eq(LOCK_ID_FIELD, lockId.getValue());
   }
 }

@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.reactive.driver;
+package com.coditory.distributed.lock.common.driver;
 
 public class InitializationResult {
   private boolean initialized;

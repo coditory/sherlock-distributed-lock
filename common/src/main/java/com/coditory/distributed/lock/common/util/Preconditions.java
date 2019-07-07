@@ -1,6 +1,10 @@
 package com.coditory.distributed.lock.common.util;
 
-public class Preconditions {
+public final class Preconditions {
+  private Preconditions() {
+    throw new IllegalStateException("Do not instantiate utility class");
+  }
+
   public static <T> T expectNonNull(T value) {
     return expectNonNull(value, "Expected non null value");
   }

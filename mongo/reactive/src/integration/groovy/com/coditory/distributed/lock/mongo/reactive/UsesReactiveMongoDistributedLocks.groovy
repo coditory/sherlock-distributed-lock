@@ -2,7 +2,7 @@ package com.coditory.distributed.lock.mongo.reactive
 
 
 import com.coditory.distributed.lock.reactive.ReactiveDistributedLocks
-import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver
+import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver
 import com.coditory.distributed.lock.tests.base.DistributedLocksCreator
 import com.coditory.distributed.lock.tests.base.TestableDistributedLocks
 import com.mongodb.reactivestreams.client.MongoCollection

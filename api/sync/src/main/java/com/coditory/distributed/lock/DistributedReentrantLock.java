@@ -8,7 +8,7 @@ import java.time.Duration;
 
 import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
 
-class DistributedReentrantLock implements DistributedLock {
+final class DistributedReentrantLock implements DistributedLock {
   private final LockId lockId;
   private final InstanceId instanceId;
   private final Duration duration;

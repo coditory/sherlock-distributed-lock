@@ -5,9 +5,7 @@ import com.coditory.distributed.lock.common.util.Preconditions;
 import java.time.Duration;
 import java.util.Objects;
 
-import static com.coditory.distributed.lock.common.util.Preconditions.expectNonNull;
-
-public class LockRequest {
+public final class LockRequest {
   private final LockId lockId;
   private final InstanceId instanceId;
   private final Duration duration;

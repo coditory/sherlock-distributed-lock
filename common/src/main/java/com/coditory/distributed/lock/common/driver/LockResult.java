@@ -1,4 +1,4 @@
-package com.coditory.distributed.lock.reactive.driver;
+package com.coditory.distributed.lock.common.driver;
 
 import java.util.Objects;
 

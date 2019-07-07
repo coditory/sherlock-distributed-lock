@@ -2,7 +2,7 @@ package com.coditory.distributed.lock.mongo.reactive.infrastructure
 
 import com.coditory.distributed.lock.mongo.reactive.ReactiveMongoDistributedLockDriver
 import com.coditory.distributed.lock.reactive.ReactiveDistributedLocks
-import com.coditory.distributed.lock.reactive.driver.ReactiveDistributedLockDriver
+import com.coditory.distributed.lock.reactive.ReactiveDistributedLockDriver
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 
