@@ -32,6 +32,22 @@ signing {
   sign configurations.archives
 }
 
+scmVersion {
+  versionCreator 'versionWithBranch'
+  tag {
+    prefix = project.name
+  }
+  hooks {
+    // update version in readme.md
+    pre 'fileUpdate', [
+        file       : 'readme.md',
+        pattern    : { v, p -> /'$v'/ },
+        replacement: { v, p -> "'$v'" }
+    ]
+    pre 'commit'
+  }
+}
+
 allprojects {
   group = 'com.coditory.sherlock'
   version = scmVersion.version
@@ -80,22 +96,6 @@ subprojects {
       setAuthor true
       links "https://docs.oracle.com/javase/8/docs/api/"
     }
-  }
-}
-
-scmVersion {
-  versionCreator 'versionWithBranch'
-  tag {
-    prefix = project.name
-  }
-  hooks {
-    // update version in readme.md
-    pre 'fileUpdate', [
-        file       : 'readme.md',
-        pattern    : { v, p -> /'$v'/ },
-        replacement: { v, p -> "'$v'" }
-    ]
-    pre 'commit'
   }
 }
 
