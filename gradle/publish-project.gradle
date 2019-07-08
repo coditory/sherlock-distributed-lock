@@ -1,4 +1,9 @@
 apply plugin: 'maven-publish'
+apply plugin: 'signing'
+
+signing {
+  sign configurations.archives
+}
 
 if (System.env.'nexusUsername') {
   project.nexusUsername = System.env.'nexusUsername'
