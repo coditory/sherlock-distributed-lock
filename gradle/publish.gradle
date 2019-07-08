@@ -1,3 +1,6 @@
+// Releasing the project:
+// ./gradlew release && ./gradlew publish -PmavenCentral && ./gradlew closeAndReleaseRepository
+
 apply plugin: 'maven-publish'
 
 if (System.env.'nexusUsername') {

@@ -22,6 +22,7 @@ plugins {
   id 'maven'
   id 'pl.allegro.tech.build.axion-release' version '1.10.1'
   id 'com.github.kt3k.coveralls' version '2.8.4'
+  id 'io.codearte.nexus-staging' version '0.21.0'
   id 'com.coditory.integration-test' version '1.0.6' apply false
 }
 
@@ -103,8 +104,10 @@ def publishedProjects = subprojects.findAll {
   ![':client', ':tests'].contains(it.path)
 }
 
-publishedProjects.each { subproject ->
-  subproject.apply from: "${rootDir}/gradle/publish.gradle"
+if (project.hasProperty('mavenCentral')) {
+  publishedProjects.each { subproject ->
+    subproject.apply from: "${rootDir}/gradle/publish.gradle"
+  }
 }
 
 task jacocoMerge(type: JacocoMerge) {
@@ -141,4 +144,9 @@ tasks.coveralls {
   description = 'Uploads the aggregated coverage report to Coveralls'
   dependsOn jacocoRootReport
   onlyIf { System.env['CI'] }
+}
+
+nexusStaging {
+  packageGroup = "com.coditory"
+  stagingProfileId = "365d557aaf167c"
 }
