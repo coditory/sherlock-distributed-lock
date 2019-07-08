@@ -39,10 +39,6 @@ artifacts {
   archives sourcesJar
 }
 
-signing {
-  sign configurations.archives
-}
-
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -57,12 +53,6 @@ publishing {
         }
         usage('java-runtime') {
           fromResolutionResult()
-        }
-      }
-
-      signArchives.signatures.each { signature ->
-        artifact(signature) {
-          extension signature.type
         }
       }
 
@@ -110,4 +100,8 @@ publishing {
       }
     }
   }
+}
+
+signing {
+  sign publishing.publications.mavenJava
 }
