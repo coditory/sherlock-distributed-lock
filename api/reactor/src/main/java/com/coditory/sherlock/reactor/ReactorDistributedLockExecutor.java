@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive;
+package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.driver.LockResult;
 import com.coditory.sherlock.reactive.driver.UnlockResult;

@@ -1,0 +1,102 @@
+apply plugin: 'maven-publish'
+
+if (System.env.'nexusUsername') {
+  project.nexusUsername = System.env.'nexusUsername'
+  project.nexusPassword = System.env.'nexusPassword'
+}
+
+jar {
+  manifest {
+    attributes 'Implementation-Title': archivesBaseName
+    attributes 'Implementation-Version': project.version
+    attributes 'Automatic-Module-Name': rootProject.group + '.' + project.name.replace('-', '.')
+    attributes 'Created-By': "${System.getProperty("java.version")} (${System.getProperty("java.specification.vendor")})"
+  }
+
+  from(rootProject.projectDir) {
+    include "license.txt"
+    into "META-INF"
+    expand(
+        copyright: new Date().format("yyyy"),
+        version: project.version
+    )
+  }
+}
+
+task javadocJar(type: Jar) {
+  from javadoc
+  archiveClassifier = 'javadoc'
+}
+
+task sourcesJar(type: Jar) {
+  from sourceSets.main.allJava
+  archiveClassifier = 'sources'
+}
+
+artifacts {
+  archives javadocJar
+  archives sourcesJar
+}
+
+publishing {
+  publications {
+    mavenJava(MavenPublication) {
+      artifactId = archivesBaseName
+      from components.java
+      artifact sourcesJar
+      artifact javadocJar
+
+      versionMapping {
+        usage('java-api') {
+          fromResolutionOf('runtimeClasspath')
+        }
+        usage('java-runtime') {
+          fromResolutionResult()
+        }
+      }
+
+      pom {
+        name = archivesBaseName
+        description = project.description ?: rootProject.description
+        url = 'https://github.com/coditory/sherlock-distributed-lock'
+        organization {
+          name = "Coditory"
+          url = "https://coditory.com"
+        }
+        licenses {
+          license {
+            name = 'The Apache License, Version 2.0'
+            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+          }
+        }
+        developers {
+          developer {
+            id = 'pawel.mendelski'
+            name = 'Pawel Mendelski'
+            email = 'mendelski.pawel@gmail.com'
+          }
+        }
+        scm {
+          connection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
+          developerConnection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
+          url = 'https://github.com/coditory/sherlock-distributed-lock'
+        }
+        issueManagement {
+          system = "GitHub"
+          url = "https://github.com/coditory/sherlock-distributed-lock/issues"
+        }
+      }
+    }
+  }
+  repositories {
+    maven {
+      def releasesRepoUrl = "https://oss.sonatype.org/service/local/staging/deploy/maven2/"
+      def snapshotsRepoUrl = "https://oss.sonatype.org/content/repositories/snapshots/"
+      url = version.endsWith('SNAPSHOT') ? snapshotsRepoUrl : releasesRepoUrl
+      credentials {
+        username nexusUsername
+        password nexusPassword
+      }
+    }
+  }
+}

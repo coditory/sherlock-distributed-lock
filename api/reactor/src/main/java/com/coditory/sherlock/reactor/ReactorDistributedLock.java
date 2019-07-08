@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive;
+package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.driver.LockResult;
 import com.coditory.sherlock.reactive.driver.UnlockResult;
@@ -7,8 +7,8 @@ import reactor.core.publisher.Mono;
 import java.time.Duration;
 import java.util.function.Supplier;
 
-import static com.coditory.sherlock.reactive.ReactorDistributedLockExecutor.executeOnAcquired;
-import static com.coditory.sherlock.reactive.ReactorDistributedLockExecutor.executeOnReleased;
+import static com.coditory.sherlock.reactor.ReactorDistributedLockExecutor.executeOnAcquired;
+import static com.coditory.sherlock.reactor.ReactorDistributedLockExecutor.executeOnReleased;
 
 public interface ReactorDistributedLock {
   String getId();

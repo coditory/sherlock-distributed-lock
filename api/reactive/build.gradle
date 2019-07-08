@@ -1,3 +1,5 @@
+description = "Sherlock Distributed Lock reactive API"
+
 dependencies {
   implementation project(':common')
 }

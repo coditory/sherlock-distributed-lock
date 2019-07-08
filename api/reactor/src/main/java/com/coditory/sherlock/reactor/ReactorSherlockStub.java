@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive;
+package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.common.InstanceId;
 
@@ -7,7 +7,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.singleStateLock;
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.singleStateLock;
 
 public final class ReactorSherlockStub implements ReactorSherlock {
   private final Map<String, ReactorDistributedLock> locksById = new HashMap<>();

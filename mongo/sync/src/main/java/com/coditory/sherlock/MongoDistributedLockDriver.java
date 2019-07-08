@@ -4,8 +4,6 @@ import com.coditory.sherlock.common.InstanceId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
-import com.coditory.sherlock.common.MongoDistributedLockQueries;
-import com.coditory.sherlock.common.util.Preconditions;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -19,7 +17,10 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.coditory.sherlock.common.MongoDistributedLock.fromLockRequest;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquired;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredAndReleased;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredOrReleased;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
@@ -36,11 +37,10 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
 
   public MongoDistributedLockDriver(
       MongoClient client, String databaseName, String collectionName, Clock clock) {
-    this.mongoClient = Preconditions.expectNonNull(client, "Expected non null mongoClient");
-    this.databaseName = Preconditions.expectNonEmpty(databaseName, "Expected non empty databaseName");
-    this.collectionName = Preconditions
-        .expectNonEmpty(collectionName, "Expected non empty collectionName");
-    this.clock = Preconditions.expectNonNull(clock, "Expected non null clock");
+    this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
+    this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");
+    this.collectionName = expectNonEmpty(collectionName, "Expected non empty collectionName");
+    this.clock = expectNonNull(clock, "Expected non null clock");
   }
 
   @Override
@@ -55,9 +55,8 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   public boolean acquire(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-        MongoDistributedLockQueries
-            .queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
-        MongoDistributedLock.fromLockRequest(lockRequest, now)
+        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        fromLockRequest(lockRequest, now)
     );
   }
 
@@ -65,28 +64,27 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   public boolean acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-        MongoDistributedLockQueries
-            .queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
-        MongoDistributedLock.fromLockRequest(lockRequest, now)
+        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        fromLockRequest(lockRequest, now)
     );
   }
 
   @Override
   public boolean forceAcquire(LockRequest lockRequest) {
     return upsert(
-        MongoDistributedLockQueries.queryAcquired(lockRequest.getLockId()),
-        MongoDistributedLock.fromLockRequest(lockRequest, now())
+        queryAcquired(lockRequest.getLockId()),
+        fromLockRequest(lockRequest, now())
     );
   }
 
   @Override
   public boolean release(LockId lockId, InstanceId instanceId) {
-    return delete(MongoDistributedLockQueries.queryAcquired(lockId, instanceId));
+    return delete(queryAcquired(lockId, instanceId));
   }
 
   @Override
   public boolean forceRelease(LockId lockId) {
-    return delete(MongoDistributedLockQueries.queryAcquired(lockId));
+    return delete(queryAcquired(lockId));
   }
 
   @Override

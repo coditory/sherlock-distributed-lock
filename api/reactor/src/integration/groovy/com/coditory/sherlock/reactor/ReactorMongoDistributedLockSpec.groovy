@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive
+package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.tests.AcquireLockMultipleTimesSpec
 import com.coditory.sherlock.tests.AcquireLockSpec

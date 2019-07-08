@@ -1,3 +1,5 @@
+description = "Sherlock Distributed Lock reactor based API"
+
 dependencies {
   api project(':api:api-reactive')
   api "io.projectreactor:reactor-core:$versions.reactor"

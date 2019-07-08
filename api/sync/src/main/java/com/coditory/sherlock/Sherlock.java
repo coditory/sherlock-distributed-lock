@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import com.coditory.sherlock.DistributedLock;
+
 import java.time.Duration;
 
 public interface Sherlock {

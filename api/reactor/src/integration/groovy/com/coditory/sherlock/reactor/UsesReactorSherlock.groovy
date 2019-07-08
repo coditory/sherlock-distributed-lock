@@ -1,8 +1,10 @@
-package com.coditory.sherlock.reactive
+package com.coditory.sherlock.reactor
 
 
 import com.coditory.sherlock.tests.base.DistributedLocksCreator
 import com.coditory.sherlock.tests.base.TestableDistributedLocks
+import com.coditory.sherlock.xxx.ReactiveMongoSherlock
+import com.coditory.sherlock.reactive.ReactiveSherlock
 import com.mongodb.reactivestreams.client.MongoCollection
 import org.bson.BsonDocument
 import org.bson.Document

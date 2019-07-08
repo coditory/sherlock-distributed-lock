@@ -1,4 +1,6 @@
-package com.coditory.sherlock.reactive;
+package com.coditory.sherlock.reactor;
+
+import com.coditory.sherlock.reactive.ReactiveSherlock;
 
 import java.time.Duration;
 

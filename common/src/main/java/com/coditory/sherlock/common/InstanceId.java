@@ -1,6 +1,5 @@
 package com.coditory.sherlock.common;
 
-import com.coditory.sherlock.common.util.Preconditions;
 import com.coditory.sherlock.common.util.UuidGenerator;
 
 import java.util.Objects;
@@ -19,7 +18,7 @@ public final class InstanceId {
   private final String id;
 
   private InstanceId(String id) {
-    this.id = Preconditions.expectNonEmpty(id, "Expected non empty instance id");
+    this.id = expectNonEmpty(id, "Expected non empty instance id");
   }
 
   public String getValue() {

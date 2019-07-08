@@ -1,6 +1,6 @@
-package com.coditory.sherlock.reactive
+package com.coditory.sherlock.reactor
 
-import com.coditory.sherlock.reactive.base.SpecSimulatedException
+import com.coditory.sherlock.reactor.base.SpecSimulatedException
 import org.junit.Before
 import reactor.core.publisher.Mono
 import spock.lang.Shared
@@ -9,8 +9,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.alwaysClosedLock
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.alwaysOpenedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysClosedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysOpenedLock
 
 class ReactorDistributedLockSpec extends Specification {
   @Shared

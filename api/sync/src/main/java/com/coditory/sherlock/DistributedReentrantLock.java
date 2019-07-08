@@ -3,7 +3,6 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.common.InstanceId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.common.util.Preconditions;
 
 import java.time.Duration;
 
@@ -20,10 +19,10 @@ final class DistributedReentrantLock implements DistributedLock {
       InstanceId instanceId,
       Duration duration,
       DistributedLockDriver driver) {
-    this.lockId = Preconditions.expectNonNull(lockId);
-    this.instanceId = Preconditions.expectNonNull(instanceId);
-    this.duration = Preconditions.expectNonNull(duration);
-    this.driver = Preconditions.expectNonNull(driver);
+    this.lockId = expectNonNull(lockId);
+    this.instanceId = expectNonNull(instanceId);
+    this.duration = expectNonNull(duration);
+    this.driver = expectNonNull(driver);
   }
 
   @Override
@@ -38,7 +37,7 @@ final class DistributedReentrantLock implements DistributedLock {
 
   @Override
   public boolean acquire(Duration duration) {
-    Preconditions.expectNonNull(duration, "Expected non null duration");
+    expectNonNull(duration, "Expected non null duration");
     return tryLock(duration);
   }
 

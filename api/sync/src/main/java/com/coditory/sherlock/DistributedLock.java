@@ -1,7 +1,6 @@
 package com.coditory.sherlock;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 import static com.coditory.sherlock.DistributedLockExecutor.executeOnAcquired;
 import static com.coditory.sherlock.DistributedLockExecutor.executeOnReleased;

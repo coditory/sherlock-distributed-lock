@@ -1,3 +1,5 @@
+description = "Sherlock Distributed Lock shared tests"
+
 dependencies {
   compile project(':api:api-sync')
   compile project(':api:api-reactive')

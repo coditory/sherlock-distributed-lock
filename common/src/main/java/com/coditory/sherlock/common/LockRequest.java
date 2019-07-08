@@ -1,9 +1,9 @@
 package com.coditory.sherlock.common;
 
-import com.coditory.sherlock.common.util.Preconditions;
-
 import java.time.Duration;
 import java.util.Objects;
+
+import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 public final class LockRequest {
   private final LockId lockId;
@@ -14,16 +14,16 @@ public final class LockRequest {
       LockId lockId,
       InstanceId instanceId,
       Duration duration) {
-    this.lockId = Preconditions.expectNonNull(lockId);
-    this.instanceId = Preconditions.expectNonNull(instanceId);
+    this.lockId = expectNonNull(lockId);
+    this.instanceId = expectNonNull(instanceId);
     this.duration = duration;
   }
 
   public LockRequest(
       LockId lockId,
       InstanceId instanceId) {
-    this.lockId = Preconditions.expectNonNull(lockId);
-    this.instanceId = Preconditions.expectNonNull(instanceId);
+    this.lockId = expectNonNull(lockId);
+    this.instanceId = expectNonNull(instanceId);
     this.duration = null;
   }
 

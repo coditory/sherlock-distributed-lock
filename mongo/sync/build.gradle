@@ -1,3 +1,5 @@
+description = "Sherlock Distributed Lock implementation using mongo synchronous driver"
+
 dependencies {
   api project(':api:api-sync')
   api "org.mongodb:mongodb-driver-sync:$versions.mongodb"

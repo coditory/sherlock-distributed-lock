@@ -1,9 +1,9 @@
 package com.coditory.sherlock.tests.base
 
 
-import com.coditory.sherlock.common.InstanceId
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.common.InstanceId
 import com.coditory.sherlock.reactive.ReactiveSherlock
 
 import java.time.Duration

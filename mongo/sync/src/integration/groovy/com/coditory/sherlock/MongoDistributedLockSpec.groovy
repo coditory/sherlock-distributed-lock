@@ -1,6 +1,5 @@
 package com.coditory.sherlock
 
-
 import com.coditory.sherlock.tests.AcquireLockMultipleTimesSpec
 import com.coditory.sherlock.tests.AcquireLockSpec
 import com.coditory.sherlock.tests.InfiniteAcquireLockSpec

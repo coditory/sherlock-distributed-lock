@@ -1,8 +1,8 @@
 package com.coditory.sherlock.client;
 
 import com.coditory.sherlock.reactive.ReactiveMongoSherlock;
-import com.coditory.sherlock.reactive.ReactorDistributedLock;
-import com.coditory.sherlock.reactive.ReactorSherlock;
+import com.coditory.sherlock.reactor.ReactorDistributedLock;
+import com.coditory.sherlock.reactor.ReactorSherlock;
 import com.coditory.sherlock.reactive.driver.LockResult;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
@@ -12,7 +12,7 @@ public class ReactiveMongoSherlockSample {
     new ReactiveMongoSherlockSample().run();
   }
 
-  ReactorSherlock createSharelock() {
+  ReactorSherlock createSherlock() {
     String database = "sherlock";
     MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
     return ReactiveMongoSherlock.builder()
@@ -23,8 +23,8 @@ public class ReactiveMongoSherlockSample {
   }
 
   void run() {
-    ReactorSherlock sharelock = createSharelock();
-    ReactorDistributedLock lock = sharelock.createLock("sample-acquire");
+    ReactorSherlock sherlock = createSherlock();
+    ReactorDistributedLock lock = sherlock.createLock("sample-acquire");
     lock.acquire()
         .filter(LockResult::isLocked)
         .flatMap(result -> {

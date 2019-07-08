@@ -18,18 +18,22 @@ buildscript {
 
 plugins {
   id 'jacoco'
+  id 'signing'
+  id 'maven'
   id 'pl.allegro.tech.build.axion-release' version '1.10.1'
   id 'com.github.kt3k.coveralls' version '2.8.4'
   id 'com.coditory.integration-test' version '1.0.6' apply false
 }
 
+description = "Distributed Lock Library for JVM"
+
+signing {
+  sign configurations.archives
+}
+
 allprojects {
   group = 'com.coditory.sherlock'
   version = scmVersion.version
-
-  repositories {
-    mavenCentral()
-  }
 }
 
 subprojects {
@@ -47,6 +51,10 @@ subprojects {
   archivesBaseName = (rootProject.name + '-' + project.name)
       .replaceAll('-api-', '-')
 
+  repositories {
+    mavenCentral()
+  }
+
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"
     testCompile "ch.qos.logback:logback-classic:$versions.logback"
@@ -56,8 +64,20 @@ subprojects {
 
   tasks.withType(Test) {
     testLogging {
+      showStandardStreams = true
       exceptionFormat = 'full'
       events = ['passed', 'skipped', 'failed']
+    }
+  }
+
+  javadoc {
+    source = sourceSets.main.allJava
+    classpath = configurations.compileClasspath
+    failOnError = false
+    options {
+      setMemberLevel JavadocMemberLevel.PUBLIC
+      setAuthor true
+      links "https://docs.oracle.com/javase/8/docs/api/"
     }
   }
 }
@@ -70,8 +90,8 @@ scmVersion {
   hooks {
     // update version in readme.md
     pre 'fileUpdate', [
-        file: 'readme.md',
-        pattern: { v, p -> /'$v'/ },
+        file       : 'readme.md',
+        pattern    : { v, p -> /'$v'/ },
         replacement: { v, p -> "'$v'" }
     ]
     pre 'commit'
@@ -81,6 +101,10 @@ scmVersion {
 // Only report code coverage for projects that are distributed
 def publishedProjects = subprojects.findAll {
   ![':client', ':tests'].contains(it.path)
+}
+
+publishedProjects.each { subproject ->
+  subproject.apply from: "${rootDir}/gradle/publish.gradle"
 }
 
 task jacocoMerge(type: JacocoMerge) {

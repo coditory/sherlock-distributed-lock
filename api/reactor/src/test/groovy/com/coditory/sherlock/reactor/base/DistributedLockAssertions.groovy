@@ -1,7 +1,6 @@
-package com.coditory.sherlock.reactive.base
+package com.coditory.sherlock.reactor.base
 
-
-import com.coditory.sherlock.reactive.ReactorDistributedLock
+import com.coditory.sherlock.reactor.ReactorDistributedLock
 
 import java.time.Duration
 

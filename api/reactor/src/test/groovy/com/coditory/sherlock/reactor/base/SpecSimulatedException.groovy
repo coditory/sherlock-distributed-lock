@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive.base
+package com.coditory.sherlock.reactor.base
 
 class SpecSimulatedException extends RuntimeException {
   SpecSimulatedException() {

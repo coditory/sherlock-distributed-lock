@@ -1,15 +1,15 @@
-package com.coditory.sherlock.reactive
+package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.reactive.driver.LockResult
 import com.coditory.sherlock.reactive.driver.UnlockResult
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.alwaysClosedLock
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.alwaysOpenedLock
-import static com.coditory.sherlock.reactive.ReactorDistributedLockMock.sequencedLock
-import static com.coditory.sherlock.reactive.base.DistributedLockAssertions.assertAlwaysClosedLock
-import static com.coditory.sherlock.reactive.base.DistributedLockAssertions.assertAlwaysOpenedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysClosedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysOpenedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.sequencedLock
+import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysClosedLock
+import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
 class ReactorDistributedLockMockSpec extends Specification {
   String lockId = "sample-lock"

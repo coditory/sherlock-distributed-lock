@@ -27,7 +27,7 @@ dependencies {
 
 Create synchronous lock:
 ```java
-// Initialize Sharelock
+// Initialize Sherlock
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
 Sherlock sherlock = MongoSherlock.builder()
@@ -74,7 +74,7 @@ dependencies {
 
 Create synchronous lock:
 ```java
-// Initialize Sharelock
+// Initialize Sherlock
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
 ReactorSherlock sherlock = ReactiveMongoSherlock.builder()
