@@ -1,10 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-signing {
-  sign configurations.archives
-}
-
 if (System.env.'nexusUsername') {
   project.nexusUsername = System.env.'nexusUsername'
   project.nexusPassword = System.env.'nexusPassword'
@@ -43,6 +39,10 @@ artifacts {
   archives sourcesJar
 }
 
+signing {
+  sign configurations.archives
+}
+
 publishing {
   publications {
     mavenJava(MavenPublication) {
@@ -57,6 +57,12 @@ publishing {
         }
         usage('java-runtime') {
           fromResolutionResult()
+        }
+      }
+
+      signArchives.signatures.each { signature ->
+        artifact(signature) {
+          extension signature.type
         }
       }
 

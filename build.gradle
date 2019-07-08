@@ -37,7 +37,6 @@ description = "Distributed Lock Library for JVM"
 
 scmVersion {
   versionCreator 'versionWithBranch'
-  tag.prefix = 'v'
   hooks {
     // update version in readme.md
     pre 'fileUpdate', [
