@@ -22,7 +22,7 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "sherlock-mongo-sync:0.1.3"
+  compile "sherlock-mongo-sync:0.1.4"
 }
 ```
 
