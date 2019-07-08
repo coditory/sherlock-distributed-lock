@@ -37,15 +37,13 @@ description = "Distributed Lock Library for JVM"
 
 scmVersion {
   versionCreator 'versionWithBranch'
-  tag {
-    prefix = project.name
-  }
+  tag.prefix = 'v'
   hooks {
     // update version in readme.md
     pre 'fileUpdate', [
         file       : 'readme.md',
-        pattern    : { v, p -> /'$v'/ },
-        replacement: { v, p -> "'$v'" }
+        pattern    : { v, p -> v },
+        replacement: { v, p -> v }
     ]
     pre 'commit'
   }
