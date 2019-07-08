@@ -1,5 +1,6 @@
 language: java
 jdk: oraclejdk11
+services: docker
 
 install: ./gradlew assemble
 script: ./gradlew check
