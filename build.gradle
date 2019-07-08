@@ -1,3 +1,5 @@
+// Releasing the project:
+// ./gradlew release && ./gradlew publish -PmavenCentral && ./gradlew closeAndReleaseRepository -PmavenCentral
 buildscript {
   ext {
     versions = [
@@ -10,6 +12,12 @@ buildscript {
         groovy         : '2.5.5',
         spock          : '1.2-groovy-2.5'
     ]
+    notPublishableModules = [
+        ':api',
+        ':client',
+        ':mongo',
+        ':tests'
+    ]
   }
   repositories {
     mavenCentral()
@@ -18,19 +26,13 @@ buildscript {
 
 plugins {
   id 'jacoco'
-  id 'signing'
-  id 'maven'
   id 'pl.allegro.tech.build.axion-release' version '1.10.1'
   id 'com.github.kt3k.coveralls' version '2.8.4'
-  id 'io.codearte.nexus-staging' version '0.21.0'
+  id 'io.codearte.nexus-staging' version '0.21.0' apply false
   id 'com.coditory.integration-test' version '1.0.6' apply false
 }
 
 description = "Distributed Lock Library for JVM"
-
-signing {
-  sign configurations.archives
-}
 
 scmVersion {
   versionCreator 'versionWithBranch'
@@ -99,54 +101,8 @@ subprojects {
   }
 }
 
-// Only report code coverage for projects that are distributed
-def publishedProjects = subprojects.findAll {
-  ![':client', ':tests'].contains(it.path)
-}
+apply from: "gradle/coverage.gradle"
 
 if (project.hasProperty('mavenCentral')) {
-  publishedProjects.each { subproject ->
-    subproject.apply from: "${rootDir}/gradle/publish.gradle"
-  }
-}
-
-task jacocoMerge(type: JacocoMerge) {
-  publishedProjects.each { subproject ->
-    executionData subproject.tasks.withType(Test)
-  }
-  doFirst {
-    executionData = files(executionData.findAll { it.exists() })
-  }
-}
-
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
-  description = 'Generates an aggregate report from all subprojects'
-  dependsOn publishedProjects.test, jacocoMerge
-
-  additionalSourceDirs.from(publishedProjects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories.from(publishedProjects.sourceSets.main.allSource.srcDirs)
-  classDirectories.from(publishedProjects.sourceSets.main.output)
-  executionData jacocoMerge.destinationFile
-
-  reports {
-    html.enabled = true // human readable
-    xml.enabled = true // required by coveralls
-  }
-}
-
-coveralls {
-  sourceDirs = publishedProjects.sourceSets.main.allSource.srcDirs.flatten()
-  jacocoReportPath = "${buildDir}/reports/jacoco/jacocoRootReport/jacocoRootReport.xml"
-}
-
-tasks.coveralls {
-  group = 'Coverage reports'
-  description = 'Uploads the aggregated coverage report to Coveralls'
-  dependsOn jacocoRootReport
-  onlyIf { System.env['CI'] }
-}
-
-nexusStaging {
-  packageGroup = "com.coditory"
-  stagingProfileId = "365d557aaf167c"
+  apply from: "gradle/publish.gradle"
 }
