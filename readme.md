@@ -4,12 +4,12 @@
 [![Coverage Status](https://coveralls.io/repos/github/coditory/sherlock-distributed-lock/badge.svg)](https://coveralls.io/github/coditory/sherlock-distributed-lock)
 [![Join the chat at https://gitter.im/coditory/sherlock-distributed-lock](https://badges.gitter.im/coditory/sherlock-distributed-lock.svg)](https://gitter.im/coditory/sherlock-distributed-lock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
-**Small and single purpose** distributed locking library for JVM. Provides multiple implementations (over single abstraction) for distributed locking:
-- [mongo-synchronous](./mongo/sync)
-- [mongo-reactive](./mongo/reactive)
+**Single purpose and small** distributed locking library for JVM. Provides multiple implementations (over single abstraction) for distributed locking:
+- [mongo-synchronous](./mongo/sync) - uses mongodb (tested on v3.4) and its synchronous driver to manage locks
+- [mongo-reactive](./mongo/reactive) - uses mongodb (tested on v3.4) and its reactive driver to manage locks
 - ...postgres implementation comes next
 
-Before using the library read [main problems of distributed locking](#disclaimer).
+Before using the library read about [main problems of distributed locking](#disclaimer).
 
 ## Basic usage
 
@@ -19,7 +19,7 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "sherlock-mongo-sync:0.1.4"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:0.1.4"
 }
 ```
 
@@ -65,8 +65,8 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "sherlock-mongo-reactive:0.1.0"
-  compile "sherlock-reactor:0.1.0"
+  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.0"
+  compile "com.coditory.sherlock:sherlock-reactor:0.1.0"
 }
 ```
 
@@ -220,11 +220,13 @@ def "should not perform single instance action when lock is locked"() {
 }
 ```
 
-## Disclaimer
+## Problems of distributed locking
 
-#### How to ensure that an acquired lock is released?
+Distributed locking is not a trivial concept. Before using it know its limits.
 
-It is possible the an instance that acquired a lock may go down before releasing it.
+#### How to ensure that a that was acquired lock will be release?
+
+It is possible the an instance that acquired a lock may go down before releasing it. Example:
 
 ```java
 if (lock.acquire()) {
@@ -232,8 +234,7 @@ if (lock.acquire()) {
     System.out.println("Lock granted!");
     System.exit(); // ...or OOM or any other cause
   } finally {
-    // if this part is not reached
-    // lock will be released after exipration time
+    // this part is never reached
     lock.release();
   }
 }
@@ -243,10 +244,23 @@ This problem is fixed by [automatically releasing a lock](#lock-duration) after 
 
 #### How to ensure that an operation did not exceed a lock duration?**
 Because of stop-the-world (...or multiple other causes) an operation that required a lock may
-take longer to finish than the lock duration. This problem is not trivial
-and well described by [Martin Kleppmann](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html).
-This library is not designed to solve it.
-Simply make the lock duration as long as possible and don't use it in a per request manner.
+take longer to finish than the lock duration. Example:
+
+```
+if (lock.acquire()) {
+  try {
+    System.out.println("Lock granted!");
+    System.gc(); // ...very long break that exceeded lock duration
+    criticalAction(); // invoked by two instances
+  } finally {
+    lock.release();
+  }
+}
+```
+
+This problem is well described by [Martin Kleppmann](https://martin.kleppmann.com/2016/02/08/how-to-do-distributed-locking.html).
+
+This library is not designed to solve it. Simply make the lock duration as long as possible and don't use it in a per request manner.
 
 ## License
 **[sherlock-distributed-lock](#sherlock-distributed-lock)** is published under [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
