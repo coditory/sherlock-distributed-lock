@@ -246,7 +246,7 @@ This problem is fixed by [automatically releasing a lock](#lock-duration) after 
 Because of stop-the-world (...or multiple other causes) an operation that required a lock may
 take longer to finish than the lock duration. Example:
 
-```
+```java
 if (lock.acquire()) {
   try {
     System.out.println("Lock granted!");
