@@ -1,9 +1,9 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-if (System.env.'nexusUsername') {
-  project.nexusUsername = System.env.'nexusUsername'
-  project.nexusPassword = System.env.'nexusPassword'
+if (System.env.NEXUS_USERNAME) {
+  project.nexusUsername = System.env.NEXUS_USERNAME
+  project.nexusPassword = System.env.NEXUS_PASSWORD
 }
 
 jar {
@@ -105,3 +105,4 @@ publishing {
 signing {
   sign publishing.publications.mavenJava
 }
+
