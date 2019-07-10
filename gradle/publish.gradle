@@ -1,9 +1,29 @@
 apply plugin: 'io.codearte.nexus-staging'
 apply plugin: 'de.marcphilipp.nexus-publish'
 
+if (System.env.NEXUS_USERNAME) {
+  project.nexusUsername = System.env.NEXUS_USERNAME
+  project.nexusPassword = System.env.NEXUS_PASSWORD
+}
+
 nexusStaging {
   packageGroup = "com.coditory"
   stagingProfileId = "365d557aaf167c"
+}
+
+// Update readme on release only
+if (!project.version.endsWith("-SNAPSHOT")) {
+  scmVersion {
+    hooks {
+      // update version in readme.md
+      pre 'fileUpdate', [
+          file       : 'readme.md',
+          pattern    : { v, p -> v },
+          replacement: { v, p -> v }
+      ]
+      pre 'commit'
+    }
+  }
 }
 
 // Don't publish the default jar for the root project
