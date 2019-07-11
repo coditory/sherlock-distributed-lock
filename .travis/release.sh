@@ -1,29 +1,25 @@
 #!/bin/bash -e
 
-if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
-  echo "Exiting release. Release is enabled on master branch only."
-  exit 0;
-fi
+publish() {
+  echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$TRAVIS_BUILD_DIR/secring.gpg"
+  if [[ "$RELEASE" =~ SNAPSHOST$ ]]; then
+    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot "$@" \
+     || exit 1
+  else
+    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish --stacktrace "$@" \
+     && ./gradlew closeAndReleaseRepository -Ppublish "$@" \
+     || exit 1
+  fi
+  rm -rf "$TRAVIS_BUILD_DIR/secring.gpg"
+}
 
-if [[ -z "$RELEASE" ]]; then
-  echo "Exiting release. No RELEASE variable"
-  exit 0;
-fi
+release() {
+  ./gradlew release -Ppublish -Prelease.customUsername="$GITHUB_TOKEN" "$@" || exit 1
+}
 
-if [[ -z "$GITHUB_TOKEN" ]]; then
-  echo "Exiting release. No GITHUB_TOKEN variable"
-  exit 0;
-fi
-
-if [[ -z "$GPG_SECRET_KEYS" ]] || [[ -z "$GPG_OWNERTRUST" ]]; then
-  echo "Exiting release. Missing gpg keys."
-  exit 0;
-fi
-
-if [[ "$(./gradlew currentVersion)" =~ "release-" ]]; then
-  echo "Exiting release. Already released."
-  exit 0;
-fi
+: ${RELEASE:?Exiting release: No RELEASE variable}
+: ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
+: ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
 
 git config --local user.name "travis@travis-ci.org"
 git config --local user.email "Travis CI"
@@ -31,37 +27,31 @@ git stash
 git checkout "$TRAVIS_BRANCH"
 git stash pop
 
-RELEASE_ARGS="-Ppublish -Prelease.customUsername=\"$GITHUB_TOKEN\""
-PUBLISH_ARGS="-Ppublish"
+if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" == "BRANCH_SNAPSHOT" ]]; then
+  echo "Releasing branch snapshot"
+  publish
+  exit 0;
+fi
 
-publish() {
-  echo $GPG_SECRET_KEYS | base64 --decode > "$TRAVIS_BUILD_DIR/secring.gpg"
-  GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishRelease -Ppublish
-}
-
-publishSnapshot() {
-  echo $GPG_SECRET_KEYS | base64 --decode > "$TRAVIS_BUILD_DIR/secring.gpg"
-  GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publish -Ppublish -Prelease.forceSnapshot
-}
-
-release() {
-  ./gradlew release -Ppublish -Prelease.customUsername=\"$GITHUB_TOKEN\" "$@"
-}
+if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
+  echo "Exiting release: Release is enabled on master branch only"
+  exit 0;
+fi
 
 if [[ "$RELEASE" = "SNAPSHOT" ]]; then
   echo "Releasing snapshot version"
-  publishSnapshot
+  publish
 elif [[ "$RELEASE" = "TRUE" ]] || [[ "$RELEASE" = "PATCH" ]]; then
-  echo "Releasing patch version"
+  echo "Releasing: Patch version"
   release && publish
 elif [[ "$RELEASE" = "MINOR" ]]; then
-  echo "Releasing minor version"
+  echo "Releasing: Minor version"
   release -Prelease.versionIncrementer=incrementMinor && publish
 elif [[ "$RELEASE" = "MAJOR" ]]; then
-  echo "Releasing major version"
+  echo "Releasing: Major version"
   release -Prelease.versionIncrementer=incrementMajor && publish
 elif [[ "$RELEASE" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  echo "Releasing version: $RELEASE"
+  echo "Releasing: Version $RELEASE"
   release -Prelease.forceVersion="$RELEASE" && publish
 else
   echo "Unrecognized RELEASE value: $RELEASE"

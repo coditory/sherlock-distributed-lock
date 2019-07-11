@@ -1,16 +1,10 @@
 apply plugin: 'io.codearte.nexus-staging'
-apply plugin: 'de.marcphilipp.nexus-publish'
 
 nexusStaging {
   packageGroup = "com.coditory"
   stagingProfileId = "365d557aaf167c"
-}
-
-if (System.env.NEXUS_USERNAME) {
-  project.allprojects {
-    project.nexusUsername = System.env.NEXUS_USERNAME
-    project.nexusPassword = System.env.NEXUS_PASSWORD
-  }
+  username = System.env.NEXUS_USERNAME ?: rootProject.properties["nexusUsername"]
+  password = System.env.NEXUS_PASSWORD ?: rootProject.properties["nexusPassword"]
 }
 
 // Update readme on release only
@@ -37,16 +31,8 @@ subprojects
       configurations.archives.artifacts.clear()
     }
 
-if (project.hasProperty('publish')) {
-  subprojects
-      .findAll { !notPublishableModules.contains(it.path) }
-      .each { subproject ->
-        subproject.apply from: "${rootDir}/gradle/publish-project.gradle"
-      }
-}
-
-task publishRelease() {
-  dependsOn 'publish'
-  dependsOn 'closeAndReleaseRepository'
-  tasks.findByName('closeAndReleaseRepository').mustRunAfter 'publish'
-}
+subprojects
+    .findAll { !notPublishableModules.contains(it.path) }
+    .each { subproject ->
+      subproject.apply from: "${rootDir}/gradle/publish-project.gradle"
+    }
