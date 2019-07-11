@@ -22,7 +22,7 @@ release() {
 : ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
 
 if [[ "$RELEASE" = "TRUE" ]]; then
-  RELEASE="PATCH"
+  RELEASE="SNAPSHOT"
 fi
 
 git config --local user.name "travis@travis-ci.org"
