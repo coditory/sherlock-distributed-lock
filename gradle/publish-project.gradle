@@ -1,11 +1,6 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 
-if (System.env.NEXUS_USERNAME) {
-  project.nexusUsername = System.env.NEXUS_USERNAME
-  project.nexusPassword = System.env.NEXUS_PASSWORD
-}
-
 jar {
   manifest {
     attributes 'Implementation-Title': archivesBaseName
@@ -106,3 +101,8 @@ signing {
   sign publishing.publications.mavenJava
 }
 
+if (System.env.GPG_KEY_ID) {
+  project.ext['signing.keyId'] = System.env.GPG_KEY_ID
+  project.ext['signing.password'] = System.env.GPG_PASSWORD
+  project.ext['signing.secretKeyRingFile'] = System.env.GPG_KEY_RING_FILE
+}

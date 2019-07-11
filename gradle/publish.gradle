@@ -6,6 +6,13 @@ nexusStaging {
   stagingProfileId = "365d557aaf167c"
 }
 
+if (System.env.NEXUS_USERNAME) {
+  project.allprojects {
+    project.nexusUsername = System.env.NEXUS_USERNAME
+    project.nexusPassword = System.env.NEXUS_PASSWORD
+  }
+}
+
 // Update readme on release only
 if (!project.version.endsWith("-SNAPSHOT")) {
   scmVersion {
@@ -30,10 +37,16 @@ subprojects
       configurations.archives.artifacts.clear()
     }
 
-if (project.hasProperty('mavenCentral')) {
+if (project.hasProperty('publish')) {
   subprojects
       .findAll { !notPublishableModules.contains(it.path) }
       .each { subproject ->
         subproject.apply from: "${rootDir}/gradle/publish-project.gradle"
       }
+}
+
+task publishRelease() {
+  dependsOn 'publish'
+  dependsOn 'closeAndReleaseRepository'
+  tasks.findByName('closeAndReleaseRepository').mustRunAfter 'publish'
 }

@@ -2,6 +2,7 @@ language: java
 jdk: oraclejdk11
 services: docker
 
+before_install: bash .travis/skip.sh
 install: ./gradlew assemble
 script: ./gradlew check
 after_success: bash .travis/coverage.sh

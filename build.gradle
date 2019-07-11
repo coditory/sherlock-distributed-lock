@@ -58,10 +58,6 @@ subprojects {
   archivesBaseName = (rootProject.name + '-' + project.name)
       .replaceAll('-api-', '-')
 
-  repositories {
-    mavenCentral()
-  }
-
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"
     testCompile "ch.qos.logback:logback-classic:$versions.logback"
