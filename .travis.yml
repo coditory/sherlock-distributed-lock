@@ -6,10 +6,9 @@ branches:
   except:
     - /^release-\d+\.\d+(\.\d+)?(-\S*)?$/
 
-# install: ./gradlew assemble
-# script: ./gradlew check
-script: echo "OK"
-# after_success: bash .travis/coverage.sh
+install: ./gradlew assemble
+script: ./gradlew check
+after_success: bash .travis/coverage.sh
 
 # Try to release
 deploy:

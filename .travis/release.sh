@@ -2,12 +2,12 @@
 
 publish() {
   echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$TRAVIS_BUILD_DIR/secring.gpg"
-  if [[ "$RELEASE" =~ SNAPSHOST$ ]]; then
-    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot "$@" \
+  if [[ "$RELEASE" =~ SNAPSHOT$ ]]; then
+    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot \
      || exit 1
   else
-    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish --stacktrace "$@" \
-     && ./gradlew closeAndReleaseRepository -Ppublish "$@" \
+    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish \
+     && ./gradlew closeAndReleaseRepository -Ppublish \
      || exit 1
   fi
   rm -rf "$TRAVIS_BUILD_DIR/secring.gpg"
@@ -21,6 +21,10 @@ release() {
 : ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
 : ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
 
+if [[ "$RELEASE" = "TRUE" ]]; then
+  RELEASE="PATCH"
+fi
+
 git config --local user.name "travis@travis-ci.org"
 git config --local user.email "Travis CI"
 git stash
@@ -29,7 +33,7 @@ git stash pop
 
 if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" == "BRANCH_SNAPSHOT" ]]; then
   echo "Releasing branch snapshot"
-  publish
+  publish "SNAPSHOT"
   exit 0;
 fi
 
@@ -41,7 +45,7 @@ fi
 if [[ "$RELEASE" = "SNAPSHOT" ]]; then
   echo "Releasing snapshot version"
   publish
-elif [[ "$RELEASE" = "TRUE" ]] || [[ "$RELEASE" = "PATCH" ]]; then
+elif [[ "$RELEASE" = "PATCH" ]]; then
   echo "Releasing: Patch version"
   release && publish
 elif [[ "$RELEASE" = "MINOR" ]]; then

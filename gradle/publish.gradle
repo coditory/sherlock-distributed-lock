@@ -5,6 +5,8 @@ nexusStaging {
   stagingProfileId = "365d557aaf167c"
   username = System.env.NEXUS_USERNAME ?: rootProject.properties["nexusUsername"]
   password = System.env.NEXUS_PASSWORD ?: rootProject.properties["nexusPassword"]
+  numberOfRetries = 30
+  delayBetweenRetriesInMillis = 3000
 }
 
 // Update readme on release only
