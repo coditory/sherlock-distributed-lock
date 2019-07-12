@@ -19,11 +19,11 @@ echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$GPG_KEY_RING_FILE"
 
 publish() {
   if [[ "$RELEASE" =~ SNAPSHOT$ ]]; then
-    ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot --no-parallel \
+    ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot \
       || exit 1
   else
-    ./gradlew publishToNexus -Ppublish --no-parallel \
-      && ./gradlew closeAndReleaseRepository -Ppublish --no-parallel \
+    ./gradlew publishToNexus -Ppublish \
+      && ./gradlew closeAndReleaseRepository -Ppublish \
       || exit 1
   fi
 }
