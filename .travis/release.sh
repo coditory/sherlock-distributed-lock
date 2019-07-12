@@ -1,35 +1,40 @@
 #!/bin/bash -e
 
+: ${RELEASE:?Exiting release: No RELEASE variable}
+: ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
+: ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
+export GPG_KEY_RING_FILE="$HOME/.gnupg/keyring.gpg"
+
+cleanup() {
+  rm -rf "$GPG_KEY_RING_FILE"
+}
+trap cleanup EXIT INT TERM
+
+git config --local user.name "travis@travis-ci.org"
+git config --local user.email "Travis CI"
+git checkout "$TRAVIS_BRANCH" >/dev/null 2>1
+
+mkdir -p "$HOME/.gnupg"
+echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$GPG_KEY_RING_FILE"
+
 publish() {
-  echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$TRAVIS_BUILD_DIR/secring.gpg"
   if [[ "$RELEASE" =~ SNAPSHOT$ ]]; then
-    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot \
-     || exit 1
+    ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot --no-parallel \
+      || exit 1
   else
-    GPG_KEY_RING_FILE="$TRAVIS_BUILD_DIR/secring.gpg" ./gradlew publishToNexus -Ppublish \
-     && ./gradlew closeAndReleaseRepository -Ppublish \
-     || exit 1
+    ./gradlew publishToNexus -Ppublish --no-parallel \
+      && ./gradlew closeAndReleaseRepository -Ppublish --no-parallel \
+      || exit 1
   fi
-  rm -rf "$TRAVIS_BUILD_DIR/secring.gpg"
 }
 
 release() {
   ./gradlew release -Ppublish -Prelease.customUsername="$GITHUB_TOKEN" "$@" || exit 1
 }
 
-: ${RELEASE:?Exiting release: No RELEASE variable}
-: ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
-: ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
-
 if [[ "$RELEASE" = "TRUE" ]]; then
   RELEASE="SNAPSHOT"
 fi
-
-git config --local user.name "travis@travis-ci.org"
-git config --local user.email "Travis CI"
-git stash
-git checkout "$TRAVIS_BRANCH"
-git stash pop
 
 if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" == "BRANCH_SNAPSHOT" ]]; then
   echo "Releasing branch snapshot"

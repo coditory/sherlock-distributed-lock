@@ -1,0 +1,40 @@
+buildScan {
+  termsOfServiceUrl = 'https://gradle.com/terms-of-service'
+  termsOfServiceAgree = 'yes'
+}
+
+if (System.getenv("CI")) {
+  buildScan.tag "CI"
+} else {
+  buildScan.tag "LOCAL"
+}
+
+
+if (System.getenv("TRAVIS") == "true") {
+  buildScan.tag "CI"
+  buildScan.tag "TRAVIS"
+  buildScan.link "CI Build", System.getenv("TRAVIS_BUILD_WEB_URL")
+  buildScan.link "Job", System.getenv("TRAVIS_JOB_WEB_URL")
+
+  [
+      'Repository'         : System.getenv('TRAVIS_REPO_SLUG'),
+      'Branch'             : System.getenv('TRAVIS_BRANCH'),
+      'Tag'                : System.getenv('TRAVIS_TAG'),
+      'Build Id'           : System.getenv('TRAVIS_BUILD_ID'),
+      'Build Number'       : System.getenv('TRAVIS_BUILD_NUMBER'),
+      'Commit'             : System.getenv('TRAVIS_COMMIT'),
+      'Commit Message'     : System.getenv('TRAVIS_COMMIT_MESSAGE'),
+      'Commit Range'       : System.getenv('TRAVIS_COMMIT_RANGE'),
+      'Job Id'             : System.getenv('TRAVIS_JOB_ID'),
+      'Job Name'           : System.getenv('TRAVIS_JOB_NAME'),
+      'Job Number'         : System.getenv('TRAVIS_JOB_NUMBER'),
+      'OS'                 : System.getenv('TRAVIS_OS_NAME'),
+      'Pull Request'       : System.getenv('TRAVIS_PULL_REQUEST'),
+      'Pull Request Branch': System.getenv('TRAVIS_PULL_REQUEST_BRANCH'),
+      'Pull Request SHA'   : System.getenv('TRAVIS_PULL_REQUEST_SHA'),
+      'Pull Request Slug'  : System.getenv('TRAVIS_PULL_REQUEST_SLUG')
+  ]
+      .findAll { it.value != null && !it.value.isEmpty() }
+      .each { buildScan.value(it.key, it.value) }
+}
+
