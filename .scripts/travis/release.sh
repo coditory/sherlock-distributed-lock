@@ -31,4 +31,4 @@ if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; th
   exit 0;
 fi
 
-.scripts/release "$RELEASE"
+.scripts/release.sh "$RELEASE"

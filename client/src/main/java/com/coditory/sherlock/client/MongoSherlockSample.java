@@ -5,11 +5,15 @@ import com.coditory.sherlock.MongoSherlock;
 import com.coditory.sherlock.Sherlock;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.Duration;
 
 public class MongoSherlockSample {
+  private static Logger logger = LoggerFactory.getLogger(MongoSherlockSample.class);
+
   private static Sherlock createSherlock() {
     return createSherlock("localhost");
   }
@@ -29,12 +33,15 @@ public class MongoSherlockSample {
 
   public static void main() {
     Sherlock sherlock = createSherlock();
-    DistributedLock lock = sherlock.createLock("sample-acquire");
-    if (lock.acquire()) {
-      System.out.println("Lock granted!");
-    }
-    System.out.println("release1: " + lock.release());
-    System.out.println("release2: " + lock.release());
+    DistributedLock simpleLock = sherlock.createLock("sample-acquire");
+    DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
+    DistributedLock overridingLock = sherlock.createOverridingLock("sample-acquire");
+    logger.info("acquire: {}", simpleLock.acquire());
+    logger.info("acquire: {}", simpleLock.acquire());
+    logger.info("acquire: {}", reentrantLock.acquire());
+    logger.info("acquire: {}", reentrantLock.acquire());
+    logger.info("acquire: {}", overridingLock.acquire());
+    logger.info("acquire: {}", overridingLock.acquire());
   }
 
   public static void main2() {
