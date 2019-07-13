@@ -120,6 +120,6 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       unlockResult == false
 
     where:
-      type << [REENTRANT, SINGLE_ENTRANT]
+      type << allLockTypes()
   }
 }
