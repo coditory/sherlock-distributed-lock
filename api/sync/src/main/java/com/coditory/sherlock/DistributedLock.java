@@ -22,7 +22,7 @@ public interface DistributedLock {
   /**
    * Try to acquire the lock. Lock is acquired for a configured duration.
    *
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    */
   boolean acquire();
 
@@ -30,7 +30,7 @@ public interface DistributedLock {
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    */
   boolean acquire(Duration duration);
 
@@ -38,7 +38,7 @@ public interface DistributedLock {
    * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
    * situation where the lock owning instance goes down with out releasing the lock.
    *
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    */
   boolean acquireForever();
 
@@ -54,7 +54,7 @@ public interface DistributedLock {
    * Acquire a lock and release it after action is executed.
    *
    * @param action to be executed when lock is acquired
-   * @return true if lock was acquired.
+   * @return true if lock is acquired.
    * @see DistributedLock#acquire()
    */
   default boolean acquireAndExecute(Runnable action) {
@@ -66,7 +66,7 @@ public interface DistributedLock {
    *
    * @param duration how much time must pass for the acquired lock to expire
    * @param action to be executed when lock is acquired
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    * @see DistributedLock#acquire(Duration)
    */
   default boolean acquireAndExecute(Duration duration, Runnable action) {
@@ -77,7 +77,7 @@ public interface DistributedLock {
    * Acquire a lock without expiration time and release it after action is executed.
    *
    * @param action to be executed when lock is acquired
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    * @see DistributedLock#acquireForever()
    */
   default boolean acquireForeverAndExecute(Runnable action) {

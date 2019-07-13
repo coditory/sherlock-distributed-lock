@@ -31,12 +31,16 @@ public final class MongoDistributedLock {
   public static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
 
   public static MongoDistributedLock fromDocument(Document document) {
-    return new MongoDistributedLock(
-        LockId.of(document.getString(LOCK_ID_FIELD)),
-        OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
-        dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
-        dateToInstant(document.getDate(EXPIRES_AT_FIELD))
-    );
+    try {
+      return new MongoDistributedLock(
+          LockId.of(document.getString(LOCK_ID_FIELD)),
+          OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
+          dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
+          dateToInstant(document.getDate(EXPIRES_AT_FIELD))
+      );
+    } catch (Exception exception) {
+      throw new IllegalStateException("Could not deserialize lock document", exception);
+    }
   }
 
   private static Instant dateToInstant(Date date) {
@@ -90,6 +94,19 @@ public final class MongoDistributedLock {
       result = result.append(EXPIRES_AT_FIELD, expiresAt);
     }
     return result;
+  }
+
+  public boolean hasSameOwner(Document document) {
+    if (document == null) {
+      return false;
+    }
+    MongoDistributedLock other = MongoDistributedLock.fromDocument(document);
+    return this.ownerId.equals(other.ownerId);
+  }
+
+  public boolean isActive(Instant now) {
+    return expiresAt == null
+        || expiresAt.isAfter(now);
   }
 
   @Override

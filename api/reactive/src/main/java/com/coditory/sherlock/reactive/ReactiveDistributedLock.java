@@ -23,7 +23,7 @@ public interface ReactiveDistributedLock {
   /**
    * Try to acquire the lock. Lock is acquired for a configured duration.
    *
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Publisher<LockResult> acquire();
 
@@ -31,7 +31,7 @@ public interface ReactiveDistributedLock {
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Publisher<LockResult> acquire(Duration duration);
 
@@ -39,7 +39,7 @@ public interface ReactiveDistributedLock {
    * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
    * situation where the lock owning instance goes down with out releasing the lock.
    *
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Publisher<LockResult> acquireForever();
 

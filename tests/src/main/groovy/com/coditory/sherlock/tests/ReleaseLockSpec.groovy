@@ -106,4 +106,20 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
     then:
       unlockResult == true
   }
+
+  @Unroll
+  def "should return false for releasing an expired lock - #type"() {
+    given:
+      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
+      lock.acquire()
+      fixedClock.tick(defaultLockDuration)
+
+    when:
+      boolean unlockResult = lock.release()
+    then:
+      unlockResult == false
+
+    where:
+      type << [REENTRANT, SINGLE_ENTRANT]
+  }
 }

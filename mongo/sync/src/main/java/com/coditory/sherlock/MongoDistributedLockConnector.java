@@ -1,9 +1,9 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
+import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
@@ -94,7 +94,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
 
   private boolean delete(Bson query) {
     Document deleted = getLockCollection().findOneAndDelete(query);
-    return deleted != null;
+    return deleted != null
+        && MongoDistributedLock.fromDocument(deleted).isActive(now());
   }
 
   private void deleteAll() {
@@ -106,7 +107,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     try {
       Document current = getLockCollection()
           .findOneAndReplace(query, documentToUpsert, upsertOptions);
-      return current != null && MongoDistributedLock.fromDocument(current).equals(lock);
+      return lock.hasSameOwner(current);
     } catch (MongoCommandException exception) {
       if (exception.getErrorCode() != DUPLICATE_KEY_ERROR_CODE) {
         throw exception;

@@ -27,7 +27,7 @@ public interface ReactorDistributedLock {
   /**
    * Try to acquire the lock. Lock is acquired for a configured duration.
    *
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Mono<LockResult> acquire();
 
@@ -35,7 +35,7 @@ public interface ReactorDistributedLock {
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Mono<LockResult> acquire(Duration duration);
 
@@ -43,7 +43,7 @@ public interface ReactorDistributedLock {
    * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
    * situation where the lock owning instance goes down with out releasing the lock.
    *
-   * @return {@link LockResult#SUCCESS}, if lock was acquired
+   * @return {@link LockResult#SUCCESS}, if lock is acquired
    */
   Mono<LockResult> acquireForever();
 
@@ -61,7 +61,7 @@ public interface ReactorDistributedLock {
    *
    * @param <T> type od value emitted by the action
    * @param action to be executed when lock is acquired
-   * @return true if lock was acquired.
+   * @return true if lock is acquired.
    * @see ReactorDistributedLock#acquire()
    */
   default <T> Mono<T> acquireAndExecute(Supplier<Mono<T>> action) {
@@ -74,7 +74,7 @@ public interface ReactorDistributedLock {
    * @param <T> type od value emitted by the action
    * @param duration how much time must pass for the acquired lock to expire
    * @param action to be executed when lock is acquired
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    * @see ReactorDistributedLock#acquire(Duration)
    */
   default <T> Mono<T> acquireAndExecute(Duration duration, Supplier<Mono<T>> action) {
@@ -86,7 +86,7 @@ public interface ReactorDistributedLock {
    *
    * @param <T> type od value emitted by the action
    * @param action to be executed when lock is acquired
-   * @return true, if lock was acquired
+   * @return true, if lock is acquired
    * @see ReactorDistributedLock#acquireForever()
    */
   default <T> Mono<T> acquireForeverAndExecute(Supplier<Mono<T>> action) {
