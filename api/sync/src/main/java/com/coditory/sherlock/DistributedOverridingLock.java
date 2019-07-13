@@ -1,8 +1,9 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
+import com.coditory.sherlock.common.OwnerId;
 
 import java.time.Duration;
 
@@ -11,14 +12,14 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 final class DistributedOverridingLock implements DistributedLock {
   private final LockId lockId;
   private final OwnerId ownerId;
-  private final Duration duration;
-  private final DistributedLockDriver driver;
+  private final LockDuration duration;
+  private final DistributedLockConnector driver;
 
   DistributedOverridingLock(
       LockId lockId,
       OwnerId ownerId,
-      Duration duration,
-      DistributedLockDriver driver) {
+      LockDuration duration,
+      DistributedLockConnector driver) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = expectNonNull(duration);
@@ -37,8 +38,7 @@ final class DistributedOverridingLock implements DistributedLock {
 
   @Override
   public boolean acquire(Duration duration) {
-    expectNonNull(duration, "Expected non null duration");
-    return tryLock(duration);
+    return tryLock(LockDuration.of(duration));
   }
 
   @Override
@@ -46,7 +46,7 @@ final class DistributedOverridingLock implements DistributedLock {
     return tryLock(null);
   }
 
-  private boolean tryLock(Duration duration) {
+  private boolean tryLock(LockDuration duration) {
     LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
     return driver.forceAcquire(lockRequest);
   }

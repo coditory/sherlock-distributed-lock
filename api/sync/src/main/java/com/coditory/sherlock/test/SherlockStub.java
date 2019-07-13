@@ -2,6 +2,7 @@ package com.coditory.sherlock.test;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
 
 import java.time.Duration;
@@ -17,7 +18,7 @@ import static com.coditory.sherlock.test.DistributedLockMock.singleStateLock;
 public class SherlockStub implements Sherlock {
   private final Map<String, DistributedLock> locksById = new HashMap<>();
   private OwnerId ownerId = OwnerId.of("tested-instance");
-  private Duration duration = DEFAULT_LOCK_DURATION;
+  private LockDuration duration = DEFAULT_LOCK_DURATION;
   private boolean defaultLockResult = true;
 
   /**
@@ -58,7 +59,7 @@ public class SherlockStub implements Sherlock {
    * @return the stub instance
    */
   public SherlockStub withLockDuration(Duration duration) {
-    this.duration = duration;
+    this.duration = LockDuration.of(duration);
     return this;
   }
 
@@ -85,7 +86,7 @@ public class SherlockStub implements Sherlock {
 
   @Override
   public Duration getLockDuration() {
-    return duration;
+    return duration.getValue();
   }
 
   @Override

@@ -1,5 +1,6 @@
 package com.coditory.sherlock;
 
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.client.MongoClient;
 
@@ -20,7 +21,7 @@ public class MongoSherlock {
   private MongoClient mongoClient;
   private String databaseName;
   private String collectionName = DEFAULT_DB_TABLE_NAME;
-  private Duration duration = DEFAULT_LOCK_DURATION;
+  private LockDuration duration = DEFAULT_LOCK_DURATION;
   private OwnerId ownerId = DEFAULT_INSTANCE_ID;
   private Clock clock = DEFAULT_CLOCK;
 
@@ -69,7 +70,7 @@ public class MongoSherlock {
    * @return the instance
    */
   public MongoSherlock withLockDuration(Duration duration) {
-    this.duration = expectNonNull(duration, "Expected non null duration");
+    this.duration = LockDuration.of(duration);
     return this;
   }
 
@@ -100,8 +101,8 @@ public class MongoSherlock {
   public Sherlock build() {
     expectNonNull(mongoClient, "Expected non null mongoClient");
     expectNonEmpty(databaseName, "Expected non empty databaseName");
-    MongoDistributedLockDriver driver = new MongoDistributedLockDriver(
+    MongoDistributedLockConnector driver = new MongoDistributedLockConnector(
         mongoClient, databaseName, collectionName, clock);
-    return new SherlockWithDriver(driver, ownerId, duration);
+    return new SherlockWithConnector(driver, ownerId, duration);
   }
 }

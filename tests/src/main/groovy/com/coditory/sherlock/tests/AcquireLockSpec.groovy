@@ -62,6 +62,29 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
   }
 
   @Unroll
+  def "should throw an error on lock duration with time unit below millis - #type"() {
+    given:
+      DistributedLock lock = createLock(type, lockId, instanceId)
+    and:
+      String truncationExceptionPrefix = "Expected lock duration truncated to millis"
+
+    when:
+      lock.acquire(Duration.ofNanos(1))
+    then:
+      IllegalArgumentException exception = thrown(IllegalArgumentException)
+      exception.message.startsWith(truncationExceptionPrefix)
+
+    when:
+      lock.acquire(Duration.ofSeconds(1).plusNanos(1))
+    then:
+      exception = thrown(IllegalArgumentException)
+      exception.message.startsWith(truncationExceptionPrefix)
+
+    where:
+      type << allLockTypes()
+  }
+
+  @Unroll
   def "newer lock operation should overwrite previous one - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)

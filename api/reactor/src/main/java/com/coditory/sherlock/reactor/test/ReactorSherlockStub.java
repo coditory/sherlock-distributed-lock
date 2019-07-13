@@ -1,5 +1,6 @@
 package com.coditory.sherlock.reactor.test;
 
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import com.coditory.sherlock.reactor.ReactorSherlock;
@@ -17,7 +18,7 @@ import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.sing
 public final class ReactorSherlockStub implements ReactorSherlock {
   private final Map<String, ReactorDistributedLock> locksById = new HashMap<>();
   private OwnerId ownerId = OwnerId.of("tested-instance");
-  private Duration duration = DEFAULT_LOCK_DURATION;
+  private LockDuration duration = DEFAULT_LOCK_DURATION;
   private boolean defaultLockResult = true;
 
   /**
@@ -58,7 +59,7 @@ public final class ReactorSherlockStub implements ReactorSherlock {
    * @return the instance
    */
   public ReactorSherlockStub withLockDuration(Duration duration) {
-    this.duration = duration;
+    this.duration = LockDuration.of(duration);
     return this;
   }
 
@@ -85,7 +86,7 @@ public final class ReactorSherlockStub implements ReactorSherlock {
 
   @Override
   public Duration getLockDuration() {
-    return duration;
+    return duration.getValue();
   }
 
   @Override

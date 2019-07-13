@@ -24,7 +24,7 @@ import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcqu
 import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
-class MongoDistributedLockDriver implements DistributedLockDriver {
+class MongoDistributedLockConnector implements DistributedLockConnector {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
       .upsert(true)
@@ -35,7 +35,7 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   private final Clock clock;
   private final AtomicBoolean indexesCreated = new AtomicBoolean();
 
-  MongoDistributedLockDriver(
+  MongoDistributedLockConnector(
       MongoClient client, String databaseName, String collectionName, Clock clock) {
     this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
     this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");

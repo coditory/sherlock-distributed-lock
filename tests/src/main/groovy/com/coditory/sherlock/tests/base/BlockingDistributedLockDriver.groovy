@@ -1,6 +1,6 @@
 package com.coditory.sherlock.tests.base
 
-import com.coditory.sherlock.DistributedLockDriver
+import com.coditory.sherlock.DistributedLockConnector
 import com.coditory.sherlock.common.LockId
 import com.coditory.sherlock.common.LockRequest
 import com.coditory.sherlock.common.OwnerId
@@ -8,8 +8,8 @@ import com.coditory.sherlock.reactive.ReactiveDistributedLockDriver
 
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux
 
-class BlockingDistributedLockDriver implements DistributedLockDriver {
-  static DistributedLockDriver toBlockingDriver(ReactiveDistributedLockDriver reactiveDriver) {
+class BlockingDistributedLockDriver implements DistributedLockConnector {
+  static DistributedLockConnector toBlockingConnector(ReactiveDistributedLockDriver reactiveDriver) {
     return new BlockingDistributedLockDriver(reactiveDriver)
   }
 

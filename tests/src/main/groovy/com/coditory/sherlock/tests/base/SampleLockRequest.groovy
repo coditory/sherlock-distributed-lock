@@ -1,6 +1,6 @@
 package com.coditory.sherlock.tests.base
 
-
+import com.coditory.sherlock.common.LockDuration
 import com.coditory.sherlock.common.LockId
 import com.coditory.sherlock.common.LockRequest
 import com.coditory.sherlock.common.OwnerId
@@ -13,7 +13,7 @@ class SampleLockRequest {
   private static final Map<String, ?> DEFAULT_PROPERTIES = [
       lockId    : LockId.of("sample-acquire-id"),
       instanceId: OwnerId.of("sample-acquire-instance-id"),
-      duration  : Duration.ofMinutes(5)
+      duration  : LockDuration.of(Duration.ofMinutes(5))
   ]
 
   static LockRequest sampleLockRequest(Map<String, ?> customProperties = [:]) {
@@ -21,7 +21,7 @@ class SampleLockRequest {
     return new LockRequest(
         properties.lockId as LockId,
         properties.instanceId as OwnerId,
-        properties.duration as Duration
+        properties.duration as LockDuration
     )
   }
 }

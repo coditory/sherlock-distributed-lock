@@ -4,7 +4,7 @@ import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 
-interface DistributedLockDriver {
+interface DistributedLockConnector {
   /**
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.

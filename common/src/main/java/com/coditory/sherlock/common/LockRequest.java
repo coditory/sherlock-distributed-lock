@@ -1,6 +1,5 @@
 package com.coditory.sherlock.common;
 
-import java.time.Duration;
 import java.util.Objects;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
@@ -8,12 +7,12 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 public final class LockRequest {
   private final LockId lockId;
   private final OwnerId ownerId;
-  private final Duration duration;
+  private final LockDuration duration;
 
   public LockRequest(
       LockId lockId,
       OwnerId ownerId,
-      Duration duration) {
+      LockDuration duration) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = duration;
@@ -35,7 +34,7 @@ public final class LockRequest {
     return ownerId;
   }
 
-  public Duration getDuration() {
+  public LockDuration getDuration() {
     return duration;
   }
 

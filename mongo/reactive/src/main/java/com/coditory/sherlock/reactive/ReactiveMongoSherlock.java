@@ -1,5 +1,6 @@
 package com.coditory.sherlock.reactive;
 
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.reactivestreams.client.MongoClient;
 
@@ -20,7 +21,7 @@ public class ReactiveMongoSherlock {
   private MongoClient mongoClient;
   private String databaseName;
   private String collectionName = DEFAULT_DB_TABLE_NAME;
-  private Duration duration = DEFAULT_LOCK_DURATION;
+  private LockDuration duration = DEFAULT_LOCK_DURATION;
   private OwnerId ownerId = DEFAULT_INSTANCE_ID;
   private Clock clock = DEFAULT_CLOCK;
 
@@ -69,7 +70,7 @@ public class ReactiveMongoSherlock {
    * @return the instance
    */
   public ReactiveMongoSherlock withLockDuration(Duration duration) {
-    this.duration = expectNonNull(duration, "Expected non null duration");
+    this.duration = LockDuration.of(duration);
     return this;
   }
 
@@ -102,6 +103,6 @@ public class ReactiveMongoSherlock {
     expectNonEmpty(databaseName, "Expected non empty databaseName");
     ReactiveMongoDistributedLockDriver driver = new ReactiveMongoDistributedLockDriver(
         mongoClient, databaseName, collectionName, clock);
-    return new ReactiveSherlockWithDriver(driver, ownerId, duration);
+    return new ReactiveSherlockWithConnector(driver, ownerId, duration);
   }
 }

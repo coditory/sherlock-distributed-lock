@@ -1,8 +1,9 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.reactive.driver.LockResult;
 import com.coditory.sherlock.reactive.driver.ReleaseResult;
 
@@ -14,13 +15,13 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock {
   private final LockId lockId;
   private final OwnerId ownerId;
-  private final Duration duration;
+  private final LockDuration duration;
   private final ReactiveDistributedLockDriver driver;
 
   ReactiveDistributedReentrantLock(
       LockId lockId,
       OwnerId ownerId,
-      Duration duration,
+      LockDuration duration,
       ReactiveDistributedLockDriver driver) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
@@ -40,8 +41,7 @@ final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock 
 
   @Override
   public Publisher<LockResult> acquire(Duration duration) {
-    expectNonNull(duration, "Expected non null duration");
-    return tryLock(duration);
+    return tryLock(LockDuration.of(duration));
   }
 
   @Override
@@ -49,7 +49,7 @@ final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock 
     return tryLock(null);
   }
 
-  private Publisher<LockResult> tryLock(Duration duration) {
+  private Publisher<LockResult> tryLock(LockDuration duration) {
     LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
     return driver.acquireOrProlong(lockRequest);
   }

@@ -16,7 +16,7 @@ public interface ReactorSherlock {
    * @return reactor version of sherlock locks
    */
   static ReactorSherlock reactorSherlock(ReactiveSherlock locks) {
-    return new ReactorSherlockWithDriver(locks);
+    return new ReactorSherlockWithConnector(locks);
   }
 
   /**

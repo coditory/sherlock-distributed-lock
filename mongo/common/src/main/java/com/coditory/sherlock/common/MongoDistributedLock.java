@@ -53,6 +53,7 @@ public final class MongoDistributedLock {
     expectNonNull(lockRequest);
     expectNonNull(acquiredAt);
     Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
+        .map(LockDuration::getValue)
         .map(acquiredAt::plus)
         .map(MongoDistributedLock::truncateToMillis)
         .orElse(null);

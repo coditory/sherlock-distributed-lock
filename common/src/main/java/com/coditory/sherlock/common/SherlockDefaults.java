@@ -6,7 +6,7 @@ import java.time.Duration;
 import static java.time.Clock.systemDefaultZone;
 
 public final class SherlockDefaults {
-  public static final Duration DEFAULT_LOCK_DURATION = Duration.ofMinutes(5);
+  public static final LockDuration DEFAULT_LOCK_DURATION = LockDuration.of(Duration.ofMinutes(5));
   public static final OwnerId DEFAULT_INSTANCE_ID = OwnerId.uniqueOwnerId();
   public static final Clock DEFAULT_CLOCK = systemDefaultZone();
   public static final String DEFAULT_DB_TABLE_NAME = "locks";

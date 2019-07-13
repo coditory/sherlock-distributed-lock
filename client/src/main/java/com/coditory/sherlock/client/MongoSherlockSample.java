@@ -31,7 +31,7 @@ public class MongoSherlockSample {
         .build();
   }
 
-  public static void main() {
+  public static void main(String... args) {
     Sherlock sherlock = createSherlock();
     DistributedLock simpleLock = sherlock.createLock("sample-acquire");
     DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
@@ -42,6 +42,13 @@ public class MongoSherlockSample {
     logger.info("acquire: {}", reentrantLock.acquire());
     logger.info("acquire: {}", overridingLock.acquire());
     logger.info("acquire: {}", overridingLock.acquire());
+
+    logger.info("release: {}", simpleLock.release());
+    logger.info("release: {}", simpleLock.release());
+    logger.info("release: {}", reentrantLock.release());
+    logger.info("release: {}", reentrantLock.release());
+    logger.info("release: {}", overridingLock.release());
+    logger.info("release: {}", overridingLock.release());
   }
 
   public static void main2() {

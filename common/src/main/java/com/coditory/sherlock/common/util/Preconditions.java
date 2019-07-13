@@ -1,6 +1,9 @@
 package com.coditory.sherlock.common.util;
 
+import java.time.Duration;
+import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.function.BiFunction;
 
 /**
  * Preconditions for sherlock distributed lock. Throws {@link IllegalArgumentException} if
@@ -9,6 +12,14 @@ import java.util.List;
 public final class Preconditions {
   private Preconditions() {
     throw new IllegalStateException("Do not instantiate utility class");
+  }
+
+  @SafeVarargs
+  public static <T> T expectAll(T value, String message, BiFunction<T, String, T>... expects) {
+    for (BiFunction<T, String, T> expect : expects) {
+      expect.apply(value, message);
+    }
+    return value;
   }
 
   public static <T> T expectNonNull(T value) {
@@ -42,5 +53,18 @@ public final class Preconditions {
       throw new IllegalArgumentException(message);
     }
     return list;
+  }
+
+  public static Duration expectTruncatedToMillis(Duration duration) {
+    return expectTruncatedToMillis(
+        duration, "Expected duration truncated to millis. Got: " + duration);
+  }
+
+  public static Duration expectTruncatedToMillis(Duration duration, String message) {
+    Duration truncated = duration.truncatedTo(ChronoUnit.MILLIS);
+    if (duration != truncated) {
+      throw new IllegalArgumentException(message);
+    }
+    return duration;
   }
 }
