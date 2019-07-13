@@ -20,7 +20,7 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:0.1.4"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:0.1.8"
 }
 ```
 
@@ -28,15 +28,15 @@ Create synchronous lock:
 ```java
 // Initialize Sherlock
 String database = "sherlock";
-MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
+MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
 Sherlock sherlock = MongoSherlock.builder()
-  .withMongoClient(mongoClient) // required
-  .withDatabaseName(database) // required
-  .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
-  .withCollectionName("locks") // default: "locks"
-  .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
-  .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
-  .build();
+    .withMongoClient(mongoClient) // required
+    .withDatabaseName(database) // required
+    .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
+    .withCollectionName("locks") // default: "locks"
+    .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
+    .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+    .build();
 // Create a lock
 DistributedLock lock = sherlock.createLock("sample-lock");
 ```
@@ -66,8 +66,8 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.0"
-  compile "com.coditory.sherlock:sherlock-reactor:0.1.0"
+  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.8"
+  compile "com.coditory.sherlock:sherlock-reactor:0.1.8"
 }
 ```
 
@@ -75,7 +75,7 @@ Create synchronous lock:
 ```java
 // Initialize Sherlock
 String database = "sherlock";
-MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
+MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
 ReactorSherlock sherlock = ReactiveMongoSherlock.builder()
   .withMongoClient(mongoClient)
   .withDatabaseName(database)
@@ -198,26 +198,26 @@ Sample usage in spock tests:
 ```groovy
 def "should release a lock after operation"() {
   given: "there is a released lock"
-    DistributedLockMock lock = DistributedLockMock.alwaysOpenedLock()
+    DistributedLockMock lock = DistributedLockMock.alwaysReleasedLock()
   when: "single instance action is executed"
     boolean taskPerformed = singleInstanceAction(lock)
   then: "the task was performed"
     taskPerformed == true
-  and: "action released the lock"
-    lock.wasReleased == true
+  and: "lock was acquired and released"
+    lock.wasAcquiredAndReleased == true
 }
 
 def "should not perform single instance action when lock is locked"() {
   given: "there is a lock acquired by other instance"
-    DistributedLockMock lock = DistributedLockMock.alwaysClosedLock()
+    DistributedLockMock lock = DistributedLockMock.alwaysAcquiredLock()
   when: "single instance action is executed"
     boolean taskPerformed = singleInstanceAction(lock)
-  then: "action did not enter perform the task"
+  then: "action did not perform the task"
     taskPerformed == false
-  and: "action tried to acquire the lock"
-    lock.wasAcquired == true
+  and: "action failed acquiring the lock"
+    lock.wasAcquireRejected == true
   and: "action did not release the lock"
-    lock.wasReleased == false
+    lock.wasReleaseInvoked == false
 }
 ```
 

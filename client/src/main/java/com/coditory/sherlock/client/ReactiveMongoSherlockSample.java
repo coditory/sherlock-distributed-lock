@@ -8,13 +8,9 @@ import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 
 public class ReactiveMongoSherlockSample {
-  public static void main(String[] args) {
-    new ReactiveMongoSherlockSample().run();
-  }
-
-  ReactorSherlock createSherlock() {
+  static ReactorSherlock createSherlock() {
     String database = "sherlock";
-    MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
+    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
     return ReactiveMongoSherlock.builder()
         .withMongoClient(mongoClient)
         .withDatabaseName(database)
@@ -22,7 +18,7 @@ public class ReactiveMongoSherlockSample {
         .map(ReactorSherlock::reactorSherlock);
   }
 
-  void run() {
+  public static void main(String[] args) {
     ReactorSherlock sherlock = createSherlock();
     ReactorDistributedLock lock = sherlock.createLock("sample-acquire");
     lock.acquire()

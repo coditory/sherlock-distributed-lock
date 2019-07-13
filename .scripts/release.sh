@@ -29,13 +29,13 @@ echo "Releasing: $VERSION"
 if [[ "$VERSION" = "SNAPSHOT" ]]; then
   publish
 elif [[ "$VERSION" = "PATCH" ]]; then
-  release && publish
+  release && publish && git push
 elif [[ "$VERSION" = "MINOR" ]]; then
-  release -Prelease.versionIncrementer=incrementMinor && publish
+  release -Prelease.versionIncrementer=incrementMinor && publish && git push
 elif [[ "$VERSION" = "MAJOR" ]]; then
-  release -Prelease.versionIncrementer=incrementMajor && publish
+  release -Prelease.versionIncrementer=incrementMajor && publish && git push
 elif [[ "$VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
-  release -Prelease.forceVersion="$VERSION" && publish
+  release -Prelease.forceVersion="$VERSION" && publish && git push
 else
   echo "Unrecognized version: $VERSION"
   echo "Expected one of: \"SNAPSHOT\", \"TRUE\", \"PATCH\", \"MINOR\", \"MAJOR\" or semver (eg 1.2.3)"

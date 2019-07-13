@@ -141,6 +141,27 @@ public final class DistributedLockMock implements DistributedLock {
   }
 
   /**
+   * @return true if lock was successfully acquired and released
+   */
+  public boolean wasAcquiredAndReleased() {
+    return wasAcquired() && wasReleased();
+  }
+
+  /**
+   * @return true if lock was at least once acquired without success
+   */
+  public boolean wasAcquireRejected() {
+    return acquireSuccesses.get() < acquireInvocations.get();
+  }
+
+  /**
+   * @return true if lock was at least once acquired without success
+   */
+  public boolean wasReleaseRejected() {
+    return releaseSuccesses.get() < releaseInvocations.get();
+  }
+
+  /**
    * @return the count of successful releases
    */
   public int releaseSuccesses() {

@@ -18,12 +18,12 @@ public class MongoSherlockSample {
     String database = "sherlock";
     MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
     return MongoSherlock.builder()
-        .withMongoClient(mongoClient)
-        .withDatabaseName(database)
-        .withClock(Clock.systemDefaultZone())
-        .withCollectionName("locks")
-        .withLockDuration(Duration.ofMinutes(3))
-        .withOwnerId(ownerId)
+        .withMongoClient(mongoClient) // required
+        .withDatabaseName(database) // required
+        .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
+        .withCollectionName("locks") // default: "locks"
+        .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
+        .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
         .build();
   }
 
