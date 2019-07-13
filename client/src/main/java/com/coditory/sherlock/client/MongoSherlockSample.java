@@ -23,7 +23,7 @@ public class MongoSherlockSample {
         .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
         .withCollectionName("locks") // default: "locks"
         .withLockDuration(Duration.ofMinutes(3)) // default: 5 min
-        .withServiceInstanceId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+        .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
         .build();
   }
 

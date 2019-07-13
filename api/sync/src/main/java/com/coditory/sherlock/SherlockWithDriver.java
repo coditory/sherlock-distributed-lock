@@ -20,7 +20,7 @@ final class SherlockWithDriver implements Sherlock {
   }
 
   @Override
-  public String getInstanceId() {
+  public String getOwnerId() {
     return instanceId.getValue();
   }
 

@@ -27,7 +27,7 @@ class TestableDistributedLocksWrapper implements TestableDistributedLocks {
 
   @Override
   InstanceId getInstanceId() {
-    return locks.instanceId
+    return locks.ownerId
   }
 
   @Override

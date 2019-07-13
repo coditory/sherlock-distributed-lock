@@ -1,6 +1,7 @@
 package com.coditory.sherlock
 
-
+import com.coditory.sherlock.test.DistributedLockMock
+import com.coditory.sherlock.test.SherlockStub
 import spock.lang.Specification
 
 import java.time.Duration
@@ -15,19 +16,19 @@ class SherlockStubSpec extends Specification {
       Duration duration = Duration.ofHours(1)
 
     when:
-      Sherlock sherlock = SherlockStub.withOpenedLocks()
+      Sherlock sherlock = SherlockStub.withReleasedLocks()
           .withLockDuration(duration)
-          .withServiceInstanceId(instanceId)
+          .withOwnerId(instanceId)
 
     then:
       sherlock.lockDuration == duration
-      sherlock.instanceId == instanceId
+      sherlock.ownerId == instanceId
   }
 
   def "should create sherlock returning always opened locks"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withOpenedLocks()
+      Sherlock sherlock = SherlockStub.withReleasedLocks()
 
     expect:
       assertAlwaysOpenedLock(sherlock.createLock(lockId), lockId)
@@ -38,7 +39,7 @@ class SherlockStubSpec extends Specification {
   def "should create sherlock returning always closed locks"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withClosedLocks()
+      Sherlock sherlock = SherlockStub.withAcquiredLocks()
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock(lockId), lockId)
@@ -49,8 +50,8 @@ class SherlockStubSpec extends Specification {
   def "should create sherlock returning closed locks by default and opened lock for specific id"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withClosedLocks()
-          .withLock(DistributedLockMock.alwaysOpenedLock(lockId))
+      Sherlock sherlock = SherlockStub.withAcquiredLocks()
+          .withLock(DistributedLockMock.alwaysReleasedLock(lockId))
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock("other-lock"))

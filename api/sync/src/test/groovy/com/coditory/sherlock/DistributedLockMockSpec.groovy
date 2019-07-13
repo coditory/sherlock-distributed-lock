@@ -1,10 +1,11 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.test.DistributedLockMock
 import spock.lang.Specification
 
-import static DistributedLockMock.alwaysClosedLock
-import static DistributedLockMock.alwaysOpenedLock
-import static DistributedLockMock.sequencedLock
+import static com.coditory.sherlock.test.DistributedLockMock.alwaysAcquiredLock
+import static com.coditory.sherlock.test.DistributedLockMock.alwaysReleasedLock
+import static com.coditory.sherlock.test.DistributedLockMock.sequencedLock
 import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
@@ -13,14 +14,14 @@ class DistributedLockMockSpec extends Specification {
 
   def "should create always open lock that returns always success"() {
     given:
-      DistributedLock lock = alwaysOpenedLock(lockId)
+      DistributedLock lock = alwaysReleasedLock(lockId)
     expect:
       assertAlwaysOpenedLock(lock, lockId)
   }
 
   def "should create always closed lock that returns always failure"() {
     given:
-      DistributedLock lock = alwaysClosedLock("sample-lock")
+      DistributedLock lock = alwaysAcquiredLock("sample-lock")
     expect:
       assertAlwaysClosedLock(lock, lockId)
   }
@@ -48,13 +49,13 @@ class DistributedLockMockSpec extends Specification {
 
   def "should count acquire and release invocations"() {
     given:
-      DistributedLockMock lock = alwaysOpenedLock(lockId)
+      DistributedLockMock lock = alwaysReleasedLock(lockId)
     expect:
       lock.acquireInvocations() == 0
       lock.releaseInvocations() == 0
     and:
-      lock.wasAcquired() == false
-      lock.wasReleased() == false
+      lock.wasAcquireInvoked() == false
+      lock.wasReleaseInvoked() == false
 
     when:
       lock.acquire()
@@ -63,7 +64,7 @@ class DistributedLockMockSpec extends Specification {
       lock.acquireInvocations() == 1
       lock.releaseInvocations() == 1
     and:
-      lock.wasAcquired() == true
-      lock.wasReleased() == true
+      lock.wasAcquireInvoked() == true
+      lock.wasReleaseInvoked() == true
   }
 }

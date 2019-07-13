@@ -3,8 +3,8 @@ package com.coditory.sherlock.reactive.driver;
 import java.util.Objects;
 
 public class LockResult {
-  private static final LockResult SUCCESS = new LockResult(true);
-  private static final LockResult FAILURE = new LockResult(false);
+  public static final LockResult SUCCESS = new LockResult(true);
+  public static final LockResult FAILURE = new LockResult(false);
 
   public static LockResult of(boolean value) {
     return value ? SUCCESS : FAILURE;

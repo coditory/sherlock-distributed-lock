@@ -5,7 +5,7 @@ import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.reactive.driver.InitializationResult;
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
 
 import java.util.concurrent.Flow.Publisher;
 
@@ -38,15 +38,15 @@ interface ReactiveDistributedLockDriver {
   /**
    * Unlock previously acquired acquire by the same instance.
    */
-  Publisher<UnlockResult> release(LockId lockId, InstanceId instanceId);
+  Publisher<ReleaseResult> release(LockId lockId, InstanceId instanceId);
 
   /**
    * Unlocks a acquire without checking its owner or release date.
    */
-  Publisher<UnlockResult> forceRelease(LockId lockId);
+  Publisher<ReleaseResult> forceRelease(LockId lockId);
 
   /**
    * Unlocks all previously acquired locks with out checking their state.
    */
-  Publisher<UnlockResult> forceReleaseAll();
+  Publisher<ReleaseResult> forceReleaseAll();
 }

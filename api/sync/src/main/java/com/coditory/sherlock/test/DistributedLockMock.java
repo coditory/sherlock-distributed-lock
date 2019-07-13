@@ -1,4 +1,6 @@
-package com.coditory.sherlock;
+package com.coditory.sherlock.test;
+
+import com.coditory.sherlock.DistributedLock;
 
 import java.time.Duration;
 import java.util.List;
@@ -7,24 +9,43 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 
+/**
+ * Use it to mock {@link DistributedLock} in tests.
+ */
 public final class DistributedLockMock implements DistributedLock {
-  public static DistributedLockMock alwaysOpenedLock(String lockId) {
+  /**
+   * Create a lock that can be always acquired.
+   */
+  public static DistributedLockMock alwaysReleasedLock(String lockId) {
     return singleStateLock(lockId, true);
   }
 
-  public static DistributedLockMock alwaysClosedLock(String lockId) {
+  /**
+   * Create a lock that can be never acquired.
+   */
+  public static DistributedLockMock alwaysAcquiredLock(String lockId) {
     return singleStateLock(lockId, false);
   }
 
-  public static DistributedLockMock singleStateLock(String lockId, boolean result) {
-    return new DistributedLockMock(lockId, List.of(result), List.of(result));
+  /**
+   * Create always released lock if released parameter is true, otherwise always acquired lock is
+   * returned
+   */
+  public static DistributedLockMock singleStateLock(String lockId, boolean released) {
+    return new DistributedLockMock(lockId, List.of(released), List.of(released));
   }
 
+  /**
+   * Create a lock returning a sequence of results for acquiring.
+   */
   public static DistributedLockMock sequencedLock(
       String lockId, List<Boolean> results) {
     return new DistributedLockMock(lockId, results, results);
   }
 
+  /**
+   * Create a lock returning a sequence of results for acquiring and releasing.
+   */
   public static DistributedLockMock sequencedLock(
       String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
     return new DistributedLockMock(lockId, acquireResults, releaseResults);
@@ -37,8 +58,10 @@ public final class DistributedLockMock implements DistributedLock {
   private final boolean defaultReleaseResult;
   private AtomicInteger releaseInvocations = new AtomicInteger(0);
   private AtomicInteger acquireInvocations = new AtomicInteger(0);
+  private AtomicInteger releaseSuccesses = new AtomicInteger(0);
+  private AtomicInteger acquireSuccesses = new AtomicInteger(0);
 
-  DistributedLockMock(
+  private DistributedLockMock(
       String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
     expectNonEmpty(acquireResults, "Expected non empty acquire results");
     expectNonEmpty(releaseResults, "Expected non empty release results");
@@ -57,7 +80,11 @@ public final class DistributedLockMock implements DistributedLock {
   @Override
   public boolean acquire() {
     acquireInvocations.incrementAndGet();
-    return pollOrDefault(acquireResults, defaultAcquireResult);
+    boolean result = pollOrDefault(acquireResults, defaultAcquireResult);
+    if (result) {
+      acquireSuccesses.incrementAndGet();
+    }
+    return result;
   }
 
   @Override
@@ -73,21 +100,65 @@ public final class DistributedLockMock implements DistributedLock {
   @Override
   public boolean release() {
     releaseInvocations.incrementAndGet();
-    return pollOrDefault(releaseResults, defaultReleaseResult);
+    boolean result = pollOrDefault(releaseResults, defaultReleaseResult);
+    if (result) {
+      acquireSuccesses.incrementAndGet();
+    }
+    return result;
   }
 
+  /**
+   * @return true if lock was successfully acquired
+   */
   public boolean wasAcquired() {
-    return acquireInvocations() > 0;
+    return acquireSuccesses.get() > 0;
   }
 
+  /**
+   * @return true if lock was successfully released
+   */
   public boolean wasReleased() {
-    return releaseInvocations() > 0;
+    return releaseSuccesses.get() > 0;
   }
 
+  /**
+   * @return the count of successful releases
+   */
+  public int releaseSuccesses() {
+    return releaseSuccesses.get();
+  }
+
+  /**
+   * @return the count of successful acquisitions
+   */
+  public int aquireSuccesses() {
+    return acquireSuccesses.get();
+  }
+
+  /**
+   * @return true if acquire operation was invoked
+   */
+  public boolean wasAcquireInvoked() {
+    return acquireInvocations.get() > 0;
+  }
+
+  /**
+   * @return true if release operation was invoked
+   */
+  public boolean wasReleaseInvoked() {
+    return releaseInvocations.get() > 0;
+  }
+
+  /**
+   * @return the count of release invocations
+   */
   public int releaseInvocations() {
     return releaseInvocations.get();
   }
 
+  /**
+   * @return the count of acquire invocations
+   */
   public int acquireInvocations() {
     return acquireInvocations.get();
   }

@@ -4,7 +4,7 @@ import com.coditory.sherlock.common.InstanceId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
 
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;
@@ -55,7 +55,7 @@ final class ReactiveDistributedSingleEntrantLock implements ReactiveDistributedL
   }
 
   @Override
-  public Publisher<UnlockResult> release() {
+  public Publisher<ReleaseResult> release() {
     return driver.release(lockId, instanceId);
   }
 }

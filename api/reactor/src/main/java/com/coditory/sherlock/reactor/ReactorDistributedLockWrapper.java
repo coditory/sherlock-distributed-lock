@@ -2,7 +2,7 @@ package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.ReactiveDistributedLock;
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -41,7 +41,7 @@ final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
   }
 
   @Override
-  public Mono<UnlockResult> release() {
+  public Mono<ReleaseResult> release() {
     return flowPublisherToFlux(lock.release()).single();
   }
 }

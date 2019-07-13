@@ -1,7 +1,8 @@
-package com.coditory.sherlock.reactor;
+package com.coditory.sherlock.reactor.test;
 
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -11,23 +12,42 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 
+/**
+ * Use it to mock {@link ReactorDistributedLock} in tests.
+ */
 public final class ReactorDistributedLockMock implements ReactorDistributedLock {
-  public static ReactorDistributedLockMock alwaysOpenedLock(String lockId) {
+  /**
+   * Create a lock that can be always acquired.
+   */
+  public static ReactorDistributedLockMock alwaysReleasedLock(String lockId) {
     return singleStateLock(lockId, true);
   }
 
-  public static ReactorDistributedLockMock alwaysClosedLock(String lockId) {
+  /**
+   * Create a lock that can be never acquired.
+   */
+  public static ReactorDistributedLockMock alwaysAcquiredLock(String lockId) {
     return singleStateLock(lockId, false);
   }
 
+  /**
+   * Create always released lock if released parameter is true, otherwise always acquired lock is
+   * returned
+   */
   public static ReactorDistributedLockMock singleStateLock(String lockId, boolean result) {
     return new ReactorDistributedLockMock(lockId, List.of(result), List.of(result));
   }
 
+  /**
+   * Create a lock returning a sequence of results for acquiring.
+   */
   public static ReactorDistributedLockMock sequencedLock(String lockId, List<Boolean> results) {
     return sequencedLock(lockId, results, results);
   }
 
+  /**
+   * Create a lock returning a sequence of results for acquiring and releasing.
+   */
   public static ReactorDistributedLockMock sequencedLock(
       String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
     return new ReactorDistributedLockMock(lockId, acquireResults, releaseResults);
@@ -40,8 +60,10 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   private final boolean defaultReleaseResult;
   private AtomicInteger releaseInvocations = new AtomicInteger(0);
   private AtomicInteger acquireInvocations = new AtomicInteger(0);
+  private AtomicInteger releaseSuccesses = new AtomicInteger(0);
+  private AtomicInteger acquireSuccesses = new AtomicInteger(0);
 
-  ReactorDistributedLockMock(
+  private ReactorDistributedLockMock(
       String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
     expectNonEmpty(acquireResults, "Expected non empty acquire results");
     expectNonEmpty(releaseResults, "Expected non empty release results");
@@ -60,8 +82,15 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   @Override
   public Mono<LockResult> acquire() {
     return pollOrDefault(acquireResults, defaultAcquireResult)
-        .map(LockResult::of)
-        .doOnNext(result -> acquireInvocations.incrementAndGet());
+        .doOnNext(this::incrementAcquireCounters)
+        .map(LockResult::of);
+  }
+
+  private void incrementAcquireCounters(boolean acquired) {
+    acquireInvocations.incrementAndGet();
+    if (acquired) {
+      acquireSuccesses.incrementAndGet();
+    }
   }
 
   @Override
@@ -75,24 +104,71 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   }
 
   @Override
-  public Mono<UnlockResult> release() {
+  public Mono<ReleaseResult> release() {
     return pollOrDefault(releaseResults, defaultReleaseResult)
-        .map(UnlockResult::of)
-        .doOnNext(result -> releaseInvocations.incrementAndGet());
+        .doOnNext(this::incrementReleaseCounters)
+        .map(ReleaseResult::of);
   }
 
+  private void incrementReleaseCounters(boolean released) {
+    releaseInvocations.incrementAndGet();
+    if (released) {
+      releaseSuccesses.incrementAndGet();
+    }
+  }
+
+  /**
+   * @return true if lock was successfully acquired
+   */
   public boolean wasAcquired() {
-    return acquireInvocations() > 0;
+    return acquireSuccesses.get() > 0;
   }
 
+  /**
+   * @return true if lock was successfully released
+   */
   public boolean wasReleased() {
-    return releaseInvocations() > 0;
+    return releaseSuccesses.get() > 0;
   }
 
+  /**
+   * @return the count of successful releases
+   */
+  public int releaseSuccesses() {
+    return releaseSuccesses.get();
+  }
+
+  /**
+   * @return the count of successful acquisitions
+   */
+  public int aquireSuccesses() {
+    return acquireSuccesses.get();
+  }
+
+  /**
+   * @return true if acquire operation was invoked
+   */
+  public boolean wasAcquireInvoked() {
+    return acquireInvocations.get() > 0;
+  }
+
+  /**
+   * @return true if release operation was invoked
+   */
+  public boolean wasReleaseInvoked() {
+    return releaseInvocations.get() > 0;
+  }
+
+  /**
+   * @return the count of release invocations
+   */
   public int releaseInvocations() {
     return releaseInvocations.get();
   }
 
+  /**
+   * @return the count of acquire invocations
+   */
   public int acquireInvocations() {
     return acquireInvocations.get();
   }

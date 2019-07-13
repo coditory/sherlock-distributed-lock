@@ -1,6 +1,7 @@
 package com.coditory.sherlock
 
 import com.coditory.sherlock.base.SpecSimulatedException
+import com.coditory.sherlock.test.DistributedLockMock
 import org.junit.Before
 import spock.lang.Shared
 import spock.lang.Specification
@@ -8,8 +9,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.DistributedLockMock.alwaysClosedLock
-import static com.coditory.sherlock.DistributedLockMock.alwaysOpenedLock
+import static com.coditory.sherlock.test.DistributedLockMock.alwaysAcquiredLock
+import static com.coditory.sherlock.test.DistributedLockMock.alwaysReleasedLock
 
 class DistributedLockSpec extends Specification {
   @Shared
@@ -23,7 +24,7 @@ class DistributedLockSpec extends Specification {
   @Unroll
   def "should execute action and release the lock"() {
     given:
-      DistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      DistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       boolean result = action(lock)
@@ -44,7 +45,7 @@ class DistributedLockSpec extends Specification {
   @Unroll
   def "should not execute action if lock was not acquired"() {
     given:
-      DistributedLockMock lock = alwaysClosedLock("sample-lock")
+      DistributedLockMock lock = alwaysAcquiredLock("sample-lock")
 
     when:
       boolean result = action(lock)
@@ -65,7 +66,7 @@ class DistributedLockSpec extends Specification {
   @Unroll
   def "should execute action and release the lock on error"() {
     given:
-      DistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      DistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       Boolean result = action(lock)
@@ -87,7 +88,7 @@ class DistributedLockSpec extends Specification {
 
   def "should execute action on lock release"() {
     given:
-      DistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      DistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       boolean result = lock.releaseAndExecute({ counter.incrementAndGet() })
@@ -100,7 +101,7 @@ class DistributedLockSpec extends Specification {
 
   def "should not execute action when lock was not released"() {
     given:
-      DistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      DistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       boolean result = lock.releaseAndExecute({ counter.incrementAndThrow() })

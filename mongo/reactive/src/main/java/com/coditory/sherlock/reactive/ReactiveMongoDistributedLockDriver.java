@@ -6,7 +6,7 @@ import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
 import com.coditory.sherlock.reactive.driver.InitializationResult;
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -82,21 +82,21 @@ class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDrive
   }
 
   @Override
-  public Publisher<UnlockResult> release(LockId lockId, InstanceId instanceId) {
+  public Publisher<ReleaseResult> release(LockId lockId, InstanceId instanceId) {
     return publisherToFlowPublisher(delete(queryAcquired(lockId, instanceId))
-        .map(UnlockResult::of));
+        .map(ReleaseResult::of));
   }
 
   @Override
-  public Publisher<UnlockResult> forceRelease(LockId lockId) {
+  public Publisher<ReleaseResult> forceRelease(LockId lockId) {
     return publisherToFlowPublisher(delete(queryAcquired(lockId))
-        .map(UnlockResult::of));
+        .map(ReleaseResult::of));
   }
 
   @Override
-  public Publisher<UnlockResult> forceReleaseAll() {
+  public Publisher<ReleaseResult> forceReleaseAll() {
     return publisherToFlowPublisher(deleteAll()
-        .map(UnlockResult::of));
+        .map(ReleaseResult::of));
   }
 
   private Mono<Boolean> delete(Bson query) {

@@ -20,7 +20,7 @@ final class ReactiveSherlockWithDriver implements ReactiveSherlock {
   }
 
   @Override
-  public String getInstanceId() {
+  public String getOwnerId() {
     return instanceId.getValue();
   }
 

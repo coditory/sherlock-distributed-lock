@@ -25,7 +25,7 @@ trait UsesReactiveMongoSherlock implements DistributedLocksCreator {
         .withMongoClient(mongoClient)
         .withDatabaseName(databaseName)
         .withCollectionName(locksCollectionName)
-        .withServiceInstanceId(instanceId)
+        .withOwnerId(instanceId)
         .withLockDuration(duration)
         .withClock(clock)
         .build()

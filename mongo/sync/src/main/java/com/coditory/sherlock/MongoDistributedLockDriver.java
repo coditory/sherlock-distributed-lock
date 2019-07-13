@@ -35,7 +35,7 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   private final Clock clock;
   private final AtomicBoolean indexesCreated = new AtomicBoolean();
 
-  public MongoDistributedLockDriver(
+  MongoDistributedLockDriver(
       MongoClient client, String databaseName, String collectionName, Clock clock) {
     this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
     this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");

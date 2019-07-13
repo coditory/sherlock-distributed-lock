@@ -1,6 +1,7 @@
 package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.reactor.base.SpecSimulatedException
+import com.coditory.sherlock.reactor.test.ReactorDistributedLockMock
 import org.junit.Before
 import reactor.core.publisher.Mono
 import spock.lang.Shared
@@ -9,8 +10,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysClosedLock
-import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysOpenedLock
+import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysAcquiredLock
+import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysReleasedLock
 
 class ReactorDistributedLockSpec extends Specification {
   @Shared
@@ -24,7 +25,7 @@ class ReactorDistributedLockSpec extends Specification {
   @Unroll
   def "should execute action and release the lock"() {
     given:
-      ReactorDistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       Integer result = action(lock).block()
@@ -45,7 +46,7 @@ class ReactorDistributedLockSpec extends Specification {
   @Unroll
   def "should not execute action if lock was not acquired"() {
     given:
-      ReactorDistributedLockMock lock = alwaysClosedLock("sample-lock")
+      ReactorDistributedLockMock lock = alwaysAcquiredLock("sample-lock")
 
     when:
       Integer result = action(lock).block()
@@ -66,7 +67,7 @@ class ReactorDistributedLockSpec extends Specification {
   @Unroll
   def "should execute action and release the lock on error"() {
     given:
-      ReactorDistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       Integer result = action(lock).block()
@@ -88,7 +89,7 @@ class ReactorDistributedLockSpec extends Specification {
 
   def "should execute action on lock release"() {
     given:
-      ReactorDistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
@@ -102,7 +103,7 @@ class ReactorDistributedLockSpec extends Specification {
 
   def "should not execute action when lock was not released"() {
     given:
-      ReactorDistributedLockMock lock = alwaysOpenedLock("sample-lock")
+      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
 
     when:
       Integer result = lock.releaseAndExecute({ counter.incrementAndThrow() })

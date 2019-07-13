@@ -1,7 +1,7 @@
 package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.UnlockResult;
+import com.coditory.sherlock.reactive.driver.ReleaseResult;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;
@@ -13,7 +13,7 @@ final class ReactorDistributedLockExecutor {
 
   static <T> Mono<T> executeOnAcquired(
       Mono<LockResult> lockResult, Supplier<Mono<T>> supplier,
-      Supplier<Mono<UnlockResult>> release) {
+      Supplier<Mono<ReleaseResult>> release) {
     return lockResult
         .filter(LockResult::isLocked)
         .flatMap(acquiredLockResult ->
@@ -25,9 +25,9 @@ final class ReactorDistributedLockExecutor {
   }
 
   static <T> Mono<T> executeOnReleased(
-      Mono<UnlockResult> unlockResult, Supplier<Mono<T>> supplier) {
+      Mono<ReleaseResult> unlockResult, Supplier<Mono<T>> supplier) {
     return unlockResult
-        .filter(UnlockResult::isUnlocked)
+        .filter(ReleaseResult::isUnlocked)
         .flatMap(result -> supplier.get());
   }
 }

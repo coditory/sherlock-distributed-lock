@@ -2,17 +2,17 @@ package com.coditory.sherlock.reactive.driver;
 
 import java.util.Objects;
 
-public class UnlockResult {
-  private static final UnlockResult SUCCESS = new UnlockResult(true);
-  private static final UnlockResult FAILURE = new UnlockResult(false);
+public class ReleaseResult {
+  public static final ReleaseResult SUCCESS = new ReleaseResult(true);
+  public static final ReleaseResult FAILURE = new ReleaseResult(false);
 
-  public static UnlockResult of(boolean value) {
+  public static ReleaseResult of(boolean value) {
     return value ? SUCCESS : FAILURE;
   }
 
   private boolean unlocked;
 
-  private UnlockResult(boolean unlocked) {
+  private ReleaseResult(boolean unlocked) {
     this.unlocked = unlocked;
   }
 
@@ -22,7 +22,7 @@ public class UnlockResult {
 
   @Override
   public String toString() {
-    return "UnlockResult{unlocked=" + unlocked + '}';
+    return "ReleaseResult{unlocked=" + unlocked + '}';
   }
 
   @Override
@@ -33,7 +33,7 @@ public class UnlockResult {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    UnlockResult that = (UnlockResult) o;
+    ReleaseResult that = (ReleaseResult) o;
     return unlocked == that.unlocked;
   }
 

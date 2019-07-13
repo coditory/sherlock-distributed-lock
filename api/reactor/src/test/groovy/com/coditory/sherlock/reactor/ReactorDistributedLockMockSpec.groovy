@@ -1,13 +1,14 @@
 package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.reactive.driver.LockResult
-import com.coditory.sherlock.reactive.driver.UnlockResult
+import com.coditory.sherlock.reactive.driver.ReleaseResult
+import com.coditory.sherlock.reactor.test.ReactorDistributedLockMock
 import reactor.core.publisher.Mono
 import spock.lang.Specification
 
-import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysClosedLock
-import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.alwaysOpenedLock
-import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.sequencedLock
+import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysAcquiredLock
+import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysReleasedLock
+import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.sequencedLock
 import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
@@ -16,14 +17,14 @@ class ReactorDistributedLockMockSpec extends Specification {
 
   def "should create always open lock that returns always success"() {
     given:
-      ReactorDistributedLock lock = alwaysOpenedLock(lockId)
+      ReactorDistributedLock lock = alwaysReleasedLock(lockId)
     expect:
       assertAlwaysOpenedLock(lock, lockId)
   }
 
   def "should create always closed lock that returns always failure"() {
     given:
-      ReactorDistributedLock lock = alwaysClosedLock("sample-lock")
+      ReactorDistributedLock lock = alwaysAcquiredLock("sample-lock")
     expect:
       assertAlwaysClosedLock(lock, lockId)
   }
@@ -51,7 +52,7 @@ class ReactorDistributedLockMockSpec extends Specification {
 
   def "should count acquire and release invocations"() {
     given:
-      ReactorDistributedLockMock lock = alwaysOpenedLock(lockId)
+      ReactorDistributedLockMock lock = alwaysReleasedLock(lockId)
     expect:
       lock.acquireInvocations() == 0
       lock.releaseInvocations() == 0
@@ -76,7 +77,7 @@ class ReactorDistributedLockMockSpec extends Specification {
         .collect { it.locked }
   }
 
-  private List<Boolean> awaitRelseases(Mono<UnlockResult>... results) {
+  private List<Boolean> awaitRelseases(Mono<ReleaseResult>... results) {
     return results
         .collect { it.block() }
         .collect { it.unlocked }

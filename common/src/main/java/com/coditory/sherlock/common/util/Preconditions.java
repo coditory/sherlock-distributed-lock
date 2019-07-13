@@ -2,6 +2,10 @@ package com.coditory.sherlock.common.util;
 
 import java.util.List;
 
+/**
+ * Preconditions for sherlock distributed lock. Throws {@link IllegalArgumentException} if
+ * precondition is not met.
+ */
 public final class Preconditions {
   private Preconditions() {
     throw new IllegalStateException("Do not instantiate utility class");

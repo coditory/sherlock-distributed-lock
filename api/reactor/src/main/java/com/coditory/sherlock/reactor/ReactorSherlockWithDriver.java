@@ -13,8 +13,8 @@ final class ReactorSherlockWithDriver implements ReactorSherlock {
     this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
   }
 
-  public String getInstanceId() {
-    return sherlock.getInstanceId();
+  public String getOwnerId() {
+    return sherlock.getOwnerId();
   }
 
   public Duration getLockDuration() {
