@@ -6,6 +6,7 @@ import org.bson.Document;
 import org.bson.conversions.Bson;
 
 import java.time.Instant;
+import java.time.temporal.ChronoUnit;
 import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
@@ -39,7 +40,13 @@ public final class MongoDistributedLock {
   }
 
   private static Instant dateToInstant(Date date) {
-    return date != null ? date.toInstant() : null;
+    return date != null
+        ? truncateToMillis(date.toInstant())
+        : null;
+  }
+
+  private static Instant truncateToMillis(Instant instant) {
+    return instant.truncatedTo(ChronoUnit.MILLIS);
   }
 
   public static MongoDistributedLock fromLockRequest(LockRequest lockRequest, Instant acquiredAt) {
@@ -47,11 +54,12 @@ public final class MongoDistributedLock {
     expectNonNull(acquiredAt);
     Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
         .map(acquiredAt::plus)
+        .map(MongoDistributedLock::truncateToMillis)
         .orElse(null);
     return new MongoDistributedLock(
         lockRequest.getLockId(),
         lockRequest.getOwnerId(),
-        acquiredAt,
+        truncateToMillis(acquiredAt),
         releaseAt
     );
   }

@@ -10,32 +10,34 @@ import java.time.Clock;
 import java.time.Duration;
 
 public class MongoSherlockSample {
-  public static void main(String[] args) {
-    new MongoSherlockSample().run();
+  private static Sherlock createSherlock() {
+    return createSherlock("localhost");
   }
 
-  Sherlock createSherlock() {
+  private static Sherlock createSherlock(String ownerId) {
     String database = "sherlock";
-    MongoClient mongoClient = MongoClients.create("mongodb://loclhost:27017/" + database);
+    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
     return MongoSherlock.builder()
         .withMongoClient(mongoClient)
         .withDatabaseName(database)
-        .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
-        .withCollectionName("locks") // default: "locks"
-        .withLockDuration(Duration.ofMinutes(3)) // default: 5 min
-        .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+        .withClock(Clock.systemDefaultZone())
+        .withCollectionName("locks")
+        .withLockDuration(Duration.ofMinutes(3))
+        .withOwnerId(ownerId)
         .build();
   }
 
-  void run() {
+  public static void main() {
     Sherlock sherlock = createSherlock();
     DistributedLock lock = sherlock.createLock("sample-acquire");
     if (lock.acquire()) {
       System.out.println("Lock granted!");
     }
+    System.out.println("release1: " + lock.release());
+    System.out.println("release2: " + lock.release());
   }
 
-  void run2() {
+  public static void main2() {
     Sherlock sherlock = createSherlock();
     DistributedLock lock = sherlock.createLock("sample-acquire");
     lock.acquireAndExecute(() -> System.out.println("Lock granted!"));

@@ -11,6 +11,7 @@ class MongoInitializer {
   private static MongoClient startMongo() {
     // using an older version to preserve backward compatibility
     GenericContainer mongo = new GenericContainer<>("mongo:3.4")
+    // GenericContainer mongo = new GenericContainer<>("mongo:4.0.10")
         .withExposedPorts(27017)
     mongo.start()
     return MongoClients.create("mongodb://localhost:${mongo.firstMappedPort}/$databaseName")

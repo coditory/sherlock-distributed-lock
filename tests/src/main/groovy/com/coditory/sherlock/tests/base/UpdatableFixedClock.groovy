@@ -13,8 +13,9 @@ import static java.util.Objects.requireNonNull
 
 @CompileStatic
 class UpdatableFixedClock extends Clock {
+  // Always use instant with nanos for testing. Some databases (like mongo) trim nanos - you should test for that!
+  public static final Instant DEFAULT_FIXED_TIME = Instant.parse('2015-12-03T10:15:30.123456Z')
   public static final ZoneId DEFAULT_ZONE_ID = ZoneId.of('Europe/Warsaw')
-  public static final Instant DEFAULT_FIXED_TIME = Instant.parse('2015-12-03T10:15:30.12Z')
 
   static final UpdatableFixedClock defaultUpdatableFixedClock() {
     return new UpdatableFixedClock(DEFAULT_FIXED_TIME, DEFAULT_ZONE_ID)
