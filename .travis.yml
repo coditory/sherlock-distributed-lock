@@ -15,13 +15,13 @@ before_install:
 
 install: echo "skip 'gradle assemble' step"
 script: ./gradlew build --scan --stacktrace
-after_success: bash .travis/coverage.sh
+after_success: bash .scripts/travis/coverage.sh
 
 # Try to release
 deploy:
   skip_cleanup: true
   provider: script
-  script: bash .travis/release.sh
+  script: bash .scripts/travis/release.sh
   on:
     tags: false
 
