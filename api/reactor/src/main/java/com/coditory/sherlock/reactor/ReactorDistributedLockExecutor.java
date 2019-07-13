@@ -1,7 +1,7 @@
 package com.coditory.sherlock.reactor;
 
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import reactor.core.publisher.Mono;
 
 import java.util.function.Supplier;

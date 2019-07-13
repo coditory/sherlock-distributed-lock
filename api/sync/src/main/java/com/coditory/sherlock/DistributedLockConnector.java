@@ -1,15 +1,15 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
+import com.coditory.sherlock.common.OwnerId;
 
 interface DistributedLockConnector {
   /**
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.
-   *
-   * If it is not executed explicitly, driver may execute it during first acquire acquisition or
+   * <p>
+   * If it is not executed explicitly, connector may execute it during first acquire acquisition or
    * release.
    */
   void initialize();
@@ -22,8 +22,8 @@ interface DistributedLockConnector {
   boolean acquire(LockRequest lockRequest);
 
   /**
-   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire if it
-   * was already acquired by the same instance.
+   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire
+   * if it was already acquired by the same instance.
    *
    * @return boolean - true if acquire was acquired by this call
    */

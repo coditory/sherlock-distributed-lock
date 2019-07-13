@@ -4,8 +4,8 @@ import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.OwnerId;
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;
@@ -16,17 +16,17 @@ final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock 
   private final LockId lockId;
   private final OwnerId ownerId;
   private final LockDuration duration;
-  private final ReactiveDistributedLockDriver driver;
+  private final ReactiveDistributedLockConnector connector;
 
   ReactiveDistributedReentrantLock(
       LockId lockId,
       OwnerId ownerId,
       LockDuration duration,
-      ReactiveDistributedLockDriver driver) {
+      ReactiveDistributedLockConnector connector) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = expectNonNull(duration);
-    this.driver = expectNonNull(driver);
+    this.connector = expectNonNull(connector);
   }
 
   @Override
@@ -51,11 +51,11 @@ final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock 
 
   private Publisher<LockResult> tryLock(LockDuration duration) {
     LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
-    return driver.acquireOrProlong(lockRequest);
+    return connector.acquireOrProlong(lockRequest);
   }
 
   @Override
   public Publisher<ReleaseResult> release() {
-    return driver.release(lockId, ownerId);
+    return connector.release(lockId, ownerId);
   }
 }

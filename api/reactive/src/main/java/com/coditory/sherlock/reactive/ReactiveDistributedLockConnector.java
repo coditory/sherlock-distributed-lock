@@ -1,20 +1,20 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.reactive.driver.InitializationResult;
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.reactive.connector.InitializationResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 
 import java.util.concurrent.Flow.Publisher;
 
-interface ReactiveDistributedLockDriver {
+interface ReactiveDistributedLockConnector {
   /**
    * Initializes underlying infrastructure for locks. Most frequently triggers database index
    * creation.
-   *
-   * If it is not executed explicitly, driver may execute it during first acquire acquisition or
+   * <p>
+   * If it is not executed explicitly, connector may execute it during first acquire acquisition or
    * release.
    */
   Publisher<InitializationResult> initialize();

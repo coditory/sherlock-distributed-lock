@@ -4,6 +4,7 @@ buildscript {
         reactor        : '3.2.10.RELEASE',
         mongodb        : '3.10.2',
         mongodbReactive: '1.11.0',
+        slf4j          : '1.7.26',
         logback        : '1.2.3',
         // test dependencies:
         testContainers : '1.11.3',

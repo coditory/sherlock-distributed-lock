@@ -10,20 +10,22 @@ import java.time.Duration;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 final class DistributedReentrantLock implements DistributedLock {
+  private final LockResultLogger logger;
   private final LockId lockId;
   private final OwnerId ownerId;
   private final LockDuration duration;
-  private final DistributedLockConnector driver;
+  private final DistributedLockConnector connector;
 
   DistributedReentrantLock(
       LockId lockId,
       OwnerId ownerId,
       LockDuration duration,
-      DistributedLockConnector driver) {
+      DistributedLockConnector connector) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = expectNonNull(duration);
-    this.driver = expectNonNull(driver);
+    this.connector = expectNonNull(connector);
+    this.logger = new LockResultLogger(lockId, this.getClass());
   }
 
   @Override
@@ -48,11 +50,13 @@ final class DistributedReentrantLock implements DistributedLock {
 
   private boolean tryLock(LockDuration duration) {
     LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
-    return driver.acquireOrProlong(lockRequest);
+    return logger.logAcquireResult(
+        connector.acquireOrProlong(lockRequest));
   }
 
   @Override
   public boolean release() {
-    return driver.release(lockId, ownerId);
+    return logger.logReleaseResult(
+        connector.release(lockId, ownerId));
   }
 }

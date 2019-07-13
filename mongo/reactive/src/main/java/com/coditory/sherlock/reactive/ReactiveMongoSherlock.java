@@ -101,8 +101,8 @@ public class ReactiveMongoSherlock {
   public ReactiveSherlock build() {
     expectNonNull(mongoClient, "Expected non null mongoClient");
     expectNonEmpty(databaseName, "Expected non empty databaseName");
-    ReactiveMongoDistributedLockDriver driver = new ReactiveMongoDistributedLockDriver(
+    ReactiveMongoDistributedLockConnector connector = new ReactiveMongoDistributedLockConnector(
         mongoClient, databaseName, collectionName, clock);
-    return new ReactiveSherlockWithConnector(driver, ownerId, duration);
+    return new ReactiveSherlockWithConnector(connector, ownerId, duration);
   }
 }

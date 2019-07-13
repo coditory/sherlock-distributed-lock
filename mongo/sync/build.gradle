@@ -1,4 +1,4 @@
-description = "Sherlock Distributed Lock implementation using mongo synchronous driver"
+description = "Sherlock Distributed Lock implementation using mongo synchronous connector"
 
 dependencies {
   api project(':api:api-sync')

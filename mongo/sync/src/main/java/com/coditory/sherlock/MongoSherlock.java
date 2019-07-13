@@ -101,8 +101,8 @@ public class MongoSherlock {
   public Sherlock build() {
     expectNonNull(mongoClient, "Expected non null mongoClient");
     expectNonEmpty(databaseName, "Expected non empty databaseName");
-    MongoDistributedLockConnector driver = new MongoDistributedLockConnector(
+    MongoDistributedLockConnector connector = new MongoDistributedLockConnector(
         mongoClient, databaseName, collectionName, clock);
-    return new SherlockWithConnector(driver, ownerId, duration);
+    return new SherlockWithConnector(connector, ownerId, duration);
   }
 }

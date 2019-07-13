@@ -6,8 +6,8 @@
 [![Join the chat at https://gitter.im/coditory/sherlock-distributed-lock](https://badges.gitter.im/coditory/sherlock-distributed-lock.svg)](https://gitter.im/coditory/sherlock-distributed-lock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 **Single purpose and small** distributed locking library for JVM. Provides multiple implementations (over single abstraction) for distributed locking:
-- [mongo-synchronous](./mongo/sync) - uses mongodb (tested on v3.4) and its synchronous driver to manage locks
-- [mongo-reactive](./mongo/reactive) - uses mongodb (tested on v3.4) and its reactive driver to manage locks
+- [mongo-synchronous](./mongo/sync) - uses mongodb (tested on v3.4) and its synchronous connector to manage locks
+- [mongo-reactive](./mongo/reactive) - uses mongodb (tested on v3.4) and its reactive connector to manage locks
 - ...postgres implementation comes next
 
 Before using the library read about [main problems of distributed locking](#disclaimer).

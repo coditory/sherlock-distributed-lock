@@ -1,7 +1,7 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;
@@ -47,8 +47,8 @@ public interface ReactiveDistributedLock {
    * Release the lock
    *
    * @return {@link ReleaseResult#SUCCESS}, if lock was released in this call. If lock could not be
-   * released or was released by a different instance then {@link ReleaseResult#FAILURE} is
-   * returned.
+   *     released or was released by a different instance then {@link ReleaseResult#FAILURE} is
+   *     returned.
    */
   Publisher<ReleaseResult> release();
 }

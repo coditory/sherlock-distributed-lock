@@ -3,19 +3,22 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.OwnerId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 final class SherlockWithConnector implements Sherlock {
-  private final DistributedLockConnector driver;
+  private final Logger logger = LoggerFactory.getLogger(SherlockWithConnector.class);
+  private final DistributedLockConnector connector;
   private final LockDuration duration;
   private final OwnerId ownerId;
 
   SherlockWithConnector(
-      DistributedLockConnector driver, OwnerId ownerId, LockDuration duration) {
-    this.driver = expectNonNull(driver, "Expected non null driver");
+      DistributedLockConnector connector, OwnerId ownerId, LockDuration duration) {
+    this.connector = expectNonNull(connector, "Expected non null connector");
     this.ownerId = expectNonNull(ownerId, "Expected non null ownerId");
     this.duration = expectNonNull(duration, "Expected non null duration");
   }
@@ -41,7 +44,8 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   private DistributedLock createReentrantLock(String lockId, LockDuration duration) {
-    return new DistributedReentrantLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new DistributedReentrantLock(LockId.of(lockId), ownerId, duration, connector));
   }
 
   @Override
@@ -55,7 +59,8 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   private DistributedLock createLock(String lockId, LockDuration duration) {
-    return new DistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new DistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, connector));
   }
 
   @Override
@@ -69,6 +74,12 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   private DistributedLock createOverridingLock(String lockId, LockDuration duration) {
-    return new DistributedOverridingLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new DistributedOverridingLock(LockId.of(lockId), ownerId, duration, connector));
+  }
+
+  private DistributedLock logCreatedLock(DistributedLock lock) {
+    logger.debug("Created lock: {}", lock);
+    return lock;
   }
 }

@@ -3,19 +3,22 @@ package com.coditory.sherlock.reactive;
 import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.OwnerId;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 final class ReactiveSherlockWithConnector implements ReactiveSherlock {
-  private final ReactiveDistributedLockDriver driver;
+  private final Logger logger = LoggerFactory.getLogger(ReactiveSherlockWithConnector.class);
+  private final ReactiveDistributedLockConnector connector;
   private final LockDuration duration;
   private final OwnerId ownerId;
 
   ReactiveSherlockWithConnector(
-      ReactiveDistributedLockDriver driver, OwnerId ownerId, LockDuration duration) {
-    this.driver = expectNonNull(driver, "Expected non null driver");
+      ReactiveDistributedLockConnector connector, OwnerId ownerId, LockDuration duration) {
+    this.connector = expectNonNull(connector, "Expected non null connector");
     this.ownerId = expectNonNull(ownerId, "Expected non null ownerId");
     this.duration = expectNonNull(duration, "Expected non null duration");
   }
@@ -41,7 +44,8 @@ final class ReactiveSherlockWithConnector implements ReactiveSherlock {
   }
 
   private ReactiveDistributedLock createLock(String lockId, LockDuration duration) {
-    return new ReactiveDistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new ReactiveDistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, connector));
   }
 
   @Override
@@ -55,7 +59,8 @@ final class ReactiveSherlockWithConnector implements ReactiveSherlock {
   }
 
   private ReactiveDistributedLock createReentrantLock(String lockId, LockDuration duration) {
-    return new ReactiveDistributedReentrantLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new ReactiveDistributedReentrantLock(LockId.of(lockId), ownerId, duration, connector));
   }
 
   @Override
@@ -69,6 +74,12 @@ final class ReactiveSherlockWithConnector implements ReactiveSherlock {
   }
 
   private ReactiveDistributedLock createOverridingLock(String lockId, LockDuration duration) {
-    return new ReactiveDistributedOverridingLock(LockId.of(lockId), ownerId, duration, driver);
+    return logCreatedLock(
+        new ReactiveDistributedOverridingLock(LockId.of(lockId), ownerId, duration, connector));
+  }
+
+  private ReactiveDistributedLock logCreatedLock(ReactiveDistributedLock lock) {
+    logger.debug("Created lock: {}", lock);
+    return lock;
   }
 }

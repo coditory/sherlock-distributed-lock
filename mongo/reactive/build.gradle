@@ -1,4 +1,4 @@
-description = "Sherlock Distributed Lock implementation using mongo reactive driver"
+description = "Sherlock Distributed Lock implementation using mongo reactive connector"
 
 dependencies {
   api project(':api:api-reactive')

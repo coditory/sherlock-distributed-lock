@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactive.driver;
+package com.coditory.sherlock.reactive.connector;
 
 import java.util.Objects;
 

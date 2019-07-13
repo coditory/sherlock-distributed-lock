@@ -36,19 +36,19 @@ public class MongoSherlockSample {
     DistributedLock simpleLock = sherlock.createLock("sample-acquire");
     DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
     DistributedLock overridingLock = sherlock.createOverridingLock("sample-acquire");
-    logger.info("acquire: {}", simpleLock.acquire());
-    logger.info("acquire: {}", simpleLock.acquire());
-    logger.info("acquire: {}", reentrantLock.acquire());
-    logger.info("acquire: {}", reentrantLock.acquire());
-    logger.info("acquire: {}", overridingLock.acquire());
-    logger.info("acquire: {}", overridingLock.acquire());
+    simpleLock.acquire();
+    simpleLock.acquire();
+    reentrantLock.acquire();
+    reentrantLock.acquire();
+    overridingLock.acquire();
+    overridingLock.acquire();
 
-    logger.info("release: {}", simpleLock.release());
-    logger.info("release: {}", simpleLock.release());
-    logger.info("release: {}", reentrantLock.release());
-    logger.info("release: {}", reentrantLock.release());
-    logger.info("release: {}", overridingLock.release());
-    logger.info("release: {}", overridingLock.release());
+    simpleLock.release();
+    simpleLock.release();
+    reentrantLock.release();
+    reentrantLock.release();
+    overridingLock.release();
+    overridingLock.release();
   }
 
   public static void main2() {

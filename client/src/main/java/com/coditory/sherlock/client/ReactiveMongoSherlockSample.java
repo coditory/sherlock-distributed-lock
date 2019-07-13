@@ -1,9 +1,9 @@
 package com.coditory.sherlock.client;
 
 import com.coditory.sherlock.reactive.ReactiveMongoSherlock;
+import com.coditory.sherlock.reactive.connector.LockResult;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import com.coditory.sherlock.reactor.ReactorSherlock;
-import com.coditory.sherlock.reactive.driver.LockResult;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 

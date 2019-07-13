@@ -6,7 +6,7 @@ import com.coditory.sherlock.tests.InfiniteAcquireLockSpec
 import com.coditory.sherlock.tests.ReleaseLockSpec
 
 /*
- * Run a set of tests on any driver to prove that reactor mapping is correct
+ * Run a set of tests on any connector to prove that reactor mapping is correct
  */
 
 class ReactorMongoReleaseLockSpec extends ReleaseLockSpec implements UsesReactorSherlock {}

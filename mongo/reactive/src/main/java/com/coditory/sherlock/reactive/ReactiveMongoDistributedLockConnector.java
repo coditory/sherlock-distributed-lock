@@ -1,12 +1,12 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
-import com.coditory.sherlock.reactive.driver.InitializationResult;
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.reactive.connector.InitializationResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -31,7 +31,7 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
-class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDriver {
+class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockConnector {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
       .upsert(true)
@@ -42,7 +42,7 @@ class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDrive
   private final Clock clock;
   private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
 
-  ReactiveMongoDistributedLockDriver(
+  ReactiveMongoDistributedLockConnector(
       MongoClient client, String databaseName, String collectionName, Clock clock) {
     this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
     this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");

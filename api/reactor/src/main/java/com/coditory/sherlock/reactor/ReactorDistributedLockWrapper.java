@@ -1,8 +1,8 @@
 package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.ReactiveDistributedLock;
-import com.coditory.sherlock.reactive.driver.LockResult;
-import com.coditory.sherlock.reactive.driver.ReleaseResult;
+import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -14,10 +14,12 @@ final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
     return new ReactorDistributedLockWrapper(lock);
   }
 
+  private final LockResultLogger logger;
   private final ReactiveDistributedLock lock;
 
   private ReactorDistributedLockWrapper(ReactiveDistributedLock lock) {
     this.lock = lock;
+    this.logger = new LockResultLogger(lock.getId(), lock.getClass());
   }
 
   @Override
@@ -27,21 +29,29 @@ final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
 
   @Override
   public Mono<LockResult> acquire() {
-    return flowPublisherToFlux(lock.acquire()).single();
+    return flowPublisherToFlux(lock.acquire())
+        .single()
+        .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<LockResult> acquire(Duration duration) {
-    return flowPublisherToFlux(lock.acquire(duration)).single();
+    return flowPublisherToFlux(lock.acquire(duration))
+        .single()
+        .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<LockResult> acquireForever() {
-    return flowPublisherToFlux(lock.acquireForever()).single();
+    return flowPublisherToFlux(lock.acquireForever())
+        .single()
+        .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<ReleaseResult> release() {
-    return flowPublisherToFlux(lock.release()).single();
+    return flowPublisherToFlux(lock.release())
+        .single()
+        .doOnNext(logger::logResult);
   }
 }
