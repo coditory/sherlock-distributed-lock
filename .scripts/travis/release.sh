@@ -12,7 +12,7 @@ trap cleanup EXIT INT TERM
 
 git config --local user.name "travis@travis-ci.org"
 git config --local user.email "Travis CI"
-git checkout "$TRAVIS_BRANCH" >/dev/null 2>1
+git checkout "$TRAVIS_BRANCH" >/dev/null 2>&1
 
 mkdir -p "$HOME/.gnupg"
 echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$GPG_KEY_RING_FILE"

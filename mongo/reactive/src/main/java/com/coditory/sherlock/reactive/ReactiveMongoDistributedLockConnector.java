@@ -103,7 +103,8 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
     return getLockCollection()
         .map(collection -> collection.findOneAndDelete(query))
         .flatMap(Mono::from)
-        .map(result -> true)
+        .map(MongoDistributedLock::fromDocument)
+        .map(lock -> lock.isActive(now()))
         .defaultIfEmpty(false);
   }
 
