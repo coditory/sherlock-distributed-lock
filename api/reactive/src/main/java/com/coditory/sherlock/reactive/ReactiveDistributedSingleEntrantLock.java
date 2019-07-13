@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.reactive.driver.LockResult;
@@ -13,17 +13,17 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 final class ReactiveDistributedSingleEntrantLock implements ReactiveDistributedLock {
   private final LockId lockId;
-  private final InstanceId instanceId;
+  private final OwnerId ownerId;
   private final Duration duration;
   private final ReactiveDistributedLockDriver driver;
 
   ReactiveDistributedSingleEntrantLock(
       LockId lockId,
-      InstanceId instanceId,
+      OwnerId ownerId,
       Duration duration,
       ReactiveDistributedLockDriver driver) {
     this.lockId = expectNonNull(lockId);
-    this.instanceId = expectNonNull(instanceId);
+    this.ownerId = expectNonNull(ownerId);
     this.duration = expectNonNull(duration);
     this.driver = expectNonNull(driver);
   }
@@ -50,12 +50,12 @@ final class ReactiveDistributedSingleEntrantLock implements ReactiveDistributedL
   }
 
   private Publisher<LockResult> tryLock(Duration duration) {
-    LockRequest lockRequest = new LockRequest(lockId, instanceId, duration);
+    LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
     return driver.acquire(lockRequest);
   }
 
   @Override
   public Publisher<ReleaseResult> release() {
-    return driver.release(lockId, instanceId);
+    return driver.release(lockId, ownerId);
   }
 }

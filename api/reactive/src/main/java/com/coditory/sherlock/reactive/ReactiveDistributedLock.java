@@ -14,23 +14,23 @@ import java.util.concurrent.Flow.Publisher;
  */
 public interface ReactiveDistributedLock {
   /**
+   * Return the lock id.
+   *
    * @return the lock id
    */
   String getId();
 
   /**
-   * Try to acquire the lock. Lock is acquired for a configured duration. After that times it
-   * expires and is ready to be acquired by other instance.
+   * Try to acquire the lock. Lock is acquired for a configured duration.
    *
    * @return {@link LockResult#SUCCESS}, if lock was acquired
    */
   Publisher<LockResult> acquire();
 
   /**
-   * Try to acquire the lock for a given duration. After that times it expires and is ready to be
-   * acquired by other instance.
+   * Try to acquire the lock for a given duration.
    *
-   * @param duration - how much time must pass for the acquired lock to expire
+   * @param duration how much time must pass for the acquired lock to expire
    * @return {@link LockResult#SUCCESS}, if lock was acquired
    */
   Publisher<LockResult> acquire(Duration duration);

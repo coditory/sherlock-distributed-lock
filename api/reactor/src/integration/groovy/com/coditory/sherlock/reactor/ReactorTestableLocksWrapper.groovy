@@ -2,7 +2,7 @@ package com.coditory.sherlock.reactor
 
 
 import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.common.InstanceId
+import com.coditory.sherlock.common.OwnerId
 import com.coditory.sherlock.reactive.ReactiveSherlock
 import com.coditory.sherlock.tests.base.TestableDistributedLocks
 
@@ -22,7 +22,7 @@ class ReactorTestableLocksWrapper implements TestableDistributedLocks {
   }
 
   @Override
-  InstanceId getInstanceId() {
+  OwnerId getOwnerId() {
     return locks.ownerId
   }
 

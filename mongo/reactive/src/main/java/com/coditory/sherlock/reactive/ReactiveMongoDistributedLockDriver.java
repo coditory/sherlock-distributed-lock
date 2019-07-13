@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
@@ -59,7 +59,7 @@ class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDrive
   public Publisher<LockResult> acquire(LockRequest lockRequest) {
     Instant now = now();
     return publisherToFlowPublisher(upsert(
-        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
     ).map(LockResult::of));
   }
@@ -68,7 +68,7 @@ class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDrive
   public Publisher<LockResult> acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return publisherToFlowPublisher(upsert(
-        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
     ).map(LockResult::of));
   }
@@ -82,8 +82,8 @@ class ReactiveMongoDistributedLockDriver implements ReactiveDistributedLockDrive
   }
 
   @Override
-  public Publisher<ReleaseResult> release(LockId lockId, InstanceId instanceId) {
-    return publisherToFlowPublisher(delete(queryAcquired(lockId, instanceId))
+  public Publisher<ReleaseResult> release(LockId lockId, OwnerId ownerId) {
+    return publisherToFlowPublisher(delete(queryAcquired(lockId, ownerId))
         .map(ReleaseResult::of));
   }
 

@@ -22,12 +22,12 @@ trait UsesReactorSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "sherlock"
 
   @Override
-  TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
+  TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveLocks = ReactiveMongoSherlock.builder()
         .withMongoClient(mongoClient)
         .withDatabaseName(databaseName)
         .withCollectionName(locksCollectionName)
-        .withOwnerId(instanceId)
+        .withOwnerId(ownerId)
         .withLockDuration(duration)
         .withClock(clock)
         .build()

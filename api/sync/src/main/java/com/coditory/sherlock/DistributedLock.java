@@ -13,23 +13,23 @@ import static com.coditory.sherlock.DistributedLockExecutor.executeOnReleased;
  */
 public interface DistributedLock {
   /**
+   * Return the lock id.
+   *
    * @return the lock id
    */
   String getId();
 
   /**
-   * Try to acquire the lock. Lock is acquired for a configured duration. After that times it
-   * expires and is ready to be acquired by other instance.
+   * Try to acquire the lock. Lock is acquired for a configured duration.
    *
    * @return true, if lock was acquired
    */
   boolean acquire();
 
   /**
-   * Try to acquire the lock for a given duration. After that times it expires and is ready to be
-   * acquired by other instance.
+   * Try to acquire the lock for a given duration.
    *
-   * @param duration - how much time must pass for the acquired lock to expire
+   * @param duration how much time must pass for the acquired lock to expire
    * @return true, if lock was acquired
    */
   boolean acquire(Duration duration);
@@ -53,9 +53,9 @@ public interface DistributedLock {
   /**
    * Acquire a lock and release it after action is executed.
    *
-   * @param action - to be executed when lock is acquired
+   * @param action to be executed when lock is acquired
    * @return true if lock was acquired.
-   * @see DistributedLock#acquire()}
+   * @see DistributedLock#acquire()
    */
   default boolean acquireAndExecute(Runnable action) {
     return executeOnAcquired(acquire(), action, this::release);
@@ -64,10 +64,10 @@ public interface DistributedLock {
   /**
    * Acquire a lock for a given duration and release it after action is executed.
    *
-   * @param duration - how much time must pass for the acquired lock to expire
-   * @param action - to be executed when lock is acquired
+   * @param duration how much time must pass for the acquired lock to expire
+   * @param action to be executed when lock is acquired
    * @return true, if lock was acquired
-   * @see DistributedLock#acquire(Duration)}
+   * @see DistributedLock#acquire(Duration)
    */
   default boolean acquireAndExecute(Duration duration, Runnable action) {
     return executeOnAcquired(acquire(duration), action, this::release);
@@ -76,7 +76,7 @@ public interface DistributedLock {
   /**
    * Acquire a lock without expiration time and release it after action is executed.
    *
-   * @param action - to be executed when lock is acquired
+   * @param action to be executed when lock is acquired
    * @return true, if lock was acquired
    * @see DistributedLock#acquireForever()
    */
@@ -87,7 +87,7 @@ public interface DistributedLock {
   /**
    * Run the action when lock is released
    *
-   * @param action - to be executed when lock is released
+   * @param action to be executed when lock is released
    * @return true, if lock was release
    * @see DistributedLock#release()
    */

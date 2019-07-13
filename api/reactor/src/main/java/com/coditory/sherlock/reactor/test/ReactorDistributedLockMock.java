@@ -18,6 +18,9 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 public final class ReactorDistributedLockMock implements ReactorDistributedLock {
   /**
    * Create a lock that can be always acquired.
+   *
+   * @param lockId the lock id
+   * @return created mock
    */
   public static ReactorDistributedLockMock alwaysReleasedLock(String lockId) {
     return singleStateLock(lockId, true);
@@ -25,6 +28,9 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
 
   /**
    * Create a lock that can be never acquired.
+   *
+   * @param lockId the lock id
+   * @return created mock
    */
   public static ReactorDistributedLockMock alwaysAcquiredLock(String lockId) {
     return singleStateLock(lockId, false);
@@ -33,13 +39,21 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   /**
    * Create always released lock if released parameter is true, otherwise always acquired lock is
    * returned
+   *
+   * @param lockId the lock id
+   * @param released the lock state
+   * @return created mock
    */
-  public static ReactorDistributedLockMock singleStateLock(String lockId, boolean result) {
-    return new ReactorDistributedLockMock(lockId, List.of(result), List.of(result));
+  public static ReactorDistributedLockMock singleStateLock(String lockId, boolean released) {
+    return new ReactorDistributedLockMock(lockId, List.of(released), List.of(released));
   }
 
   /**
    * Create a lock returning a sequence of results for acquiring.
+   *
+   * @param lockId the lock id
+   * @param results the sequence of acquire and release results
+   * @return created mock
    */
   public static ReactorDistributedLockMock sequencedLock(String lockId, List<Boolean> results) {
     return sequencedLock(lockId, results, results);
@@ -47,6 +61,11 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
 
   /**
    * Create a lock returning a sequence of results for acquiring and releasing.
+   *
+   * @param lockId the lock id
+   * @param acquireResults the sequence of acquire results
+   * @param releaseResults the sequence of release results
+   * @return created mock of distributed lock
    */
   public static ReactorDistributedLockMock sequencedLock(
       String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {

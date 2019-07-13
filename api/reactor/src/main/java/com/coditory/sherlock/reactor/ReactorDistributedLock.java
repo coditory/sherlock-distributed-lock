@@ -18,23 +18,23 @@ import static com.coditory.sherlock.reactor.ReactorDistributedLockExecutor.execu
  */
 public interface ReactorDistributedLock {
   /**
+   * Return the lock id.
+   *
    * @return the lock id
    */
   String getId();
 
   /**
-   * Try to acquire the lock. Lock is acquired for a configured duration. After that times it
-   * expires and is ready to be acquired by other instance.
+   * Try to acquire the lock. Lock is acquired for a configured duration.
    *
    * @return {@link LockResult#SUCCESS}, if lock was acquired
    */
   Mono<LockResult> acquire();
 
   /**
-   * Try to acquire the lock for a given duration. After that times it expires and is ready to be
-   * acquired by other instance.
+   * Try to acquire the lock for a given duration.
    *
-   * @param duration - how much time must pass for the acquired lock to expire
+   * @param duration how much time must pass for the acquired lock to expire
    * @return {@link LockResult#SUCCESS}, if lock was acquired
    */
   Mono<LockResult> acquire(Duration duration);
@@ -51,17 +51,18 @@ public interface ReactorDistributedLock {
    * Release the lock
    *
    * @return {@link ReleaseResult#SUCCESS}, if lock was released in this call. If lock could not be
-   * released or was released by a different instance then {@link ReleaseResult#FAILURE} is
-   * returned.
+   *     released or was released by a different instance then {@link ReleaseResult#FAILURE} is
+   *     returned.
    */
   Mono<ReleaseResult> release();
 
   /**
    * Acquire a lock and release it after action is executed.
    *
-   * @param action - to be executed when lock is acquired
+   * @param <T> type od value emitted by the action
+   * @param action to be executed when lock is acquired
    * @return true if lock was acquired.
-   * @see ReactorDistributedLock#acquire()}
+   * @see ReactorDistributedLock#acquire()
    */
   default <T> Mono<T> acquireAndExecute(Supplier<Mono<T>> action) {
     return executeOnAcquired(acquire(), action, this::release);
@@ -70,10 +71,11 @@ public interface ReactorDistributedLock {
   /**
    * Acquire a lock for a given duration and release it after action is executed.
    *
-   * @param duration - how much time must pass for the acquired lock to expire
-   * @param action - to be executed when lock is acquired
+   * @param <T> type od value emitted by the action
+   * @param duration how much time must pass for the acquired lock to expire
+   * @param action to be executed when lock is acquired
    * @return true, if lock was acquired
-   * @see ReactorDistributedLock#acquire(Duration)}
+   * @see ReactorDistributedLock#acquire(Duration)
    */
   default <T> Mono<T> acquireAndExecute(Duration duration, Supplier<Mono<T>> action) {
     return executeOnAcquired(acquire(duration), action, this::release);
@@ -82,7 +84,8 @@ public interface ReactorDistributedLock {
   /**
    * Acquire a lock without expiration time and release it after action is executed.
    *
-   * @param action - to be executed when lock is acquired
+   * @param <T> type od value emitted by the action
+   * @param action to be executed when lock is acquired
    * @return true, if lock was acquired
    * @see ReactorDistributedLock#acquireForever()
    */
@@ -93,7 +96,8 @@ public interface ReactorDistributedLock {
   /**
    * Run the action when lock is released
    *
-   * @param action - to be executed when lock is released
+   * @param <T> type od value emitted by the action
+   * @param action to be executed when lock is released
    * @return true, if lock was release
    * @see ReactorDistributedLock#release()
    */

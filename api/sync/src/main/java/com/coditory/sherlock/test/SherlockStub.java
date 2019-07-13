@@ -2,7 +2,7 @@ package com.coditory.sherlock.test;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -16,12 +16,14 @@ import static com.coditory.sherlock.test.DistributedLockMock.singleStateLock;
  */
 public class SherlockStub implements Sherlock {
   private final Map<String, DistributedLock> locksById = new HashMap<>();
-  private InstanceId instanceId = InstanceId.of("tested-instance");
+  private OwnerId ownerId = OwnerId.of("tested-instance");
   private Duration duration = DEFAULT_LOCK_DURATION;
   private boolean defaultLockResult = true;
 
   /**
    * Make the stub produce released locks by default
+   *
+   * @return the stub instance
    */
   public static SherlockStub withReleasedLocks() {
     return new SherlockStub()
@@ -30,6 +32,8 @@ public class SherlockStub implements Sherlock {
 
   /**
    * Make the stub produce acquired locks by default
+   *
+   * @return the stub instance
    */
   public static SherlockStub withAcquiredLocks() {
     return new SherlockStub()
@@ -38,14 +42,20 @@ public class SherlockStub implements Sherlock {
 
   /**
    * Make the stub produce locks with given application instance id
+   *
+   * @param ownerId lock owner id
+   * @return the stub instance
    */
   public SherlockStub withOwnerId(String ownerId) {
-    this.instanceId = InstanceId.of(ownerId);
+    this.ownerId = OwnerId.of(ownerId);
     return this;
   }
 
   /**
    * Make the stub produce locks with given lock duration
+   *
+   * @param duration lock duration
+   * @return the stub instance
    */
   public SherlockStub withLockDuration(Duration duration) {
     this.duration = duration;
@@ -54,6 +64,9 @@ public class SherlockStub implements Sherlock {
 
   /**
    * Make the stub produce return a predefined lock.
+   *
+   * @param lock returned when creating a lock with the same id
+   * @return the stub instance
    */
   public SherlockStub withLock(DistributedLock lock) {
     this.locksById.put(lock.getId(), lock);
@@ -67,7 +80,7 @@ public class SherlockStub implements Sherlock {
 
   @Override
   public String getOwnerId() {
-    return instanceId.getValue();
+    return ownerId.getValue();
   }
 
   @Override

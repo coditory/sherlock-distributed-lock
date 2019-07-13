@@ -1,6 +1,6 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.client.MongoClient;
 
 import java.time.Clock;
@@ -21,7 +21,7 @@ public class MongoSherlock {
   private String databaseName;
   private String collectionName = DEFAULT_DB_TABLE_NAME;
   private Duration duration = DEFAULT_LOCK_DURATION;
-  private InstanceId instanceId = DEFAULT_INSTANCE_ID;
+  private OwnerId ownerId = DEFAULT_INSTANCE_ID;
   private Clock clock = DEFAULT_CLOCK;
 
   /**
@@ -36,7 +36,8 @@ public class MongoSherlock {
   }
 
   /**
-   * @param mongoClient - mongo client to be used for locking
+   * @param mongoClient mongo client to be used for locking
+   * @return the instance
    */
   public MongoSherlock withMongoClient(MongoClient mongoClient) {
     this.mongoClient = expectNonNull(mongoClient, "Expected non null mongoClient");
@@ -44,7 +45,8 @@ public class MongoSherlock {
   }
 
   /**
-   * @param databaseName - database name where locks will be stored
+   * @param databaseName database name where locks will be stored
+   * @return the instance
    */
   public MongoSherlock withDatabaseName(String databaseName) {
     this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");
@@ -52,8 +54,9 @@ public class MongoSherlock {
   }
 
   /**
-   * @param collectionName - collection name where locks will be stored. Default: {@link
-   * com.coditory.sherlock.common.SherlockDefaults#DEFAULT_DB_TABLE_NAME}
+   * @param collectionName collection name where locks will be stored. Default: {@link
+   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_DB_TABLE_NAME}
+   * @return the instance
    */
   public MongoSherlock withCollectionName(String collectionName) {
     this.collectionName = expectNonEmpty(collectionName, "Expected non empty collectionName");
@@ -61,8 +64,9 @@ public class MongoSherlock {
   }
 
   /**
-   * @param duration - how much time a lock should be active. When time passes lock is expired and
-   * becomes released. Default: {@link * com.coditory.sherlock.common.SherlockDefaults#DEFAULT_LOCK_DURATION}
+   * @param duration how much time a lock should be active. When time passes lock is expired and
+   *     becomes released. Default: {@link com.coditory.sherlock.common.SherlockDefaults#DEFAULT_LOCK_DURATION}
+   * @return the instance
    */
   public MongoSherlock withLockDuration(Duration duration) {
     this.duration = expectNonNull(duration, "Expected non null duration");
@@ -70,17 +74,19 @@ public class MongoSherlock {
   }
 
   /**
-   * @param ownerId - owner id most often should be a unique application instance identifier.
-   * Default: {@link * com.coditory.sherlock.common.SherlockDefaults#DEFAULT_INSTANCE_ID}
+   * @param ownerId owner id most often should be a unique application instance identifier.
+   *     Default: {@link com.coditory.sherlock.common.SherlockDefaults#DEFAULT_INSTANCE_ID}
+   * @return the instance
    */
   public MongoSherlock withOwnerId(String ownerId) {
-    this.instanceId = InstanceId.of(ownerId);
+    this.ownerId = OwnerId.of(ownerId);
     return this;
   }
 
   /**
-   * @param clock - time provider used in locking mechanism. Default: {@link *
-   * com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
+   * @param clock time provider used in locking mechanism. Default: {@link
+   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
+   * @return the instance
    */
   public MongoSherlock withClock(Clock clock) {
     this.clock = expectNonNull(clock, "Expected non null clock");
@@ -96,6 +102,6 @@ public class MongoSherlock {
     expectNonEmpty(databaseName, "Expected non empty databaseName");
     MongoDistributedLockDriver driver = new MongoDistributedLockDriver(
         mongoClient, databaseName, collectionName, clock);
-    return new SherlockWithDriver(driver, instanceId, duration);
+    return new SherlockWithDriver(driver, ownerId, duration);
   }
 }

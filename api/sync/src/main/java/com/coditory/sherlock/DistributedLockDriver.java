@@ -1,6 +1,6 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 
@@ -41,7 +41,7 @@ interface DistributedLockDriver {
    *
    * @return boolean - true if acquire was released by this call
    */
-  boolean release(LockId lockId, InstanceId instanceId);
+  boolean release(LockId lockId, OwnerId ownerId);
 
   /**
    * Unlocks a acquire without checking its owner or release date.

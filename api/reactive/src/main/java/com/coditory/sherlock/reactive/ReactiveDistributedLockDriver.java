@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactive;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.reactive.driver.InitializationResult;
@@ -38,7 +38,7 @@ interface ReactiveDistributedLockDriver {
   /**
    * Unlock previously acquired acquire by the same instance.
    */
-  Publisher<ReleaseResult> release(LockId lockId, InstanceId instanceId);
+  Publisher<ReleaseResult> release(LockId lockId, OwnerId ownerId);
 
   /**
    * Unlocks a acquire without checking its owner or release date.

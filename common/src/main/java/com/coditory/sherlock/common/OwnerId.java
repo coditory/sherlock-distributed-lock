@@ -6,18 +6,18 @@ import java.util.Objects;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 
-public final class InstanceId {
-  public static InstanceId uniqueInstanceId() {
-    return new InstanceId(UuidGenerator.uuid());
+public final class OwnerId {
+  public static OwnerId uniqueOwnerId() {
+    return new OwnerId(UuidGenerator.uuid());
   }
 
-  public static InstanceId of(String value) {
-    return new InstanceId(value);
+  public static OwnerId of(String value) {
+    return new OwnerId(value);
   }
 
   private final String id;
 
-  private InstanceId(String id) {
+  private OwnerId(String id) {
     this.id = expectNonEmpty(id, "Expected non empty instance id");
   }
 
@@ -27,7 +27,7 @@ public final class InstanceId {
 
   @Override
   public String toString() {
-    return "InstanceId{id='" + id + "'}";
+    return "OwnerId{id='" + id + "'}";
   }
 
   @Override
@@ -38,8 +38,8 @@ public final class InstanceId {
     if (o == null || getClass() != o.getClass()) {
       return false;
     }
-    InstanceId instanceId = (InstanceId) o;
-    return Objects.equals(id, instanceId.id);
+    OwnerId ownerId = (OwnerId) o;
+    return Objects.equals(id, ownerId.id);
   }
 
   @Override

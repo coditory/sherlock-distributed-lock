@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactor.test;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import com.coditory.sherlock.reactor.ReactorSherlock;
 
@@ -16,12 +16,14 @@ import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.sing
  */
 public final class ReactorSherlockStub implements ReactorSherlock {
   private final Map<String, ReactorDistributedLock> locksById = new HashMap<>();
-  private InstanceId instanceId = InstanceId.of("tested-instance");
+  private OwnerId ownerId = OwnerId.of("tested-instance");
   private Duration duration = DEFAULT_LOCK_DURATION;
   private boolean defaultLockResult = true;
 
   /**
    * Make the stub produce released locks by default
+   *
+   * @return the instance
    */
   static public ReactorSherlockStub withReleasedLocks() {
     return new ReactorSherlockStub()
@@ -30,6 +32,8 @@ public final class ReactorSherlockStub implements ReactorSherlock {
 
   /**
    * Make the stub produce acquired locks by default
+   *
+   * @return the instance
    */
   static public ReactorSherlockStub withAcquiredLocks() {
     return new ReactorSherlockStub()
@@ -38,14 +42,20 @@ public final class ReactorSherlockStub implements ReactorSherlock {
 
   /**
    * Make the stub produce locks with given application instance id
+   *
+   * @param ownerId lock owner id
+   * @return the instance
    */
   public ReactorSherlockStub withOwnerId(String ownerId) {
-    this.instanceId = InstanceId.of(ownerId);
+    this.ownerId = OwnerId.of(ownerId);
     return this;
   }
 
   /**
    * Make the stub produce locks with given lock duration
+   *
+   * @param duration lock duration
+   * @return the instance
    */
   public ReactorSherlockStub withLockDuration(Duration duration) {
     this.duration = duration;
@@ -54,6 +64,9 @@ public final class ReactorSherlockStub implements ReactorSherlock {
 
   /**
    * Make the stub produce return a predefined lock.
+   *
+   * @param lock returned when creating a lock with the same id
+   * @return the instance
    */
   public ReactorSherlockStub withLock(ReactorDistributedLock lock) {
     this.locksById.put(lock.getId(), lock);
@@ -67,7 +80,7 @@ public final class ReactorSherlockStub implements ReactorSherlock {
 
   @Override
   public String getOwnerId() {
-    return instanceId.getValue();
+    return ownerId.getValue();
   }
 
   @Override

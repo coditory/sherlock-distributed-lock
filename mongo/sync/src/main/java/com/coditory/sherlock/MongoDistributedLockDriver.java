@@ -1,6 +1,6 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
@@ -55,7 +55,7 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   public boolean acquire(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
         fromLockRequest(lockRequest, now)
     );
   }
@@ -64,7 +64,7 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   public boolean acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getInstanceId(), now),
+        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
         fromLockRequest(lockRequest, now)
     );
   }
@@ -78,8 +78,8 @@ class MongoDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  public boolean release(LockId lockId, InstanceId instanceId) {
-    return delete(queryAcquired(lockId, instanceId));
+  public boolean release(LockId lockId, OwnerId ownerId) {
+    return delete(queryAcquired(lockId, ownerId));
   }
 
   @Override

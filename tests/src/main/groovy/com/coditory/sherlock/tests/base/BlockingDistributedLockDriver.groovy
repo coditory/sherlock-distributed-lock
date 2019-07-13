@@ -1,9 +1,9 @@
 package com.coditory.sherlock.tests.base
 
 import com.coditory.sherlock.DistributedLockDriver
-import com.coditory.sherlock.common.InstanceId
 import com.coditory.sherlock.common.LockId
 import com.coditory.sherlock.common.LockRequest
+import com.coditory.sherlock.common.OwnerId
 import com.coditory.sherlock.reactive.ReactiveDistributedLockDriver
 
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux
@@ -44,8 +44,8 @@ class BlockingDistributedLockDriver implements DistributedLockDriver {
   }
 
   @Override
-  boolean release(LockId lockId, InstanceId instanceId) {
-    return flowPublisherToFlux(reactiveDriver.release(lockId, instanceId))
+  boolean release(LockId lockId, OwnerId ownerId) {
+    return flowPublisherToFlux(reactiveDriver.release(lockId, ownerId))
         .single().block().isUnlocked()
   }
 

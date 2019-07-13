@@ -7,23 +7,23 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 public final class LockRequest {
   private final LockId lockId;
-  private final InstanceId instanceId;
+  private final OwnerId ownerId;
   private final Duration duration;
 
   public LockRequest(
       LockId lockId,
-      InstanceId instanceId,
+      OwnerId ownerId,
       Duration duration) {
     this.lockId = expectNonNull(lockId);
-    this.instanceId = expectNonNull(instanceId);
+    this.ownerId = expectNonNull(ownerId);
     this.duration = duration;
   }
 
   public LockRequest(
       LockId lockId,
-      InstanceId instanceId) {
+      OwnerId ownerId) {
     this.lockId = expectNonNull(lockId);
-    this.instanceId = expectNonNull(instanceId);
+    this.ownerId = expectNonNull(ownerId);
     this.duration = null;
   }
 
@@ -31,8 +31,8 @@ public final class LockRequest {
     return lockId;
   }
 
-  public InstanceId getInstanceId() {
-    return instanceId;
+  public OwnerId getOwnerId() {
+    return ownerId;
   }
 
   public Duration getDuration() {
@@ -49,20 +49,20 @@ public final class LockRequest {
     }
     LockRequest request = (LockRequest) o;
     return Objects.equals(lockId, request.lockId) &&
-        Objects.equals(instanceId, request.instanceId) &&
+        Objects.equals(ownerId, request.ownerId) &&
         Objects.equals(duration, request.duration);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(lockId, instanceId, duration);
+    return Objects.hash(lockId, ownerId, duration);
   }
 
   @Override
   public String toString() {
     return "LockRequest{" +
         "lockId=" + lockId +
-        ", instanceId=" + instanceId +
+        ", ownerId=" + ownerId +
         ", duration=" + duration +
         '}';
   }

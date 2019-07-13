@@ -1,6 +1,6 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InstanceId;
+import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.LockId;
 
 import java.time.Duration;
@@ -10,18 +10,18 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 final class SherlockWithDriver implements Sherlock {
   private final DistributedLockDriver driver;
   private final Duration duration;
-  private final InstanceId instanceId;
+  private final OwnerId ownerId;
 
   SherlockWithDriver(
-      DistributedLockDriver driver, InstanceId instanceId, Duration duration) {
+      DistributedLockDriver driver, OwnerId ownerId, Duration duration) {
     this.driver = expectNonNull(driver, "Expected non null driver");
-    this.instanceId = expectNonNull(instanceId, "Expected non null instanceId");
+    this.ownerId = expectNonNull(ownerId, "Expected non null ownerId");
     this.duration = expectNonNull(duration, "Expected non null duration");
   }
 
   @Override
   public String getOwnerId() {
-    return instanceId.getValue();
+    return ownerId.getValue();
   }
 
   @Override
@@ -36,7 +36,7 @@ final class SherlockWithDriver implements Sherlock {
 
   @Override
   public DistributedLock createReentrantLock(String lockId, Duration duration) {
-    return new DistributedReentrantLock(LockId.of(lockId), instanceId, duration, driver);
+    return new DistributedReentrantLock(LockId.of(lockId), ownerId, duration, driver);
   }
 
   @Override
@@ -46,7 +46,7 @@ final class SherlockWithDriver implements Sherlock {
 
   @Override
   public DistributedLock createLock(String lockId, Duration duration) {
-    return new DistributedSingleEntrantLock(LockId.of(lockId), instanceId, duration, driver);
+    return new DistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, driver);
   }
 
   @Override
@@ -56,6 +56,6 @@ final class SherlockWithDriver implements Sherlock {
 
   @Override
   public DistributedLock createOverridingLock(String lockId, Duration duration) {
-    return new DistributedOverridingLock(LockId.of(lockId), instanceId, duration, driver);
+    return new DistributedOverridingLock(LockId.of(lockId), ownerId, duration, driver);
   }
 }

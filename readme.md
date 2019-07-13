@@ -35,7 +35,7 @@ Sherlock sherlock = MongoSherlock.builder()
   .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
   .withCollectionName("locks") // default: "locks"
   .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
-  .withServiceInstanceId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+  .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
   .build();
 // Create a lock
 DistributedLock lock = sherlock.createLock("sample-lock");

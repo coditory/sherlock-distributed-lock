@@ -32,7 +32,7 @@ public final class MongoDistributedLock {
   public static MongoDistributedLock fromDocument(Document document) {
     return new MongoDistributedLock(
         LockId.of(document.getString(LOCK_ID_FIELD)),
-        InstanceId.of(document.getString(ACQUIRED_BY_FIELD)),
+        OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
         dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
         dateToInstant(document.getDate(EXPIRES_AT_FIELD))
     );
@@ -50,24 +50,24 @@ public final class MongoDistributedLock {
         .orElse(null);
     return new MongoDistributedLock(
         lockRequest.getLockId(),
-        lockRequest.getInstanceId(),
+        lockRequest.getOwnerId(),
         acquiredAt,
         releaseAt
     );
   }
 
   private final LockId id;
-  private final InstanceId instanceId;
+  private final OwnerId ownerId;
   private final Instant acquiredAt;
   private final Instant expiresAt;
 
   private MongoDistributedLock(
       LockId id,
-      InstanceId instanceId,
+      OwnerId ownerId,
       Instant createdAt,
       Instant expiresAt) {
     this.id = expectNonNull(id);
-    this.instanceId = expectNonNull(instanceId);
+    this.ownerId = expectNonNull(ownerId);
     this.acquiredAt = expectNonNull(createdAt);
     this.expiresAt = expiresAt;
   }
@@ -75,7 +75,7 @@ public final class MongoDistributedLock {
   public Document toDocument() {
     Document result = new Document()
         .append(LOCK_ID_FIELD, id.getValue())
-        .append(ACQUIRED_BY_FIELD, instanceId.getValue())
+        .append(ACQUIRED_BY_FIELD, ownerId.getValue())
         .append(ACQUIRED_AT_FIELD, acquiredAt);
     if (expiresAt != null) {
       result = result.append(EXPIRES_AT_FIELD, expiresAt);
@@ -87,7 +87,7 @@ public final class MongoDistributedLock {
   public String toString() {
     return "MongoDistributedLock{" +
         "id=" + id +
-        ", instanceId=" + instanceId +
+        ", ownerId=" + ownerId +
         ", acquiredAt=" + acquiredAt +
         ", expiresAt=" + expiresAt +
         '}';
@@ -103,13 +103,13 @@ public final class MongoDistributedLock {
     }
     MongoDistributedLock that = (MongoDistributedLock) o;
     return Objects.equals(id, that.id) &&
-        Objects.equals(instanceId, that.instanceId) &&
+        Objects.equals(ownerId, that.ownerId) &&
         Objects.equals(acquiredAt, that.acquiredAt) &&
         Objects.equals(expiresAt, that.expiresAt);
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(id, instanceId, acquiredAt, expiresAt);
+    return Objects.hash(id, ownerId, acquiredAt, expiresAt);
   }
 }
