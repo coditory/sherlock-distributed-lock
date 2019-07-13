@@ -4,6 +4,8 @@ import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.tests.base.LockTypes
 import spock.lang.Unroll
 
+import java.time.Duration
+
 import static com.coditory.sherlock.tests.base.LockTypes.OVERRIDING
 import static com.coditory.sherlock.tests.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.allLockTypes
@@ -68,5 +70,19 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
       secondResult == false
     where:
       type << allLockTypes() - mayAcquireMultipleTimes
+  }
+
+  def "should prolong lock duration when acquired multiple times by reentrant lock"() {
+    given:
+      DistributedLock lock = createLock(REENTRANT)
+    and:
+      lock.acquire(Duration.ofHours(1))
+      fixedClock.tick(Duration.ofMinutes(30))
+    when:
+      lock.acquire(Duration.ofHours(1))
+    and:
+      fixedClock.tick(Duration.ofMinutes(45))
+    then:
+      lock.release() == true
   }
 }

@@ -6,8 +6,7 @@ import static com.coditory.sherlock.DistributedLockExecutor.executeOnAcquired;
 import static com.coditory.sherlock.DistributedLockExecutor.executeOnReleased;
 
 /**
- * A lock for distributed environment consisting of multiple application instances. Acquire a
- * distributed lock when only one application instance should execute a specific action.
+ * A lock for distributed environment consisting of multiple application instances.
  *
  * @see Sherlock
  */
@@ -45,7 +44,7 @@ public interface DistributedLock {
   /**
    * Release the lock
    *
-   * @return true, if lock was released in this call. If lock could not be released or was released
+   * @return true, if lock was released in this call. If lock has expired or was released
    * by a different instance then false is returned.
    */
   boolean release();

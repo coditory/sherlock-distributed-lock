@@ -35,7 +35,7 @@ plugins {
   id 'org.ajoberstar.grgit' version '3.1.1' apply false
 }
 
-description = "Distributed Lock Library for JVM"
+description = 'Distributed Lock Library for JVM'
 
 scmVersion {
   versionCreator 'versionWithBranch'
@@ -57,9 +57,12 @@ subprojects {
   apply plugin: 'com.coditory.integration-test'
   sourceCompatibility = 11
 
-  // make nicer archive names
+  // make nicer archive and module names
   archivesBaseName = (rootProject.name + '-' + project.name)
       .replaceAll('-api-', '-')
+  ext.moduleName = (rootProject.group + '-' + project.name)
+      .replaceAll('-api-', '-')
+      .replaceAll('-', '.')
 
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"

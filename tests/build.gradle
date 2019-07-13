@@ -1,4 +1,4 @@
-description = "Sherlock Distributed Lock shared tests"
+description = 'Sherlock Distributed Lock shared tests'
 
 dependencies {
   compile project(':api:api-sync')

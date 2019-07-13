@@ -14,7 +14,7 @@ jar {
     attributes 'Built-Date': ZonedDateTime.now()
     attributes 'Built-JDK': System.getProperty('java.version')
     attributes 'Built-JDK-Vendor': System.getProperty('java.specification.vendor')
-    attributes 'Automatic-Module-Name': (rootProject.group + '.' + project.name.replace('-', '.')).replace('.api.', '.')
+    attributes 'Automatic-Module-Name': moduleName
 
     try {
       def head = grgit.head()

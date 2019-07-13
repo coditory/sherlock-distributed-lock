@@ -5,15 +5,11 @@ import com.coditory.sherlock.MongoSherlock;
 import com.coditory.sherlock.Sherlock;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 import java.time.Duration;
 
 public class MongoSherlockSample {
-  private static Logger logger = LoggerFactory.getLogger(MongoSherlockSample.class);
-
   private static Sherlock createSherlock() {
     return createSherlock("localhost");
   }
@@ -31,24 +27,14 @@ public class MongoSherlockSample {
         .build();
   }
 
-  public static void main(String... args) {
+  public static void main(String... args) throws InterruptedException {
     Sherlock sherlock = createSherlock();
     DistributedLock simpleLock = sherlock.createLock("sample-acquire");
     DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
     DistributedLock overridingLock = sherlock.createOverridingLock("sample-acquire");
-    simpleLock.acquire();
-    simpleLock.acquire();
     reentrantLock.acquire();
+    Thread.sleep(60_000);
     reentrantLock.acquire();
-    overridingLock.acquire();
-    overridingLock.acquire();
-
-    simpleLock.release();
-    simpleLock.release();
-    reentrantLock.release();
-    reentrantLock.release();
-    overridingLock.release();
-    overridingLock.release();
   }
 
   public static void main2() {
