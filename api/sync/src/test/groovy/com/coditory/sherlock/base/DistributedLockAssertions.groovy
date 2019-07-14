@@ -1,9 +1,11 @@
 package com.coditory.sherlock.base
 
 import com.coditory.sherlock.DistributedLock
+import groovy.transform.CompileStatic
 
 import java.time.Duration
 
+@CompileStatic
 class DistributedLockAssertions {
   static assertAlwaysOpenedLock(DistributedLock lock, String lockId = lock.id) {
     assertSingleStateLock(lock, lockId, true)

@@ -1,5 +1,6 @@
 package com.coditory.sherlock.reactor
 
+import com.coditory.sherlock.reactor.base.UsesReactorSherlock
 import com.coditory.sherlock.tests.AcquireLockMultipleTimesSpec
 import com.coditory.sherlock.tests.AcquireLockSpec
 import com.coditory.sherlock.tests.InfiniteAcquireLockSpec

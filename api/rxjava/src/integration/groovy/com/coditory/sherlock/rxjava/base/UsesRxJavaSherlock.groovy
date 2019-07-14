@@ -1,6 +1,7 @@
-package com.coditory.sherlock.reactive
+package com.coditory.sherlock.rxjava.base
 
-
+import com.coditory.sherlock.reactive.ReactiveMongoSherlock
+import com.coditory.sherlock.rxjava.RxJavaSherlock
 import com.coditory.sherlock.tests.base.DistributedLocksCreator
 import com.coditory.sherlock.tests.base.TestableDistributedLocks
 import com.mongodb.reactivestreams.client.MongoCollection
@@ -12,24 +13,24 @@ import reactor.core.publisher.Flux
 import java.time.Clock
 import java.time.Duration
 
-import static MongoInitializer.databaseName
-import static MongoInitializer.mongoClient
-import static com.coditory.sherlock.tests.base.BlockingReactiveSherlockWrapper.testableLocks
+import static com.coditory.sherlock.rxjava.base.BlockingRxJavaSherlock.blockRxJavaSherlock
+import static com.coditory.sherlock.rxjava.base.MongoInitializer.databaseName
+import static com.coditory.sherlock.rxjava.base.MongoInitializer.mongoClient
 
-trait UsesReactiveMongoSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "locks"
+trait UsesRxJavaSherlock implements DistributedLocksCreator {
+  static final String locksCollectionName = "sherlock"
 
   @Override
-  TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
-    ReactiveSherlock reactiveLocks = ReactiveMongoSherlock.builder()
+  TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
+    RxJavaSherlock rxJavaLocks = ReactiveMongoSherlock.builder()
         .withMongoClient(mongoClient)
         .withDatabaseName(databaseName)
         .withCollectionName(locksCollectionName)
-        .withOwnerId(instanceId)
+        .withOwnerId(ownerId)
         .withLockDuration(duration)
         .withClock(clock)
-        .build()
-    return testableLocks(reactiveLocks)
+        .build { RxJavaSherlock.wrapReactiveSherlock(it) }
+    return blockRxJavaSherlock(rxJavaLocks)
   }
 
   @After

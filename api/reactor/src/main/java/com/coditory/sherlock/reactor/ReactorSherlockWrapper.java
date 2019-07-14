@@ -6,10 +6,10 @@ import java.time.Duration;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
-final class ReactorSherlockWithConnector implements ReactorSherlock {
+final class ReactorSherlockWrapper implements ReactorSherlock {
   private final ReactiveSherlock sherlock;
 
-  ReactorSherlockWithConnector(ReactiveSherlock sherlock) {
+  ReactorSherlockWrapper(ReactiveSherlock sherlock) {
     this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
   }
 

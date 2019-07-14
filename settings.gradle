@@ -3,6 +3,7 @@ include 'api'
 include 'api:api-sync'
 include 'api:api-reactive'
 include 'api:api-reactor'
+include 'api:api-rxjava'
 include 'client'
 include 'common'
 include 'mongo'
@@ -16,6 +17,7 @@ include 'tests'
 project(':api:api-sync').projectDir = file('./api/sync')
 project(':api:api-reactive').projectDir = file('./api/reactive')
 project(':api:api-reactor').projectDir = file('./api/reactor')
+project(':api:api-rxjava').projectDir = file('./api/rxjava')
 project(':mongo:mongo-sync').projectDir = file('./mongo/sync')
 project(':mongo:mongo-reactive').projectDir = file('./mongo/reactive')
 project(':mongo:mongo-common').projectDir = file('./mongo/common')

@@ -70,7 +70,9 @@ Add dependency to `build.gradle`:
 ```gradle
 dependencies {
   compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.12"
-  compile "com.coditory.sherlock:sherlock-reactor:0.1.12"
+  compile "com.coditory.sherlock:sherlock-api-reactor:0.1.12"
+  // for RxJava API use:
+  // compile "com.coditory.sherlock:sherlock-api-rxjava:0.1.12"
 }
 ```
 

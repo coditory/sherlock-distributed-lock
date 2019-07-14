@@ -98,7 +98,11 @@ public class ReactiveMongoSherlock {
    * @return sherlock instance
    * @throws IllegalArgumentException when some required values are missing
    */
-  public ReactiveSherlock build() {
+  public <T> T build(ReactiveSherlockApiWrapper<T> apiWrapper) {
+    return apiWrapper.wrapApi(build());
+  }
+
+  public ReactiveSherlockWithConnector build() {
     expectNonNull(mongoClient, "Expected non null mongoClient");
     expectNonEmpty(databaseName, "Expected non empty databaseName");
     ReactiveMongoDistributedLockConnector connector = new ReactiveMongoDistributedLockConnector(
