@@ -12,11 +12,14 @@ publish() {
 }
 
 release() {
+  local ARGS="$@";
   if [[ -n "$GITHUB_TOKEN" ]]; then
-    ./gradlew release -Ppublish -Prelease.customUsername="$GITHUB_TOKEN" "$@"
-  else
-    ./gradlew release -Ppublish "$@"
+    ARGS="$ARGS -Prelease.customUsername=$GITHUB_TOKEN"
   fi
+  if [[ "$VERSION" == "SNAPSHOT" ]]; then
+    ARGS="$ARGS -Prelease.pushTagsOnly"
+  fi
+  ./gradlew release -Ppublish $ARGS
 }
 
 if [[ -z "$CI" ]]; then

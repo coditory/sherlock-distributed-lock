@@ -20,7 +20,7 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:0.1.10"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:0.1.11"
 }
 ```
 
@@ -66,8 +66,8 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.10"
-  compile "com.coditory.sherlock:sherlock-reactor:0.1.10"
+  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.1.11"
+  compile "com.coditory.sherlock:sherlock-reactor:0.1.11"
 }
 ```
 

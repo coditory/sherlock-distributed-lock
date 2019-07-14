@@ -9,19 +9,15 @@ nexusStaging {
   delayBetweenRetriesInMillis = 3000
 }
 
-// Update readme on release only
-if (!project.version.endsWith("-SNAPSHOT")) {
-  scmVersion {
-    hooks {
-      // update version in readme.md
-      pre 'fileUpdate', [
-          file       : 'readme.md',
-          pattern    : { v, p -> v },
-          replacement: { v, p -> v }
-      ]
-      pre 'commit'
-      post 'push'
-    }
+scmVersion {
+  hooks {
+    // update version in readme.md
+    pre 'fileUpdate', [
+        file       : 'readme.md',
+        pattern    : { v, p -> v },
+        replacement: { v, p -> v }
+    ]
+    pre 'commit'
   }
 }
 
