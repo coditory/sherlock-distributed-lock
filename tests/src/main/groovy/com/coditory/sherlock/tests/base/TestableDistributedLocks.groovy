@@ -1,12 +1,13 @@
 package com.coditory.sherlock.tests.base
 
 import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.common.OwnerId
+import groovy.transform.CompileStatic
 
 import java.time.Duration
 
+@CompileStatic
 interface TestableDistributedLocks {
-  OwnerId getOwnerId();
+  String getOwnerId();
 
   Duration getDefaultDuration();
 

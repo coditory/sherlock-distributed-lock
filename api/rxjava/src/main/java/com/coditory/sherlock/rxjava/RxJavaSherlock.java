@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactor;
+package com.coditory.sherlock.rxjava;
 
 import com.coditory.sherlock.reactive.ReactiveSherlock;
 
@@ -7,16 +7,15 @@ import java.time.Duration;
 /**
  * Creates and manages reactive distributed locks with reactor api.
  */
-public interface ReactorSherlock {
+public interface RxJavaSherlock {
   /**
-   * Maps reactive sherlock to a one using Reactor's {@link reactor.core.publisher.Mono} and {@link
-   * reactor.core.publisher.Flux}
+   * Maps reactive sherlock to a one using RxJava API
    *
    * @param locks reactive locks to be wrapped in Reactor api
    * @return reactor version of sherlock locks
    */
-  static ReactorSherlock wrapReactiveSherlock(ReactiveSherlock locks) {
-    return new ReactorSherlockWrapper(locks);
+  static RxJavaSherlock wrapReactiveSherlock(ReactiveSherlock locks) {
+    return new RxJavaSherlockWrapper(locks);
   }
 
   /**
@@ -30,13 +29,13 @@ public interface ReactorSherlock {
   Duration getLockDuration();
 
   /**
-   * Create a distributed lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed lock. Lock expires after {@link RxJavaSherlock#getLockDuration()}.
    *
    * @param lockId the lock id
    * @return the lock
-   * @see ReactorSherlock#createLock(String, Duration)
+   * @see RxJavaSherlock#createLock(String, Duration)
    */
-  ReactorDistributedLock createLock(String lockId);
+  RxJavaDistributedLock createLock(String lockId);
 
   /**
    * Create a lock. Created lock may be acquired only once by the same application instance:
@@ -50,16 +49,16 @@ public interface ReactorSherlock {
    * @param duration after that time lock expires and is released
    * @return the lock
    */
-  ReactorDistributedLock createLock(String lockId, Duration duration);
+  RxJavaDistributedLock createLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed reentrant lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed reentrant lock. Lock expires after {@link RxJavaSherlock#getLockDuration()}.
    *
    * @param lockId the lock id
    * @return the reentrant lock
-   * @see ReactorSherlock#createReentrantLock(String, Duration)
+   * @see RxJavaSherlock#createReentrantLock(String, Duration)
    */
-  ReactorDistributedLock createReentrantLock(String lockId);
+  RxJavaDistributedLock createReentrantLock(String lockId);
 
   /**
    * Create a distributed reentrant lock. Reentrant lock maybe acquired multiple times by the same
@@ -74,16 +73,16 @@ public interface ReactorSherlock {
    * @param duration after that time lock expires and is released
    * @return the reentrant lock
    */
-  ReactorDistributedLock createReentrantLock(String lockId, Duration duration);
+  RxJavaDistributedLock createReentrantLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed overriding lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed overriding lock. Lock expires after {@link RxJavaSherlock#getLockDuration()}.
    *
    * @param lockId the lock id
    * @return the reentrant lock
-   * @see ReactorSherlock#createOverridingLock(String, Duration)
+   * @see RxJavaSherlock#createOverridingLock(String, Duration)
    */
-  ReactorDistributedLock createOverridingLock(String lockId);
+  RxJavaDistributedLock createOverridingLock(String lockId);
 
   /**
    * Create a distributed overriding lock. Returned lock overrides lock state without checking if it
@@ -93,5 +92,5 @@ public interface ReactorSherlock {
    * @param duration after that time lock expires and is released
    * @return the reentrant lock
    */
-  ReactorDistributedLock createOverridingLock(String lockId, Duration duration);
+  RxJavaDistributedLock createOverridingLock(String lockId, Duration duration);
 }

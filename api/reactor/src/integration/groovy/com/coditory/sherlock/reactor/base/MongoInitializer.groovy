@@ -1,9 +1,11 @@
-package com.coditory.sherlock.reactor
+package com.coditory.sherlock.reactor.base
 
 import com.mongodb.reactivestreams.client.MongoClient
 import com.mongodb.reactivestreams.client.MongoClients
+import groovy.transform.CompileStatic
 import org.testcontainers.containers.GenericContainer
 
+@CompileStatic
 class MongoInitializer {
   static final String databaseName = "distributed-acquire-mongo"
   static final MongoClient mongoClient = startMongo()

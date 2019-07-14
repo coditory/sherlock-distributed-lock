@@ -1,4 +1,4 @@
-package com.coditory.sherlock.reactor.base
+package com.coditory.sherlock.rxjava.base
 
 import groovy.transform.CompileStatic
 

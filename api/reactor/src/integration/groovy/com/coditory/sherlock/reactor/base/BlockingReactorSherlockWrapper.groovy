@@ -1,28 +1,29 @@
-package com.coditory.sherlock.reactor
-
+package com.coditory.sherlock.reactor.base
 
 import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.common.OwnerId
-import com.coditory.sherlock.reactive.ReactiveSherlock
+import com.coditory.sherlock.reactor.ReactorDistributedLock
+import com.coditory.sherlock.reactor.ReactorSherlock
 import com.coditory.sherlock.tests.base.TestableDistributedLocks
+import groovy.transform.CompileStatic
 
 import java.time.Duration
 
-import static com.coditory.sherlock.tests.base.BlockingReactiveDistributedLock.blockingLock
+import static BlockingReactorLock.blockingLock
 
-class ReactorTestableLocksWrapper implements TestableDistributedLocks {
-  static TestableDistributedLocks testableLocks(ReactiveSherlock locks) {
-    return new ReactorTestableLocksWrapper(locks)
+@CompileStatic
+class BlockingReactorSherlockWrapper implements TestableDistributedLocks {
+  static TestableDistributedLocks blockReactorSherlock(ReactorSherlock locks) {
+    return new BlockingReactorSherlockWrapper(locks)
   }
 
-  private final ReactiveSherlock locks
+  private final ReactorSherlock locks
 
-  private ReactorTestableLocksWrapper(ReactiveSherlock locks) {
+  private BlockingReactorSherlockWrapper(ReactorSherlock locks) {
     this.locks = locks
   }
 
   @Override
-  OwnerId getOwnerId() {
+  String getOwnerId() {
     return locks.ownerId
   }
 
@@ -62,14 +63,15 @@ class ReactorTestableLocksWrapper implements TestableDistributedLocks {
   }
 }
 
-class ReatorBlockingLock implements DistributedLock {
-  static blockingLock(ReactorDistributedLock lock) {
-    return new ReatorBlockingLock(lock)
+@CompileStatic
+class BlockingReactorLock implements DistributedLock {
+  static BlockingReactorLock blockingLock(ReactorDistributedLock lock) {
+    return new BlockingReactorLock(lock)
   }
 
   private final ReactorDistributedLock lock
 
-  ReatorBlockingLock(ReactorDistributedLock lock) {
+  BlockingReactorLock(ReactorDistributedLock lock) {
     this.lock = lock
   }
 
