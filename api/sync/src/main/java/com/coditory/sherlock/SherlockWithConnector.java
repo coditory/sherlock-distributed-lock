@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.common.OwnerIdGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -14,23 +15,15 @@ final class SherlockWithConnector implements Sherlock {
   private final Logger logger = LoggerFactory.getLogger(SherlockWithConnector.class);
   private final DistributedLockConnector connector;
   private final LockDuration duration;
-  private final OwnerId ownerId;
+  private final OwnerIdGenerator ownerIdGenerator;
 
   SherlockWithConnector(
-      DistributedLockConnector connector, OwnerId ownerId, LockDuration duration) {
+      DistributedLockConnector connector,
+      OwnerIdGenerator ownerIdGenerator,
+      LockDuration duration) {
     this.connector = expectNonNull(connector, "Expected non null connector");
-    this.ownerId = expectNonNull(ownerId, "Expected non null ownerId");
+    this.ownerIdGenerator = expectNonNull(ownerIdGenerator, "Expected non null ownerIdGenerator");
     this.duration = expectNonNull(duration, "Expected non null duration");
-  }
-
-  @Override
-  public String getOwnerId() {
-    return ownerId.getValue();
-  }
-
-  @Override
-  public Duration getLockDuration() {
-    return duration.getValue();
   }
 
   @Override
@@ -45,7 +38,7 @@ final class SherlockWithConnector implements Sherlock {
 
   private DistributedLock createReentrantLock(String lockId, LockDuration duration) {
     return logCreatedLock(
-        new DistributedReentrantLock(LockId.of(lockId), ownerId, duration, connector));
+        new DistributedReentrantLock(LockId.of(lockId), ownerId(), duration, connector));
   }
 
   @Override
@@ -60,7 +53,7 @@ final class SherlockWithConnector implements Sherlock {
 
   private DistributedLock createLock(String lockId, LockDuration duration) {
     return logCreatedLock(
-        new DistributedSingleEntrantLock(LockId.of(lockId), ownerId, duration, connector));
+        new DistributedSingleEntrantLock(LockId.of(lockId), ownerId(), duration, connector));
   }
 
   @Override
@@ -75,7 +68,11 @@ final class SherlockWithConnector implements Sherlock {
 
   private DistributedLock createOverridingLock(String lockId, LockDuration duration) {
     return logCreatedLock(
-        new DistributedOverridingLock(LockId.of(lockId), ownerId, duration, connector));
+        new DistributedOverridingLock(LockId.of(lockId), ownerId(), duration, connector));
+  }
+
+  private OwnerId ownerId() {
+    return ownerIdGenerator.getOwnerId();
   }
 
   private DistributedLock logCreatedLock(DistributedLock lock) {

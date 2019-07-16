@@ -7,17 +7,7 @@ import java.time.Duration;
  */
 public interface Sherlock {
   /**
-   * @return owner id is most often the application instance id
-   */
-  String getOwnerId();
-
-  /**
-   * @return the default lock duration
-   */
-  Duration getLockDuration();
-
-  /**
-   * Create a distributed lock. Lock expires after {@link Sherlock#getLockDuration()}.
+   * Create a distributed lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the lock
@@ -40,7 +30,7 @@ public interface Sherlock {
   DistributedLock createLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed reentrant lock. Lock expires after {@link Sherlock#getLockDuration()}.
+   * Create a distributed reentrant lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock
@@ -64,7 +54,7 @@ public interface Sherlock {
   DistributedLock createReentrantLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed overriding lock. Lock expires after {@link Sherlock#getLockDuration()}.
+   * Create a distributed overriding lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock

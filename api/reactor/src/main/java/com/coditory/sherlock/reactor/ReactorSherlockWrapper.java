@@ -13,20 +13,13 @@ final class ReactorSherlockWrapper implements ReactorSherlock {
     this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
   }
 
-  public String getOwnerId() {
-    return sherlock.getOwnerId();
-  }
-
-  public Duration getLockDuration() {
-    return sherlock.getLockDuration();
-  }
-
   public ReactorDistributedLock createReentrantLock(String lockId) {
     return ReactorDistributedLockWrapper.reactorLock(sherlock.createReentrantLock(lockId));
   }
 
   public ReactorDistributedLock createReentrantLock(String lockId, Duration duration) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createReentrantLock(lockId, duration));
+    return ReactorDistributedLockWrapper
+        .reactorLock(sherlock.createReentrantLock(lockId, duration));
   }
 
   public ReactorDistributedLock createLock(String lockId) {
@@ -42,6 +35,7 @@ final class ReactorSherlockWrapper implements ReactorSherlock {
   }
 
   public ReactorDistributedLock createOverridingLock(String lockId, Duration duration) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createOverridingLock(lockId, duration));
+    return ReactorDistributedLockWrapper
+        .reactorLock(sherlock.createOverridingLock(lockId, duration));
   }
 }
