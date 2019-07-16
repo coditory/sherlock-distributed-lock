@@ -20,9 +20,7 @@ trait UsesMongoSherlock implements DistributedLocksCreator {
   @Override
   TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
     Sherlock locks = MongoSherlock.builder()
-        .withMongoClient(mongoClient)
-        .withDatabaseName(databaseName)
-        .withCollectionName(locksCollectionName)
+        .withMongoCollection(getLocksCollection())
         .withOwnerId(instanceId)
         .withLockDuration(duration)
         .withClock(clock)
