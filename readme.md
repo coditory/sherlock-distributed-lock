@@ -29,16 +29,15 @@ dependencies {
 
 Create synchronous lock:
 ```java
-// Initialize Sherlock
+// Get mongo locks collection
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
+MongoCollection<Document> collection = mongoClient
+    .getDatabase("sherlock")
+    .getCollection("locks");
+// Create sherlock
 Sherlock sherlock = MongoSherlock.builder()
-    .withMongoClient(mongoClient) // required
-    .withDatabaseName(database) // required
-    .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
-    .withCollectionName("locks") // default: "locks"
-    .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
-    .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+    .withLocksCollection(collection)
     .build();
 // Create a lock
 DistributedLock lock = sherlock.createLock("sample-lock");
@@ -78,15 +77,17 @@ dependencies {
 
 Create synchronous lock:
 ```java
-// Initialize Sherlock
+// Get mongo locks collection
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
+MongoCollection<Document> collection = mongoClient
+    .getDatabase(database)
+    .getCollection("locks");
+// Create sherlock
 ReactorSherlock sherlock = ReactiveMongoSherlock.builder()
-  .withMongoClient(mongoClient)
-  .withDatabaseName(database)
-  .build()
-  .map(ReactorSherlock::reactorSherlock);
-// Create a lock
+    .withLocksCollection(collection)
+    .build(ReactorSherlock::wrapReactiveSherlock);
+// Create a lock with reactor api
 ReactorDistributedLock lock = sherlock.createLock("sample-lock");
 ```
 

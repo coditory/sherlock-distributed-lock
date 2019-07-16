@@ -8,9 +8,6 @@ import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MongoSherlockSample {
   private static Sherlock createSherlock() {
     return createSherlock("localhost");
@@ -23,10 +20,7 @@ public class MongoSherlockSample {
         .getDatabase("sherlock")
         .getCollection("locks");
     return MongoSherlock.builder()
-        .withMongoCollection(collection) // required
-        .withClock(Clock.systemDefaultZone()) // default: Clock.systemDefaultZone()
-        .withLockDuration(Duration.ofMinutes(5)) // default: 5 min
-        .withOwnerId("datacenter-X-machine-Y-instance-Z") // default: generated unique string
+        .withLocksCollection(collection)
         .build();
   }
 

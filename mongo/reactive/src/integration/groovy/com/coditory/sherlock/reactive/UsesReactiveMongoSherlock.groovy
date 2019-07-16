@@ -22,7 +22,7 @@ trait UsesReactiveMongoSherlock implements DistributedLocksCreator {
   @Override
   TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveLocks = ReactiveMongoSherlock.builder()
-        .withMongoCollection(getLocksCollection())
+        .withLocksCollection(getLocksCollection())
         .withOwnerId(instanceId)
         .withLockDuration(duration)
         .withClock(clock)
