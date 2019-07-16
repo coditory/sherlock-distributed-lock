@@ -17,7 +17,7 @@ public class RxJavaMongoSherlockSample {
         .getDatabase("sherlock")
         .getCollection("locks");
     return ReactiveMongoSherlock.builder()
-        .withMongoCollection(collection)
+        .withLocksCollection(collection)
         .build(RxJavaSherlock::wrapReactiveSherlock);
   }
 

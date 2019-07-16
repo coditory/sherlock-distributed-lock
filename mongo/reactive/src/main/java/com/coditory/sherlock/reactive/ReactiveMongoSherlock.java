@@ -31,8 +31,8 @@ public class ReactiveMongoSherlock extends
    * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public ReactiveMongoSherlock withMongoCollection(MongoCollection<Document> collection) {
-    this.collection = expectNonNull(collection, "Expected non null mongoClient");
+  public ReactiveMongoSherlock withLocksCollection(MongoCollection<Document> collection) {
+    this.collection = expectNonNull(collection, "Expected non null collection");
     return this;
   }
 

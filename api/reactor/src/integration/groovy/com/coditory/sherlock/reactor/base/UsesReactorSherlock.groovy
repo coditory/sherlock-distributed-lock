@@ -21,7 +21,7 @@ trait UsesReactorSherlock implements DistributedLocksCreator {
   @Override
   TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
     ReactorSherlock reactorSherlock = ReactiveMongoSherlock.builder()
-        .withMongoCollection(getLocksCollection())
+        .withLocksCollection(getLocksCollection())
         .withOwnerId(ownerId)
         .withLockDuration(duration)
         .withClock(clock)

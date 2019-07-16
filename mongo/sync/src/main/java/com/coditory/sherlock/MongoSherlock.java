@@ -30,7 +30,7 @@ public class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherlock> {
    * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public MongoSherlock withMongoCollection(MongoCollection<Document> collection) {
+  public MongoSherlock withLocksCollection(MongoCollection<Document> collection) {
     this.collection = expectNonNull(collection, "Expected non null collection");
     return this;
   }

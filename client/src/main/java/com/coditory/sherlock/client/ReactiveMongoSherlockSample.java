@@ -14,10 +14,10 @@ public class ReactiveMongoSherlockSample {
     String database = "sherlock";
     MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
     MongoCollection<Document> collection = mongoClient
-        .getDatabase("sherlock")
+        .getDatabase(database)
         .getCollection("locks");
     return ReactiveMongoSherlock.builder()
-        .withMongoCollection(collection)
+        .withLocksCollection(collection)
         .build(ReactorSherlock::wrapReactiveSherlock);
   }
 

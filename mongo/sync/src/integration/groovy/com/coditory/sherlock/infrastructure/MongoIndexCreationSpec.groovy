@@ -15,7 +15,7 @@ class MongoIndexCreationSpec extends Specification {
   MongoCollection<Document> collection = mongoClient.getDatabase(databaseName)
       .getCollection(collectionName)
   Sherlock locks = MongoSherlock.builder()
-      .withMongoCollection(collection)
+      .withLocksCollection(collection)
       .build()
 
   def "should create mongo indexes on first lock"() {
