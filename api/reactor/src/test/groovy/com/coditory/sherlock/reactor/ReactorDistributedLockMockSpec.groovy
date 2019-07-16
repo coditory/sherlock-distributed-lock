@@ -1,6 +1,7 @@
 package com.coditory.sherlock.reactor
 
-import com.coditory.sherlock.reactive.connector.LockResult
+
+import com.coditory.sherlock.reactive.connector.AcquireResult
 import com.coditory.sherlock.reactive.connector.ReleaseResult
 import com.coditory.sherlock.reactor.test.ReactorDistributedLockMock
 import reactor.core.publisher.Mono
@@ -71,10 +72,10 @@ class ReactorDistributedLockMockSpec extends Specification {
       lock.wasReleased() == true
   }
 
-  private List<Boolean> awaitAcquires(Mono<LockResult>... results) {
+  private List<Boolean> awaitAcquires(Mono<AcquireResult>... results) {
     return results
         .collect { it.block() }
-        .collect { it.locked }
+        .collect { it.acquired }
   }
 
   private List<Boolean> awaitRelseases(Mono<ReleaseResult>... results) {

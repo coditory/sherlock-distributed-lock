@@ -3,8 +3,8 @@ package com.coditory.sherlock.reactive;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.InitializationResult;
-import com.coditory.sherlock.reactive.connector.LockResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 
 import java.util.concurrent.Flow.Publisher;
@@ -22,18 +22,18 @@ interface ReactiveDistributedLockConnector {
   /**
    * Acquires a acquire when there is no acquire acquired with the same lockId.
    */
-  Publisher<LockResult> acquire(LockRequest lockRequest);
+  Publisher<AcquireResult> acquire(LockRequest lockRequest);
 
   /**
    * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire
    * if it was already acquired by the same instance.
    */
-  Publisher<LockResult> acquireOrProlong(LockRequest lockRequest);
+  Publisher<AcquireResult> acquireOrProlong(LockRequest lockRequest);
 
   /**
    * Acquires a acquire even if it was already acquired.
    */
-  Publisher<LockResult> forceAcquire(LockRequest lockRequest);
+  Publisher<AcquireResult> forceAcquire(LockRequest lockRequest);
 
   /**
    * Unlock previously acquired acquire by the same instance.

@@ -4,7 +4,7 @@ import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.OwnerId;
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 
 import java.time.Duration;
@@ -35,21 +35,21 @@ final class ReactiveDistributedReentrantLock implements ReactiveDistributedLock 
   }
 
   @Override
-  public Publisher<LockResult> acquire() {
+  public Publisher<AcquireResult> acquire() {
     return tryLock(duration);
   }
 
   @Override
-  public Publisher<LockResult> acquire(Duration duration) {
+  public Publisher<AcquireResult> acquire(Duration duration) {
     return tryLock(LockDuration.of(duration));
   }
 
   @Override
-  public Publisher<LockResult> acquireForever() {
+  public Publisher<AcquireResult> acquireForever() {
     return tryLock(null);
   }
 
-  private Publisher<LockResult> tryLock(LockDuration duration) {
+  private Publisher<AcquireResult> tryLock(LockDuration duration) {
     LockRequest lockRequest = new LockRequest(lockId, ownerId, duration);
     return connector.acquireOrProlong(lockRequest);
   }

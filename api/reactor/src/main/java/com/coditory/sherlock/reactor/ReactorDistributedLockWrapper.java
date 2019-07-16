@@ -1,7 +1,7 @@
 package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.ReactiveDistributedLock;
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import reactor.core.publisher.Mono;
 
@@ -28,21 +28,21 @@ final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
   }
 
   @Override
-  public Mono<LockResult> acquire() {
+  public Mono<AcquireResult> acquire() {
     return flowPublisherToFlux(lock.acquire())
         .single()
         .doOnNext(logger::logResult);
   }
 
   @Override
-  public Mono<LockResult> acquire(Duration duration) {
+  public Mono<AcquireResult> acquire(Duration duration) {
     return flowPublisherToFlux(lock.acquire(duration))
         .single()
         .doOnNext(logger::logResult);
   }
 
   @Override
-  public Mono<LockResult> acquireForever() {
+  public Mono<AcquireResult> acquireForever() {
     return flowPublisherToFlux(lock.acquireForever())
         .single()
         .doOnNext(logger::logResult);

@@ -1,6 +1,6 @@
 package com.coditory.sherlock.rxjava;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -13,10 +13,10 @@ final class RxJavaDistributedLockExecutor {
   }
 
   static <T> Maybe<T> executeOnAcquired(
-      Single<LockResult> lockResult, Supplier<Single<T>> supplier,
+      Single<AcquireResult> lockResult, Supplier<Single<T>> supplier,
       Supplier<Single<ReleaseResult>> release) {
     return lockResult
-        .filter(LockResult::isLocked)
+        .filter(AcquireResult::isAcquired)
         .flatMap(acquiredLockResult ->
           Maybe.fromSingle(supplier.get())
               .flatMap(result -> release.get().flatMapMaybe(__ -> Maybe.just(result)))

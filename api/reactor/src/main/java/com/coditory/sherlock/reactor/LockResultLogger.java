@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactor;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -14,8 +14,8 @@ final class LockResultLogger {
     this.logger = LoggerFactory.getLogger(lockType);
   }
 
-  void logResult(LockResult result) {
-    if (result.isLocked()) {
+  void logResult(AcquireResult result) {
+    if (result.isAcquired()) {
       logger.debug("Lock acquired: {}", lockId);
     } else {
       logger.debug("Lock not acquired: {}", lockId);
