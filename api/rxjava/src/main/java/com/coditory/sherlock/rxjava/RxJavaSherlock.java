@@ -1,6 +1,8 @@
 package com.coditory.sherlock.rxjava;
 
 import com.coditory.sherlock.reactive.ReactiveSherlock;
+import com.coditory.sherlock.reactive.connector.InitializationResult;
+import io.reactivex.Single;
 
 import java.time.Duration;
 
@@ -17,6 +19,13 @@ public interface RxJavaSherlock {
   static RxJavaSherlock wrapReactiveSherlock(ReactiveSherlock locks) {
     return new RxJavaSherlockWrapper(locks);
   }
+
+  /**
+   * Initializes underlying infrastructure. If it's database then indexes and tables are created. If
+   * this method is not invoked directly then it is invoked implicitly when acquiring or releasing a
+   * lock for the first time.
+   */
+  Single<InitializationResult> initialize();
 
   /**
    * Create a distributed lock. Lock expires after configured duration.

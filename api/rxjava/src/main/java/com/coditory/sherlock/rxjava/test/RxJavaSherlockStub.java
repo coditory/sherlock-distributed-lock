@@ -1,7 +1,9 @@
 package com.coditory.sherlock.rxjava.test;
 
+import com.coditory.sherlock.reactive.connector.InitializationResult;
 import com.coditory.sherlock.rxjava.RxJavaDistributedLock;
 import com.coditory.sherlock.rxjava.RxJavaSherlock;
+import io.reactivex.Single;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -60,6 +62,11 @@ public final class RxJavaSherlockStub implements RxJavaSherlock {
   @Override
   public RxJavaDistributedLock createReentrantLock(String lockId, Duration duration) {
     return getLockOrDefault(lockId);
+  }
+
+  @Override
+  public Single<InitializationResult> initialize() {
+    return Single.just(InitializationResult.of(true));
   }
 
   @Override

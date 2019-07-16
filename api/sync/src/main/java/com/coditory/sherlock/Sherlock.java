@@ -6,6 +6,14 @@ import java.time.Duration;
  * Creates and manages distributed locks.
  */
 public interface Sherlock {
+
+  /**
+   * Initializes underlying infrastructure. If it's database then indexes and tables are created. If
+   * this method is not invoked directly then it is invoked implicitly when acquiring or releasing a
+   * lock for the first time.
+   */
+  void initialize();
+
   /**
    * Create a distributed lock. Lock expires after configured lock duration.
    *

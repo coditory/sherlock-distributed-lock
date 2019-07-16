@@ -54,10 +54,4 @@ class BlockingDistributedLockConnector implements DistributedLockConnector {
     return flowPublisherToFlux(reactiveConnector.forceRelease(lockId))
         .single().block().isUnlocked()
   }
-
-  @Override
-  void forceReleaseAll() {
-    flowPublisherToFlux(reactiveConnector.forceReleaseAll())
-        .single().block()
-  }
 }

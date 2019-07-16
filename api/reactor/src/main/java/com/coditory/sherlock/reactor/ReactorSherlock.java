@@ -1,6 +1,8 @@
 package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.reactive.ReactiveSherlock;
+import com.coditory.sherlock.reactive.connector.InitializationResult;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
@@ -18,6 +20,13 @@ public interface ReactorSherlock {
   static ReactorSherlock wrapReactiveSherlock(ReactiveSherlock locks) {
     return new ReactorSherlockWrapper(locks);
   }
+
+  /**
+   * Initializes underlying infrastructure. If it's database then indexes and tables are created. If
+   * this method is not invoked directly then it is invoked implicitly when acquiring or releasing a
+   * lock for the first time.
+   */
+  Mono<InitializationResult> initialize();
 
   /**
    * Create a distributed lock. Lock expires after configured duration.

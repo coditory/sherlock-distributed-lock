@@ -1,7 +1,9 @@
 package com.coditory.sherlock.reactor.test;
 
+import com.coditory.sherlock.reactive.connector.InitializationResult;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import com.coditory.sherlock.reactor.ReactorSherlock;
+import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 import java.util.HashMap;
@@ -60,6 +62,11 @@ public final class ReactorSherlockStub implements ReactorSherlock {
   @Override
   public ReactorDistributedLock createReentrantLock(String lockId, Duration duration) {
     return getLockOrDefault(lockId);
+  }
+
+  @Override
+  public Mono<InitializationResult> initialize() {
+    return Mono.just(InitializationResult.of(true));
   }
 
   @Override

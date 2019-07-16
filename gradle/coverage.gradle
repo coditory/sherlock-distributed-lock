@@ -12,7 +12,7 @@ task jacocoMerge(type: JacocoMerge) {
   }
 }
 
-task jacocoRootReport(type: JacocoReport, group: 'Coverage reports') {
+task coverage(type: JacocoReport, group: 'Coverage reports') {
   description = 'Generates an aggregate report from all subprojects'
   dependsOn coverProjects.test, jacocoMerge
 
@@ -35,6 +35,6 @@ coveralls {
 tasks.coveralls {
   group = 'Coverage reports'
   description = 'Uploads the aggregated coverage report to Coveralls'
-  dependsOn jacocoRootReport
+  dependsOn coverage
   onlyIf { System.env['CI'] }
 }

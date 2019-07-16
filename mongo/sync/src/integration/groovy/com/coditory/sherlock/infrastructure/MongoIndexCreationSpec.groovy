@@ -4,6 +4,7 @@ import com.coditory.sherlock.MongoSherlock
 import com.coditory.sherlock.Sherlock
 import com.mongodb.client.MongoCollection
 import org.bson.Document
+import org.junit.After
 import spock.lang.Specification
 
 import static com.coditory.sherlock.MongoInitializer.databaseName
@@ -18,17 +19,41 @@ class MongoIndexCreationSpec extends Specification {
       .withLocksCollection(collection)
       .build()
 
+  @After
+  def removeCollection() {
+    collection.drop()
+  }
+
+  def "should create mongo indexes on initialize"() {
+    expect:
+      assertNoIndexes()
+    when:
+      locks.initialize()
+    then:
+      assertIndexesCreated()
+  }
+
   def "should create mongo indexes on first lock"() {
     expect:
-      assertJsonEqual(getCollectionIndexes(), "[]")
+      assertNoIndexes()
     when:
       locks.createLock("some-acquire")
           .acquire()
     then:
-      assertJsonEqual(getCollectionIndexes(), """[
+      assertIndexesCreated()
+  }
+
+  private boolean assertNoIndexes() {
+    assertJsonEqual(getCollectionIndexes(), "[]")
+    return true
+  }
+
+  private boolean assertIndexesCreated() {
+    assertJsonEqual(getCollectionIndexes(), """[
         {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "$databaseName.$collectionName", "background": true},
         {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "$databaseName.$collectionName"}
       ]""")
+    return true
   }
 
   private String getCollectionIndexes() {

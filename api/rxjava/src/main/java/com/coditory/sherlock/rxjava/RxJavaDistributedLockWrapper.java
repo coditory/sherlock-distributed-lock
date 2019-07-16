@@ -4,10 +4,11 @@ import com.coditory.sherlock.reactive.ReactiveDistributedLock;
 import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import io.reactivex.Single;
-import org.reactivestreams.FlowAdapters;
 
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;
+
+import static com.coditory.sherlock.rxjava.PublisherToSingleConverter.convertToSingle;
 
 final class RxJavaDistributedLockWrapper implements RxJavaDistributedLock {
   static RxJavaDistributedLock rxJavaLock(ReactiveDistributedLock lock) {
@@ -52,6 +53,6 @@ final class RxJavaDistributedLockWrapper implements RxJavaDistributedLock {
   }
 
   private <T> Single<T> toSingle(Publisher<T> publisher) {
-    return Single.fromPublisher(FlowAdapters.toPublisher(publisher));
+    return convertToSingle(publisher);
   }
 }
