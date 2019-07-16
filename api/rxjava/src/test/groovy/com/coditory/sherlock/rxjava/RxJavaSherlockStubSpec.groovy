@@ -3,28 +3,11 @@ package com.coditory.sherlock.rxjava
 import com.coditory.sherlock.rxjava.test.RxJavaSherlockStub
 import spock.lang.Specification
 
-import java.time.Duration
-
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysOpenedLock
 import static com.coditory.sherlock.rxjava.test.RxJavaDistributedLockMock.alwaysReleasedLock
 
 class RxJavaSherlockStubSpec extends Specification {
-  def "should create sherlock with custom properties"() {
-    given:
-      String instanceId = "tested-instance-id"
-      Duration duration = Duration.ofHours(1)
-
-    when:
-      RxJavaSherlock sherlock = RxJavaSherlockStub.withReleasedLocks()
-          .withLockDuration(duration)
-          .withOwnerId(instanceId)
-
-    then:
-      sherlock.lockDuration == duration
-      sherlock.ownerId == instanceId
-  }
-
   def "should create sherlock returning always opened locks"() {
     given:
       String lockId = "some-lock"

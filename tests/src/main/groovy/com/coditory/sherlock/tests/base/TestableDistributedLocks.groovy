@@ -7,10 +7,6 @@ import java.time.Duration
 
 @CompileStatic
 interface TestableDistributedLocks {
-  String getOwnerId();
-
-  Duration getDefaultDuration();
-
   DistributedLock createReentrantLock(String lockId);
 
   DistributedLock createReentrantLock(String lockId, Duration duration);

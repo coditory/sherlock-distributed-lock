@@ -8,17 +8,7 @@ import java.util.function.Function;
  */
 public interface ReactiveSherlock {
   /**
-   * @return owner id is most often the application instance id
-   */
-  String getOwnerId();
-
-  /**
-   * @return the default lock duration
-   */
-  Duration getLockDuration();
-
-  /**
-   * Create a distributed lock. Lock expires after {@link ReactiveSherlock#getLockDuration()}.
+   * Create a distributed lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the lock
@@ -41,7 +31,7 @@ public interface ReactiveSherlock {
   ReactiveDistributedLock createLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed reentrant lock. Lock expires after {@link ReactiveSherlock#getLockDuration()}.
+   * Create a distributed reentrant lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock
@@ -65,7 +55,7 @@ public interface ReactiveSherlock {
   ReactiveDistributedLock createReentrantLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed overriding lock. Lock expires after {@link ReactiveSherlock#getLockDuration()}.
+   * Create a distributed overriding lock. Lock expires after configured lock duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock

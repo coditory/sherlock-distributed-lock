@@ -2,14 +2,11 @@ package com.coditory.sherlock.test;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.OwnerId;
 
 import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.test.DistributedLockMock.singleStateLock;
 
 /**
@@ -17,8 +14,6 @@ import static com.coditory.sherlock.test.DistributedLockMock.singleStateLock;
  */
 public class SherlockStub implements Sherlock {
   private final Map<String, DistributedLock> locksById = new HashMap<>();
-  private OwnerId ownerId = OwnerId.of("tested-instance");
-  private LockDuration duration = DEFAULT_LOCK_DURATION;
   private boolean defaultLockResult = true;
 
   /**
@@ -42,28 +37,6 @@ public class SherlockStub implements Sherlock {
   }
 
   /**
-   * Make the stub produce locks with given application instance id
-   *
-   * @param ownerId lock owner id
-   * @return the stub instance
-   */
-  public SherlockStub withOwnerId(String ownerId) {
-    this.ownerId = OwnerId.of(ownerId);
-    return this;
-  }
-
-  /**
-   * Make the stub produce locks with given lock duration
-   *
-   * @param duration lock duration
-   * @return the stub instance
-   */
-  public SherlockStub withLockDuration(Duration duration) {
-    this.duration = LockDuration.of(duration);
-    return this;
-  }
-
-  /**
    * Make the stub produce return a predefined lock.
    *
    * @param lock returned when creating a lock with the same id
@@ -77,16 +50,6 @@ public class SherlockStub implements Sherlock {
   private SherlockStub withDefaultAcquireResult(boolean result) {
     this.defaultLockResult = result;
     return this;
-  }
-
-  @Override
-  public String getOwnerId() {
-    return ownerId.getValue();
-  }
-
-  @Override
-  public Duration getLockDuration() {
-    return duration.getValue();
   }
 
   @Override

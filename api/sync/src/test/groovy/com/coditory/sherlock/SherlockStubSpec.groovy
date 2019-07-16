@@ -4,27 +4,10 @@ import com.coditory.sherlock.test.DistributedLockMock
 import com.coditory.sherlock.test.SherlockStub
 import spock.lang.Specification
 
-import java.time.Duration
-
 import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
 class SherlockStubSpec extends Specification {
-  def "should create sherlock with custom properties"() {
-    given:
-      String instanceId = "tested-instance-id"
-      Duration duration = Duration.ofHours(1)
-
-    when:
-      Sherlock sherlock = SherlockStub.withReleasedLocks()
-          .withLockDuration(duration)
-          .withOwnerId(instanceId)
-
-    then:
-      sherlock.lockDuration == duration
-      sherlock.ownerId == instanceId
-  }
-
   def "should create sherlock returning always opened locks"() {
     given:
       String lockId = "some-lock"

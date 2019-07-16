@@ -28,16 +28,6 @@ class BlockingReactiveSherlockWrapper implements TestableDistributedLocks {
   }
 
   @Override
-  String getOwnerId() {
-    return locks.ownerId
-  }
-
-  @Override
-  Duration getDefaultDuration() {
-    return locks.lockDuration
-  }
-
-  @Override
   DistributedLock createReentrantLock(String lockId) {
     return blockingLock(locks.createReentrantLock(lockId))
   }

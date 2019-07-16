@@ -20,17 +20,7 @@ public interface ReactorSherlock {
   }
 
   /**
-   * @return owner id is most often the application instance id
-   */
-  String getOwnerId();
-
-  /**
-   * @return the default lock duration
-   */
-  Duration getLockDuration();
-
-  /**
-   * Create a distributed lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed lock. Lock expires after configured duration.
    *
    * @param lockId the lock id
    * @return the lock
@@ -53,7 +43,7 @@ public interface ReactorSherlock {
   ReactorDistributedLock createLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed reentrant lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed reentrant lock. Lock expires after configured duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock
@@ -77,7 +67,7 @@ public interface ReactorSherlock {
   ReactorDistributedLock createReentrantLock(String lockId, Duration duration);
 
   /**
-   * Create a distributed overriding lock. Lock expires after {@link ReactorSherlock#getLockDuration()}.
+   * Create a distributed overriding lock. Lock expires after configured duration.
    *
    * @param lockId the lock id
    * @return the reentrant lock

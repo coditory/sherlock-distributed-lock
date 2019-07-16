@@ -13,14 +13,6 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
     this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
   }
 
-  public String getOwnerId() {
-    return sherlock.getOwnerId();
-  }
-
-  public Duration getLockDuration() {
-    return sherlock.getLockDuration();
-  }
-
   public RxJavaDistributedLock createReentrantLock(String lockId) {
     return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createReentrantLock(lockId));
   }
