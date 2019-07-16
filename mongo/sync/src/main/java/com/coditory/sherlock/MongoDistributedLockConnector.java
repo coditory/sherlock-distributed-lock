@@ -8,7 +8,6 @@ import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 
@@ -77,19 +76,10 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     return delete(queryAcquired(lockId));
   }
 
-  @Override
-  public void forceReleaseAll() {
-    deleteAll();
-  }
-
   private boolean delete(Bson query) {
     Document deleted = getLockCollection().findOneAndDelete(query);
     return deleted != null
         && MongoDistributedLock.fromDocument(deleted).isActive(now());
-  }
-
-  private void deleteAll() {
-    getLockCollection().deleteMany(new BsonDocument());
   }
 
   private boolean upsert(Bson query, MongoDistributedLock lock) {

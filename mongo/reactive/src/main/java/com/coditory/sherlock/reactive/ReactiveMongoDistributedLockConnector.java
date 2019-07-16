@@ -11,7 +11,6 @@ import com.mongodb.MongoCommandException;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
 import com.mongodb.reactivestreams.client.MongoCollection;
-import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
 import reactor.core.publisher.Mono;
@@ -85,12 +84,6 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
         .map(ReleaseResult::of));
   }
 
-  @Override
-  public Publisher<ReleaseResult> forceReleaseAll() {
-    return publisherToFlowPublisher(deleteAll()
-        .map(ReleaseResult::of));
-  }
-
   private Mono<Boolean> delete(Bson query) {
     return getLockCollection()
         .map(collection -> collection.findOneAndDelete(query))
@@ -98,13 +91,6 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
         .map(MongoDistributedLock::fromDocument)
         .map(lock -> lock.isActive(now()))
         .defaultIfEmpty(false);
-  }
-
-  private Mono<Boolean> deleteAll() {
-    return getLockCollection()
-        .map(collection -> collection.deleteMany(new BsonDocument()))
-        .flatMap(Mono::from)
-        .map(result -> result.getDeletedCount() > 0);
   }
 
   private Mono<Boolean> upsert(Bson query, MongoDistributedLock lock) {

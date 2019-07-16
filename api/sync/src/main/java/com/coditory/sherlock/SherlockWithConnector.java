@@ -42,6 +42,12 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   @Override
+  public void initialize() {
+    connector.initialize();
+    logger.debug("Initialized sherlock infrastructure");
+  }
+
+  @Override
   public DistributedLock createLock(String lockId) {
     return createLock(lockId, duration);
   }

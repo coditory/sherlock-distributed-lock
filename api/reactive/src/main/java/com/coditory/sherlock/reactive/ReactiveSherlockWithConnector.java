@@ -4,10 +4,12 @@ import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.LockId;
 import com.coditory.sherlock.common.OwnerId;
 import com.coditory.sherlock.common.OwnerIdGenerator;
+import com.coditory.sherlock.reactive.connector.InitializationResult;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
+import java.util.concurrent.Flow.Publisher;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
@@ -24,6 +26,11 @@ final class ReactiveSherlockWithConnector implements ReactiveSherlock {
     this.connector = expectNonNull(connector, "Expected non null connector");
     this.ownerIdGenerator = expectNonNull(ownerIdGenerator, "Expected non null ownerIdGenerator");
     this.duration = expectNonNull(duration, "Expected non null duration");
+  }
+
+  @Override
+  public Publisher<InitializationResult> initialize() {
+    return connector.initialize();
   }
 
   @Override

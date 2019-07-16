@@ -63,6 +63,11 @@ public class SherlockStub implements Sherlock {
   }
 
   @Override
+  public void initialize() {
+    // deliberately empty
+  }
+
+  @Override
   public DistributedLock createLock(String lockId) {
     return getLockOrDefault(lockId);
   }

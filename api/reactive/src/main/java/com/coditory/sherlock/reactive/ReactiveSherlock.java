@@ -1,12 +1,22 @@
 package com.coditory.sherlock.reactive;
 
+import com.coditory.sherlock.reactive.connector.InitializationResult;
+
 import java.time.Duration;
+import java.util.concurrent.Flow.Publisher;
 import java.util.function.Function;
 
 /**
  * Creates and manages reactive distributed locks.
  */
 public interface ReactiveSherlock {
+  /**
+   * Initializes underlying infrastructure. If it's database then indexes and tables are created. If
+   * this method is not invoked directly then it is invoked implicitly when acquiring or releasing a
+   * lock for the first time.
+   */
+  Publisher<InitializationResult> initialize();
+
   /**
    * Create a distributed lock. Lock expires after configured lock duration.
    *

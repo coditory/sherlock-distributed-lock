@@ -49,9 +49,4 @@ interface DistributedLockConnector {
    * @return boolean - true if acquire was released by this call
    */
   boolean forceRelease(LockId lockId);
-
-  /**
-   * Unlocks all previously acquired locks with out checking their state.
-   */
-  void forceReleaseAll();
 }
