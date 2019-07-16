@@ -6,14 +6,18 @@ import com.coditory.sherlock.rxjava.RxJavaDistributedLock;
 import com.coditory.sherlock.rxjava.RxJavaSherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import org.bson.Document;
 
 public class RxJavaMongoSherlockSample {
   static RxJavaSherlock createSherlock() {
     String database = "sherlock";
     MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
+    MongoCollection<Document> collection = mongoClient
+        .getDatabase("sherlock")
+        .getCollection("locks");
     return ReactiveMongoSherlock.builder()
-        .withMongoClient(mongoClient)
-        .withDatabaseName(database)
+        .withMongoCollection(collection)
         .build(RxJavaSherlock::wrapReactiveSherlock);
   }
 

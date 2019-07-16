@@ -2,25 +2,22 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
-import com.mongodb.client.MongoClient;
+import com.mongodb.client.MongoCollection;
+import org.bson.Document;
 
 import java.time.Clock;
 import java.time.Duration;
 
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_DB_TABLE_NAME;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_INSTANCE_ID;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
  */
 public class MongoSherlock {
-  private MongoClient mongoClient;
-  private String databaseName;
-  private String collectionName = DEFAULT_DB_TABLE_NAME;
+  private MongoCollection<Document> collection;
   private LockDuration duration = DEFAULT_LOCK_DURATION;
   private OwnerId ownerId = DEFAULT_INSTANCE_ID;
   private Clock clock = DEFAULT_CLOCK;
@@ -37,30 +34,11 @@ public class MongoSherlock {
   }
 
   /**
-   * @param mongoClient mongo client to be used for locking
+   * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public MongoSherlock withMongoClient(MongoClient mongoClient) {
-    this.mongoClient = expectNonNull(mongoClient, "Expected non null mongoClient");
-    return this;
-  }
-
-  /**
-   * @param databaseName database name where locks will be stored
-   * @return the instance
-   */
-  public MongoSherlock withDatabaseName(String databaseName) {
-    this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");
-    return this;
-  }
-
-  /**
-   * @param collectionName collection name where locks will be stored. Default: {@link
-   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_DB_TABLE_NAME}
-   * @return the instance
-   */
-  public MongoSherlock withCollectionName(String collectionName) {
-    this.collectionName = expectNonEmpty(collectionName, "Expected non empty collectionName");
+  public MongoSherlock withMongoCollection(MongoCollection<Document> collection) {
+    this.collection = expectNonNull(collection, "Expected non null collection");
     return this;
   }
 
@@ -99,10 +77,8 @@ public class MongoSherlock {
    * @throws IllegalArgumentException when some required values are missing
    */
   public Sherlock build() {
-    expectNonNull(mongoClient, "Expected non null mongoClient");
-    expectNonEmpty(databaseName, "Expected non empty databaseName");
-    MongoDistributedLockConnector connector = new MongoDistributedLockConnector(
-        mongoClient, databaseName, collectionName, clock);
+    expectNonNull(collection, "Expected non null collection");
+    MongoDistributedLockConnector connector = new MongoDistributedLockConnector(collection, clock);
     return new SherlockWithConnector(connector, ownerId, duration);
   }
 }

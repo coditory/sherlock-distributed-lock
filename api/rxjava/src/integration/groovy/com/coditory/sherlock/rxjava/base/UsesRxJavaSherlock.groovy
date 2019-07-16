@@ -18,14 +18,12 @@ import static com.coditory.sherlock.rxjava.base.MongoInitializer.databaseName
 import static com.coditory.sherlock.rxjava.base.MongoInitializer.mongoClient
 
 trait UsesRxJavaSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "sherlock"
+  static final String locksCollectionName = "locks"
 
   @Override
   TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
     RxJavaSherlock rxJavaLocks = ReactiveMongoSherlock.builder()
-        .withMongoClient(mongoClient)
-        .withDatabaseName(databaseName)
-        .withCollectionName(locksCollectionName)
+        .withMongoCollection(getLocksCollection())
         .withOwnerId(ownerId)
         .withLockDuration(duration)
         .withClock(clock)

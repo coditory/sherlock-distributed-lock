@@ -2,25 +2,22 @@ package com.coditory.sherlock.reactive;
 
 import com.coditory.sherlock.common.LockDuration;
 import com.coditory.sherlock.common.OwnerId;
-import com.mongodb.reactivestreams.client.MongoClient;
+import com.mongodb.reactivestreams.client.MongoCollection;
+import org.bson.Document;
 
 import java.time.Clock;
 import java.time.Duration;
 
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_DB_TABLE_NAME;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_INSTANCE_ID;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 /**
  * Builds {@link ReactiveSherlock} that uses MongoDB for locking mechanism.
  */
 public class ReactiveMongoSherlock {
-  private MongoClient mongoClient;
-  private String databaseName;
-  private String collectionName = DEFAULT_DB_TABLE_NAME;
+  private MongoCollection<Document> collection;
   private LockDuration duration = DEFAULT_LOCK_DURATION;
   private OwnerId ownerId = DEFAULT_INSTANCE_ID;
   private Clock clock = DEFAULT_CLOCK;
@@ -37,30 +34,11 @@ public class ReactiveMongoSherlock {
   }
 
   /**
-   * @param mongoClient mongo client to be used for locking
+   * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public ReactiveMongoSherlock withMongoClient(MongoClient mongoClient) {
-    this.mongoClient = expectNonNull(mongoClient, "Expected non null mongoClient");
-    return this;
-  }
-
-  /**
-   * @param databaseName database name where locks will be stored
-   * @return the instance
-   */
-  public ReactiveMongoSherlock withDatabaseName(String databaseName) {
-    this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");
-    return this;
-  }
-
-  /**
-   * @param collectionName collection name where locks will be stored. Default: {@link
-   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_DB_TABLE_NAME}
-   * @return the instance
-   */
-  public ReactiveMongoSherlock withCollectionName(String collectionName) {
-    this.collectionName = expectNonEmpty(collectionName, "Expected non empty collectionName");
+  public ReactiveMongoSherlock withMongoCollection(MongoCollection<Document> collection) {
+    this.collection = expectNonNull(collection, "Expected non null mongoClient");
     return this;
   }
 
@@ -103,10 +81,9 @@ public class ReactiveMongoSherlock {
   }
 
   public ReactiveSherlockWithConnector build() {
-    expectNonNull(mongoClient, "Expected non null mongoClient");
-    expectNonEmpty(databaseName, "Expected non empty databaseName");
+    expectNonNull(collection, "Expected non null collection");
     ReactiveMongoDistributedLockConnector connector = new ReactiveMongoDistributedLockConnector(
-        mongoClient, databaseName, collectionName, clock);
+        collection, clock);
     return new ReactiveSherlockWithConnector(connector, ownerId, duration);
   }
 }

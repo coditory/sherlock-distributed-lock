@@ -16,14 +16,12 @@ import java.time.Duration
 import static com.coditory.sherlock.reactor.base.BlockingReactorSherlockWrapper.blockReactorSherlock
 
 trait UsesReactorSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "sherlock"
+  static final String locksCollectionName = "locks"
 
   @Override
   TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
     ReactorSherlock reactorSherlock = ReactiveMongoSherlock.builder()
-        .withMongoClient(MongoInitializer.mongoClient)
-        .withDatabaseName(MongoInitializer.databaseName)
-        .withCollectionName(locksCollectionName)
+        .withMongoCollection(getLocksCollection())
         .withOwnerId(ownerId)
         .withLockDuration(duration)
         .withClock(clock)

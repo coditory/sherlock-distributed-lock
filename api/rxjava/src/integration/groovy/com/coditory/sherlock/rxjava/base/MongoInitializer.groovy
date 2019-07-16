@@ -7,7 +7,7 @@ import org.testcontainers.containers.GenericContainer
 
 @CompileStatic
 class MongoInitializer {
-  static final String databaseName = "distributed-acquire-mongo"
+  static final String databaseName = "distributed-locks"
   static final MongoClient mongoClient = startMongo()
 
   private static MongoClient startMongo() {

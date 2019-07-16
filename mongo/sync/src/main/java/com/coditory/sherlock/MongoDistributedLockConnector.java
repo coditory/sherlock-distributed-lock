@@ -5,7 +5,6 @@ import com.coditory.sherlock.common.LockRequest;
 import com.coditory.sherlock.common.MongoDistributedLock;
 import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.MongoCommandException;
-import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
 import com.mongodb.client.model.ReturnDocument;
@@ -15,13 +14,11 @@ import org.bson.conversions.Bson;
 
 import java.time.Clock;
 import java.time.Instant;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.coditory.sherlock.common.MongoDistributedLock.fromLockRequest;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquired;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredAndReleased;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredOrReleased;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
@@ -29,26 +26,19 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
       .upsert(true)
       .returnDocument(ReturnDocument.AFTER);
-  private final MongoClient mongoClient;
-  private final String databaseName;
-  private final String collectionName;
+  private final MongoCollectionInitializer collectionInitializer;
   private final Clock clock;
-  private final AtomicBoolean indexesCreated = new AtomicBoolean();
 
   MongoDistributedLockConnector(
-      MongoClient client, String databaseName, String collectionName, Clock clock) {
-    this.mongoClient = expectNonNull(client, "Expected non null mongoClient");
-    this.databaseName = expectNonEmpty(databaseName, "Expected non empty databaseName");
-    this.collectionName = expectNonEmpty(collectionName, "Expected non empty collectionName");
+      MongoCollection<Document> collection, Clock clock) {
+    expectNonNull(collection, "Expected non null collection");
+    this.collectionInitializer = new MongoCollectionInitializer(collection);
     this.clock = expectNonNull(clock, "Expected non null clock");
   }
 
   @Override
   public void initialize() {
-    boolean shouldCreateIndexes = indexesCreated.compareAndSet(false, true);
-    if (shouldCreateIndexes) {
-      createIndexes();
-    }
+    collectionInitializer.getInitializedCollection();
   }
 
   @Override
@@ -116,19 +106,11 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
   }
 
-  private void createIndexes() {
-    indexesCreated.set(true);
-    MongoCollection<Document> collection = getLockCollection();
-    collection.createIndex(MongoDistributedLock.INDEX, MongoDistributedLock.INDEX_OPTIONS);
-  }
-
   private Instant now() {
     return clock.instant();
   }
 
   private MongoCollection<Document> getLockCollection() {
-    initialize();
-    return mongoClient.getDatabase(databaseName)
-        .getCollection(collectionName);
+    return collectionInitializer.getInitializedCollection();
   }
 }
