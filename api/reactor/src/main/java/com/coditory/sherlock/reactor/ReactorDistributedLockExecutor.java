@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactor;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import reactor.core.publisher.Mono;
 
@@ -12,10 +12,10 @@ final class ReactorDistributedLockExecutor {
   }
 
   static <T> Mono<T> executeOnAcquired(
-      Mono<LockResult> lockResult, Supplier<Mono<T>> supplier,
+      Mono<AcquireResult> lockResult, Supplier<Mono<T>> supplier,
       Supplier<Mono<ReleaseResult>> release) {
     return lockResult
-        .filter(LockResult::isLocked)
+        .filter(AcquireResult::isAcquired)
         .flatMap(acquiredLockResult ->
             supplier.get()
                 .flatMap(result -> release.get().map(__ -> result))

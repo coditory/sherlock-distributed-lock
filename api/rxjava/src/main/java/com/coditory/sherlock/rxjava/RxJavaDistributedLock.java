@@ -1,6 +1,6 @@
 package com.coditory.sherlock.rxjava;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import io.reactivex.Maybe;
 import io.reactivex.Single;
@@ -28,25 +28,25 @@ public interface RxJavaDistributedLock {
   /**
    * Try to acquire the lock. Lock is acquired for a configured duration.
    *
-   * @return {@link LockResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
    */
-  Single<LockResult> acquire();
+  Single<AcquireResult> acquire();
 
   /**
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return {@link LockResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
    */
-  Single<LockResult> acquire(Duration duration);
+  Single<AcquireResult> acquire(Duration duration);
 
   /**
    * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
    * situation where the lock owning instance goes down with out releasing the lock.
    *
-   * @return {@link LockResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
    */
-  Single<LockResult> acquireForever();
+  Single<AcquireResult> acquireForever();
 
   /**
    * Release the lock

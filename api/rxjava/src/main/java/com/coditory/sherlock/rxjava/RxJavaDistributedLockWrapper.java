@@ -1,7 +1,7 @@
 package com.coditory.sherlock.rxjava;
 
 import com.coditory.sherlock.reactive.ReactiveDistributedLock;
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import io.reactivex.Single;
 import org.reactivestreams.FlowAdapters;
@@ -28,19 +28,19 @@ final class RxJavaDistributedLockWrapper implements RxJavaDistributedLock {
   }
 
   @Override
-  public Single<LockResult> acquire() {
+  public Single<AcquireResult> acquire() {
     return toSingle(lock.acquire())
         .doOnSuccess(logger::logResult);
   }
 
   @Override
-  public Single<LockResult> acquire(Duration duration) {
+  public Single<AcquireResult> acquire(Duration duration) {
     return toSingle(lock.acquire(duration))
         .doOnSuccess(logger::logResult);
   }
 
   @Override
-  public Single<LockResult> acquireForever() {
+  public Single<AcquireResult> acquireForever() {
     return toSingle(lock.acquireForever())
         .doOnSuccess(logger::logResult);
   }

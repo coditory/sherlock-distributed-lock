@@ -18,9 +18,9 @@ class DistributedLockAssertions {
 
   private static assertSingleStateLock(RxJavaDistributedLock lock, String lockId, boolean expectedResult) {
     assert lock.id == lockId
-    assert lock.acquire().blockingGet().locked == expectedResult
-    assert lock.acquire(Duration.ofHours(1)).blockingGet().locked == expectedResult
-    assert lock.acquireForever().blockingGet().locked == expectedResult
+    assert lock.acquire().blockingGet().acquired == expectedResult
+    assert lock.acquire(Duration.ofHours(1)).blockingGet().acquired == expectedResult
+    assert lock.acquireForever().blockingGet().acquired == expectedResult
     assert lock.release().blockingGet().unlocked == expectedResult
     return true
   }

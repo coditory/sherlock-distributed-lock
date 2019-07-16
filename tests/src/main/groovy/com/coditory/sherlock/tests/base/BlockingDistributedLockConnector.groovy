@@ -28,19 +28,19 @@ class BlockingDistributedLockConnector implements DistributedLockConnector {
   @Override
   boolean acquire(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.acquire(lockRequest))
-        .single().block().isLocked()
+        .single().block().isAcquired()
   }
 
   @Override
   boolean acquireOrProlong(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.acquireOrProlong(lockRequest))
-        .single().block().isLocked()
+        .single().block().isAcquired()
   }
 
   @Override
   boolean forceAcquire(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.forceAcquire(lockRequest))
-        .single().block().isLocked()
+        .single().block().isAcquired()
   }
 
   @Override

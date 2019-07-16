@@ -1,6 +1,6 @@
 package com.coditory.sherlock.reactor.test;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import reactor.core.publisher.Mono;
@@ -99,10 +99,10 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   }
 
   @Override
-  public Mono<LockResult> acquire() {
+  public Mono<AcquireResult> acquire() {
     return pollOrDefault(acquireResults, defaultAcquireResult)
         .doOnNext(this::incrementAcquireCounters)
-        .map(LockResult::of);
+        .map(AcquireResult::of);
   }
 
   private void incrementAcquireCounters(boolean acquired) {
@@ -113,12 +113,12 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
   }
 
   @Override
-  public Mono<LockResult> acquire(Duration duration) {
+  public Mono<AcquireResult> acquire(Duration duration) {
     return acquire();
   }
 
   @Override
-  public Mono<LockResult> acquireForever() {
+  public Mono<AcquireResult> acquireForever() {
     return acquire();
   }
 

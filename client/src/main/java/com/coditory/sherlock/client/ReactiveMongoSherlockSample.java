@@ -1,7 +1,7 @@
 package com.coditory.sherlock.client;
 
 import com.coditory.sherlock.reactive.ReactiveMongoSherlock;
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactor.ReactorDistributedLock;
 import com.coditory.sherlock.reactor.ReactorSherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
@@ -25,7 +25,7 @@ public class ReactiveMongoSherlockSample {
     ReactorSherlock sherlock = createSherlock();
     ReactorDistributedLock lock = sherlock.createLock("sample-acquire");
     lock.acquire()
-        .filter(LockResult::isLocked)
+        .filter(AcquireResult::isAcquired)
         .flatMap(result -> {
           System.out.println("Lock granted!");
           return lock.release();

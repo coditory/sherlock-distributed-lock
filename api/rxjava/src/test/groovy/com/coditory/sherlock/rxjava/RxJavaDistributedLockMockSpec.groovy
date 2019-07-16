@@ -1,6 +1,7 @@
 package com.coditory.sherlock.rxjava
 
-import com.coditory.sherlock.reactive.connector.LockResult
+
+import com.coditory.sherlock.reactive.connector.AcquireResult
 import com.coditory.sherlock.reactive.connector.ReleaseResult
 import io.reactivex.Single
 import spock.lang.Specification
@@ -70,10 +71,10 @@ class RxJavaDistributedLockMockSpec extends Specification {
       lock.wasReleased() == true
   }
 
-  private List<Boolean> awaitAcquires(Single<LockResult>... results) {
+  private List<Boolean> awaitAcquires(Single<AcquireResult>... results) {
     return results
         .collect { it.blockingGet() }
-        .collect { it.locked }
+        .collect { it.acquired }
   }
 
   private List<Boolean> awaitReleases(Single<ReleaseResult>... results) {

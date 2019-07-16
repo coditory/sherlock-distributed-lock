@@ -1,6 +1,6 @@
 package com.coditory.sherlock.rxjava.test;
 
-import com.coditory.sherlock.reactive.connector.LockResult;
+import com.coditory.sherlock.reactive.connector.AcquireResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
 import com.coditory.sherlock.rxjava.RxJavaDistributedLock;
 import io.reactivex.Single;
@@ -99,10 +99,10 @@ public final class RxJavaDistributedLockMock implements RxJavaDistributedLock {
   }
 
   @Override
-  public Single<LockResult> acquire() {
+  public Single<AcquireResult> acquire() {
     return pollOrDefault(acquireResults, defaultAcquireResult)
         .doOnSuccess(this::incrementAcquireCounters)
-        .map(LockResult::of);
+        .map(AcquireResult::of);
   }
 
   private void incrementAcquireCounters(boolean acquired) {
@@ -113,12 +113,12 @@ public final class RxJavaDistributedLockMock implements RxJavaDistributedLock {
   }
 
   @Override
-  public Single<LockResult> acquire(Duration duration) {
+  public Single<AcquireResult> acquire(Duration duration) {
     return acquire();
   }
 
   @Override
-  public Single<LockResult> acquireForever() {
+  public Single<AcquireResult> acquireForever() {
     return acquire();
   }
 

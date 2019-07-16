@@ -84,19 +84,19 @@ class BlockingRxJavaLock implements DistributedLock {
   @Override
   boolean acquire() {
     return lock.acquire()
-        .blockingGet().locked
+        .blockingGet().acquired
   }
 
   @Override
   boolean acquire(Duration duration) {
     return lock.acquire(duration)
-        .blockingGet().locked
+        .blockingGet().acquired
   }
 
   @Override
   boolean acquireForever() {
     return lock.acquireForever()
-        .blockingGet().locked
+        .blockingGet().acquired
   }
 
   @Override

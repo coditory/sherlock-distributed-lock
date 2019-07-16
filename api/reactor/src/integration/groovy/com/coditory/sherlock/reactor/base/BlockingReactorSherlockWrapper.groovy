@@ -83,19 +83,19 @@ class BlockingReactorLock implements DistributedLock {
   @Override
   boolean acquire() {
     return lock.acquire()
-        .block().locked
+        .block().acquired
   }
 
   @Override
   boolean acquire(Duration duration) {
     return lock.acquire(duration)
-        .block().locked
+        .block().acquired
   }
 
   @Override
   boolean acquireForever() {
     return lock.acquireForever()
-        .block().locked
+        .block().acquired
   }
 
   @Override
