@@ -27,21 +27,6 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   @Override
-  public DistributedLock createReentrantLock(String lockId) {
-    return createReentrantLock(lockId, duration);
-  }
-
-  @Override
-  public DistributedLock createReentrantLock(String lockId, Duration duration) {
-    return createReentrantLock(lockId, duration);
-  }
-
-  private DistributedLock createReentrantLock(String lockId, LockDuration duration) {
-    return logCreatedLock(
-        new DistributedReentrantLock(LockId.of(lockId), ownerId(), duration, connector));
-  }
-
-  @Override
   public void initialize() {
     connector.initialize();
     logger.debug("Initialized sherlock infrastructure");
@@ -60,6 +45,21 @@ final class SherlockWithConnector implements Sherlock {
   private DistributedLock createLock(String lockId, LockDuration duration) {
     return logCreatedLock(
         new DistributedSingleEntrantLock(LockId.of(lockId), ownerId(), duration, connector));
+  }
+
+  @Override
+  public DistributedLock createReentrantLock(String lockId) {
+    return createReentrantLock(lockId, duration);
+  }
+
+  @Override
+  public DistributedLock createReentrantLock(String lockId, Duration duration) {
+    return createReentrantLock(lockId, duration);
+  }
+
+  private DistributedLock createReentrantLock(String lockId, LockDuration duration) {
+    return logCreatedLock(
+        new DistributedReentrantLock(LockId.of(lockId), ownerId(), duration, connector));
   }
 
   @Override

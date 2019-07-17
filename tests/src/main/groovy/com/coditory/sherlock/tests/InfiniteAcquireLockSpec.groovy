@@ -1,27 +1,23 @@
 package com.coditory.sherlock.tests
 
 import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.tests.base.LockAssertions
 import spock.lang.Unroll
 
-import static com.coditory.sherlock.tests.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.allLockTypes
 
-abstract class InfiniteAcquireLockSpec extends LocksBaseSpec {
-  String otherInstanceId = "other-instance-id"
-
+abstract class InfiniteAcquireLockSpec extends LocksBaseSpec implements LockAssertions {
   @Unroll
-  def "infinite lock should stay blocked even after default lock duration - #type"() {
+  def "infinite lock should stay acquired even when default lock duration passes - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:
       lock.acquireForever()
 
     when:
       fixedClock.tick(defaultLockDuration)
-      boolean lockResult = otherLock.acquire()
     then:
-      lockResult == false
+      assertAcquired(lock.id)
 
     where:
       type << allLockTypes()

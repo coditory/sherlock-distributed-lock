@@ -1,6 +1,7 @@
 package com.coditory.sherlock.tests
 
 import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.tests.base.LockAssertions
 import spock.lang.Unroll
 
 import java.time.Duration
@@ -10,14 +11,13 @@ import static com.coditory.sherlock.tests.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.SINGLE_ENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.allLockTypes
 
-abstract class ReleaseLockSpec extends LocksBaseSpec {
-  String otherInstanceId = "other-instance-id"
+abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
+  String otherOwnerId = "other-instance-id"
 
   @Unroll
-  def "should release a lock after unlocking - #type"() {
+  def "should release a previously acquired lock - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:
       lock.acquire()
 
@@ -25,11 +25,24 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       boolean unlockResult = lock.release()
     then:
       unlockResult == true
+    and:
+      assertReleased(lock.id)
+
+    where:
+      type << allLockTypes()
+  }
+
+  @Unroll
+  def "should not release a lock that was not acquired - #type"() {
+    given:
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
 
     when:
-      boolean lockResult = otherLock.acquire()
+      boolean unlockResult = lock.release()
     then:
-      lockResult == true
+      unlockResult == false
+    and:
+      assertReleased(lock.id)
 
     where:
       type << allLockTypes()
@@ -38,16 +51,14 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
   @Unroll
   def "should release a lock after default lock duration - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:
       lock.acquire()
 
     when:
       fixedClock.tick(defaultLockDuration)
-      boolean lockResult = otherLock.acquire()
     then:
-      lockResult == true
+      assertReleased(lock.id)
 
     where:
       type << allLockTypes()
@@ -56,17 +67,15 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
   @Unroll
   def "should release a lock after custom lock duration - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:
       Duration duration = Duration.ofSeconds(5)
       lock.acquire(duration)
 
     when:
       fixedClock.tick(duration)
-      boolean lockResult = otherLock.acquire()
     then:
-      lockResult == true
+      assertReleased(lock.id)
 
     where:
       type << allLockTypes()
@@ -75,8 +84,8 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
   @Unroll
   def "only the instance that acquired a lock can release it - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(type, sampleLockId, otherInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
+      DistributedLock otherLock = createLock(type, sampleLockId, otherOwnerId)
     and:
       otherLock.acquire()
 
@@ -84,33 +93,36 @@ abstract class ReleaseLockSpec extends LocksBaseSpec {
       boolean unlockResult = lock.release()
     then:
       unlockResult == false
+      assertAcquired(lock.id)
 
     when:
       boolean lockResult = otherLock.release()
     then:
       lockResult == true
+      assertReleased(lock.id)
 
     where:
       type << [REENTRANT, SINGLE_ENTRANT]
   }
 
-  def "overriding lock may release a lock acquired by other instance"() {
+  def "overriding lock may release a lock acquired by other owner"() {
     given:
-      DistributedLock lock = createLock(OVERRIDING, sampleLockId, sampleInstanceId)
-      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherInstanceId)
+      DistributedLock overridingLock = createLock(OVERRIDING, sampleLockId, sampleOwnerId)
+      DistributedLock otherLock = createLock(REENTRANT, sampleLockId, otherOwnerId)
     and:
       otherLock.acquire()
 
     when:
-      boolean unlockResult = lock.release()
+      boolean unlockResult = overridingLock.release()
     then:
       unlockResult == true
+      assertReleased(otherLock.id)
   }
 
   @Unroll
   def "should return false for releasing an expired lock - #type"() {
     given:
-      DistributedLock lock = createLock(type, sampleLockId, sampleInstanceId)
+      DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
       lock.acquire()
       fixedClock.tick(defaultLockDuration)
 

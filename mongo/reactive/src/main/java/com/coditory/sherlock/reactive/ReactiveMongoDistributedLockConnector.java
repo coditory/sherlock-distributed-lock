@@ -20,8 +20,9 @@ import java.time.Instant;
 import java.util.concurrent.Flow.Publisher;
 
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquired;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredAndReleased;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredOrReleased;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryReleased;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
@@ -50,7 +51,7 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
   public Publisher<AcquireResult> acquire(LockRequest lockRequest) {
     Instant now = now();
     return publisherToFlowPublisher(upsert(
-        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
+        queryReleased(lockRequest.getLockId(), now),
         MongoDistributedLock.fromLockRequest(lockRequest, now)
     ).map(AcquireResult::of));
   }
@@ -67,7 +68,7 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
   @Override
   public Publisher<AcquireResult> forceAcquire(LockRequest lockRequest) {
     return publisherToFlowPublisher(upsert(
-        queryAcquired(lockRequest.getLockId()),
+        queryById(lockRequest.getLockId()),
         MongoDistributedLock.fromLockRequest(lockRequest, now())
     ).map(AcquireResult::of));
   }
@@ -80,7 +81,7 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
 
   @Override
   public Publisher<ReleaseResult> forceRelease(LockId lockId) {
-    return publisherToFlowPublisher(delete(queryAcquired(lockId))
+    return publisherToFlowPublisher(delete(queryById(lockId))
         .map(ReleaseResult::of));
   }
 

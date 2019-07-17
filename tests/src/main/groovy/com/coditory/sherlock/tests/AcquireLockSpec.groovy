@@ -1,23 +1,23 @@
 package com.coditory.sherlock.tests
 
 import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.tests.base.LockAssertions
 import spock.lang.Unroll
 
 import java.time.Duration
-import java.time.Instant
 
 import static com.coditory.sherlock.tests.base.LockTypes.OVERRIDING
 import static com.coditory.sherlock.tests.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.SINGLE_ENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.allLockTypes
 
-abstract class AcquireLockSpec extends LocksBaseSpec {
+abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
   String lockId = "acquire-id"
   String instanceId = "instance-id"
   String otherInstanceId = "other-instance-id"
 
   @Unroll
-  def "only one of two different instances may acquire lock - #type"() {
+  def "only one of two different instances may acquire a lock - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
       DistributedLock otherLock = createLock(type, lockId, otherInstanceId)
@@ -93,38 +93,39 @@ abstract class AcquireLockSpec extends LocksBaseSpec {
     when:
       lock.acquire(duration)
     then:
-      assertLocked(lockId, duration)
+      assertAcquired(lock.id, duration)
 
     when:
       lock.acquireForever()
     then:
-      assertLockedInfinitely(lockId)
+      assertAcquiredForever(lock.id)
 
     when:
       lock.acquire()
     then:
-      assertLocked(lock.id, defaultLockDuration)
+      assertAcquired(lock.id, defaultLockDuration)
 
     where:
       type << [REENTRANT, OVERRIDING]
   }
 
-  void assertLockedInfinitely(String lockId) {
-    DistributedLock otherLock = createLock(REENTRANT, lockId, "assert-instance")
-    assert otherLock.acquire() == false
-    Instant backup = fixedClock.instant()
-    fixedClock.tick(Duration.ofDays(100_000))
-    assert otherLock.acquire() == false
-    fixedClock.setup(backup)
-  }
+  @Unroll
+  def "should acquire an expired lock - #type"() {
+    given:
+      DistributedLock lock = createLock(type, lockId, instanceId)
+      DistributedLock otherLock = createLock(type, lockId, otherInstanceId)
+    and:
+      lock.acquire()
+      fixedClock.tick(defaultLockDuration)
 
-  void assertLocked(String lockId, Duration duration = defaultLockDuration) {
-    DistributedLock otherLock = createLock(REENTRANT, lockId, "assert-instance")
-    assert otherLock.acquire() == false
-    Instant backup = fixedClock.instant()
-    fixedClock.tick(duration)
-    assert otherLock.acquire() == true
-    otherLock.release()
-    fixedClock.setup(backup)
+    when:
+      boolean result = otherLock.acquire()
+
+    then:
+      result == true
+      assertAcquired(otherLock.id)
+
+    where:
+      type << [REENTRANT, SINGLE_ENTRANT]
   }
 }

@@ -9,6 +9,7 @@ import java.time.ZoneId
 
 import static java.time.Duration.ofDays
 import static java.time.Duration.ofMillis
+import static java.time.Duration.ofNanos
 import static java.util.Objects.requireNonNull
 
 @CompileStatic
@@ -56,7 +57,7 @@ class UpdatableFixedClock extends Clock {
     this.fixedTime = DEFAULT_FIXED_TIME
   }
 
-  void tick(Duration duration = ofMillis(1)) {
+  void tick(Duration duration = ofNanos(1)) {
     this.fixedTime = this.fixedTime + duration
   }
 

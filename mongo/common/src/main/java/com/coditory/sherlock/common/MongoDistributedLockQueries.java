@@ -15,10 +15,9 @@ public final class MongoDistributedLockQueries {
     throw new IllegalStateException("Do not instantiate utility class");
   }
 
-  public static Bson queryAcquiredAndReleased(LockId lockId, OwnerId ownerId, Instant now) {
+  public static Bson queryReleased(LockId lockId, Instant now) {
     return and(
         eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
         lte(Fields.EXPIRES_AT_FIELD, now)
     );
   }
@@ -26,12 +25,11 @@ public final class MongoDistributedLockQueries {
   public static Bson queryAcquired(LockId lockId, OwnerId ownerId) {
     return and(
         eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
+        lte(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
     );
   }
 
-  public static Bson queryAcquiredOrReleased(
-      LockId lockId, OwnerId ownerId, Instant now) {
+  public static Bson queryAcquiredOrReleased(LockId lockId, OwnerId ownerId, Instant now) {
     return and(
         eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
         or(
@@ -41,7 +39,7 @@ public final class MongoDistributedLockQueries {
     );
   }
 
-  public static Bson queryAcquired(LockId lockId) {
+  public static Bson queryById(LockId lockId) {
     return eq(Fields.LOCK_ID_FIELD, lockId.getValue());
   }
 }
