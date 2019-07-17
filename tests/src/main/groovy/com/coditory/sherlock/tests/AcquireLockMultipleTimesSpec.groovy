@@ -14,7 +14,7 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
   static List<LockTypes> mayAcquireMultipleTimes = [REENTRANT, OVERRIDING]
 
   @Unroll
-  def "the same instance may acquire lock multiple times - #type"() {
+  def "the same owner may acquire lock multiple times - #type"() {
     given:
       DistributedLock lock = createLock(type)
     when:

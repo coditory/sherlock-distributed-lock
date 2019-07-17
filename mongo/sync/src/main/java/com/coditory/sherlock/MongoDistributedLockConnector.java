@@ -16,8 +16,9 @@ import java.time.Instant;
 
 import static com.coditory.sherlock.common.MongoDistributedLock.fromLockRequest;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquired;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredAndReleased;
 import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredOrReleased;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryReleased;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
@@ -44,7 +45,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   public boolean acquire(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-        queryAcquiredAndReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
+        queryReleased(lockRequest.getLockId(), now),
         fromLockRequest(lockRequest, now)
     );
   }
@@ -61,7 +62,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   @Override
   public boolean forceAcquire(LockRequest lockRequest) {
     return upsert(
-        queryAcquired(lockRequest.getLockId()),
+        queryById(lockRequest.getLockId()),
         fromLockRequest(lockRequest, now())
     );
   }
@@ -73,7 +74,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
 
   @Override
   public boolean forceRelease(LockId lockId) {
-    return delete(queryAcquired(lockId));
+    return delete(queryById(lockId));
   }
 
   private boolean delete(Bson query) {

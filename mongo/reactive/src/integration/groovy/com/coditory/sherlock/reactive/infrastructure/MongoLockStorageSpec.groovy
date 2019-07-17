@@ -25,7 +25,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
       assertJsonEqual(getLockDocument(), """
       {
         "_id": "$sampleLockId",
-        "acquiredBy": "$sampleInstanceId",
+        "acquiredBy": "$sampleOwnerId",
         "acquiredAt": { "\$date": ${epochMillis()} },
         "expiresAt": { "\$date": ${epochMillis(defaultLockDuration)} }
       }""")
@@ -44,7 +44,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
       assertJsonEqual(getLockDocument(), """
       {
         "_id": "$sampleLockId",
-        "acquiredBy": "$sampleInstanceId", 
+        "acquiredBy": "$sampleOwnerId", 
         "acquiredAt": { "\$date": ${epochMillis()} },
         "expiresAt": { "\$date": ${epochMillis(duration)} }
       }""")
@@ -62,7 +62,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
       assertJsonEqual(getLockDocument(), """
       {
         "_id": "$sampleLockId",
-        "acquiredBy": "$sampleInstanceId",
+        "acquiredBy": "$sampleOwnerId",
         "acquiredAt": { "\$date": ${epochMillis()} },
       }""")
     where:
