@@ -1,8 +1,8 @@
 package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.tests.LocksBaseSpec
-import com.coditory.sherlock.tests.base.LockTypes
+import com.coditory.sherlock.LocksBaseSpec
+import com.coditory.sherlock.base.LockTypes
 import com.coditory.sherlock.UsesMongoSherlock
 import org.bson.BsonDocument
 import spock.lang.Unroll
@@ -11,7 +11,7 @@ import java.time.Duration
 
 import static com.coditory.sherlock.MongoInitializer.databaseName
 import static com.coditory.sherlock.MongoInitializer.mongoClient
-import static com.coditory.sherlock.tests.base.JsonAssert.assertJsonEqual
+import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoSherlock {
   @Unroll

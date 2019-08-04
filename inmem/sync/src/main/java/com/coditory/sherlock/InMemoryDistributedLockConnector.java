@@ -1,10 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InMemoryDistributedLockStorage;
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.common.OwnerId;
-
 import java.time.Clock;
 import java.time.Instant;
 

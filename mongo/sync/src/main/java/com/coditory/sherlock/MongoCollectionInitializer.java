@@ -5,8 +5,8 @@ import org.bson.Document;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
-import static com.coditory.sherlock.common.MongoDistributedLock.INDEX;
-import static com.coditory.sherlock.common.MongoDistributedLock.INDEX_OPTIONS;
+import static com.coditory.sherlock.MongoDistributedLock.INDEX;
+import static com.coditory.sherlock.MongoDistributedLock.INDEX_OPTIONS;
 
 class MongoCollectionInitializer {
   private final MongoCollection<Document> collection;

@@ -1,9 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.common.MongoDistributedLock;
-import com.coditory.sherlock.common.OwnerId;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -16,12 +12,12 @@ import org.bson.conversions.Bson;
 import java.time.Clock;
 import java.time.Instant;
 
-import static com.coditory.sherlock.common.MongoDistributedLock.fromLockRequest;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquired;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryAcquiredOrReleased;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryById;
-import static com.coditory.sherlock.common.MongoDistributedLockQueries.queryReleased;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.MongoDistributedLock.fromLockRequest;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;

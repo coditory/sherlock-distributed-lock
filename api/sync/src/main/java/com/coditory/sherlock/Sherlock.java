@@ -23,7 +23,7 @@ public interface Sherlock {
    *
    * @return the lock
    */
-  DistributedLockBuilder createLock();
+  DistributedLockBuilder<DistributedLock> createLock();
 
   default DistributedLock createLock(String lockId) {
     return createLock().withLockId(lockId).build();
@@ -40,7 +40,7 @@ public interface Sherlock {
    *
    * @return the reentrant lock
    */
-  DistributedLockBuilder createReentrantLock();
+  DistributedLockBuilder<DistributedLock> createReentrantLock();
 
   default DistributedLock createReentrantLock(String lockId) {
     return createReentrantLock().withLockId(lockId).build();
@@ -52,7 +52,7 @@ public interface Sherlock {
    *
    * @return the reentrant lock
    */
-  DistributedLockBuilder createOverridingLock();
+  DistributedLockBuilder<DistributedLock> createOverridingLock();
 
   /**
    * @param lockId lock identifier

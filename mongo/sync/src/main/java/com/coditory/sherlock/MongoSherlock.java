@@ -5,8 +5,8 @@ import org.bson.Document;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
@@ -37,7 +37,7 @@ public class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherlock> {
 
   /**
    * @param clock time provider used in locking mechanism. Default: {@link
-   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
+   *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
   public MongoSherlock withClock(Clock clock) {

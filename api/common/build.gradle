@@ -1,0 +1,6 @@
+description = 'Sherlock Distributed Lock reactive API'
+
+dependencies {
+  api "org.slf4j:slf4j-api:$versions.slf4j"
+  implementation project(':common')
+}

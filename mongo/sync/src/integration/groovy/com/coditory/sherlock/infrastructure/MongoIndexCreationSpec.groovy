@@ -9,7 +9,7 @@ import spock.lang.Specification
 
 import static com.coditory.sherlock.MongoInitializer.databaseName
 import static com.coditory.sherlock.MongoInitializer.mongoClient
-import static com.coditory.sherlock.tests.base.JsonAssert.assertJsonEqual
+import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 
 class MongoIndexCreationSpec extends Specification {
   String collectionName = "other-locks"

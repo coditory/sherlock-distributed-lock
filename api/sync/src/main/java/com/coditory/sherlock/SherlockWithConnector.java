@@ -3,14 +3,10 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.DelegatingDistributedLock.AcquireAction;
 import com.coditory.sherlock.DelegatingDistributedLock.ReleaseAction;
 import com.coditory.sherlock.DistributedLockBuilder.LockCreator;
-import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.OwnerId;
-import com.coditory.sherlock.common.OwnerIdPolicy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 final class SherlockWithConnector implements Sherlock {
   private final Logger logger = LoggerFactory.getLogger(SherlockWithConnector.class);
@@ -36,17 +32,17 @@ final class SherlockWithConnector implements Sherlock {
   }
 
   @Override
-  public DistributedLockBuilder createLock() {
+  public DistributedLockBuilder<DistributedLock> createLock() {
     return createLockBuilder(connector::acquire, connector::release);
   }
 
   @Override
-  public DistributedLockBuilder createReentrantLock() {
+  public DistributedLockBuilder<DistributedLock> createReentrantLock() {
     return createLockBuilder(connector::acquireOrProlong, connector::release);
   }
 
   @Override
-  public DistributedLockBuilder createOverridingLock() {
+  public DistributedLockBuilder<DistributedLock> createOverridingLock() {
     return createLockBuilder(connector::forceAcquire, (id, __) -> connector.forceRelease(id));
   }
 
@@ -55,15 +51,15 @@ final class SherlockWithConnector implements Sherlock {
     return connector.forceReleaseAll();
   }
 
-  private DistributedLockBuilder createLockBuilder(
+  private DistributedLockBuilder<DistributedLock> createLockBuilder(
     AcquireAction acquireAction,
     ReleaseAction releaseAction) {
-    return new DistributedLockBuilder(createLock(acquireAction, releaseAction))
+    return new DistributedLockBuilder<>(createLock(acquireAction, releaseAction))
       .withLockDuration(defaultDuration)
       .withOwnerIdPolicy(defaultOwnerIdPolicy);
   }
 
-  private LockCreator createLock(
+  private LockCreator<DistributedLock> createLock(
     AcquireAction acquireAction,
     ReleaseAction releaseAction) {
     return (lockId, duration, ownerId) ->

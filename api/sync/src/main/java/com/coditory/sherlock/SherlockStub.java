@@ -1,9 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.OwnerId;
-
 import java.util.HashMap;
 import java.util.Map;
 
@@ -56,17 +52,17 @@ public class SherlockStub implements Sherlock {
   }
 
   @Override
-  public DistributedLockBuilder createLock() {
+  public DistributedLockBuilder<DistributedLock> createLock() {
     return getLockOrDefault();
   }
 
   @Override
-  public DistributedLockBuilder createReentrantLock() {
+  public DistributedLockBuilder<DistributedLock> createReentrantLock() {
     return getLockOrDefault();
   }
 
   @Override
-  public DistributedLockBuilder createOverridingLock() {
+  public DistributedLockBuilder<DistributedLock> createOverridingLock() {
     return getLockOrDefault();
   }
 
@@ -76,8 +72,8 @@ public class SherlockStub implements Sherlock {
     return false;
   }
 
-  private DistributedLockBuilder getLockOrDefault() {
-    return new DistributedLockBuilder(this::getLockOrDefault);
+  private DistributedLockBuilder<DistributedLock> getLockOrDefault() {
+    return new DistributedLockBuilder<>(this::getLockOrDefault);
   }
 
   private DistributedLock getLockOrDefault(LockId id, LockDuration duration, OwnerId ownerId) {

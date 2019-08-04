@@ -1,6 +1,6 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.tests.base.DistributedLocksCreator
+import com.coditory.sherlock.base.DistributedLocksCreator
 import com.mongodb.client.MongoCollection
 import org.bson.Document
 
