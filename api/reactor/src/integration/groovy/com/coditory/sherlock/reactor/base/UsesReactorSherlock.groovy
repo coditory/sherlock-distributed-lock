@@ -13,7 +13,7 @@ import static BlockingReactorSherlockWrapper.blockingReactorSherlock
 
 trait UsesReactorSherlock implements DistributedLocksCreator {
   @Override
-  Sherlock createDistributedLocks(String ownerId, Duration duration, Clock clock) {
+  Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveSherlock = ReactiveInMemorySherlock.builder()
       .withOwnerId(ownerId)
       .withLockDuration(duration)

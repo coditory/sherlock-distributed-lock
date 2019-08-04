@@ -6,6 +6,7 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
+import static com.coditory.sherlock.common.util.UuidGenerator.uuid
 import static com.coditory.sherlock.tests.base.LockTypes.OVERRIDING
 import static com.coditory.sherlock.tests.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.tests.base.LockTypes.SINGLE_ENTRANT
@@ -133,5 +134,40 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
 
     where:
       type << allLockTypes()
+  }
+
+  def "should force release all locks"() {
+    given:
+      DistributedLock overridingLock = createLock(OVERRIDING, uuid(), uuid())
+      DistributedLock reentrantLock = createLock(REENTRANT, uuid(), uuid())
+      DistributedLock singleEntrantLock = createLock(SINGLE_ENTRANT, uuid(), uuid())
+    and:
+      overridingLock.acquire()
+      reentrantLock.acquire()
+      singleEntrantLock.acquire()
+    when:
+      sherlock.forceReleaseAllLocks()
+    then:
+      assertReleased(overridingLock.id)
+      assertReleased(reentrantLock.id)
+      assertReleased(singleEntrantLock.id)
+  }
+
+  def "should force release single lock"() {
+    given:
+      DistributedLock overridingLock = createLock(OVERRIDING, uuid(), uuid())
+      DistributedLock reentrantLock = createLock(REENTRANT, uuid(), uuid())
+      DistributedLock singleEntrantLock = createLock(SINGLE_ENTRANT, uuid(), uuid())
+    and:
+      overridingLock.acquire()
+      reentrantLock.acquire()
+      singleEntrantLock.acquire()
+    when:
+      sherlock.forceReleaseLock(overridingLock.id)
+    then:
+      assertReleased(overridingLock.id)
+    and:
+      assertAcquired(reentrantLock.id)
+      assertAcquired(singleEntrantLock.id)
   }
 }

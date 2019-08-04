@@ -10,7 +10,7 @@ import static com.coditory.sherlock.tests.base.BlockingReactiveSherlockWrapper.b
 
 trait UsesReactiveInMemorySherlock implements DistributedLocksCreator {
   @Override
-  Sherlock createDistributedLocks(String instanceId, Duration duration, Clock clock) {
+  Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveLocks = ReactiveInMemorySherlock.builder()
       .withOwnerId(instanceId)
       .withLockDuration(duration)

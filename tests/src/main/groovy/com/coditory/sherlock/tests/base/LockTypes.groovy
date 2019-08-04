@@ -1,6 +1,7 @@
 package com.coditory.sherlock.tests.base
 
-import com.coditory.sherlock.DistributedLock
+
+import com.coditory.sherlock.DistributedLockBuilder
 import com.coditory.sherlock.Sherlock
 import groovy.transform.CompileStatic
 
@@ -8,27 +9,24 @@ import groovy.transform.CompileStatic
 enum LockTypes {
   SINGLE_ENTRANT{
     @Override
-    DistributedLock createLock(Sherlock sherlock, String lockId) {
-      return sherlock
-        .createLock(lockId)
+    DistributedLockBuilder createLock(Sherlock sherlock) {
+      return sherlock.createLock()
     }
   },
   REENTRANT{
     @Override
-    DistributedLock createLock(Sherlock sherlock, String lockId) {
-      return sherlock
-        .createReentrantLock(lockId)
+    DistributedLockBuilder createLock(Sherlock sherlock) {
+      return sherlock.createReentrantLock()
     }
   },
   OVERRIDING{
     @Override
-    DistributedLock createLock(Sherlock sherlock, String lockId) {
-      return sherlock
-        .createOverridingLock(lockId)
+    DistributedLockBuilder createLock(Sherlock sherlock) {
+      return sherlock.createOverridingLock()
     }
   };
 
-  abstract DistributedLock createLock(Sherlock sherlock, String lockId);
+  abstract DistributedLockBuilder createLock(Sherlock sherlock);
 
   static List<LockTypes> allLockTypes() {
     return values().toList()

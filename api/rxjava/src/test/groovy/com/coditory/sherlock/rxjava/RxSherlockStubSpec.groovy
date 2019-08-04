@@ -2,9 +2,9 @@ package com.coditory.sherlock.rxjava
 
 import spock.lang.Specification
 
+import java.time.Duration
+
 import static RxDistributedLockMock.lockStub
-import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysClosedLock
-import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
 class RxSherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
@@ -38,5 +38,22 @@ class RxSherlockStubSpec extends Specification {
     expect:
       assertAlwaysClosedLock(sherlock.createLock("other-lock"))
       assertAlwaysOpenedLock(sherlock.createLock(lockId))
+  }
+
+  static assertAlwaysOpenedLock(RxDistributedLock lock, String lockId = lock.id) {
+    assertSingleStateLock(lock, lockId, true)
+  }
+
+  static assertAlwaysClosedLock(RxDistributedLock lock, String lockId = lock.id) {
+    assertSingleStateLock(lock, lockId, false)
+  }
+
+  private static assertSingleStateLock(RxDistributedLock lock, String lockId, boolean expectedResult) {
+    assert lock.id == lockId
+    assert lock.acquire().blockingGet().acquired == expectedResult
+    assert lock.acquire(Duration.ofHours(1)).blockingGet().acquired == expectedResult
+    assert lock.acquireForever().blockingGet().acquired == expectedResult
+    assert lock.release().blockingGet().released == expectedResult
+    return true
   }
 }

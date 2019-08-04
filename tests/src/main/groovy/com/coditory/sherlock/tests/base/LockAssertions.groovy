@@ -9,6 +9,7 @@ import java.time.Duration
 import java.time.Instant
 
 import static com.coditory.sherlock.common.util.UuidGenerator.uuid
+import static com.coditory.sherlock.tests.base.LockTypes.SINGLE_ENTRANT
 
 @CompileStatic
 @SelfType(LocksBaseSpec)
@@ -50,6 +51,6 @@ trait LockAssertions {
   }
 
   private DistributedLock createLockWithRandomOwner(String lockId) {
-    return createLock(LockTypes.SINGLE_ENTRANT, lockId, uuid())
+    return createLock(SINGLE_ENTRANT, lockId, uuid())
   }
 }
