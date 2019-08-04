@@ -8,16 +8,16 @@ import com.coditory.sherlock.reactive.ReactiveDistributedLockBuilder;
 import com.coditory.sherlock.reactive.ReactiveSherlock;
 import com.coditory.sherlock.reactive.connector.InitializationResult;
 import com.coditory.sherlock.reactive.connector.ReleaseResult;
-import com.coditory.sherlock.rxjava.RxJavaDistributedLockBuilder.LockCreator;
+import com.coditory.sherlock.rxjava.RxDistributedLockBuilder.LockCreator;
 import io.reactivex.Single;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.rxjava.PublisherToSingleConverter.convertToSingle;
 
-final class RxJavaSherlockWrapper implements RxJavaSherlock {
+final class RxSherlockWrapper implements RxSherlock {
   private final ReactiveSherlock sherlock;
 
-  RxJavaSherlockWrapper(ReactiveSherlock sherlock) {
+  RxSherlockWrapper(ReactiveSherlock sherlock) {
     this.sherlock = expectNonNull(sherlock, "Expected non null sherlock");
   }
 
@@ -27,17 +27,17 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
   }
 
   @Override
-  public RxJavaDistributedLockBuilder createLock() {
+  public RxDistributedLockBuilder createLock() {
     return createLockBuilder(sherlock.createLock());
   }
 
   @Override
-  public RxJavaDistributedLockBuilder createReentrantLock() {
+  public RxDistributedLockBuilder createReentrantLock() {
     return createLockBuilder(sherlock.createReentrantLock());
   }
 
   @Override
-  public RxJavaDistributedLockBuilder createOverridingLock() {
+  public RxDistributedLockBuilder createOverridingLock() {
     return createLockBuilder(sherlock.createOverridingLock());
   }
 
@@ -46,9 +46,9 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
     return convertToSingle(sherlock.forceReleaseAllLocks());
   }
 
-  private RxJavaDistributedLockBuilder createLockBuilder(
+  private RxDistributedLockBuilder createLockBuilder(
     ReactiveDistributedLockBuilder reactiveBuilder) {
-    return new RxJavaDistributedLockBuilder(createLock(reactiveBuilder))
+    return new RxDistributedLockBuilder(createLock(reactiveBuilder))
       .withLockDuration(reactiveBuilder.getDuration())
       .withOwnerIdPolicy(reactiveBuilder.getOwnerIdPolicy());
   }
@@ -58,7 +58,7 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
       createLockAndLog(reactiveBuilder, lockId, ownerId, duration);
   }
 
-  private RxJavaDistributedLock createLockAndLog(
+  private RxDistributedLock createLockAndLog(
     ReactiveDistributedLockBuilder reactiveBuilder,
     LockId lockId,
     OwnerId ownerId,
@@ -68,6 +68,6 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
       .withOwnerId(ownerId.getValue())
       .withLockId(lockId.getValue())
       .build();
-    return new RxJavaDistributedLockWrapper(reactiveLock);
+    return new RxDistributedLockWrapper(reactiveLock);
   }
 }

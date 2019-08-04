@@ -4,14 +4,14 @@ package com.coditory.sherlock.rxjava
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static RxJavaDistributedLockMock.sequencedLock
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.acquiredInMemoryLock
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.acquiredReentrantInMemoryLock
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.lockStub
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.releasedInMemoryLock
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.releasedReentrantInMemoryLock
+import static RxDistributedLockMock.sequencedLock
+import static RxDistributedLockMock.acquiredInMemoryLock
+import static RxDistributedLockMock.acquiredReentrantInMemoryLock
+import static RxDistributedLockMock.lockStub
+import static RxDistributedLockMock.releasedInMemoryLock
+import static RxDistributedLockMock.releasedReentrantInMemoryLock
 
-class RxJavaDistributedLockMockSpec extends Specification {
+class RxDistributedLockMockSpec extends Specification {
   private static final String lockId = "sample-lock"
 
   @Unroll
@@ -35,7 +35,7 @@ class RxJavaDistributedLockMockSpec extends Specification {
       List<Boolean> acquireResultSequence = [true, false, true]
       List<Boolean> releaseResultSequence = [false, true, false]
     and:
-      RxJavaDistributedLockMock lock = sequencedLock("sample-lock", acquireResultSequence, releaseResultSequence)
+      RxDistributedLockMock lock = sequencedLock("sample-lock", acquireResultSequence, releaseResultSequence)
     expect:
       [acquire(lock), acquire(lock), acquire(lock), acquire(lock)] == acquireResultSequence + true
       [release(lock), release(lock), release(lock), release(lock)] == releaseResultSequence + false
@@ -83,7 +83,7 @@ class RxJavaDistributedLockMockSpec extends Specification {
 
   def "should record no invocation for a new lock mock instance"() {
     given:
-      RxJavaDistributedLockMock lock = releasedInMemoryLock()
+      RxDistributedLockMock lock = releasedInMemoryLock()
     expect:
       lock.acquisitions() == 0
       lock.releases() == 0
@@ -100,7 +100,7 @@ class RxJavaDistributedLockMockSpec extends Specification {
 
   def "should record lock acquire invocations"() {
     given:
-      RxJavaDistributedLockMock lock = releasedInMemoryLock()
+      RxDistributedLockMock lock = releasedInMemoryLock()
     when:
       acquire(lock)
     then:
@@ -127,7 +127,7 @@ class RxJavaDistributedLockMockSpec extends Specification {
 
   def "should record lock release invocations"() {
     given:
-      RxJavaDistributedLockMock lock = acquiredInMemoryLock()
+      RxDistributedLockMock lock = acquiredInMemoryLock()
     when:
       release(lock)
     then:
@@ -154,7 +154,7 @@ class RxJavaDistributedLockMockSpec extends Specification {
 
   def "should record acquire and release invocations"() {
     given:
-      RxJavaDistributedLock lock = releasedInMemoryLock()
+      RxDistributedLock lock = releasedInMemoryLock()
     when:
       acquire(lock)
       release(lock)
@@ -162,11 +162,11 @@ class RxJavaDistributedLockMockSpec extends Specification {
       lock.wasAcquiredAndReleased() == true
   }
 
-  private Boolean acquire(RxJavaDistributedLock lock) {
+  private Boolean acquire(RxDistributedLock lock) {
     return lock.acquire().blockingGet().acquired
   }
 
-  private Boolean release(RxJavaDistributedLock lock) {
+  private Boolean release(RxDistributedLock lock) {
     return lock.release().blockingGet().released
   }
 }

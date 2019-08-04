@@ -15,87 +15,87 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.common.util.UuidGenerator.uuid;
 
-public class RxJavaDistributedLockMock implements RxJavaDistributedLock {
-  public static RxJavaDistributedLockMock releasedInMemoryLock() {
+public class RxDistributedLockMock implements RxDistributedLock {
+  public static RxDistributedLockMock releasedInMemoryLock() {
     return releasedInMemoryLock(uuid());
   }
 
-  public static RxJavaDistributedLockMock acquiredInMemoryLock() {
+  public static RxDistributedLockMock acquiredInMemoryLock() {
     return acquiredInMemoryLock(uuid());
   }
 
-  public static RxJavaDistributedLockMock releasedInMemoryLock(String lockId) {
+  public static RxDistributedLockMock releasedInMemoryLock(String lockId) {
     return inMemoryLock(lockId, false);
   }
 
-  public static RxJavaDistributedLockMock acquiredInMemoryLock(String lockId) {
+  public static RxDistributedLockMock acquiredInMemoryLock(String lockId) {
     return inMemoryLock(lockId, true);
   }
 
-  private static RxJavaDistributedLockMock inMemoryLock(String lockId, boolean state) {
+  private static RxDistributedLockMock inMemoryLock(String lockId, boolean state) {
     return of(InMemoryDistributedLockStub.inMemoryLock(LockId.of(lockId), state));
   }
 
-  public static RxJavaDistributedLockMock releasedReentrantInMemoryLock() {
+  public static RxDistributedLockMock releasedReentrantInMemoryLock() {
     return releasedReentrantInMemoryLock(uuid());
   }
 
-  public static RxJavaDistributedLockMock acquiredReentrantInMemoryLock() {
+  public static RxDistributedLockMock acquiredReentrantInMemoryLock() {
     return acquiredReentrantInMemoryLock(uuid());
   }
 
-  public static RxJavaDistributedLockMock releasedReentrantInMemoryLock(String lockId) {
+  public static RxDistributedLockMock releasedReentrantInMemoryLock(String lockId) {
     return reentrantInMemoryLock(lockId, false);
   }
 
-  public static RxJavaDistributedLockMock acquiredReentrantInMemoryLock(String lockId) {
+  public static RxDistributedLockMock acquiredReentrantInMemoryLock(String lockId) {
     return reentrantInMemoryLock(lockId, true);
   }
 
-  private static RxJavaDistributedLockMock reentrantInMemoryLock(String lockId, boolean state) {
+  private static RxDistributedLockMock reentrantInMemoryLock(String lockId, boolean state) {
     return of(InMemoryDistributedLockStub.reentrantInMemoryLock(LockId.of(lockId), state));
   }
 
-  public static RxJavaDistributedLockMock lockStub(boolean result) {
+  public static RxDistributedLockMock lockStub(boolean result) {
     return lockStub(uuid(), result, result);
   }
 
-  public static RxJavaDistributedLockMock lockStub(boolean acquireResult, boolean releaseResult) {
+  public static RxDistributedLockMock lockStub(boolean acquireResult, boolean releaseResult) {
     return lockStub(uuid(), acquireResult, releaseResult);
   }
 
-  public static RxJavaDistributedLockMock lockStub(String lockId, boolean result) {
+  public static RxDistributedLockMock lockStub(String lockId, boolean result) {
     return of(lockStub(lockId, result, result));
   }
 
-  public static RxJavaDistributedLockMock lockStub(
+  public static RxDistributedLockMock lockStub(
     String lockId, boolean acquireResult, boolean releaseResult) {
     SequencedDistributedLockStub lock = new SequencedDistributedLockStub(
       lockId, List.of(acquireResult), List.of(releaseResult));
     return of(lock);
   }
 
-  public static RxJavaDistributedLockMock sequencedLock(
+  public static RxDistributedLockMock sequencedLock(
     List<Boolean> acquireResults, List<Boolean> releaseResults) {
     return sequencedLock(uuid(), acquireResults, releaseResults);
   }
 
-  public static RxJavaDistributedLockMock sequencedLock(
+  public static RxDistributedLockMock sequencedLock(
     String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
     return of(new SequencedDistributedLockStub(lockId, acquireResults, releaseResults));
   }
 
-  private static RxJavaDistributedLockMock of(RxJavaDistributedLock lock) {
-    return new RxJavaDistributedLockMock(lock);
+  private static RxDistributedLockMock of(RxDistributedLock lock) {
+    return new RxDistributedLockMock(lock);
   }
 
-  private final RxJavaDistributedLock lock;
+  private final RxDistributedLock lock;
   private final AtomicInteger releases = new AtomicInteger(0);
   private final AtomicInteger acquisitions = new AtomicInteger(0);
   private final AtomicInteger successfulReleases = new AtomicInteger(0);
   private final AtomicInteger successfulAcquisitions = new AtomicInteger(0);
 
-  private RxJavaDistributedLockMock(RxJavaDistributedLock lock) {
+  private RxDistributedLockMock(RxDistributedLock lock) {
     this.lock = lock;
   }
 
@@ -233,7 +233,7 @@ public class RxJavaDistributedLockMock implements RxJavaDistributedLock {
     return releases() > 0;
   }
 
-  private static class InMemoryDistributedLockStub implements RxJavaDistributedLock {
+  private static class InMemoryDistributedLockStub implements RxDistributedLock {
     private final LockId lockId;
     private final boolean reentrant;
     private AtomicBoolean acquired;
@@ -293,7 +293,7 @@ public class RxJavaDistributedLockMock implements RxJavaDistributedLock {
     }
   }
 
-  static class SequencedDistributedLockStub implements RxJavaDistributedLock {
+  static class SequencedDistributedLockStub implements RxDistributedLock {
     private final LockId lockId;
     private final ConcurrentLinkedQueue<Boolean> acquireResults;
     private final ConcurrentLinkedQueue<Boolean> releaseResults;

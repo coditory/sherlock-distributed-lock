@@ -7,8 +7,8 @@ import io.reactivex.Single;
 
 import java.util.function.Supplier;
 
-final class RxJavaDistributedLockExecutor {
-  private RxJavaDistributedLockExecutor() {
+final class RxDistributedLockExecutor {
+  private RxDistributedLockExecutor() {
     throw new IllegalStateException("Do not instantiate utility class");
   }
 

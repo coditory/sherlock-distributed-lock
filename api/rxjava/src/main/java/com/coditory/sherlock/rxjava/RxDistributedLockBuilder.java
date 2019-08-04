@@ -13,48 +13,48 @@ import static com.coditory.sherlock.common.OwnerIdPolicy.uniqueOwnerIdPolicy;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
-public class RxJavaDistributedLockBuilder {
+public class RxDistributedLockBuilder {
   private final LockCreator lockCreator;
   private LockId lockId;
   private LockDuration duration = DEFAULT_LOCK_DURATION;
   private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
 
-  RxJavaDistributedLockBuilder(LockCreator lockCreator) {
+  RxDistributedLockBuilder(LockCreator lockCreator) {
     this.lockCreator = lockCreator;
   }
 
-  public RxJavaDistributedLockBuilder withLockId(String lockId) {
+  public RxDistributedLockBuilder withLockId(String lockId) {
     this.lockId = LockId.of(lockId);
     return this;
   }
 
-  RxJavaDistributedLockBuilder withLockDuration(LockDuration duration) {
+  RxDistributedLockBuilder withLockDuration(LockDuration duration) {
     this.duration = duration;
     return this;
   }
 
-  public RxJavaDistributedLockBuilder withLockDuration(Duration duration) {
+  public RxDistributedLockBuilder withLockDuration(Duration duration) {
     return withLockDuration(LockDuration.of(duration));
   }
 
-  public RxJavaDistributedLockBuilder withPermanentLockDuration() {
+  public RxDistributedLockBuilder withPermanentLockDuration() {
     this.duration = LockDuration.permanent();
     return this;
   }
 
-  public RxJavaDistributedLockBuilder withOwnerId(String ownerId) {
+  public RxDistributedLockBuilder withOwnerId(String ownerId) {
     return withOwnerIdPolicy(staticOwnerIdPolicy(ownerId));
   }
 
-  public RxJavaDistributedLockBuilder withUniqueOwnerId() {
+  public RxDistributedLockBuilder withUniqueOwnerId() {
     return withOwnerIdPolicy(uniqueOwnerIdPolicy());
   }
 
-  public RxJavaDistributedLockBuilder withStaticUniqueOwnerId() {
+  public RxDistributedLockBuilder withStaticUniqueOwnerId() {
     return withOwnerIdPolicy(staticUniqueOwnerIdPolicy());
   }
 
-  RxJavaDistributedLockBuilder withOwnerIdPolicy(OwnerIdPolicy ownerIdPolicy) {
+  RxDistributedLockBuilder withOwnerIdPolicy(OwnerIdPolicy ownerIdPolicy) {
     this.ownerIdPolicy = ownerIdPolicy;
     return this;
   }
@@ -71,12 +71,12 @@ public class RxJavaDistributedLockBuilder {
     return ownerIdPolicy;
   }
 
-  public RxJavaDistributedLock build() {
+  public RxDistributedLock build() {
     return lockCreator.createLock(lockId, duration, ownerIdPolicy.getOwnerId());
   }
 
   @FunctionalInterface
   interface LockCreator {
-    RxJavaDistributedLock createLock(LockId lockId, LockDuration duration, OwnerId ownerId);
+    RxDistributedLock createLock(LockId lockId, LockDuration duration, OwnerId ownerId);
   }
 }
