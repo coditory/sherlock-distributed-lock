@@ -12,7 +12,7 @@ import com.coditory.sherlock.reactor.ReactorDistributedLockBuilder.LockCreator;
 import reactor.core.publisher.Mono;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
-import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux;
+import static com.coditory.sherlock.reactor.PublisherToMonoConverter.convertToMono;
 
 final class ReactorSherlockWrapper implements ReactorSherlock {
   private final ReactiveSherlock sherlock;
@@ -23,8 +23,7 @@ final class ReactorSherlockWrapper implements ReactorSherlock {
 
   @Override
   public Mono<InitializationResult> initialize() {
-    return flowPublisherToFlux(sherlock.initialize())
-      .single();
+    return convertToMono(sherlock.initialize());
   }
 
   @Override
@@ -44,8 +43,7 @@ final class ReactorSherlockWrapper implements ReactorSherlock {
 
   @Override
   public Mono<ReleaseResult> forceReleaseAllLocks() {
-    return flowPublisherToFlux(sherlock.forceReleaseAllLocks())
-      .single();
+    return convertToMono(sherlock.forceReleaseAllLocks());
   }
 
   private ReactorDistributedLockBuilder createLockBuilder(
