@@ -7,7 +7,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
-import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux;
+import static com.coditory.sherlock.reactor.PublisherToMonoConverter.convertToMono;
 
 final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
   private final LockResultLogger logger;
@@ -25,29 +25,25 @@ final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
 
   @Override
   public Mono<AcquireResult> acquire() {
-    return flowPublisherToFlux(lock.acquire())
-        .single()
-        .doOnNext(logger::logResult);
+    return convertToMono(lock.acquire())
+      .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<AcquireResult> acquire(Duration duration) {
-    return flowPublisherToFlux(lock.acquire(duration))
-        .single()
-        .doOnNext(logger::logResult);
+    return convertToMono(lock.acquire(duration))
+      .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<AcquireResult> acquireForever() {
-    return flowPublisherToFlux(lock.acquireForever())
-        .single()
-        .doOnNext(logger::logResult);
+    return convertToMono(lock.acquireForever())
+      .doOnNext(logger::logResult);
   }
 
   @Override
   public Mono<ReleaseResult> release() {
-    return flowPublisherToFlux(lock.release())
-        .single()
-        .doOnNext(logger::logResult);
+    return convertToMono(lock.release())
+      .doOnNext(logger::logResult);
   }
 }
