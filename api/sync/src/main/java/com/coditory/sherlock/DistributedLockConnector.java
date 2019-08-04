@@ -1,9 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.common.OwnerId;
-
 interface DistributedLockConnector {
   /**
    * Initializes underlying infrastructure for locks. Most frequently triggers database index

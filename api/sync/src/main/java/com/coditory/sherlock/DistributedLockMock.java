@@ -1,7 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockId;
-
 import java.time.Duration;
 import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -9,9 +7,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Supplier;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonEmpty;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
-import static com.coditory.sherlock.common.util.UuidGenerator.uuid;
+import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.util.UuidGenerator.uuid;
 
 public class DistributedLockMock implements DistributedLock {
   public static DistributedLockMock releasedInMemoryLock() {

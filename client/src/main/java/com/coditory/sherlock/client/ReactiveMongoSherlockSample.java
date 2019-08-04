@@ -1,15 +1,15 @@
 package com.coditory.sherlock.client;
 
-import com.coditory.sherlock.reactive.ReactiveMongoSherlock;
-import com.coditory.sherlock.reactive.connector.AcquireResult;
-import com.coditory.sherlock.reactor.ReactorDistributedLock;
-import com.coditory.sherlock.reactor.ReactorSherlock;
+import com.coditory.sherlock.ReactiveMongoSherlock;
+import com.coditory.sherlock.connector.AcquireResult;
+import com.coditory.sherlock.ReactorDistributedLock;
+import com.coditory.sherlock.ReactorSherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.Document;
 
-import static com.coditory.sherlock.reactor.ReactorSherlock.toReactorSherlock;
+import static com.coditory.sherlock.ReactorSherlock.toReactorSherlock;
 
 public class ReactiveMongoSherlockSample {
   static ReactorSherlock createSherlock() {

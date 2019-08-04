@@ -1,16 +1,12 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.OwnerIdPolicy;
-import com.coditory.sherlock.common.SherlockDefaults;
-
 import java.time.Duration;
 
-import static com.coditory.sherlock.common.OwnerIdPolicy.staticOwnerIdPolicy;
-import static com.coditory.sherlock.common.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
-import static com.coditory.sherlock.common.OwnerIdPolicy.uniqueOwnerIdPolicy;
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
+import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
+import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
+import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
 abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder> {
   private LockDuration duration = DEFAULT_LOCK_DURATION;

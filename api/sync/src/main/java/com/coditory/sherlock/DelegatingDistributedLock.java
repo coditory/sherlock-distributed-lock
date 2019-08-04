@@ -1,15 +1,11 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.LockId;
-import com.coditory.sherlock.common.LockRequest;
-import com.coditory.sherlock.common.OwnerId;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 class DelegatingDistributedLock implements DistributedLock {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());

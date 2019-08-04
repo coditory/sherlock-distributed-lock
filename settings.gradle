@@ -1,5 +1,6 @@
 rootProject.name = 'sherlock'
 include 'api'
+include 'api:api-common'
 include 'api:api-sync'
 include 'api:api-reactive'
 include 'api:api-reactor'
@@ -21,6 +22,7 @@ project(':api:api-sync').projectDir = file('./api/sync')
 project(':api:api-reactive').projectDir = file('./api/reactive')
 project(':api:api-reactor').projectDir = file('./api/reactor')
 project(':api:api-rxjava').projectDir = file('./api/rxjava')
+project(':api:api-common').projectDir = file('./api/common')
 project(':mongo:mongo-sync').projectDir = file('./mongo/sync')
 project(':mongo:mongo-reactive').projectDir = file('./mongo/reactive')
 project(':mongo:mongo-common').projectDir = file('./mongo/common')

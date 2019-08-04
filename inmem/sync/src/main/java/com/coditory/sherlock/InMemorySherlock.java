@@ -1,11 +1,9 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.common.InMemoryDistributedLockStorage;
-
 import java.time.Clock;
 
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
+import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
@@ -27,7 +25,7 @@ public class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherl
 
   /**
    * @param clock time provider used in locking mechanism. Default: {@link
-   *   com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
+   *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
   public InMemorySherlock withClock(Clock clock) {
@@ -44,6 +42,7 @@ public class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherl
    * @return sherlock instance
    * @throws IllegalArgumentException when some required values are missing
    */
+  @Override
   public Sherlock build() {
     InMemoryDistributedLockConnector connector = new InMemoryDistributedLockConnector(
       clock, storage);

@@ -2,7 +2,7 @@ package com.coditory.sherlock.migrator;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.common.util.Preconditions;
+import com.coditory.sherlock.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
