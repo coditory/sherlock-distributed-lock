@@ -8,10 +8,10 @@ import com.coditory.sherlock.tests.base.DistributedLocksCreator
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.sherlock.rxjava.RxJavaSherlock.toRxSherlock
-import static BlockingRxJavaSherlock.blockingRxJavaSherlock
+import static com.coditory.sherlock.rxjava.RxSherlock.toRxSherlock
+import static BlockingRxSherlock.blockingRxJavaSherlock
 
-trait UsesRxJavaSherlock implements DistributedLocksCreator {
+trait UsesRxSherlock implements DistributedLocksCreator {
   @Override
   Sherlock createDistributedLocks(String ownerId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveSherlock = ReactiveInMemorySherlock.builder()

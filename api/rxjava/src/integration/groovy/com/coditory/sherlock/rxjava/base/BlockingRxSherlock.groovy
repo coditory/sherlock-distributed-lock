@@ -6,22 +6,22 @@ import com.coditory.sherlock.Sherlock
 import com.coditory.sherlock.common.LockDuration
 import com.coditory.sherlock.common.LockId
 import com.coditory.sherlock.common.OwnerId
-import com.coditory.sherlock.rxjava.RxJavaDistributedLock
-import com.coditory.sherlock.rxjava.RxJavaDistributedLockBuilder
-import com.coditory.sherlock.rxjava.RxJavaSherlock
+import com.coditory.sherlock.rxjava.RxDistributedLock
+import com.coditory.sherlock.rxjava.RxDistributedLockBuilder
+import com.coditory.sherlock.rxjava.RxSherlock
 import groovy.transform.CompileStatic
 
 import java.time.Duration
 
 @CompileStatic
-class BlockingRxJavaSherlock implements Sherlock {
-  static Sherlock blockingRxJavaSherlock(RxJavaSherlock locks) {
-    return new BlockingRxJavaSherlock(locks)
+class BlockingRxSherlock implements Sherlock {
+  static Sherlock blockingRxJavaSherlock(RxSherlock locks) {
+    return new BlockingRxSherlock(locks)
   }
 
-  private final RxJavaSherlock locks
+  private final RxSherlock locks
 
-  private BlockingRxJavaSherlock(RxJavaSherlock locks) {
+  private BlockingRxSherlock(RxSherlock locks) {
     this.locks = locks
   }
 
@@ -57,24 +57,24 @@ class BlockingRxJavaSherlock implements Sherlock {
       .blockingGet().released
   }
 
-  private DistributedLockBuilder blockingLockBuilder(RxJavaDistributedLockBuilder rxBuilder) {
+  private DistributedLockBuilder blockingLockBuilder(RxDistributedLockBuilder rxBuilder) {
     return new DistributedLockBuilder({ LockId lockId, LockDuration duration, OwnerId ownerId ->
-      RxJavaDistributedLock lock = rxBuilder
+      RxDistributedLock lock = rxBuilder
         .withLockId(lockId.value)
         .withLockDuration(duration.value)
         .withOwnerId(ownerId.value)
         .build()
-      return new BlockingRxJavaLock(lock)
+      return new BlockingRxLock(lock)
     }).withLockDuration(rxBuilder.getDuration())
       .withOwnerIdPolicy(rxBuilder.getOwnerIdPolicy())
   }
 }
 
 @CompileStatic
-class BlockingRxJavaLock implements DistributedLock {
-  private final RxJavaDistributedLock lock
+class BlockingRxLock implements DistributedLock {
+  private final RxDistributedLock lock
 
-  BlockingRxJavaLock(RxJavaDistributedLock lock) {
+  BlockingRxLock(RxDistributedLock lock) {
     this.lock = lock
   }
 

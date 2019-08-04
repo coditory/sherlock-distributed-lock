@@ -1,22 +1,22 @@
 package com.coditory.sherlock.rxjava.base
 
 
-import com.coditory.sherlock.rxjava.RxJavaDistributedLock
+import com.coditory.sherlock.rxjava.RxDistributedLock
 import groovy.transform.CompileStatic
 
 import java.time.Duration
 
 @CompileStatic
 class DistributedLockAssertions {
-  static assertAlwaysOpenedLock(RxJavaDistributedLock lock, String lockId = lock.id) {
+  static assertAlwaysOpenedLock(RxDistributedLock lock, String lockId = lock.id) {
     assertSingleStateLock(lock, lockId, true)
   }
 
-  static assertAlwaysClosedLock(RxJavaDistributedLock lock, String lockId = lock.id) {
+  static assertAlwaysClosedLock(RxDistributedLock lock, String lockId = lock.id) {
     assertSingleStateLock(lock, lockId, false)
   }
 
-  private static assertSingleStateLock(RxJavaDistributedLock lock, String lockId, boolean expectedResult) {
+  private static assertSingleStateLock(RxDistributedLock lock, String lockId, boolean expectedResult) {
     assert lock.id == lockId
     assert lock.acquire().blockingGet().acquired == expectedResult
     assert lock.acquire(Duration.ofHours(1)).blockingGet().acquired == expectedResult

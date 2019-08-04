@@ -9,10 +9,10 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.acquiredInMemoryLock
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.releasedInMemoryLock
+import static RxDistributedLockMock.acquiredInMemoryLock
+import static RxDistributedLockMock.releasedInMemoryLock
 
-class RxJavaDistributedLockSpec extends Specification {
+class RxDistributedLockSpec extends Specification {
   @Shared
   Counter counter = new Counter()
 
@@ -24,7 +24,7 @@ class RxJavaDistributedLockSpec extends Specification {
   @Unroll
   def "should release the lock after executing the action"() {
     given:
-      RxJavaDistributedLockMock lock = releasedInMemoryLock("sample-lock")
+      RxDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).blockingGet()
     then:
@@ -43,7 +43,7 @@ class RxJavaDistributedLockSpec extends Specification {
   @Unroll
   def "should not execute action if lock was not acquired"() {
     given:
-      RxJavaDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
+      RxDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).blockingGet()
     then:
@@ -62,7 +62,7 @@ class RxJavaDistributedLockSpec extends Specification {
   @Unroll
   def "should release the lock after action error"() {
     given:
-      RxJavaDistributedLockMock lock = releasedInMemoryLock("sample-lock")
+      RxDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).blockingGet()
     then:
@@ -82,7 +82,7 @@ class RxJavaDistributedLockSpec extends Specification {
 
   def "should execute action on lock release"() {
     given:
-      RxJavaDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
+      RxDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
       Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
         .blockingGet()
@@ -95,7 +95,7 @@ class RxJavaDistributedLockSpec extends Specification {
 
   def "should not execute action when lock was not released"() {
     given:
-      RxJavaDistributedLockMock lock = releasedInMemoryLock("sample-lock")
+      RxDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
       Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
         .blockingGet()

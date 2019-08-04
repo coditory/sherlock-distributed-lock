@@ -2,15 +2,15 @@ package com.coditory.sherlock.rxjava
 
 import spock.lang.Specification
 
-import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.lockStub
+import static RxDistributedLockMock.lockStub
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
-class RxJavaSherlockStubSpec extends Specification {
+class RxSherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
     given:
       String lockId = "some-lock"
-      RxJavaSherlock sherlock = RxJavaSherlockStub.withReleasedLocks()
+      RxSherlock sherlock = RxSherlockStub.withReleasedLocks()
 
     expect:
       assertAlwaysOpenedLock(sherlock.createLock(lockId), lockId)
@@ -21,7 +21,7 @@ class RxJavaSherlockStubSpec extends Specification {
   def "should create sherlock returning always closed locks"() {
     given:
       String lockId = "some-lock"
-      RxJavaSherlock sherlock = RxJavaSherlockStub.withAcquiredLocks()
+      RxSherlock sherlock = RxSherlockStub.withAcquiredLocks()
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock(lockId), lockId)
@@ -32,7 +32,7 @@ class RxJavaSherlockStubSpec extends Specification {
   def "should create sherlock returning closed locks by default and opened lock for specific id"() {
     given:
       String lockId = "some-lock"
-      RxJavaSherlock sherlock = RxJavaSherlockStub.withAcquiredLocks()
+      RxSherlock sherlock = RxSherlockStub.withAcquiredLocks()
         .withLock(lockStub(lockId, true))
 
     expect:
