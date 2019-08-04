@@ -16,7 +16,7 @@ trait UsesReactiveMongoSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
-  Sherlock createDistributedLocks(String ownerId, Duration duration, Clock clock) {
+  Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
     ReactiveSherlock reactiveLocks = ReactiveMongoSherlock.builder()
       .withLocksCollection(getLocksCollection())
       .withOwnerId(ownerId)

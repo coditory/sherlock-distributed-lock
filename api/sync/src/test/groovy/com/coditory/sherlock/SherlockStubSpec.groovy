@@ -1,11 +1,8 @@
 package com.coditory.sherlock
 
-
 import spock.lang.Specification
 
 import static com.coditory.sherlock.DistributedLockMock.lockStub
-import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysClosedLock
-import static com.coditory.sherlock.base.DistributedLockAssertions.assertAlwaysOpenedLock
 
 class SherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
@@ -39,5 +36,20 @@ class SherlockStubSpec extends Specification {
       sherlock.createLock("other-lock").acquire() == false
     and:
       sherlock.createLock(lockId).acquire() == true
+  }
+
+  static assertAlwaysOpenedLock(DistributedLock lock, String lockId = lock.id) {
+    assertSingleStateLock(lock, lockId, true)
+  }
+
+  static assertAlwaysClosedLock(DistributedLock lock, String lockId = lock.id) {
+    assertSingleStateLock(lock, lockId, false)
+  }
+
+  private static assertSingleStateLock(DistributedLock lock, String lockId, boolean expectedResult) {
+    assert lock.id == lockId
+    assert lock.acquire() == expectedResult
+    assert lock.release() == expectedResult
+    return true
   }
 }

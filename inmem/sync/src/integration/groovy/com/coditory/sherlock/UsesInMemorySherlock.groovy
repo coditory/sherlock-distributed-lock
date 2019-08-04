@@ -7,7 +7,7 @@ import java.time.Duration
 
 trait UsesInMemorySherlock implements DistributedLocksCreator {
   @Override
-  Sherlock createDistributedLocks(String instanceId, Duration duration, Clock clock) {
+  Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
     return InMemorySherlock.builder()
       .withOwnerId(instanceId)
       .withLockDuration(duration)

@@ -14,7 +14,7 @@ trait UsesMongoSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
-  Sherlock createDistributedLocks(String instanceId, Duration duration, Clock clock) {
+  Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
     return MongoSherlock.builder()
       .withLocksCollection(getLocksCollection())
       .withOwnerId(instanceId)
