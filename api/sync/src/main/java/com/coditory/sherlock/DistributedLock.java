@@ -3,7 +3,7 @@ package com.coditory.sherlock;
 import java.time.Duration;
 
 /**
- * A lock for distributed environment consisting of multiple application instances.
+ * A distributed lock.
  *
  * @see Sherlock
  */
@@ -16,9 +16,9 @@ public interface DistributedLock {
   String getId();
 
   /**
-   * Try to acquire the lock. Lock is acquired for a configured duration.
+   * Try to acquire the lock. Lock is acquired for a pre configured duration.
    *
-   * @return true, if lock is acquired
+   * @return true if lock is acquired
    */
   boolean acquire();
 
@@ -26,31 +26,36 @@ public interface DistributedLock {
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return true, if lock is acquired
+   * @return true if lock is acquired
    */
   boolean acquire(Duration duration);
 
   /**
-   * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
-   * situation where the lock owning instance goes down with out releasing the lock.
+   * Try to acquire the lock without expiring date.
+   * <p>
+   * It is potentially dangerous. Lookout for a situation when the lock owning instance goes down
+   * with out releasing the lock.
    *
-   * @return true, if lock is acquired
+   * @return true if lock is acquired
    */
   boolean acquireForever();
 
   /**
-   * Release the lock
+   * Try to release the lock.
    *
-   * @return true, if lock was released in this call. If lock has expired or was released by a
-   *     different instance then false is returned.
+   * @return true if lock was released by this method invocation. If lock has expired or was
+   *   released earlier  then false is returned.
    */
   boolean release();
 
   /**
    * Acquire a lock and release it after action is executed.
+   * <p>
+   * This is a helper method that makes sure the lock is released when action finishes successfully
+   * or throws an exception.
    *
    * @param action to be executed when lock is acquired
-   * @return true if lock is acquired.
+   * @return {@link AcquireAndExecuteResult}
    * @see DistributedLock#acquire()
    */
   default AcquireAndExecuteResult acquireAndExecute(Runnable action) {
@@ -58,21 +63,42 @@ public interface DistributedLock {
       .executeOnAcquired(acquire(), action, this::release);
   }
 
+  /**
+   * Acquire a lock for specific duration and release it after action is executed.
+   * <p>
+   * This is a helper method that makes sure the lock is released when action finishes successfully
+   * or throws an exception.
+   *
+   * @param duration how much time must pass to release the lock
+   * @param action to be executed when lock is acquired
+   * @return {@link AcquireAndExecuteResult}
+   * @see DistributedLock#acquire(Duration)
+   */
   default AcquireAndExecuteResult acquireAndExecute(Duration duration, Runnable action) {
     return AcquireAndExecuteResult
       .executeOnAcquired(acquire(duration), action, this::release);
   }
 
+  /**
+   * Acquire a lock for specific duration and release it after action is executed.
+   * <p>
+   * This is a helper method that makes sure the lock is released when action finishes successfully
+   * or throws an exception.
+   *
+   * @param action to be executed when lock is acquired
+   * @return {@link AcquireAndExecuteResult}
+   * @see DistributedLock#acquireForever()
+   */
   default AcquireAndExecuteResult acquireForeverAndExecute(Runnable action) {
     return AcquireAndExecuteResult
       .executeOnAcquired(acquireForever(), action, this::release);
   }
 
   /**
-   * Run the action when lock is released
+   * Run the action if lock is released.
    *
    * @param action to be executed when lock is released
-   * @return true, if lock was release
+   * @return {@link ReleaseAndExecuteResult}
    * @see DistributedLock#release()
    */
   default ReleaseAndExecuteResult releaseAndExecute(Runnable action) {
@@ -81,7 +107,8 @@ public interface DistributedLock {
   }
 
   class AcquireAndExecuteResult {
-    private static AcquireAndExecuteResult executeOnAcquired(boolean acquired, Runnable action, Runnable release) {
+    private static AcquireAndExecuteResult executeOnAcquired(
+      boolean acquired, Runnable action, Runnable release) {
       if (acquired) {
         try {
           action.run();

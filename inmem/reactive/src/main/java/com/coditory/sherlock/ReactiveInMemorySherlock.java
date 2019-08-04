@@ -6,11 +6,13 @@ import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
 import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 /**
- * Builds {@link ReactiveSherlock} that stores lock in memory.
+ * Builds {@link ReactiveSherlock} that that stores locks in memory.
+ * <p>
+ * Designed for testing purposes only.
  */
 public final class ReactiveInMemorySherlock extends
   ReactiveSherlockWithConnectorBuilder<ReactiveInMemorySherlock> {
-  private InMemoryDistributedLockStorage storage = InMemoryDistributedLockStorage.singleton();
+  private InMemoryDistributedLockStorage storage = new InMemoryDistributedLockStorage();
   private Clock clock = DEFAULT_CLOCK;
 
   /**
@@ -34,8 +36,13 @@ public final class ReactiveInMemorySherlock extends
     return this;
   }
 
-  public ReactiveInMemorySherlock withUnsharedStorage() {
-    this.storage = new InMemoryDistributedLockStorage();
+  /**
+   * Use shared stage for all instances of {@link ReactiveSherlock}.
+   *
+   * @return the instance
+   */
+  public ReactiveInMemorySherlock withSharedStorage() {
+    this.storage = InMemoryDistributedLockStorage.singleton();
     return this;
   }
 
