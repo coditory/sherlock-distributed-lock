@@ -21,7 +21,7 @@ public final class LockId {
 
   @Override
   public String toString() {
-    return "LockId{id='" + id + "'}";
+    return "LockId(" + id + ")";
   }
 
   @Override

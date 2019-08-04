@@ -1,86 +1,172 @@
 package com.coditory.sherlock.reactor
 
 
-import com.coditory.sherlock.reactive.connector.AcquireResult
-import com.coditory.sherlock.reactive.connector.ReleaseResult
-import com.coditory.sherlock.reactor.test.ReactorDistributedLockMock
-import reactor.core.publisher.Mono
 import spock.lang.Specification
+import spock.lang.Unroll
 
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysAcquiredLock
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysReleasedLock
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.sequencedLock
-import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysClosedLock
-import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysOpenedLock
+import static ReactorDistributedLockMock.sequencedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.acquiredReentrantInMemoryLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.lockStub
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.releasedReentrantInMemoryLock
 
 class ReactorDistributedLockMockSpec extends Specification {
-  String lockId = "sample-lock"
+  private static final String lockId = "sample-lock"
 
-  def "should create always open lock that returns always success"() {
-    given:
-      ReactorDistributedLock lock = alwaysReleasedLock(lockId)
+  @Unroll
+  def "should create single state lock with #action"() {
     expect:
-      assertAlwaysOpenedLock(lock, lockId)
-  }
-
-  def "should create always closed lock that returns always failure"() {
-    given:
-      ReactorDistributedLock lock = alwaysAcquiredLock("sample-lock")
-    expect:
-      assertAlwaysClosedLock(lock, lockId)
-  }
-
-  def "should create a lock stub that returns a sequence of results"() {
-    given:
-      List<Boolean> resultSequence = [true, false, true]
+      acquire(lock) == acquireResult
+      acquire(lock) == acquireResult
     and:
-      ReactorDistributedLock lock = sequencedLock("sample-lock", resultSequence)
-    expect:
-      awaitAcquires(lock.acquire(), lock.acquire(), lock.acquire()) == resultSequence
-      awaitRelseases(lock.release(), lock.release(), lock.release()) == resultSequence
+      release(lock) == releaseResult
+      release(lock) == releaseResult
+    where:
+      action                                 | acquireResult | releaseResult | lock
+      'singleStateLock(lockId, true)'        | true          | true          | lockStub(lockId, true)
+      'singleStateLock(lockId, true, false)' | true          | false         | lockStub(lockId, true, false)
+      'singleStateLock(true)'                | false         | false         | lockStub(false)
+      'singleStateLock(true, false)'         | false         | true          | lockStub(false, true)
   }
 
-  def "should create a lock stub that returns a sequence of different results"() {
+  def "should create a lock that returns a sequence of results"() {
     given:
       List<Boolean> acquireResultSequence = [true, false, true]
-      List<Boolean> releaseResultSequence = [false, false, true]
+      List<Boolean> releaseResultSequence = [false, true, false]
     and:
       ReactorDistributedLock lock = sequencedLock("sample-lock", acquireResultSequence, releaseResultSequence)
     expect:
-      awaitAcquires(lock.acquire(), lock.acquire(), lock.acquire()) == acquireResultSequence
-      awaitRelseases(lock.release(), lock.release(), lock.release()) == releaseResultSequence
+      [acquire(lock), acquire(lock), acquire(lock), acquire(lock)] == acquireResultSequence + true
+      [release(lock), release(lock), release(lock), release(lock)] == releaseResultSequence + false
   }
 
-  def "should count acquire and release invocations"() {
-    given:
-      ReactorDistributedLockMock lock = alwaysReleasedLock(lockId)
+  @Unroll
+  def "should create a released in-memory lock"() {
     expect:
-      lock.acquireInvocations() == 0
-      lock.releaseInvocations() == 0
+      release(lock) == false
+      acquire(lock) == true
+    where:
+      lock << [
+        releasedInMemoryLock()
+//        releasedReentrantInMemoryLock(),
+//        releasedInMemoryLock(lockId),
+//        releasedReentrantInMemoryLock(lockId)
+      ]
+  }
+
+  @Unroll
+  def "should create an acquired reentrant in-memory lock"() {
+    expect:
+      release(lock) == true
+      acquire(lock) == true
+      acquire(lock) == true
+    where:
+      lock << [
+        acquiredReentrantInMemoryLock(),
+        acquiredReentrantInMemoryLock(lockId)
+      ]
+  }
+
+  @Unroll
+  def "should create an acquired single entrant in-memory lock"() {
+    expect:
+      release(lock) == true
+      acquire(lock) == true
+      acquire(lock) == false
+    where:
+      lock << [
+        acquiredInMemoryLock(),
+        acquiredInMemoryLock(lockId)
+      ]
+  }
+
+  def "should record no invocation for a new lock mock instance"() {
+    given:
+      ReactorDistributedLockMock lock = releasedInMemoryLock()
+    expect:
+      lock.acquisitions() == 0
+      lock.releases() == 0
     and:
-      lock.wasAcquired() == false
-      lock.wasReleased() == false
+      lock.successfulAcquisitions() == 0
+      lock.successfulReleases() == 0
+    and:
+      lock.wasAcquireInvoked() == false
+      lock.wasReleaseInvoked() == false
+      lock.wasAcquireRejected() == false
+      lock.wasReleaseRejected() == false
+      lock.wasAcquiredAndReleased() == false
+  }
+
+  def "should record lock acquire invocations"() {
+    given:
+      ReactorDistributedLockMock lock = releasedInMemoryLock()
+    when:
+      acquire(lock)
+    then:
+      lock.acquisitions() == 1
+    and:
+      lock.successfulAcquisitions() == 1
+      lock.rejectedAcquisitions() == 0
+    and:
+      lock.wasAcquireInvoked() == true
+      lock.wasAcquireRejected() == false
+      lock.wasAcquiredAndReleased() == false
 
     when:
-      lock.acquire().block()
-      lock.release().block()
+      acquire(lock)
     then:
-      lock.acquireInvocations() == 1
-      lock.releaseInvocations() == 1
+      lock.acquisitions() == 2
     and:
-      lock.wasAcquired() == true
-      lock.wasReleased() == true
+      lock.successfulAcquisitions() == 1
+      lock.rejectedAcquisitions() == 1
+    and:
+      lock.wasAcquireInvoked() == true
+      lock.wasAcquireRejected() == true
   }
 
-  private List<Boolean> awaitAcquires(Mono<AcquireResult>... results) {
-    return results
-        .collect { it.block() }
-        .collect { it.acquired }
+  def "should record lock release invocations"() {
+    given:
+      ReactorDistributedLockMock lock = acquiredInMemoryLock()
+    when:
+      release(lock)
+    then:
+      lock.releases() == 1
+    and:
+      lock.successfulReleases() == 1
+      lock.rejectedReleases() == 0
+    and:
+      lock.wasReleaseInvoked() == true
+      lock.wasReleaseRejected() == false
+      lock.wasAcquiredAndReleased() == false
+
+    when:
+      release(lock)
+    then:
+      lock.releases() == 2
+    and:
+      lock.successfulReleases() == 1
+      lock.rejectedReleases() == 1
+    and:
+      lock.wasReleaseInvoked() == true
+      lock.wasReleaseRejected() == true
   }
 
-  private List<Boolean> awaitRelseases(Mono<ReleaseResult>... results) {
-    return results
-        .collect { it.block() }
-        .collect { it.unlocked }
+  def "should record acquire and release invocations"() {
+    given:
+      ReactorDistributedLockMock lock = releasedInMemoryLock()
+    when:
+      acquire(lock)
+      release(lock)
+    then:
+      lock.wasAcquiredAndReleased() == true
+  }
+
+  private Boolean acquire(ReactorDistributedLock lock) {
+    return lock.acquire().block().acquired
+  }
+
+  private Boolean release(ReactorDistributedLock lock) {
+    return lock.release().block().released
   }
 }

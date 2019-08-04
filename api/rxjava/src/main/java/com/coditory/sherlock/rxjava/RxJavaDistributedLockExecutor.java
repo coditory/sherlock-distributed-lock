@@ -28,7 +28,7 @@ final class RxJavaDistributedLockExecutor {
   static <T> Maybe<T> executeOnReleased(
       Single<ReleaseResult> unlockResult, Supplier<Single<T>> supplier) {
     return unlockResult
-        .filter(ReleaseResult::isUnlocked)
+        .filter(ReleaseResult::isReleased)
         .flatMap(releasedLockResult -> supplier.get().flatMapMaybe(Maybe::just));
   }
 }

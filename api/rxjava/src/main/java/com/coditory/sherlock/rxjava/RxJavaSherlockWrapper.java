@@ -1,10 +1,15 @@
 package com.coditory.sherlock.rxjava;
 
+import com.coditory.sherlock.common.LockDuration;
+import com.coditory.sherlock.common.LockId;
+import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.reactive.ReactiveDistributedLock;
+import com.coditory.sherlock.reactive.ReactiveDistributedLockBuilder;
 import com.coditory.sherlock.reactive.ReactiveSherlock;
 import com.coditory.sherlock.reactive.connector.InitializationResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
+import com.coditory.sherlock.rxjava.RxJavaDistributedLockBuilder.LockCreator;
 import io.reactivex.Single;
-
-import java.time.Duration;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.rxjava.PublisherToSingleConverter.convertToSingle;
@@ -22,32 +27,47 @@ final class RxJavaSherlockWrapper implements RxJavaSherlock {
   }
 
   @Override
-  public RxJavaDistributedLock createReentrantLock(String lockId) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createReentrantLock(lockId));
+  public RxJavaDistributedLockBuilder createLock() {
+    return createLockBuilder(sherlock.createLock());
   }
 
   @Override
-  public RxJavaDistributedLock createReentrantLock(String lockId, Duration duration) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createReentrantLock(lockId, duration));
+  public RxJavaDistributedLockBuilder createReentrantLock() {
+    return createLockBuilder(sherlock.createReentrantLock());
   }
 
   @Override
-  public RxJavaDistributedLock createLock(String lockId) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createLock(lockId));
+  public RxJavaDistributedLockBuilder createOverridingLock() {
+    return createLockBuilder(sherlock.createOverridingLock());
   }
 
   @Override
-  public RxJavaDistributedLock createLock(String lockId, Duration duration) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createLock(lockId, duration));
+  public Single<ReleaseResult> forceReleaseAllLocks() {
+    return convertToSingle(sherlock.forceReleaseAllLocks());
   }
 
-  @Override
-  public RxJavaDistributedLock createOverridingLock(String lockId) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createOverridingLock(lockId));
+  private RxJavaDistributedLockBuilder createLockBuilder(
+    ReactiveDistributedLockBuilder reactiveBuilder) {
+    return new RxJavaDistributedLockBuilder(createLock(reactiveBuilder))
+      .withLockDuration(reactiveBuilder.getDuration())
+      .withOwnerIdPolicy(reactiveBuilder.getOwnerIdPolicy());
   }
 
-  @Override
-  public RxJavaDistributedLock createOverridingLock(String lockId, Duration duration) {
-    return RxJavaDistributedLockWrapper.rxJavaLock(sherlock.createOverridingLock(lockId, duration));
+  private LockCreator createLock(ReactiveDistributedLockBuilder reactiveBuilder) {
+    return (lockId, duration, ownerId) ->
+      createLockAndLog(reactiveBuilder, lockId, ownerId, duration);
+  }
+
+  private RxJavaDistributedLock createLockAndLog(
+    ReactiveDistributedLockBuilder reactiveBuilder,
+    LockId lockId,
+    OwnerId ownerId,
+    LockDuration duration) {
+    ReactiveDistributedLock reactiveLock = reactiveBuilder
+      .withLockDuration(duration.getValue())
+      .withOwnerId(ownerId.getValue())
+      .withLockId(lockId.getValue())
+      .build();
+    return new RxJavaDistributedLockWrapper(reactiveLock);
   }
 }

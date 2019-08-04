@@ -3,7 +3,6 @@ package com.coditory.sherlock.common;
 import java.time.Duration;
 import java.util.Objects;
 
-import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.common.util.Preconditions.expectTruncatedToMillis;
 
 public final class LockDuration {
@@ -11,12 +10,17 @@ public final class LockDuration {
     return new LockDuration(duration);
   }
 
+  public static LockDuration permanent() {
+    return new LockDuration(null);
+  }
+
   private final Duration duration;
 
   private LockDuration(Duration duration) {
-    expectNonNull(duration, "Expected non null lock duration");
-    expectTruncatedToMillis(
+    if (duration != null) {
+      expectTruncatedToMillis(
         duration, "Expected lock duration truncated to millis. Got: " + duration);
+    }
     this.duration = duration;
   }
 
@@ -24,9 +28,13 @@ public final class LockDuration {
     return duration;
   }
 
+  public boolean isPermanent() {
+    return duration == null;
+  }
+
   @Override
   public String toString() {
-    return "LockDuration{duration=" + duration + "}";
+    return "LockDuration(" + duration + ")";
   }
 
   @Override

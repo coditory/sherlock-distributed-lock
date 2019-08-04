@@ -1,26 +1,28 @@
 package com.coditory.sherlock;
 
+import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
+import com.coditory.sherlock.DistributedLock.ReleaseAndExecuteResult;
+
 final class DistributedLockExecutor {
   private DistributedLockExecutor() {
     throw new IllegalStateException("Do not instantiate utility class");
   }
 
-  static boolean executeOnAcquired(boolean acquired, Runnable action, Runnable release) {
-    if (!acquired) {
-      return false;
+  static AcquireAndExecuteResult executeOnAcquired(boolean acquired, Runnable action, Runnable release) {
+    if (acquired) {
+      try {
+        action.run();
+      } finally {
+        release.run();
+      }
     }
-    try {
-      action.run();
-    } finally {
-      release.run();
-    }
-    return true;
+    return new AcquireAndExecuteResult(acquired);
   }
 
-  static boolean executeOnReleased(boolean released, Runnable action) {
+  static ReleaseAndExecuteResult executeOnReleased(boolean released, Runnable action) {
     if (released) {
       action.run();
     }
-    return released;
+    return new ReleaseAndExecuteResult(released);
   }
 }

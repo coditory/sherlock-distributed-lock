@@ -12,7 +12,7 @@ import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
  * Builds {@link ReactiveSherlock} that uses MongoDB for locking mechanism.
  */
 public class ReactiveMongoSherlock extends
-    ReactiveSherlockWithConnectorBuilder<ReactiveMongoSherlock> {
+  ReactiveSherlockWithConnectorBuilder<ReactiveMongoSherlock> {
   private MongoCollection<Document> collection;
   private Clock clock = DEFAULT_CLOCK;
 
@@ -38,7 +38,7 @@ public class ReactiveMongoSherlock extends
 
   /**
    * @param clock time provider used in locking mechanism. Default: {@link
-   *     com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
+   *   com.coditory.sherlock.common.SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
   public ReactiveMongoSherlock withClock(Clock clock) {
@@ -50,7 +50,7 @@ public class ReactiveMongoSherlock extends
   public ReactiveSherlock build() {
     expectNonNull(collection, "Expected non null collection");
     ReactiveMongoDistributedLockConnector connector = new ReactiveMongoDistributedLockConnector(
-        collection, clock);
+      collection, clock);
     return build(connector);
   }
 }

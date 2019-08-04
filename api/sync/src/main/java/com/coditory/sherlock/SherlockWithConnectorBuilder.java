@@ -1,21 +1,24 @@
 package com.coditory.sherlock;
 
 import com.coditory.sherlock.common.LockDuration;
-import com.coditory.sherlock.common.OwnerIdGenerator;
+import com.coditory.sherlock.common.OwnerIdPolicy;
+import com.coditory.sherlock.common.SherlockDefaults;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.common.OwnerIdGenerator.staticOwnerIdGenerator;
+import static com.coditory.sherlock.common.OwnerIdPolicy.staticOwnerIdPolicy;
+import static com.coditory.sherlock.common.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
+import static com.coditory.sherlock.common.OwnerIdPolicy.uniqueOwnerIdPolicy;
 import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_OWNER_ID_GENERATOR;
+import static com.coditory.sherlock.common.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
 abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder> {
   private LockDuration duration = DEFAULT_LOCK_DURATION;
-  private OwnerIdGenerator ownerIdGenerator = DEFAULT_OWNER_ID_GENERATOR;
+  private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
 
   /**
    * @param duration how much time a lock should be active. When time passes lock is expired and
-   *     becomes released. Default: {@link com.coditory.sherlock.common.SherlockDefaults#DEFAULT_LOCK_DURATION}
+   *   becomes released. Default: {@link SherlockDefaults#DEFAULT_LOCK_DURATION}
    * @return the instance
    */
   public T withLockDuration(Duration duration) {
@@ -28,18 +31,18 @@ abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuild
    * @return the instance
    */
   public T withOwnerId(String ownerId) {
-    this.ownerIdGenerator = staticOwnerIdGenerator(ownerId);
+    this.ownerIdPolicy = staticOwnerIdPolicy(ownerId);
     return instance();
   }
 
   /**
-   * Generates random owner id for every instance of lock object.
+   * Generates random unique owner id for every instance of lock object.
    *
    * @return the instance
    * @see this#withOwnerId(String)
    */
-  public T withRandomOwnerId() {
-    this.ownerIdGenerator = OwnerIdGenerator.RANDOM_OWNER_ID_GENERATOR;
+  public T withUniqueOwnerId() {
+    this.ownerIdPolicy = uniqueOwnerIdPolicy();
     return instance();
   }
 
@@ -50,8 +53,8 @@ abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuild
    * @return the instance
    * @see this#withOwnerId(String)
    */
-  public T withRandomStaticOwnerId() {
-    this.ownerIdGenerator = OwnerIdGenerator.RANDOM_STATIC_OWNER_ID_GENERATOR;
+  public T withStaticUniqueOwnerId() {
+    this.ownerIdPolicy = staticUniqueOwnerIdPolicy();
     return instance();
   }
 
@@ -62,7 +65,7 @@ abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuild
   public abstract Sherlock build();
 
   protected Sherlock build(DistributedLockConnector connector) {
-    return new SherlockWithConnector(connector, ownerIdGenerator, duration);
+    return new SherlockWithConnector(connector, ownerIdPolicy, duration);
   }
 
   @SuppressWarnings("unchecked")

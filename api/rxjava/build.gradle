@@ -5,8 +5,6 @@ dependencies {
   api "io.reactivex.rxjava2:rxjava:$versions.rxjava"
   implementation "org.reactivestreams:reactive-streams-flow-adapters:1.0.2"
   implementation project(':common')
-  integrationCompile project(':mongo:mongo-reactive')
+  integrationCompile project(':inmem:inmem-reactive')
   integrationCompile project(':tests')
-  integrationCompile "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
-  integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

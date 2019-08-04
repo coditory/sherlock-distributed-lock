@@ -20,7 +20,7 @@ class DistributedLockAssertions {
     assert lock.acquire().block().acquired == expectedResult
     assert lock.acquire(Duration.ofHours(1)).block().acquired == expectedResult
     assert lock.acquireForever().block().acquired == expectedResult
-    assert lock.release().block().unlocked == expectedResult
+    assert lock.release().block().released == expectedResult
     return true
   }
 }

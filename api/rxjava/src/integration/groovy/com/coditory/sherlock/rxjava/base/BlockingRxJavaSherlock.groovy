@@ -1,18 +1,21 @@
 package com.coditory.sherlock.rxjava.base
 
 import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.DistributedLockBuilder
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.common.LockDuration
+import com.coditory.sherlock.common.LockId
+import com.coditory.sherlock.common.OwnerId
 import com.coditory.sherlock.rxjava.RxJavaDistributedLock
+import com.coditory.sherlock.rxjava.RxJavaDistributedLockBuilder
 import com.coditory.sherlock.rxjava.RxJavaSherlock
-import com.coditory.sherlock.tests.base.TestableDistributedLocks
 import groovy.transform.CompileStatic
 
 import java.time.Duration
 
-import static BlockingRxJavaLock.blockingLock
-
 @CompileStatic
-class BlockingRxJavaSherlock implements TestableDistributedLocks {
-  static TestableDistributedLocks blockRxJavaSherlock(RxJavaSherlock locks) {
+class BlockingRxJavaSherlock implements Sherlock {
+  static Sherlock blockingRxJavaSherlock(RxJavaSherlock locks) {
     return new BlockingRxJavaSherlock(locks)
   }
 
@@ -23,46 +26,55 @@ class BlockingRxJavaSherlock implements TestableDistributedLocks {
   }
 
   @Override
-  DistributedLock createReentrantLock(String lockId) {
-    return blockingLock(locks.createReentrantLock(lockId))
+  void initialize() {
+    locks.initialize().blockingGet()
   }
 
   @Override
-  DistributedLock createReentrantLock(String lockId, Duration duration) {
-    return blockingLock(locks.createReentrantLock(lockId, duration))
+  DistributedLockBuilder createLock() {
+    return blockingLockBuilder(locks.createLock())
   }
 
   @Override
-  DistributedLock createLock(String lockId) {
-    return blockingLock(locks.createLock(lockId))
+  DistributedLockBuilder createReentrantLock() {
+    return blockingLockBuilder(locks.createReentrantLock())
   }
 
   @Override
-  DistributedLock createLock(String lockId, Duration duration) {
-    return blockingLock(locks.createLock(lockId, duration))
+  DistributedLockBuilder createOverridingLock() {
+    return blockingLockBuilder(locks.createOverridingLock())
   }
 
   @Override
-  DistributedLock createOverridingLock(String lockId) {
-    return blockingLock(locks.createOverridingLock(lockId))
+  boolean forceReleaseAllLocks() {
+    return locks.forceReleaseAllLocks()
+      .blockingGet().released
   }
 
   @Override
-  DistributedLock createOverridingLock(String lockId, Duration duration) {
-    return blockingLock(locks.createOverridingLock(lockId, duration))
+  boolean forceReleaseLock(String lockId) {
+    return locks.forceReleaseLock(lockId)
+      .blockingGet().released
+  }
+
+  private DistributedLockBuilder blockingLockBuilder(RxJavaDistributedLockBuilder rxBuilder) {
+    return new DistributedLockBuilder({ LockId lockId, LockDuration duration, OwnerId ownerId ->
+      RxJavaDistributedLock lock = rxBuilder
+        .withLockId(lockId.value)
+        .withLockDuration(duration.value)
+        .withOwnerId(ownerId.value)
+        .build()
+      return new BlockingRxJavaLock(lock)
+    }).withLockDuration(rxBuilder.getDuration())
+      .withOwnerIdPolicy(rxBuilder.getOwnerIdPolicy())
   }
 }
 
 @CompileStatic
 class BlockingRxJavaLock implements DistributedLock {
-
-  static BlockingRxJavaLock blockingLock(RxJavaDistributedLock lock) {
-    return new BlockingRxJavaLock(lock)
-  }
-
   private final RxJavaDistributedLock lock
 
-  private BlockingRxJavaLock(RxJavaDistributedLock lock) {
+  BlockingRxJavaLock(RxJavaDistributedLock lock) {
     this.lock = lock
   }
 
@@ -74,24 +86,24 @@ class BlockingRxJavaLock implements DistributedLock {
   @Override
   boolean acquire() {
     return lock.acquire()
-        .blockingGet().acquired
+      .blockingGet().acquired
   }
 
   @Override
   boolean acquire(Duration duration) {
     return lock.acquire(duration)
-        .blockingGet().acquired
+      .blockingGet().acquired
   }
 
   @Override
   boolean acquireForever() {
     return lock.acquireForever()
-        .blockingGet().acquired
+      .blockingGet().acquired
   }
 
   @Override
   boolean release() {
     return lock.release()
-        .blockingGet().unlocked
+      .blockingGet().released
   }
 }

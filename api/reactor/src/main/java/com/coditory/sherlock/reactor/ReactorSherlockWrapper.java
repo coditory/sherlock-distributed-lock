@@ -1,10 +1,15 @@
 package com.coditory.sherlock.reactor;
 
+import com.coditory.sherlock.common.LockDuration;
+import com.coditory.sherlock.common.LockId;
+import com.coditory.sherlock.common.OwnerId;
+import com.coditory.sherlock.reactive.ReactiveDistributedLock;
+import com.coditory.sherlock.reactive.ReactiveDistributedLockBuilder;
 import com.coditory.sherlock.reactive.ReactiveSherlock;
 import com.coditory.sherlock.reactive.connector.InitializationResult;
+import com.coditory.sherlock.reactive.connector.ReleaseResult;
+import com.coditory.sherlock.reactor.ReactorDistributedLockBuilder.LockCreator;
 import reactor.core.publisher.Mono;
-
-import java.time.Duration;
 
 import static com.coditory.sherlock.common.util.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux;
@@ -19,38 +24,52 @@ final class ReactorSherlockWrapper implements ReactorSherlock {
   @Override
   public Mono<InitializationResult> initialize() {
     return flowPublisherToFlux(sherlock.initialize())
-        .single();
+      .single();
   }
 
   @Override
-  public ReactorDistributedLock createReentrantLock(String lockId) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createReentrantLock(lockId));
+  public ReactorDistributedLockBuilder createLock() {
+    return createLockBuilder(sherlock.createLock());
   }
 
   @Override
-  public ReactorDistributedLock createReentrantLock(String lockId, Duration duration) {
-    return ReactorDistributedLockWrapper
-        .reactorLock(sherlock.createReentrantLock(lockId, duration));
+  public ReactorDistributedLockBuilder createReentrantLock() {
+    return createLockBuilder(sherlock.createReentrantLock());
   }
 
   @Override
-  public ReactorDistributedLock createLock(String lockId) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createLock(lockId));
+  public ReactorDistributedLockBuilder createOverridingLock() {
+    return createLockBuilder(sherlock.createOverridingLock());
   }
 
   @Override
-  public ReactorDistributedLock createLock(String lockId, Duration duration) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createLock(lockId, duration));
+  public Mono<ReleaseResult> forceReleaseAllLocks() {
+    return flowPublisherToFlux(sherlock.forceReleaseAllLocks())
+      .single();
   }
 
-  @Override
-  public ReactorDistributedLock createOverridingLock(String lockId) {
-    return ReactorDistributedLockWrapper.reactorLock(sherlock.createOverridingLock(lockId));
+  private ReactorDistributedLockBuilder createLockBuilder(
+    ReactiveDistributedLockBuilder reactiveBuilder) {
+    return new ReactorDistributedLockBuilder(createLock(reactiveBuilder))
+      .withLockDuration(reactiveBuilder.getDuration())
+      .withOwnerIdPolicy(reactiveBuilder.getOwnerIdPolicy());
   }
 
-  @Override
-  public ReactorDistributedLock createOverridingLock(String lockId, Duration duration) {
-    return ReactorDistributedLockWrapper
-        .reactorLock(sherlock.createOverridingLock(lockId, duration));
+  private LockCreator createLock(ReactiveDistributedLockBuilder reactiveBuilder) {
+    return (lockId, duration, ownerId) ->
+      createLockAndLog(reactiveBuilder, lockId, ownerId, duration);
+  }
+
+  private ReactorDistributedLock createLockAndLog(
+    ReactiveDistributedLockBuilder reactiveBuilder,
+    LockId lockId,
+    OwnerId ownerId,
+    LockDuration duration) {
+    ReactiveDistributedLock reactiveLock = reactiveBuilder
+      .withLockDuration(duration.getValue())
+      .withOwnerId(ownerId.getValue())
+      .withLockId(lockId.getValue())
+      .build();
+    return new ReactorDistributedLockWrapper(reactiveLock);
   }
 }

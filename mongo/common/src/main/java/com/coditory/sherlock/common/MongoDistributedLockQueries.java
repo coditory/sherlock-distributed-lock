@@ -17,25 +17,25 @@ public final class MongoDistributedLockQueries {
 
   public static Bson queryReleased(LockId lockId, Instant now) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        lte(Fields.EXPIRES_AT_FIELD, now)
+      eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+      lte(Fields.EXPIRES_AT_FIELD, now)
     );
   }
 
   public static Bson queryAcquired(LockId lockId, OwnerId ownerId) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        lte(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
+      eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+      lte(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
     );
   }
 
   public static Bson queryAcquiredOrReleased(LockId lockId, OwnerId ownerId, Instant now) {
     return and(
-        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-        or(
-            eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
-            lte(Fields.EXPIRES_AT_FIELD, now)
-        )
+      eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+      or(
+        eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
+        lte(Fields.EXPIRES_AT_FIELD, now)
+      )
     );
   }
 

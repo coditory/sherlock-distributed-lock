@@ -1,0 +1,7 @@
+description = 'Sherlock Distributed Lock in-memory implementation'
+
+dependencies {
+  api project(':api:api-sync')
+  implementation project(':inmem:inmem-common')
+  integrationCompile project(':tests')
+}

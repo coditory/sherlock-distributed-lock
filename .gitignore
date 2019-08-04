@@ -1,6 +1,8 @@
 build
+bin
 
 # Gradle
+.log
 .gradle
 !gradle-wrapper.jar
 

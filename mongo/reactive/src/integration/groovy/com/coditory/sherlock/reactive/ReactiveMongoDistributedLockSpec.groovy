@@ -6,9 +6,6 @@ import com.coditory.sherlock.tests.InfiniteAcquireLockSpec
 import com.coditory.sherlock.tests.ReleaseLockSpec
 
 class ReactiveMongoReleaseLockSpec extends ReleaseLockSpec implements UsesReactiveMongoSherlock {}
-
 class ReactiveMongoAcquireLockSpec extends AcquireLockSpec implements UsesReactiveMongoSherlock {}
-
 class ReactiveMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec implements UsesReactiveMongoSherlock {}
-
 class ReactiveMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec implements UsesReactiveMongoSherlock {}

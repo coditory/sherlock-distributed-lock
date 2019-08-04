@@ -15,15 +15,15 @@ interface DistributedLockConnector {
   void initialize();
 
   /**
-   * Acquires a acquire when there is no acquire acquired with the same lockId.
+   * Acquires a lock when there is no acquired lock with the same lockId.
    *
    * @return boolean - true if acquire was acquired by this call
    */
   boolean acquire(LockRequest lockRequest);
 
   /**
-   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire
-   * if it was already acquired by the same instance.
+   * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the
+   * acquire if it was already acquired by the same instance.
    *
    * @return boolean - true if acquire was acquired by this call
    */
@@ -49,4 +49,11 @@ interface DistributedLockConnector {
    * @return boolean - true if acquire was released by this call
    */
   boolean forceRelease(LockId lockId);
+
+  /**
+   * Unlocks all locks without checking its owner or release date.
+   *
+   * @return boolean - true if at least one lock was released
+   */
+  boolean forceReleaseAll();
 }

@@ -11,14 +11,10 @@ import java.util.concurrent.Flow.Publisher;
 import static com.coditory.sherlock.rxjava.PublisherToSingleConverter.convertToSingle;
 
 final class RxJavaDistributedLockWrapper implements RxJavaDistributedLock {
-  static RxJavaDistributedLock rxJavaLock(ReactiveDistributedLock lock) {
-    return new RxJavaDistributedLockWrapper(lock);
-  }
-
   private final LockResultLogger logger;
   private final ReactiveDistributedLock lock;
 
-  private RxJavaDistributedLockWrapper(ReactiveDistributedLock lock) {
+  RxJavaDistributedLockWrapper(ReactiveDistributedLock lock) {
     this.lock = lock;
     this.logger = new LockResultLogger(lock.getId(), lock.getClass());
   }

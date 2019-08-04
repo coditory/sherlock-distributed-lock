@@ -10,19 +10,19 @@ public class ReleaseResult {
     return value ? SUCCESS : FAILURE;
   }
 
-  private boolean unlocked;
+  private boolean released;
 
-  private ReleaseResult(boolean unlocked) {
-    this.unlocked = unlocked;
+  private ReleaseResult(boolean released) {
+    this.released = released;
   }
 
-  public boolean isUnlocked() {
-    return unlocked;
+  public boolean isReleased() {
+    return released;
   }
 
   @Override
   public String toString() {
-    return "ReleaseResult{unlocked=" + unlocked + '}';
+    return "ReleaseResult{unlocked=" + released + '}';
   }
 
   @Override
@@ -34,11 +34,11 @@ public class ReleaseResult {
       return false;
     }
     ReleaseResult that = (ReleaseResult) o;
-    return unlocked == that.unlocked;
+    return released == that.released;
   }
 
   @Override
   public int hashCode() {
-    return Objects.hash(unlocked);
+    return Objects.hash(released);
   }
 }

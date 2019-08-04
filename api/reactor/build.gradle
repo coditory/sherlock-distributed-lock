@@ -4,8 +4,6 @@ dependencies {
   api project(':api:api-reactive')
   api "io.projectreactor:reactor-core:$versions.reactor"
   implementation project(':common')
-  integrationCompile project(':mongo:mongo-reactive')
+  integrationCompile project(':inmem:inmem-reactive')
   integrationCompile project(':tests')
-  integrationCompile "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
-  integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

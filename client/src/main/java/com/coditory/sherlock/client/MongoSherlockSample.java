@@ -17,16 +17,16 @@ public class MongoSherlockSample {
     String database = "sherlock";
     MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
     MongoCollection<Document> collection = mongoClient
-        .getDatabase("sherlock")
-        .getCollection("locks");
+      .getDatabase("sherlock")
+      .getCollection("locks");
     return MongoSherlock.builder()
-        .withLocksCollection(collection)
-        .build();
+      .withLocksCollection(collection)
+      .build();
   }
 
   public static void main(String... args) throws InterruptedException {
     Sherlock sherlock = createSherlock();
-    DistributedLock simpleLock = sherlock.createLock("sample-acquire");
+    DistributedLock simpleLock = sherlock.createLock().withLockId("sample-lock").build();
     DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
     DistributedLock overridingLock = sherlock.createOverridingLock("sample-acquire");
     reentrantLock.acquire();

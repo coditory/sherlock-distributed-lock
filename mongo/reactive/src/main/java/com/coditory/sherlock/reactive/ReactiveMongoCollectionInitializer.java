@@ -23,6 +23,6 @@ class ReactiveMongoCollectionInitializer {
       return Mono.just(collection);
     }
     return Mono.from(collection.createIndex(INDEX, INDEX_OPTIONS))
-        .map(result -> collection);
+      .map(result -> collection);
   }
 }

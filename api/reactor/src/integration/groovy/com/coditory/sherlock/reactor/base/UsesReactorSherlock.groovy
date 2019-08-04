@@ -1,42 +1,24 @@
 package com.coditory.sherlock.reactor.base
 
-import com.coditory.sherlock.reactive.ReactiveMongoSherlock
-import com.coditory.sherlock.reactor.ReactorSherlock
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.reactive.ReactiveInMemorySherlock
+import com.coditory.sherlock.reactive.ReactiveSherlock
 import com.coditory.sherlock.tests.base.DistributedLocksCreator
-import com.coditory.sherlock.tests.base.TestableDistributedLocks
-import com.mongodb.reactivestreams.client.MongoCollection
-import org.bson.BsonDocument
-import org.bson.Document
-import org.junit.After
-import reactor.core.publisher.Flux
 
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.sherlock.reactor.base.BlockingReactorSherlockWrapper.blockReactorSherlock
+import static com.coditory.sherlock.reactor.ReactorSherlock.toReactorSherlock
+import static BlockingReactorSherlockWrapper.blockingReactorSherlock
 
 trait UsesReactorSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "locks"
-
   @Override
-  TestableDistributedLocks createDistributedLocks(String ownerId, Duration duration, Clock clock) {
-    ReactorSherlock reactorSherlock = ReactiveMongoSherlock.builder()
-        .withLocksCollection(getLocksCollection())
-        .withOwnerId(ownerId)
-        .withLockDuration(duration)
-        .withClock(clock)
-        .build { ReactorSherlock.wrapReactiveSherlock(it) }
-    return blockReactorSherlock(reactorSherlock)
-  }
-
-  @After
-  void clearLockCollection() {
-    Flux.from(getLocksCollection().deleteMany(new BsonDocument()))
-        .blockLast()
-  }
-
-  MongoCollection<Document> getLocksCollection() {
-    return MongoInitializer.mongoClient.getDatabase(MongoInitializer.databaseName)
-        .getCollection(locksCollectionName)
+  Sherlock createDistributedLocks(String ownerId, Duration duration, Clock clock) {
+    ReactiveSherlock reactiveSherlock = ReactiveInMemorySherlock.builder()
+      .withOwnerId(ownerId)
+      .withLockDuration(duration)
+      .withClock(clock)
+      .build()
+    return blockingReactorSherlock(toReactorSherlock(reactiveSherlock))
   }
 }

@@ -27,7 +27,7 @@ public final class OwnerId {
 
   @Override
   public String toString() {
-    return "OwnerId{id='" + id + "'}";
+    return "OwnerId(" + id + ")";
   }
 
   @Override
