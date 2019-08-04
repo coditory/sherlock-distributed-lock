@@ -11,7 +11,7 @@ import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 import static com.coditory.sherlock.util.UuidGenerator.uuid;
 
-public class DistributedLockMock implements DistributedLock {
+public final class DistributedLockMock implements DistributedLock {
   public static DistributedLockMock releasedInMemoryLock() {
     return releasedInMemoryLock(uuid());
   }

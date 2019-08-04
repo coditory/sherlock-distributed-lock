@@ -11,7 +11,7 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
  */
-public class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherlock> {
+public final class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherlock> {
   private MongoCollection<Document> collection;
   private Clock clock = DEFAULT_CLOCK;
 

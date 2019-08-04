@@ -2,7 +2,7 @@ package com.coditory.sherlock.connector;
 
 import java.util.Objects;
 
-public class InitializationResult {
+public final class InitializationResult {
   private static final InitializationResult SUCCESS = new InitializationResult(true);
   private static final InitializationResult FAILURE = new InitializationResult(false);
 

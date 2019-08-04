@@ -2,7 +2,7 @@ package com.coditory.sherlock.connector;
 
 import java.util.Objects;
 
-public class AcquireResult {
+public final class AcquireResult {
   public static final AcquireResult SUCCESS = new AcquireResult(true);
   public static final AcquireResult FAILURE = new AcquireResult(false);
 

@@ -1,4 +1,4 @@
-package com.coditory.sherlock.client;
+package com.coditory.sherlock.sample;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.MongoSherlock;

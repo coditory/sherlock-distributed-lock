@@ -2,7 +2,7 @@ package com.coditory.sherlock.connector;
 
 import java.util.Objects;
 
-public class ReleaseResult {
+public final class ReleaseResult {
   public static final ReleaseResult SUCCESS = new ReleaseResult(true);
   public static final ReleaseResult FAILURE = new ReleaseResult(false);
 

@@ -8,7 +8,7 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link ReactiveSherlock} that stores lock in memory.
  */
-public class ReactiveInMemorySherlock extends
+public final class ReactiveInMemorySherlock extends
   ReactiveSherlockWithConnectorBuilder<ReactiveInMemorySherlock> {
   private InMemoryDistributedLockStorage storage = InMemoryDistributedLockStorage.singleton();
   private Clock clock = DEFAULT_CLOCK;
