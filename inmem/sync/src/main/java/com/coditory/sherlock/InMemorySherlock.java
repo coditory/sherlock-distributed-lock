@@ -6,7 +6,9 @@ import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
 import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
 /**
- * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
+ * Builds {@link Sherlock} that that stores locks in memory.
+ * <p>
+ * Designed for testing purposes only.
  */
 public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherlock> {
   private Clock clock = DEFAULT_CLOCK;
@@ -37,6 +39,11 @@ public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemor
     return this;
   }
 
+  /**
+   * Use shared stage for all instances of {@link Sherlock}.
+   *
+   * @return the instance
+   */
   public InMemorySherlock withSharedStorage() {
     this.storage = InMemoryDistributedLockStorage.singleton();
     return this;

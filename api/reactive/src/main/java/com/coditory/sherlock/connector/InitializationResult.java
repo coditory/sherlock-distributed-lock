@@ -3,8 +3,8 @@ package com.coditory.sherlock.connector;
 import java.util.Objects;
 
 public final class InitializationResult {
-  private static final InitializationResult SUCCESS = new InitializationResult(true);
-  private static final InitializationResult FAILURE = new InitializationResult(false);
+  public static final InitializationResult SUCCESS = new InitializationResult(true);
+  public static final InitializationResult FAILURE = new InitializationResult(false);
 
   public static InitializationResult of(boolean value) {
     return value ? SUCCESS : FAILURE;

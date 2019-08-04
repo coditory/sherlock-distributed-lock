@@ -8,10 +8,9 @@ import java.time.Duration;
 import java.util.function.Supplier;
 
 /**
- * A lock for distributed environment consisting of multiple application instances. Acquire a
- * distributed lock when only one application instance should execute a specific action.
+ * A reactive distributed lock with Reactor API.
  *
- * @see ReactorSherlock
+ * @see ReactiveSherlock
  */
 public interface ReactorDistributedLock {
   /**
@@ -22,9 +21,9 @@ public interface ReactorDistributedLock {
   String getId();
 
   /**
-   * Try to acquire the lock. Lock is acquired for a configured duration.
+   * Try to acquire the lock. Lock is acquired for a pre configured duration.
    *
-   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS} if lock is acquired
    */
   Mono<AcquireResult> acquire();
 
@@ -32,29 +31,30 @@ public interface ReactorDistributedLock {
    * Try to acquire the lock for a given duration.
    *
    * @param duration how much time must pass for the acquired lock to expire
-   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS} if lock is acquired
    */
   Mono<AcquireResult> acquire(Duration duration);
 
   /**
-   * Try to acquire the lock without expiring date. It is potentially dangerous. Lookout for a
-   * situation where the lock owning instance goes down with out releasing the lock.
+   * Try to acquire the lock without expiring date.
+   * <p>
+   * It is potentially dangerous. Lookout for a situation when the lock owning instance goes down
+   * with out releasing the lock.
    *
-   * @return {@link AcquireResult#SUCCESS}, if lock is acquired
+   * @return {@link AcquireResult#SUCCESS} if lock is acquired
    */
   Mono<AcquireResult> acquireForever();
 
   /**
-   * Release the lock
+   * Try to release the lock.
    *
-   * @return {@link ReleaseResult#SUCCESS}, if lock was released in this call. If lock could not be
-   *     released or was released by a different instance then {@link ReleaseResult#FAILURE} is
-   *     returned.
+   * @return {@link ReleaseResult#SUCCESS} if lock was released by this method invocation. If lock
+   *   has expired or was released earlier  then {@link ReleaseResult#FAILURE} is returned.
    */
   Mono<ReleaseResult> release();
 
   /**
-   * Acquire a lock and release it after action is executed.
+   * Acquire a lock and release it after action is executed or fails.
    *
    * @param <T> type od value emitted by the action
    * @param action to be executed when lock is acquired
@@ -75,7 +75,8 @@ public interface ReactorDistributedLock {
    * @see ReactorDistributedLock#acquire(Duration)
    */
   default <T> Mono<T> acquireAndExecute(Duration duration, Supplier<Mono<T>> action) {
-    return ReactorDistributedLockExecutor.executeOnAcquired(acquire(duration), action, this::release);
+    return ReactorDistributedLockExecutor
+      .executeOnAcquired(acquire(duration), action, this::release);
   }
 
   /**
@@ -87,7 +88,8 @@ public interface ReactorDistributedLock {
    * @see ReactorDistributedLock#acquireForever()
    */
   default <T> Mono<T> acquireForeverAndExecute(Supplier<Mono<T>> action) {
-    return ReactorDistributedLockExecutor.executeOnAcquired(acquireForever(), action, this::release);
+    return ReactorDistributedLockExecutor
+      .executeOnAcquired(acquireForever(), action, this::release);
   }
 
   /**

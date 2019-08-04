@@ -9,8 +9,10 @@
 > Don't use until version 0.2.0 is released.
 
 **Single purpose and small** distributed locking library for JVM. Provides multiple implementations (over single abstraction) for distributed locking:
-- [mongo-synchronous](./mongo/sync) - uses mongodb (tested on v3.4) and its synchronous connector to manage locks
-- [mongo-reactive](./mongo/reactive) - uses mongodb (tested on v3.4) and its reactive connector to manage locks
+- [mongo-synchronous](./mongo/sync) - Uses mongodb (tested on v3.4) and its synchronous connector to manage locks
+- [mongo-reactive](./mongo/reactive) - Uses mongodb (tested on v3.4) and its reactive connector to manage locks
+- [in-memory-synchronous](./inmem/sync) - Stores locks in memory. Designed for testing purposes.
+- [in-memory-reactive](./inmem/reactive) - Stores locks in memory and exposes reactive api. Designed for testing purposes.
 - ...postgres implementation comes next
 
 Before using the library read about [main problems of distributed locking](#disclaimer).
@@ -226,6 +228,25 @@ def "should not perform single instance action when lock is locked"() {
     lock.wasReleaseInvoked == false
 }
 ```
+
+## Lock based migration process
+Distributed locks may be used for multiple purposes one of them is a one way database migration process:
+
+```java
+// prepare the migration
+SherlockMigrator migrator = new SherlockMigrator("db-migration", sherlock)
+  .addChangeSet("add db index", () -> /* ... */)
+  .addChangeSet("remove stale collection", () -> /* ... */)
+
+// run the migrtion
+migrator.migrate();
+```
+
+Migration rules:
+- migrations must not be run in parallel (neither by one nor by multiple machines)
+- migration change sets are applied in order
+- migration change set must be run only once per all migrations
+- migration process stops when first change set fails
 
 ## Problems of distributed locking
 

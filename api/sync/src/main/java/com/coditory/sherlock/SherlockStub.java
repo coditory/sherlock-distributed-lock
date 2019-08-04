@@ -4,7 +4,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * Use to stub {@link Sherlock} in tests.
+ * Used to stub {@link Sherlock} in tests.
  */
 public final class SherlockStub implements Sherlock {
   private final Map<String, DistributedLock> locksById = new HashMap<>();
