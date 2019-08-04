@@ -9,7 +9,9 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-public class SherlockMigrator {
+import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+
+public final class SherlockMigrator {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
   private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();
   private final String migrationId;
@@ -27,7 +29,7 @@ public class SherlockMigrator {
   }
 
   public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
-    Preconditions.expectNonEmpty(changeSetId, "Expected non empty changeSetId");
+    expectNonEmpty(changeSetId, "Expected non empty changeSetId");
     DistributedLock changeSetLock = createChangeSetLock(changeSetId);
     migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
     return this;
@@ -65,12 +67,13 @@ public class SherlockMigrator {
 
     void execute() {
       if (lock.acquire()) {
+        logger.debug("Executing migration change set: {}", id);
         try {
           action.run();
           logger.info("Migration change set applied: {}", id);
         } catch (Throwable exception) {
-          logger.info(
-              "Migration change set failure: {}. Stopping migration process. Fix problem and rerun migration.",
+          logger.warn(
+              "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
               id, exception);
           lock.release();
           throw exception;

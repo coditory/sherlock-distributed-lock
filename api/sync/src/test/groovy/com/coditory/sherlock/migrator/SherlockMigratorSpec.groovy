@@ -1,6 +1,123 @@
 package com.coditory.sherlock.migrator
 
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.base.SpecSimulatedException
 import spock.lang.Specification
 
+import static com.coditory.sherlock.InMemorySherlock.inMemorySherlock
+import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
+import static com.coditory.sherlock.util.UuidGenerator.uuid
+
 class SherlockMigratorSpec extends Specification {
+  String migrationId = "db migration"
+  String firstChangeSetId = "add index"
+  String secondChangeSetId = "remove index"
+  String thirdChangeSetId = "add index for the second time"
+  int firstChangeSetExecutions = 0
+  int secondChangeSetExecutions = 0
+  int thirdChangeSetExecutions = 0
+
+  Sherlock sherlock = inMemorySherlock()
+
+  def "should run migration with 2 change sets in order"() {
+    given:
+      SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .addChangeSet(secondChangeSetId, { secondChangeSetExecutions++ })
+    when:
+      migrator.migrate()
+    then:
+      firstChangeSetExecutions == 1
+      secondChangeSetExecutions == 1
+    and:
+      assertReleased(migrationId)
+      assertAcquired(firstChangeSetId)
+      assertAcquired(secondChangeSetId)
+  }
+
+  def "should run migration only new not applied change sets"() {
+    given:
+      SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .addChangeSet(secondChangeSetId, { secondChangeSetExecutions++ })
+    and:
+      migrator.migrate()
+    when:
+      migrator
+        .addChangeSet(thirdChangeSetId, { thirdChangeSetExecutions++ })
+        .migrate()
+    then:
+      firstChangeSetExecutions == 1
+      secondChangeSetExecutions == 1
+      thirdChangeSetExecutions == 1
+    and:
+      assertReleased(migrationId)
+      assertAcquired(firstChangeSetId)
+      assertAcquired(secondChangeSetId)
+      assertAcquired(thirdChangeSetId)
+  }
+
+  def "should run skip change set with active locks"() {
+    given:
+      acquire(secondChangeSetId)
+    when:
+      new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .addChangeSet(secondChangeSetId, { secondChangeSetExecutions++ })
+        .addChangeSet(thirdChangeSetId, { thirdChangeSetExecutions++ })
+        .migrate()
+    then:
+      firstChangeSetExecutions == 1
+      secondChangeSetExecutions == 0
+      thirdChangeSetExecutions == 1
+  }
+
+  def "should skip migration with active lock"() {
+    given:
+      acquire(migrationId)
+    when:
+      new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .migrate()
+    then:
+      firstChangeSetExecutions == 0
+  }
+
+  def "should break migration on first change set error"() {
+    given:
+      SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .addChangeSet(secondChangeSetId, { throwSpecSimulatedException() })
+        .addChangeSet(thirdChangeSetId, { thirdChangeSetExecutions++ })
+    when:
+      migrator.migrate()
+    then:
+      thrown(SpecSimulatedException)
+    and:
+      firstChangeSetExecutions == 1
+      secondChangeSetExecutions == 0
+      thirdChangeSetExecutions == 0
+    and:
+      assertReleased(migrationId)
+      assertAcquired(firstChangeSetId)
+      assertReleased(secondChangeSetId)
+      assertReleased(thirdChangeSetId)
+  }
+
+  private void assertAcquired(String lockId) {
+    assert acquire(lockId) == false
+  }
+
+  private void assertReleased(String lockId) {
+    assert acquire(lockId) == true
+    sherlock.forceReleaseLock(lockId)
+  }
+
+  private boolean acquire(String lockId) {
+    return sherlock.createLock()
+      .withLockId(lockId)
+      .withOwnerId(uuid())
+      .build()
+      .acquireForever()
+  }
 }

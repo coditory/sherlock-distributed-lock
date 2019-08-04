@@ -7,8 +7,8 @@ import java.util.Optional;
 
 import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
-public final class InMemoryDistributedLock {
-  public static InMemoryDistributedLock fromLockRequest(
+final class InMemoryDistributedLock {
+  static InMemoryDistributedLock fromLockRequest(
     LockRequest lockRequest, Instant acquiredAt) {
     expectNonNull(lockRequest);
     expectNonNull(acquiredAt);
@@ -45,20 +45,20 @@ public final class InMemoryDistributedLock {
     this.expiresAt = expiresAt;
   }
 
-  public LockId getId() {
+  LockId getId() {
     return id;
   }
 
-  public boolean isActive(Instant now) {
+  boolean isActive(Instant now) {
     return expiresAt == null
       || expiresAt.isAfter(now);
   }
 
-  public boolean isExpired(Instant now) {
+  boolean isExpired(Instant now) {
     return !isActive(now);
   }
 
-  public boolean isOwnedBy(OwnerId ownerId) {
+  boolean isOwnedBy(OwnerId ownerId) {
     return this.ownerId.equals(ownerId);
   }
 

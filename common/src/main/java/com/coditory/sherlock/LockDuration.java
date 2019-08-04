@@ -6,11 +6,11 @@ import java.util.Objects;
 import static com.coditory.sherlock.util.Preconditions.expectTruncatedToMillis;
 
 final class LockDuration {
-  public static LockDuration of(Duration duration) {
+  static LockDuration of(Duration duration) {
     return new LockDuration(duration);
   }
 
-  public static LockDuration permanent() {
+  static LockDuration permanent() {
     return new LockDuration(null);
   }
 
@@ -24,11 +24,11 @@ final class LockDuration {
     this.duration = duration;
   }
 
-  public Duration getValue() {
+  Duration getValue() {
     return duration;
   }
 
-  public boolean isPermanent() {
+  boolean isPermanent() {
     return duration == null;
   }
 

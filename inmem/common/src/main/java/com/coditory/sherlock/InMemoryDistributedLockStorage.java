@@ -7,10 +7,10 @@ import java.util.Map;
 
 import static java.util.stream.Collectors.toList;
 
-public class InMemoryDistributedLockStorage {
+class InMemoryDistributedLockStorage {
   private static InMemoryDistributedLockStorage INSTANCE = new InMemoryDistributedLockStorage();
 
-  public static InMemoryDistributedLockStorage singleton() {
+  static InMemoryDistributedLockStorage singleton() {
     return INSTANCE;
   }
 

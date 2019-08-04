@@ -15,16 +15,16 @@ final class LockRequest {
     LockId lockId,
     OwnerId ownerId,
     LockDuration duration) {
-    this.lockId = Preconditions.expectNonNull(lockId);
-    this.ownerId = Preconditions.expectNonNull(ownerId);
+    this.lockId = expectNonNull(lockId);
+    this.ownerId = expectNonNull(ownerId);
     this.duration = duration;
   }
 
   public LockRequest(
     LockId lockId,
     OwnerId ownerId) {
-    this.lockId = Preconditions.expectNonNull(lockId);
-    this.ownerId = Preconditions.expectNonNull(ownerId);
+    this.lockId = expectNonNull(lockId);
+    this.ownerId = expectNonNull(ownerId);
     this.duration = null;
   }
 

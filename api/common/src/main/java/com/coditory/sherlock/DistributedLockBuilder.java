@@ -9,7 +9,7 @@ import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
-public class DistributedLockBuilder<T> {
+public final class DistributedLockBuilder<T> {
   private LockId lockId;
   private LockCreator<T> lockCreator;
   private LockDuration duration = DEFAULT_LOCK_DURATION;

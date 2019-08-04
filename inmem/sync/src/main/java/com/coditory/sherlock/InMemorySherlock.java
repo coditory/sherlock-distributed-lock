@@ -8,9 +8,9 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
  */
-public class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherlock> {
+public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherlock> {
   private Clock clock = DEFAULT_CLOCK;
-  private InMemoryDistributedLockStorage storage = InMemoryDistributedLockStorage.singleton();
+  private InMemoryDistributedLockStorage storage = new InMemoryDistributedLockStorage();
 
   /**
    * @return new instance of the builder
@@ -19,7 +19,11 @@ public class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherl
     return new InMemorySherlock();
   }
 
-  private InMemorySherlock() {
+  public static Sherlock inMemorySherlock() {
+    return InMemorySherlock.builder().build();
+  }
+
+  InMemorySherlock() {
     // deliberately empty
   }
 
@@ -33,8 +37,8 @@ public class InMemorySherlock extends SherlockWithConnectorBuilder<InMemorySherl
     return this;
   }
 
-  public InMemorySherlock withUnsharedStorage() {
-    this.storage = new InMemoryDistributedLockStorage();
+  public InMemorySherlock withSharedStorage() {
+    this.storage = InMemoryDistributedLockStorage.singleton();
     return this;
   }
 

@@ -1,6 +1,5 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.util.Preconditions;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import org.bson.Document;
@@ -18,7 +17,7 @@ import static com.coditory.sherlock.MongoDistributedLock.Fields.EXPIRES_AT_FIELD
 import static com.coditory.sherlock.MongoDistributedLock.Fields.LOCK_ID_FIELD;
 import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 
-public final class MongoDistributedLock {
+final class MongoDistributedLock {
   interface Fields {
     String LOCK_ID_FIELD = "_id";
     String ACQUIRED_BY_FIELD = "acquiredBy";
@@ -26,12 +25,12 @@ public final class MongoDistributedLock {
     String EXPIRES_AT_FIELD = "expiresAt";
   }
 
-  public static final Bson INDEX = Indexes
+  static final Bson INDEX = Indexes
     .ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, ACQUIRED_AT_FIELD);
 
-  public static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
+  static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
 
-  public static MongoDistributedLock fromDocument(Document document) {
+  static MongoDistributedLock fromDocument(Document document) {
     try {
       return new MongoDistributedLock(
         LockId.of(document.getString(LOCK_ID_FIELD)),
@@ -54,9 +53,9 @@ public final class MongoDistributedLock {
     return instant.truncatedTo(ChronoUnit.MILLIS);
   }
 
-  public static MongoDistributedLock fromLockRequest(LockRequest lockRequest, Instant acquiredAt) {
-    Preconditions.expectNonNull(lockRequest);
-    Preconditions.expectNonNull(acquiredAt);
+  static MongoDistributedLock fromLockRequest(LockRequest lockRequest, Instant acquiredAt) {
+    expectNonNull(lockRequest);
+    expectNonNull(acquiredAt);
     Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
       .map(LockDuration::getValue)
       .map(acquiredAt::plus)
@@ -80,13 +79,13 @@ public final class MongoDistributedLock {
     OwnerId ownerId,
     Instant createdAt,
     Instant expiresAt) {
-    this.id = Preconditions.expectNonNull(id);
-    this.ownerId = Preconditions.expectNonNull(ownerId);
-    this.acquiredAt = Preconditions.expectNonNull(createdAt);
+    this.id = expectNonNull(id);
+    this.ownerId = expectNonNull(ownerId);
+    this.acquiredAt = expectNonNull(createdAt);
     this.expiresAt = expiresAt;
   }
 
-  public Document toDocument() {
+  Document toDocument() {
     Document result = new Document()
       .append(LOCK_ID_FIELD, id.getValue())
       .append(ACQUIRED_BY_FIELD, ownerId.getValue())
@@ -97,7 +96,7 @@ public final class MongoDistributedLock {
     return result;
   }
 
-  public boolean hasSameOwner(Document document) {
+  boolean hasSameOwner(Document document) {
     if (document == null) {
       return false;
     }
@@ -105,7 +104,7 @@ public final class MongoDistributedLock {
     return this.ownerId.equals(other.ownerId);
   }
 
-  public boolean isActive(Instant now) {
+  boolean isActive(Instant now) {
     return expiresAt == null
       || expiresAt.isAfter(now);
   }
