@@ -41,7 +41,12 @@ interface ReactiveDistributedLockConnector {
   Publisher<ReleaseResult> release(LockId lockId, OwnerId ownerId);
 
   /**
-   * Unlocks a acquire without checking its owner or release date.
+   * Releases a lock without checking its owner or release date.
    */
   Publisher<ReleaseResult> forceRelease(LockId lockId);
+
+  /**
+   * Releases all locks without checking their owners or release dates.
+   */
+  Publisher<ReleaseResult> forceReleaseAll();
 }

@@ -10,17 +10,17 @@ public final class LockRequest {
   private final LockDuration duration;
 
   public LockRequest(
-      LockId lockId,
-      OwnerId ownerId,
-      LockDuration duration) {
+    LockId lockId,
+    OwnerId ownerId,
+    LockDuration duration) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = duration;
   }
 
   public LockRequest(
-      LockId lockId,
-      OwnerId ownerId) {
+    LockId lockId,
+    OwnerId ownerId) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = null;
@@ -48,8 +48,8 @@ public final class LockRequest {
     }
     LockRequest request = (LockRequest) o;
     return Objects.equals(lockId, request.lockId) &&
-        Objects.equals(ownerId, request.ownerId) &&
-        Objects.equals(duration, request.duration);
+      Objects.equals(ownerId, request.ownerId) &&
+      Objects.equals(duration, request.duration);
   }
 
   @Override
@@ -60,9 +60,9 @@ public final class LockRequest {
   @Override
   public String toString() {
     return "LockRequest{" +
-        "lockId=" + lockId +
-        ", ownerId=" + ownerId +
-        ", duration=" + duration +
-        '}';
+      "lockId=" + lockId +
+      ", ownerId=" + ownerId +
+      ", duration=" + duration +
+      '}';
   }
 }

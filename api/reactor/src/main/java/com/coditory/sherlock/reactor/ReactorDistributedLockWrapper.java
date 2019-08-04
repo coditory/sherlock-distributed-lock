@@ -10,14 +10,10 @@ import java.time.Duration;
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux;
 
 final class ReactorDistributedLockWrapper implements ReactorDistributedLock {
-  static ReactorDistributedLock reactorLock(ReactiveDistributedLock lock) {
-    return new ReactorDistributedLockWrapper(lock);
-  }
-
   private final LockResultLogger logger;
   private final ReactiveDistributedLock lock;
 
-  private ReactorDistributedLockWrapper(ReactiveDistributedLock lock) {
+  ReactorDistributedLockWrapper(ReactiveDistributedLock lock) {
     this.lock = lock;
     this.logger = new LockResultLogger(lock.getId(), lock.getClass());
   }

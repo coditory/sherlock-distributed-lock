@@ -18,8 +18,6 @@ class DistributedLockAssertions {
   private static assertSingleStateLock(DistributedLock lock, String lockId, boolean expectedResult) {
     assert lock.id == lockId
     assert lock.acquire() == expectedResult
-    assert lock.acquire(Duration.ofHours(1)) == expectedResult
-    assert lock.acquireForever() == expectedResult
     assert lock.release() == expectedResult
     return true
   }

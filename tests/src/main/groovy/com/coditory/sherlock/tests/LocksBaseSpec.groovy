@@ -1,10 +1,10 @@
 package com.coditory.sherlock.tests
 
 import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.tests.base.TestableDistributedLocks
-import com.coditory.sherlock.tests.base.UpdatableFixedClock
+import com.coditory.sherlock.Sherlock
 import com.coditory.sherlock.tests.base.DistributedLocksCreator
 import com.coditory.sherlock.tests.base.LockTypes
+import com.coditory.sherlock.tests.base.UpdatableFixedClock
 import groovy.transform.CompileStatic
 import org.junit.After
 import spock.lang.Specification
@@ -26,21 +26,20 @@ abstract class LocksBaseSpec extends Specification implements DistributedLocksCr
     fixedClock.reset()
   }
 
+  @After
+  void releaseAllLocks() {
+    createSherlock().forceReleaseAllLocks()
+  }
+
   DistributedLock createLock(
-      LockTypes type,
-      String lockId = sampleLockId,
-      String instanceId = sampleOwnerId,
-      Duration duration = defaultLockDuration) {
-    TestableDistributedLocks distributedLocks = distributedLocks(instanceId, duration)
-    return type.createLock(distributedLocks, lockId)
+    LockTypes type,
+    String lockId = sampleLockId,
+    String instanceId = sampleOwnerId,
+    Duration duration = defaultLockDuration) {
+    return type.createLock(createSherlock(instanceId, duration), lockId)
   }
 
-  DistributedLock reentrantLock(String lockId = sampleLockId, String instanceId = sampleOwnerId, Duration duration = defaultLockDuration) {
-    return distributedLocks(instanceId, duration)
-        .createReentrantLock(lockId)
-  }
-
-  TestableDistributedLocks distributedLocks(String instanceId = sampleOwnerId, Duration duration = defaultLockDuration, Clock clock = fixedClock) {
+  Sherlock createSherlock(String instanceId = sampleOwnerId, Duration duration = defaultLockDuration, Clock clock = fixedClock) {
     return createDistributedLocks(instanceId, duration, clock)
   }
 }

@@ -2,27 +2,43 @@ package com.coditory.sherlock.migrator;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.common.LockId;
+import com.coditory.sherlock.common.util.Preconditions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedHashMap;
-import java.util.Map;
+import java.util.ArrayList;
+import java.util.List;
 
 public class SherlockMigrator {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
-  private final Map<LockId, Runnable> migrations = new LinkedHashMap<>();
-  private final DistributedLock migrationLock;
+  private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();
+  private final String migrationId;
   private final Sherlock sherlock;
+  private final DistributedLock migrationLock;
 
-  public SherlockMigrator(DistributedLock migrationLock, Sherlock sherlock) {
-    this.migrationLock = migrationLock;
+  public SherlockMigrator(String migrationId, Sherlock sherlock) {
+    this.migrationId = migrationId;
     this.sherlock = sherlock;
+    this.migrationLock = sherlock.createLock()
+        .withLockId(migrationId)
+        .withPermanentLockDuration()
+        .withStaticUniqueOwnerId()
+        .build();
   }
 
-  public SherlockMigrator addMigration(String id, Runnable migration) {
-    migrations.put(LockId.of(id), migration);
+  public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
+    Preconditions.expectNonEmpty(changeSetId, "Expected non empty changeSetId");
+    DistributedLock changeSetLock = createChangeSetLock(changeSetId);
+    migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
     return this;
+  }
+
+  private DistributedLock createChangeSetLock(String migrationId) {
+    return sherlock.createLock()
+        .withLockId(migrationId)
+        .withPermanentLockDuration()
+        .withStaticUniqueOwnerId()
+        .build();
   }
 
   public void migrate() {
@@ -30,24 +46,38 @@ public class SherlockMigrator {
   }
 
   private void runMigrations() {
-    logger.info("Acquired migration lock. Starting migration.");
-    migrations.forEach(this::runMigration);
-    logger.info("Finished migration.");
+    logger.info("Starting migration: {}", migrationId);
+    migrationChangeSets.forEach(MigrationChangeSet::execute);
+    logger.info("Migration finished successfully: {}", migrationId);
   }
 
-  private void runMigration(LockId lockId, Runnable runnable) {
-    DistributedLock lock = sherlock.createLock(lockId.getValue());
-    if (lock.acquireForever()) {
-      try {
-        runnable.run();
-        logger.info("Change set success: {}", lockId.getValue());
-      } catch (Throwable exception) {
-        logger.info("Change set failure: {}. Stopping migration process.", lockId.getValue(), exception);
-        lock.release();
-        throw exception;
+  private static class MigrationChangeSet {
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final String id;
+    private final DistributedLock lock;
+    private final Runnable action;
+
+    MigrationChangeSet(String id, DistributedLock lock, Runnable action) {
+      this.id = id;
+      this.lock = lock;
+      this.action = action;
+    }
+
+    void execute() {
+      if (lock.acquire()) {
+        try {
+          action.run();
+          logger.info("Migration change set applied: {}", id);
+        } catch (Throwable exception) {
+          logger.info(
+              "Migration change set failure: {}. Stopping migration process. Fix problem and rerun migration.",
+              id, exception);
+          lock.release();
+          throw exception;
+        }
+      } else {
+        logger.info("Migration change set skipped: {}. It was already applied", id);
       }
-    } else {
-      logger.info("Change set skipped: {}. It was already applied", lockId.getValue());
     }
   }
 }

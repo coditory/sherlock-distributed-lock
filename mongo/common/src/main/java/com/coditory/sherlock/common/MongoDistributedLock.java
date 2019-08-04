@@ -26,17 +26,17 @@ public final class MongoDistributedLock {
   }
 
   public static final Bson INDEX = Indexes
-      .ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, ACQUIRED_AT_FIELD);
+    .ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, ACQUIRED_AT_FIELD);
 
   public static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
 
   public static MongoDistributedLock fromDocument(Document document) {
     try {
       return new MongoDistributedLock(
-          LockId.of(document.getString(LOCK_ID_FIELD)),
-          OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
-          dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
-          dateToInstant(document.getDate(EXPIRES_AT_FIELD))
+        LockId.of(document.getString(LOCK_ID_FIELD)),
+        OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
+        dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
+        dateToInstant(document.getDate(EXPIRES_AT_FIELD))
       );
     } catch (Exception exception) {
       throw new IllegalStateException("Could not deserialize lock document", exception);
@@ -45,8 +45,8 @@ public final class MongoDistributedLock {
 
   private static Instant dateToInstant(Date date) {
     return date != null
-        ? truncateToMillis(date.toInstant())
-        : null;
+      ? truncateToMillis(date.toInstant())
+      : null;
   }
 
   private static Instant truncateToMillis(Instant instant) {
@@ -57,15 +57,15 @@ public final class MongoDistributedLock {
     expectNonNull(lockRequest);
     expectNonNull(acquiredAt);
     Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
-        .map(LockDuration::getValue)
-        .map(acquiredAt::plus)
-        .map(MongoDistributedLock::truncateToMillis)
-        .orElse(null);
+      .map(LockDuration::getValue)
+      .map(acquiredAt::plus)
+      .map(MongoDistributedLock::truncateToMillis)
+      .orElse(null);
     return new MongoDistributedLock(
-        lockRequest.getLockId(),
-        lockRequest.getOwnerId(),
-        truncateToMillis(acquiredAt),
-        releaseAt
+      lockRequest.getLockId(),
+      lockRequest.getOwnerId(),
+      truncateToMillis(acquiredAt),
+      releaseAt
     );
   }
 
@@ -75,10 +75,10 @@ public final class MongoDistributedLock {
   private final Instant expiresAt;
 
   private MongoDistributedLock(
-      LockId id,
-      OwnerId ownerId,
-      Instant createdAt,
-      Instant expiresAt) {
+    LockId id,
+    OwnerId ownerId,
+    Instant createdAt,
+    Instant expiresAt) {
     this.id = expectNonNull(id);
     this.ownerId = expectNonNull(ownerId);
     this.acquiredAt = expectNonNull(createdAt);
@@ -87,9 +87,9 @@ public final class MongoDistributedLock {
 
   public Document toDocument() {
     Document result = new Document()
-        .append(LOCK_ID_FIELD, id.getValue())
-        .append(ACQUIRED_BY_FIELD, ownerId.getValue())
-        .append(ACQUIRED_AT_FIELD, acquiredAt);
+      .append(LOCK_ID_FIELD, id.getValue())
+      .append(ACQUIRED_BY_FIELD, ownerId.getValue())
+      .append(ACQUIRED_AT_FIELD, acquiredAt);
     if (expiresAt != null) {
       result = result.append(EXPIRES_AT_FIELD, expiresAt);
     }
@@ -106,17 +106,17 @@ public final class MongoDistributedLock {
 
   public boolean isActive(Instant now) {
     return expiresAt == null
-        || expiresAt.isAfter(now);
+      || expiresAt.isAfter(now);
   }
 
   @Override
   public String toString() {
     return "MongoDistributedLock{" +
-        "id=" + id +
-        ", ownerId=" + ownerId +
-        ", acquiredAt=" + acquiredAt +
-        ", expiresAt=" + expiresAt +
-        '}';
+      "id=" + id +
+      ", ownerId=" + ownerId +
+      ", acquiredAt=" + acquiredAt +
+      ", expiresAt=" + expiresAt +
+      '}';
   }
 
   @Override
@@ -129,9 +129,9 @@ public final class MongoDistributedLock {
     }
     MongoDistributedLock that = (MongoDistributedLock) o;
     return Objects.equals(id, that.id) &&
-        Objects.equals(ownerId, that.ownerId) &&
-        Objects.equals(acquiredAt, that.acquiredAt) &&
-        Objects.equals(expiresAt, that.expiresAt);
+      Objects.equals(ownerId, that.ownerId) &&
+      Objects.equals(acquiredAt, that.acquiredAt) &&
+      Objects.equals(expiresAt, that.expiresAt);
   }
 
   @Override

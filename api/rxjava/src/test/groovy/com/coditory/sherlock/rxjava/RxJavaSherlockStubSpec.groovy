@@ -1,11 +1,10 @@
 package com.coditory.sherlock.rxjava
 
-import com.coditory.sherlock.rxjava.test.RxJavaSherlockStub
 import spock.lang.Specification
 
+import static com.coditory.sherlock.rxjava.RxJavaDistributedLockMock.lockStub
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.rxjava.base.DistributedLockAssertions.assertAlwaysOpenedLock
-import static com.coditory.sherlock.rxjava.test.RxJavaDistributedLockMock.alwaysReleasedLock
 
 class RxJavaSherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
@@ -34,7 +33,7 @@ class RxJavaSherlockStubSpec extends Specification {
     given:
       String lockId = "some-lock"
       RxJavaSherlock sherlock = RxJavaSherlockStub.withAcquiredLocks()
-          .withLock(alwaysReleasedLock(lockId))
+        .withLock(lockStub(lockId, true))
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock("other-lock"))

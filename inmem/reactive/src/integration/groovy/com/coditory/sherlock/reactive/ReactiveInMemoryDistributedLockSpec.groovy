@@ -1,0 +1,11 @@
+package com.coditory.sherlock.reactive
+
+import com.coditory.sherlock.tests.AcquireLockMultipleTimesSpec
+import com.coditory.sherlock.tests.AcquireLockSpec
+import com.coditory.sherlock.tests.InfiniteAcquireLockSpec
+import com.coditory.sherlock.tests.ReleaseLockSpec
+
+class ReactiveInMemoryReleaseLockSpec extends ReleaseLockSpec implements UsesReactiveInMemorySherlock {}
+class ReactiveInMemoryAcquireLockSpec extends AcquireLockSpec implements UsesReactiveInMemorySherlock {}
+class ReactiveInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec implements UsesReactiveInMemorySherlock {}
+class ReactiveInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec implements UsesReactiveInMemorySherlock {}

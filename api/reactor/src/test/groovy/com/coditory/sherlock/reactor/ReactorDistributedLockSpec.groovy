@@ -1,7 +1,6 @@
 package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.reactor.base.SpecSimulatedException
-import com.coditory.sherlock.reactor.test.ReactorDistributedLockMock
 import org.junit.Before
 import reactor.core.publisher.Mono
 import spock.lang.Shared
@@ -10,8 +9,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysAcquiredLock
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysReleasedLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.releasedInMemoryLock
 
 class ReactorDistributedLockSpec extends Specification {
   @Shared
@@ -23,97 +22,87 @@ class ReactorDistributedLockSpec extends Specification {
   }
 
   @Unroll
-  def "should execute action and release the lock"() {
+  def "should release the lock after executing the action"() {
     given:
-      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
-
+      ReactorDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).block()
     then:
-      lock.acquireInvocations() == 1
-      lock.releaseInvocations() == 1
+      lock.acquisitions() == 1
+      lock.releases() == 1
       counter.value == 1
       result == 1
-
     where:
       action << [
-          { it.acquireAndExecute({ counter.incrementAndGet() }) },
-          { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-          { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
+        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
       ]
   }
 
   @Unroll
   def "should not execute action if lock was not acquired"() {
     given:
-      ReactorDistributedLockMock lock = alwaysAcquiredLock("sample-lock")
-
+      ReactorDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).block()
     then:
-      lock.acquireInvocations() == 1
-      lock.releaseInvocations() == 0
+      lock.acquisitions() == 1
+      lock.releases() == 0
       counter.value == 0
       result == null
-
     where:
       action << [
-          { it.acquireAndExecute({ counter.incrementAndGet() }) },
-          { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-          { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
+        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
       ]
   }
 
   @Unroll
-  def "should execute action and release the lock on error"() {
+  def "should release the lock after action error"() {
     given:
-      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
-
+      ReactorDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
       Integer result = action(lock).block()
     then:
       thrown(SpecSimulatedException)
     and:
-      lock.acquireInvocations() == 1
-      lock.releaseInvocations() == 1
+      lock.acquisitions() == 1
+      lock.releases() == 1
       counter.value == 1
       result == null
-
     where:
       action << [
-          { it.acquireAndExecute({ counter.incrementAndThrow() }) },
-          { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndThrow() }) },
-          { it.acquireForeverAndExecute({ counter.incrementAndThrow() }) },
+        { it.acquireAndExecute({ counter.incrementAndThrow() }) },
+        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndThrow() }) },
+        { it.acquireForeverAndExecute({ counter.incrementAndThrow() }) },
       ]
   }
 
   def "should execute action on lock release"() {
     given:
-      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
-
+      ReactorDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
       Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
-          .block()
+        .block()
     then:
-      lock.acquireInvocations() == 0
-      lock.releaseInvocations() == 1
+      lock.acquisitions() == 0
+      lock.releases() == 1
       counter.value == 1
       result == 1
   }
 
   def "should not execute action when lock was not released"() {
     given:
-      ReactorDistributedLockMock lock = alwaysReleasedLock("sample-lock")
-
+      ReactorDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
-      Integer result = lock.releaseAndExecute({ counter.incrementAndThrow() })
+      Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
         .block()
     then:
-      thrown(SpecSimulatedException)
-    and:
-      lock.acquireInvocations() == 0
-      lock.releaseInvocations() == 1
-      counter.value == 1
+      lock.acquisitions() == 0
+      lock.releases() == 1
+      counter.value == 0
       result == null
   }
 
@@ -130,7 +119,7 @@ class ReactorDistributedLockSpec extends Specification {
 
     Mono<Integer> incrementAndThrow() {
       return Mono.fromCallable({ ++value })
-          .then(Mono.error(new SpecSimulatedException()))
+        .then(Mono.error(new SpecSimulatedException()))
     }
   }
 }

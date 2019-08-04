@@ -22,36 +22,42 @@ class BlockingDistributedLockConnector implements DistributedLockConnector {
   @Override
   void initialize() {
     flowPublisherToFlux(reactiveConnector.initialize())
-        .blockLast()
+      .blockLast()
   }
 
   @Override
   boolean acquire(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.acquire(lockRequest))
-        .single().block().isAcquired()
+      .single().block().isAcquired()
   }
 
   @Override
   boolean acquireOrProlong(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.acquireOrProlong(lockRequest))
-        .single().block().isAcquired()
+      .single().block().isAcquired()
   }
 
   @Override
   boolean forceAcquire(LockRequest lockRequest) {
     return flowPublisherToFlux(reactiveConnector.forceAcquire(lockRequest))
-        .single().block().isAcquired()
+      .single().block().isAcquired()
   }
 
   @Override
   boolean release(LockId lockId, OwnerId ownerId) {
     return flowPublisherToFlux(reactiveConnector.release(lockId, ownerId))
-        .single().block().isUnlocked()
+      .single().block().isReleased()
   }
 
   @Override
   boolean forceRelease(LockId lockId) {
     return flowPublisherToFlux(reactiveConnector.forceRelease(lockId))
-        .single().block().isUnlocked()
+      .single().block().isReleased()
+  }
+
+  @Override
+  boolean forceReleaseAll() {
+    return flowPublisherToFlux(reactiveConnector.forceReleaseAll())
+      .single().block().isReleased()
   }
 }

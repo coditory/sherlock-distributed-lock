@@ -1,11 +1,10 @@
 package com.coditory.sherlock.reactor
 
-import com.coditory.sherlock.reactor.test.ReactorSherlockStub
 import spock.lang.Specification
 
+import static com.coditory.sherlock.reactor.ReactorDistributedLockMock.lockStub
 import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysClosedLock
 import static com.coditory.sherlock.reactor.base.DistributedLockAssertions.assertAlwaysOpenedLock
-import static com.coditory.sherlock.reactor.test.ReactorDistributedLockMock.alwaysReleasedLock
 
 class ReactorSherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
@@ -34,7 +33,7 @@ class ReactorSherlockStubSpec extends Specification {
     given:
       String lockId = "some-lock"
       ReactorSherlock sherlock = ReactorSherlockStub.withAcquiredLocks()
-          .withLock(alwaysReleasedLock(lockId))
+        .withLock(lockStub(lockId, true))
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock("other-lock"))

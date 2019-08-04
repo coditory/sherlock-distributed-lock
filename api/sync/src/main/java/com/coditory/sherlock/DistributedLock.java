@@ -2,9 +2,6 @@ package com.coditory.sherlock;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.DistributedLockExecutor.executeOnAcquired;
-import static com.coditory.sherlock.DistributedLockExecutor.executeOnReleased;
-
 /**
  * A lock for distributed environment consisting of multiple application instances.
  *
@@ -44,8 +41,8 @@ public interface DistributedLock {
   /**
    * Release the lock
    *
-   * @return true, if lock was released in this call. If lock has expired or was released
-   * by a different instance then false is returned.
+   * @return true, if lock was released in this call. If lock has expired or was released by a
+   *     different instance then false is returned.
    */
   boolean release();
 
@@ -56,31 +53,19 @@ public interface DistributedLock {
    * @return true if lock is acquired.
    * @see DistributedLock#acquire()
    */
-  default boolean acquireAndExecute(Runnable action) {
-    return executeOnAcquired(acquire(), action, this::release);
+  default AcquireAndExecuteResult acquireAndExecute(Runnable action) {
+    return AcquireAndExecuteResult
+      .executeOnAcquired(acquire(), action, this::release);
   }
 
-  /**
-   * Acquire a lock for a given duration and release it after action is executed.
-   *
-   * @param duration how much time must pass for the acquired lock to expire
-   * @param action to be executed when lock is acquired
-   * @return true, if lock is acquired
-   * @see DistributedLock#acquire(Duration)
-   */
-  default boolean acquireAndExecute(Duration duration, Runnable action) {
-    return executeOnAcquired(acquire(duration), action, this::release);
+  default AcquireAndExecuteResult acquireAndExecute(Duration duration, Runnable action) {
+    return AcquireAndExecuteResult
+      .executeOnAcquired(acquire(duration), action, this::release);
   }
 
-  /**
-   * Acquire a lock without expiration time and release it after action is executed.
-   *
-   * @param action to be executed when lock is acquired
-   * @return true, if lock is acquired
-   * @see DistributedLock#acquireForever()
-   */
-  default boolean acquireForeverAndExecute(Runnable action) {
-    return executeOnAcquired(acquireForever(), action, this::release);
+  default AcquireAndExecuteResult acquireForeverAndExecute(Runnable action) {
+    return AcquireAndExecuteResult
+      .executeOnAcquired(acquireForever(), action, this::release);
   }
 
   /**
@@ -90,7 +75,64 @@ public interface DistributedLock {
    * @return true, if lock was release
    * @see DistributedLock#release()
    */
-  default boolean releaseAndExecute(Runnable action) {
-    return executeOnReleased(release(), action);
+  default ReleaseAndExecuteResult releaseAndExecute(Runnable action) {
+    return ReleaseAndExecuteResult
+      .executeOnReleased(release(), action);
+  }
+
+  class AcquireAndExecuteResult {
+    private static AcquireAndExecuteResult executeOnAcquired(boolean acquired, Runnable action, Runnable release) {
+      if (acquired) {
+        try {
+          action.run();
+        } finally {
+          release.run();
+        }
+      }
+      return new AcquireAndExecuteResult(acquired);
+    }
+
+    private final boolean acquired;
+
+    AcquireAndExecuteResult(boolean acquired) {
+      this.acquired = acquired;
+    }
+
+    boolean isAcquired() {
+      return acquired;
+    }
+
+    AcquireAndExecuteResult onNotAcquired(Runnable action) {
+      if (!acquired) {
+        action.run();
+      }
+      return this;
+    }
+  }
+
+  class ReleaseAndExecuteResult {
+    private static ReleaseAndExecuteResult executeOnReleased(boolean released, Runnable action) {
+      if (released) {
+        action.run();
+      }
+      return new ReleaseAndExecuteResult(released);
+    }
+
+    private final boolean released;
+
+    ReleaseAndExecuteResult(boolean released) {
+      this.released = released;
+    }
+
+    boolean isReleased() {
+      return released;
+    }
+
+    ReleaseAndExecuteResult onNotReleased(Runnable action) {
+      if (!released) {
+        action.run();
+      }
+      return this;
+    }
   }
 }

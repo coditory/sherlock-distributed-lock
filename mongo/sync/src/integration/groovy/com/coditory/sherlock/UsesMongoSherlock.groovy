@@ -1,12 +1,8 @@
 package com.coditory.sherlock
 
-
 import com.coditory.sherlock.tests.base.DistributedLocksCreator
-import com.coditory.sherlock.tests.base.TestableDistributedLocks
 import com.mongodb.client.MongoCollection
-import org.bson.BsonDocument
 import org.bson.Document
-import org.junit.After
 
 import java.time.Clock
 import java.time.Duration
@@ -18,24 +14,18 @@ trait UsesMongoSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
-  TestableDistributedLocks createDistributedLocks(String instanceId, Duration duration, Clock clock) {
-    Sherlock locks = MongoSherlock.builder()
-        .withLocksCollection(getLocksCollection())
-        .withOwnerId(instanceId)
-        .withLockDuration(duration)
-        .withClock(clock)
-        .build()
-    return locks as TestableDistributedLocks
-  }
-
-  @After
-  void clearLockCollection() {
-    getLocksCollection().deleteMany(new BsonDocument())
+  Sherlock createDistributedLocks(String instanceId, Duration duration, Clock clock) {
+    return MongoSherlock.builder()
+      .withLocksCollection(getLocksCollection())
+      .withOwnerId(instanceId)
+      .withLockDuration(duration)
+      .withClock(clock)
+      .build()
   }
 
   MongoCollection<Document> getLocksCollection() {
     return mongoClient.getDatabase(databaseName)
-        .getCollection(locksCollectionName)
+      .getCollection(locksCollectionName)
   }
 }
 

@@ -27,7 +27,7 @@ final class ReactorDistributedLockExecutor {
   static <T> Mono<T> executeOnReleased(
       Mono<ReleaseResult> unlockResult, Supplier<Mono<T>> supplier) {
     return unlockResult
-        .filter(ReleaseResult::isUnlocked)
+        .filter(ReleaseResult::isReleased)
         .flatMap(result -> supplier.get());
   }
 }

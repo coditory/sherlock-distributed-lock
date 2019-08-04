@@ -23,7 +23,7 @@ final class LockResultLogger {
   }
 
   void logResult(ReleaseResult result) {
-    if (result.isUnlocked()) {
+    if (result.isReleased()) {
       logger.debug("Lock released: {}", lockId);
     } else {
       logger.debug("Lock not released: {}", lockId);
