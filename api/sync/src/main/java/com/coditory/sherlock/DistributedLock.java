@@ -125,7 +125,7 @@ public interface DistributedLock {
       this.acquired = acquired;
     }
 
-    boolean isAcquired() {
+    public boolean isAcquired() {
       return acquired;
     }
 
