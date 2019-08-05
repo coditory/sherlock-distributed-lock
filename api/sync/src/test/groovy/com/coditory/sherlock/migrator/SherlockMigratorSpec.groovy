@@ -104,6 +104,39 @@ class SherlockMigratorSpec extends Specification {
       assertReleased(thirdChangeSetId)
   }
 
+  def "should return migration result for successful migration"() {
+    given:
+      SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+    and:
+      int migrationFinishExecutions = 0
+      int migrationRejectedExecutions = 0
+    when:
+      MigrationResult result = migrator.migrate()
+        .onMigrationFinish({ migrationFinishExecutions++ })
+        .onMigrationRejection({ migrationRejectedExecutions++ })
+    then:
+      result.migrated == true
+      migrationFinishExecutions == 1
+      migrationRejectedExecutions == 0
+  }
+
+  def "should return migration result for rejected migration"() {
+    given:
+      acquire(migrationId)
+      SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+    and:
+      int migrationFinishExecutions = 0
+      int migrationRejectedExecutions = 0
+    when:
+      MigrationResult result = migrator.migrate()
+        .onMigrationFinish({ migrationFinishExecutions++ })
+        .onMigrationRejection({ migrationRejectedExecutions++ })
+    then:
+      result.migrated == false
+      migrationFinishExecutions == 0
+      migrationRejectedExecutions == 1
+  }
+
   private void assertAcquired(String lockId) {
     assert acquire(lockId) == false
   }

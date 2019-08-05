@@ -1,6 +1,7 @@
 package com.coditory.sherlock.migrator;
 
 import com.coditory.sherlock.DistributedLock;
+import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
 import com.coditory.sherlock.Sherlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,9 +70,12 @@ public final class SherlockMigrator {
 
   /**
    * Runs the migration process.
+   *
+   * @return migration result
    */
-  public void migrate() {
-    migrationLock.acquireAndExecute(this::runMigrations);
+  public MigrationResult migrate() {
+    AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
+    return new MigrationResult(acquireResult.isAcquired());
   }
 
   private void runMigrations() {
