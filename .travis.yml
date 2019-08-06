@@ -1,6 +1,7 @@
 language: java
 jdk: oraclejdk11
-services: docker
+python: 3.7 # for mkdocs
+services: docker # for testcontainers
 
 branches:
   except:

@@ -1,0 +1,88 @@
+site_name: sherlock-distributed-lock
+site_description: Dostributed lock library for JVM
+site_author: coditory
+site_url: https://coditory.github.io/sherlock-distributed-lock
+site_dir: build/docs
+
+repo_name: coditory/sherlock-distributed-lock
+repo_url: https://github.com/coditory/sherlock-distributed-lock
+
+theme:
+  name: 'material'
+  static_templates:
+    - 404.html
+  # Don't include MkDocs' JavaScript
+  include_search_page: false
+  search_index_only: true
+  # Default values, taken from mkdocs_theme.yml
+  language: en
+  feature:
+    tabs: true
+  palette:
+    primary: indigo
+    accent: indigo
+  font:
+    text: Roboto
+    code: Roboto Mono
+  favicon: assets/images/favicon.png
+  logo:
+    icon: "\uE80C"
+
+plugins:
+  - search
+  - minify:
+      minify_html: true
+
+markdown_extensions:
+  - markdown.extensions.admonition
+  - markdown.extensions.codehilite:
+      guess_lang: false
+  - markdown.extensions.def_list
+  - markdown.extensions.footnotes
+  - markdown.extensions.meta
+  - markdown.extensions.toc:
+      permalink: true
+  - pymdownx.arithmatex
+  - pymdownx.betterem:
+      smart_enable: all
+  - pymdownx.caret
+  - pymdownx.critic
+  - pymdownx.details
+  - pymdownx.emoji:
+      emoji_generator: !!python/name:pymdownx.emoji.to_svg
+  - pymdownx.inlinehilite
+  - pymdownx.keys
+  - pymdownx.magiclink:
+      repo_url_shorthand: true
+      user: squidfunk
+      repo: mkdocs-material
+  - pymdownx.mark
+  - pymdownx.smartsymbols
+  - pymdownx.superfences
+  - pymdownx.tasklist:
+      custom_checkbox: true
+  - pymdownx.tilde
+
+extra:
+  version: '0.2.1'
+  social:
+    - type: globe
+      link: http://struct.cc
+    - type: github-alt
+      link: https://github.com/squidfunk
+    - type: twitter
+      link: https://twitter.com/squidfunk
+
+# Site navigation
+nav:
+  - Home: 'index.md'
+  - Changelog: 'changelog.md'
+#  - Examples: 'examples/examples.md'
+#  - Configuration:
+#      - Overview: 'configuration/overview.md'
+#      - Basic usage: 'configuration/basic_usage.md'
+
+# Google Analytics
+google_analytics:
+  - !!python/object/apply:os.getenv ["GOOGLE_ANALYTICS_KEY"]
+  - auto
