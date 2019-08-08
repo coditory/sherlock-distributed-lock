@@ -7,7 +7,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
 
@@ -25,11 +27,20 @@ import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
  * </ul>
  */
 public final class SherlockMigrator {
+  private static final String DEFAULT_MIGRATOR_LOCK_ID = "migrator";
   private final Logger logger = LoggerFactory.getLogger(this.getClass());
   private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();
   private final String migrationId;
   private final Sherlock sherlock;
   private final DistributedLock migrationLock;
+  private final Set<String> migrationLockIds = new HashSet<>();
+
+  /**
+   * @param sherlock sherlock used to manage migration locks
+   */
+  public SherlockMigrator(Sherlock sherlock) {
+    this(DEFAULT_MIGRATOR_LOCK_ID, sherlock);
+  }
 
   /**
    * @param migrationId id used as lock id for the whole migration process
@@ -43,6 +54,7 @@ public final class SherlockMigrator {
       .withPermanentLockDuration()
       .withStaticUniqueOwnerId()
       .build();
+    this.migrationLockIds.add(migrationId);
   }
 
   /**
@@ -55,6 +67,8 @@ public final class SherlockMigrator {
    */
   public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
     expectNonEmpty(changeSetId, "Expected non empty changeSetId");
+    ensureUniqueChangeSetId(changeSetId);
+    migrationLockIds.add(changeSetId);
     DistributedLock changeSetLock = createChangeSetLock(changeSetId);
     migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
     return this;
@@ -82,6 +96,13 @@ public final class SherlockMigrator {
     logger.info("Starting migration: {}", migrationId);
     migrationChangeSets.forEach(MigrationChangeSet::execute);
     logger.info("Migration finished successfully: {}", migrationId);
+  }
+
+  private void ensureUniqueChangeSetId(String changeSetId) {
+    if (migrationLockIds.contains(changeSetId)) {
+      throw new IllegalArgumentException(
+        "Expected unique change set ids. Duplicated id: " + changeSetId);
+    }
   }
 
   private static class MigrationChangeSet {
