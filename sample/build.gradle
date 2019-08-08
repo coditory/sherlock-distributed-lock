@@ -1,8 +1,5 @@
 dependencies {
-  compile project(':api:api-rxjava')
-  compile project(':api:api-reactor')
   compile project(':mongo:mongo-sync')
-  compile project(':mongo:mongo-reactive')
   compile "ch.qos.logback:logback-core:$versions.logback"
   compile "ch.qos.logback:logback-classic:$versions.logback"
 }

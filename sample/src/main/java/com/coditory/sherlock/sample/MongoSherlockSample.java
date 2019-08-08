@@ -30,7 +30,7 @@ public class MongoSherlockSample {
     DistributedLock reentrantLock = sherlock.createReentrantLock("sample-acquire");
     DistributedLock overridingLock = sherlock.createOverridingLock("sample-acquire");
     reentrantLock.acquire();
-    Thread.sleep(60_000);
+    Thread.sleep(10_000);
     reentrantLock.acquire();
   }
 

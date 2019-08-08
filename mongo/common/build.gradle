@@ -1,7 +1,7 @@
 description = 'Sherlock Distributed Lock common packages for mongo implementations'
 
 dependencies {
-  api project(':common')
+  implementation project(':common')
   implementation "org.mongodb:mongodb-driver-core:$versions.mongodb"
   integrationCompile "org.testcontainers:spock:$versions.testContainers"
   integrationCompile project(':tests')
