@@ -112,8 +112,8 @@ class SherlockMigratorSpec extends Specification {
       int migrationRejectedExecutions = 0
     when:
       MigrationResult result = migrator.migrate()
-        .onMigrationFinish({ migrationFinishExecutions++ })
-        .onMigrationRejection({ migrationRejectedExecutions++ })
+        .onFinish({ migrationFinishExecutions++ })
+        .onRejected({ migrationRejectedExecutions++ })
     then:
       result.migrated == true
       migrationFinishExecutions == 1
@@ -129,12 +129,31 @@ class SherlockMigratorSpec extends Specification {
       int migrationRejectedExecutions = 0
     when:
       MigrationResult result = migrator.migrate()
-        .onMigrationFinish({ migrationFinishExecutions++ })
-        .onMigrationRejection({ migrationRejectedExecutions++ })
+        .onFinish({ migrationFinishExecutions++ })
+        .onRejected({ migrationRejectedExecutions++ })
     then:
       result.migrated == false
       migrationFinishExecutions == 0
       migrationRejectedExecutions == 1
+  }
+
+  def "should throw error on duplicated change set id"() {
+    when:
+      new SherlockMigrator(sherlock)
+        .addChangeSet(firstChangeSetId, { firstChangeSetExecutions++ })
+        .addChangeSet(firstChangeSetId, { secondChangeSetExecutions++ })
+    then:
+      IllegalArgumentException exception = thrown(IllegalArgumentException)
+      exception.message.startsWith("Expected unique change set ids")
+  }
+
+  def "should throw error on change set id same as migration id"() {
+    when:
+      new SherlockMigrator(migrationId, sherlock)
+        .addChangeSet(migrationId, { firstChangeSetExecutions++ })
+    then:
+      IllegalArgumentException exception = thrown(IllegalArgumentException)
+      exception.message.startsWith("Expected unique change set ids")
   }
 
   private void assertAcquired(String lockId) {

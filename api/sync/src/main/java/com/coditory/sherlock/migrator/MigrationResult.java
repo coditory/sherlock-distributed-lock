@@ -3,7 +3,7 @@ package com.coditory.sherlock.migrator;
 public final class MigrationResult {
   private final boolean migrated;
 
-  public MigrationResult(boolean migrated) {
+  MigrationResult(boolean migrated) {
     this.migrated = migrated;
   }
 
@@ -18,7 +18,7 @@ public final class MigrationResult {
    * @param action the action to be executed after migration
    * @return migration result for chaining
    */
-  public MigrationResult onMigrationFinish(Runnable action) {
+  public MigrationResult onFinish(Runnable action) {
     if (migrated) {
       action.run();
     }
@@ -31,7 +31,7 @@ public final class MigrationResult {
    * @param action the action to be executed when migration lock was not acquired
    * @return migration result for chaining
    */
-  public MigrationResult onMigrationRejection(Runnable action) {
+  public MigrationResult onRejected(Runnable action) {
     if (!migrated) {
       action.run();
     }
