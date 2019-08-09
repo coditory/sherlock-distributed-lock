@@ -60,11 +60,8 @@ subprojects {
   sourceCompatibility = 11
 
   // make nicer archive and module names
-  archivesBaseName = (rootProject.name + '-' + project.name)
-      .replaceAll('-api-', '-')
-  ext.moduleName = (rootProject.group + '-' + project.name)
-      .replaceAll('-api-', '-')
-      .replaceAll('-', '.')
+  archivesBaseName = rootProject.name + '-' + project.name
+  ext.moduleName = archivesBaseName.replaceAll('-', '.')
 
   dependencies {
     testCompile "ch.qos.logback:logback-core:$versions.logback"
