@@ -10,7 +10,7 @@
 - [mongo-reactive](./mongo/reactive) - Uses mongodb (tested on v3.4) and its reactive connector to manage locks
 - [in-memory-synchronous](./inmem/sync) - Stores locks in memory. Designed for testing purposes.
 - [in-memory-reactive](./inmem/reactive) - Stores locks in memory and exposes reactive api. Designed for testing purposes.
-- ...postgres implementation comes next
+- [sql-synchronous](./inmem/sync) - Stores locks in SQL database (tested on PostgreSQL v11 and MySQLv8).
 
 Before using the library read about [main problems of distributed locking](#disclaimer).
 

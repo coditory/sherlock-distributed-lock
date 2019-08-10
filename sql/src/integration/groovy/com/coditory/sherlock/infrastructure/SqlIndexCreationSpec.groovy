@@ -1,105 +1,74 @@
 package com.coditory.sherlock.infrastructure
 
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.SqlSherlock
+import com.coditory.sherlock.base.MySqlConnectionProvider
+import com.coditory.sherlock.base.PostgresConnectionProvider
+import org.junit.After
+import spock.lang.Specification
 
-import java.sql.DatabaseMetaData
-import java.sql.ResultSet
+import java.sql.Connection
+import java.sql.Statement
 
-import static com.coditory.sherlock.SqlInitializer.connection
+import static com.coditory.sherlock.infrastructure.SqlTableIndexes.listTableIndexes
 
-class SqlIndexCreationSpec {
-//  String collectionName = "other-locks"
-//  MongoCollection<Document> collection = mongoClient.getDatabase(databaseName)
-//    .getCollection(collectionName)
-//  Sherlock locks = MongoSherlock.builder()
-//    .withLocksCollection(collection)
-//    .build()
-//
-//  @After
-//  def removeCollection() {
-//    collection.drop()
-//  }
-//
-//  def "should create mongo indexes on initialize"() {
-//    expect:
-//      assertNoIndexes()
-//    when:
-//      locks.initialize()
-//    then:
-//      assertIndexesCreated()
-//  }
+class PostgresIndexCreationSpec extends SqlIndexCreationSpec implements PostgresConnectionProvider {
+  List<String> expectedIndexNames = [tableName + "_pkey"]
+}
 
-//  def "should create mongo indexes on initialize"() {
-//    expect:
-//      assertNoIndexes()
-//    when:
-//      locks.initialize()
-//    then:
-//      assertIndexesCreated()
-//  }
+class MySqlIndexCreationSpec extends SqlIndexCreationSpec implements MySqlConnectionProvider {
+  List<String> expectedIndexNames = ["PRIMARY"]
+}
 
-//  def "should create mongo indexes on first lock"() {
-//    expect:
-//      assertNoIndexes()
-//    when:
-//      locks.createLock("some-acquire")
-//        .acquire()
-//    then:
-//      assertIndexesCreated()
-//  }
+abstract class SqlIndexCreationSpec extends Specification {
+  String tableName = "other_locks"
+  Sherlock locks = SqlSherlock.builder()
+    .withConnection(connection)
+    .withLocksTable(tableName)
+    .build()
 
-//  private boolean assertNoIndexes() {
-//    assertJsonEqual(getCollectionIndexes(), "[]")
-//    return true
-//  }
-//extends Specification
-//  private boolean assertIndexesCreated() {
-//    assertJsonEqual(getCollectionIndexes(), """[
-//        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "$databaseName.$collectionName", "background": true},
-//        {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "$databaseName.$collectionName"}
-//      ]""")
-//    return true
-//  }
+  abstract List<String> getExpectedIndexNames()
 
-  private String getTableIndexes() {
-    List<String> schemaList = new ArrayList<String>();
-    List<String> catalogList = new ArrayList<String>();
-    List<String> indexs = new ArrayList<String>();
-    String dbIndexName = null;
-    ResultSet rs = null;
-    System.out.println("Got Connection.");
-    DatabaseMetaData metaData = connection.getMetaData();
+  abstract Connection getConnection();
 
-    ResultSet schemas = metaData.getSchemas();
-    ResultSet catalog = metaData.getCatalogs();
-    while (schemas.next()) {
-      String tableSchema = schemas.getString(1);
-      schemaList.add(tableSchema);
+  @After
+  void dropTable() {
+    Statement statement
+    try {
+      statement = connection.createStatement()
+      statement.executeUpdate("DROP TABLE " + tableName)
+    } finally {
+      if (statement != null) statement.close()
     }
-    while (catalog.next()) {
-      String allCatalog = catalog.getString(1);
-      catalogList.add(allCatalog);
-    }
+  }
 
+  def "should create sql indexes on initialize"() {
+    expect:
+      assertNoIndexes()
+    when:
+      locks.initialize()
+    then:
+      assertIndexesCreated()
+  }
 
-    for (int i = 0; i < schemaList.size(); i++) {
-      try {
-        if (schemaList.get(i) != null) {
-          ResultSet indexValues = metaData.getIndexInfo(null, schemaList.get(i), "locks", true, false);
+  def "should create sql indexes on first lock"() {
+    expect:
+      assertNoIndexes()
+    when:
+      locks.createLock("some-acquire")
+        .acquire()
+    then:
+      assertIndexesCreated()
+  }
 
-          while (indexValues.next()) {
+  boolean assertNoIndexes() {
+    assert listTableIndexes(connection, tableName).empty
+    return true
+  }
 
-            dbIndexName = indexValues.getString("INDEX_NAME");
-            if (dbIndexName != null) {
-              indexs.add(dbIndexName);
-            }
-          }
-          System.out.println("CORRESPONDING TABLE SCHEMA IS : " + schemaList.get(i));
-          System.out.println("INDEX_NAMES IS ::: " + indexs);
-        }
-
-      } catch (Exception e) {
-      }
-    }
+  boolean assertIndexesCreated() {
+    assert listTableIndexes(connection, tableName) == expectedIndexNames
+    return true
   }
 
 }

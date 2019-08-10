@@ -2,8 +2,9 @@ description = 'Sherlock Distributed Lock implementation using SQL synchronous co
 
 dependencies {
   api project(':api:api-sync')
-  api "org.postgresql:postgresql:$versions.postgresql"
   implementation project(':common')
   integrationCompile project(':tests')
   integrationCompile "org.testcontainers:spock:$versions.testContainers"
+  integrationCompile "org.postgresql:postgresql:$versions.postgresql"
+  integrationCompile "mysql:mysql-connector-java:$versions.mysql"
 }

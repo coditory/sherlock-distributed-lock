@@ -37,7 +37,7 @@ trait LockAssertions {
     DistributedLock otherLock = createLockWithRandomOwner(lockId)
     assert otherLock.acquire() == false
     Instant backup = fixedClock.instant()
-    fixedClock.tick(Duration.ofDays(100_000))
+    fixedClock.tick(Duration.ofDays(100))
     assert otherLock.acquire() == false
     fixedClock.setup(backup)
     return true

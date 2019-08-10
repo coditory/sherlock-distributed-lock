@@ -11,9 +11,9 @@ final class SqlQueries {
 
   private String expectValidTableName(String tableName) {
     expectNonEmpty(tableName);
-    if (!tableName.matches("[a-zA-Z0-9_-]+")) {
+    if (!tableName.matches("[a-zA-Z0-9_]+")) {
       throw new IllegalArgumentException(
-        "Expected table name consisting of a-z, A-Z, 0-9, -, _. Got: " + tableName);
+        "Expected table name consisting of a-z, A-Z, 0-9, _. Got: " + tableName);
     }
     return tableName;
   }
@@ -21,10 +21,10 @@ final class SqlQueries {
   String createLocksTable() {
     return "CREATE TABLE " + tableName
       + "("
-      + "  ID varchar(100) NOT NULL,"
-      + "  ACQUIRED_BY varchar(100) NOT NULL,"
-      + "  ACQUIRED_AT timestamp NOT NULL,"
-      + "  EXPIRES_AT timestamp,"
+      + "  ID VARCHAR(100) NOT NULL,"
+      + "  ACQUIRED_BY VARCHAR(100) NOT NULL,"
+      + "  ACQUIRED_AT TIMESTAMP(3) NOT NULL,"
+      + "  EXPIRES_AT TIMESTAMP(3),"
       + "  PRIMARY KEY (ID)"
       + ")";
   }
