@@ -1,23 +1,24 @@
 buildscript {
   ext {
     versions = [
-        reactor        : '3.2.11.RELEASE',
-        rxjava         : '2.2.11',
-        reactiveStreams: '1.0.2',
-        mongodb        : '3.10.2',
-        mongodbReactive: '1.11.0',
-        slf4j          : '1.7.26',
-        logback        : '1.2.3',
-        // test dependencies:
-        testContainers : '1.12.0',
-        groovy         : '2.5.7',
-        spock          : '1.3-groovy-2.5'
+      reactor        : '3.2.11.RELEASE',
+      rxjava         : '2.2.11',
+      reactiveStreams: '1.0.2',
+      mongodb        : '3.10.2',
+      mongodbReactive: '1.11.0',
+      slf4j          : '1.7.26',
+      logback        : '1.2.3',
+      postgresql     : '42.2.6',
+      // test dependencies:
+      testContainers : '1.12.0',
+      groovy         : '2.5.7',
+      spock          : '1.3-groovy-2.5'
     ]
     notPublishableModules = [
-        ':api',
-        ':sample',
-        ':mongo',
-        ':tests'
+      ':api',
+      ':sample',
+      ':mongo',
+      ':tests'
     ]
   }
   repositories {

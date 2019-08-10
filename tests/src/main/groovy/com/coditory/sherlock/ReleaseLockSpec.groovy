@@ -50,7 +50,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
   }
 
   @Unroll
-  def "should release a lock after default lock duration - #type"() {
+  def "should automatically release a lock after default lock duration - #type"() {
     given:
       DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:
@@ -66,7 +66,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
   }
 
   @Unroll
-  def "should release a lock after custom lock duration - #type"() {
+  def "should automatically release a lock after custom lock duration - #type"() {
     given:
       DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
     and:

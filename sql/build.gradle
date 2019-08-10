@@ -1,0 +1,9 @@
+description = 'Sherlock Distributed Lock implementation using SQL synchronous connector'
+
+dependencies {
+  api project(':api:api-sync')
+  api "org.postgresql:postgresql:$versions.postgresql"
+  implementation project(':common')
+  integrationCompile project(':tests')
+  integrationCompile "org.testcontainers:spock:$versions.testContainers"
+}
