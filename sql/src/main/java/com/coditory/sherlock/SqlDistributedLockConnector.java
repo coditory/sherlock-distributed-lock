@@ -103,7 +103,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
       setupOptionalTimestamp(statement, 4, expiresAt);
       return statement.executeUpdate() > 0;
     } catch (SQLException e) {
-      if (!e.getMessage().contains("duplicate")) {
+      if (!e.getMessage().toLowerCase().contains("duplicate")) {
         throw new IllegalStateException("SQL Error when inserting a lock: " + lockId, e);
       }
       return false;

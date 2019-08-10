@@ -9,6 +9,7 @@ buildscript {
       slf4j          : '1.7.26',
       logback        : '1.2.3',
       postgresql     : '42.2.6',
+      mysql          : '8.0.17',
       // test dependencies:
       testContainers : '1.12.0',
       groovy         : '2.5.7',

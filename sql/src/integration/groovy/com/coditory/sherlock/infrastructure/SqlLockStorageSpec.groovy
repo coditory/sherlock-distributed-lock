@@ -4,17 +4,22 @@ import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
 import com.coditory.sherlock.UsesSqlSherlock
 import com.coditory.sherlock.base.LockTypes
+import com.coditory.sherlock.base.MySqlConnectionProvider
+import com.coditory.sherlock.base.PostgresConnectionProvider
 import spock.lang.Unroll
 
 import java.sql.ResultSet
 import java.sql.ResultSetMetaData
+import java.sql.Statement
 import java.sql.Timestamp
 import java.time.Duration
 import java.time.Instant
 
-import static com.coditory.sherlock.SqlInitializer.connection
+class PostgresLockStorageSpec extends SqlLockStorageSpec implements PostgresConnectionProvider {}
 
-class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlock {
+class MySqlLockStorageSpec extends SqlLockStorageSpec implements MySqlConnectionProvider {}
+
+abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlock {
   @Unroll
   def "should preserve lock state for acquired lock - #type"() {
     given:
@@ -81,9 +86,18 @@ class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlock {
   }
 
   private Map<String, Object> getLockRow(String lockId = sampleLockId) {
-    ResultSet resultSet = connection.createStatement()
-      .executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
-    return resultSetToList(resultSet)[0]
+    Statement statement
+    ResultSet resultSet
+    Map<String, Object> result
+    try {
+      statement = connection.createStatement()
+      resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
+      result = resultSetToList(resultSet)[0]
+    } finally {
+      if (resultSet != null) resultSet.close()
+      if (statement != null) statement.close()
+    }
+    return result
   }
 
   private List<Map<String, Object>> resultSetToList(ResultSet rs) {
@@ -93,7 +107,7 @@ class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlock {
     while (rs.next()) {
       Map<String, Object> row = new HashMap<String, Object>(columns);
       for (int i = 1; i <= columns; ++i) {
-        row.put(md.getColumnName(i), rs.getObject(i));
+        row.put(md.getColumnName(i).toLowerCase(), rs.getObject(i));
       }
       rows.add(row);
     }
