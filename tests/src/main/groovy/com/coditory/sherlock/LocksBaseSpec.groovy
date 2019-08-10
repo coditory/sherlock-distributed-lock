@@ -15,8 +15,8 @@ import static com.coditory.sherlock.base.UpdatableFixedClock.defaultUpdatableFix
 abstract class LocksBaseSpec extends Specification implements DistributedLocksCreator {
   static final UpdatableFixedClock fixedClock = defaultUpdatableFixedClock()
   static final Duration defaultLockDuration = Duration.ofMinutes(10)
-  static final String sampleOwnerId = "locks-test-instance"
-  static final String sampleLockId = "sample-acquire-id"
+  static final String sampleOwnerId = "locks_test_instance"
+  static final String sampleLockId = "sample_acquire_id"
   Sherlock sherlock
 
   @Before

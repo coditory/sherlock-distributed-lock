@@ -14,6 +14,7 @@ include 'mongo:mongo-common'
 include 'inmem:inmem-sync'
 include 'inmem:inmem-reactive'
 include 'inmem:inmem-common'
+include 'sql'
 include 'tests'
 
 // Alias node names so all are unique
