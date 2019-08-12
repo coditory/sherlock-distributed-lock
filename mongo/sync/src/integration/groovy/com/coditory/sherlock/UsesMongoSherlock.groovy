@@ -9,13 +9,14 @@ import java.time.Duration
 
 import static MongoInitializer.databaseName
 import static MongoInitializer.mongoClient
+import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock
 
 trait UsesMongoSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
   Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
-    return MongoSherlock.builder()
+    return mongoSherlock()
       .withLocksCollection(getLocksCollection())
       .withOwnerId(instanceId)
       .withLockDuration(duration)

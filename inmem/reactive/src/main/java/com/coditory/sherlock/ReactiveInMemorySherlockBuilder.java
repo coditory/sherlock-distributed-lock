@@ -10,20 +10,23 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
  * <p>
  * Designed for testing purposes only.
  */
-public final class ReactiveInMemorySherlock extends
-  ReactiveSherlockWithConnectorBuilder<ReactiveInMemorySherlock> {
+public final class ReactiveInMemorySherlockBuilder extends
+  ReactiveSherlockWithConnectorBuilder<ReactiveInMemorySherlockBuilder> {
   private InMemoryDistributedLockStorage storage = new InMemoryDistributedLockStorage();
   private Clock clock = DEFAULT_CLOCK;
 
   /**
    * @return new instance of the builder
    */
-  public static ReactiveInMemorySherlock builder() {
-    return new ReactiveInMemorySherlock();
+  public static ReactiveInMemorySherlockBuilder reactiveInMemorySherlockBuilder() {
+    return new ReactiveInMemorySherlockBuilder();
   }
 
-  private ReactiveInMemorySherlock() {
-    // deliberately empty
+  /**
+   * @return new instance of in-memory sherlock with default configuration
+   */
+  public static ReactiveSherlock reactiveInMemorySherlock() {
+    return reactiveInMemorySherlockBuilder().build();
   }
 
   /**
@@ -31,7 +34,7 @@ public final class ReactiveInMemorySherlock extends
    *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
-  public ReactiveInMemorySherlock withClock(Clock clock) {
+  public ReactiveInMemorySherlockBuilder withClock(Clock clock) {
     this.clock = expectNonNull(clock, "Expected non null clock");
     return this;
   }
@@ -41,7 +44,7 @@ public final class ReactiveInMemorySherlock extends
    *
    * @return the instance
    */
-  public ReactiveInMemorySherlock withSharedStorage() {
+  public ReactiveInMemorySherlockBuilder withSharedStorage() {
     this.storage = InMemoryDistributedLockStorage.singleton();
     return this;
   }

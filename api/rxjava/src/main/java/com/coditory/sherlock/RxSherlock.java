@@ -14,7 +14,7 @@ public interface RxSherlock {
    * @param locks reactive locks to be wrapped in RxJava api
    * @return RxJava version of sherlock locks
    */
-  static RxSherlock toRxSherlock(ReactiveSherlock locks) {
+  static RxSherlock rxSherlock(ReactiveSherlock locks) {
     return new RxSherlockWrapper(locks);
   }
 

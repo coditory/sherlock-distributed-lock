@@ -6,5 +6,6 @@ dependencies {
   api "io.projectreactor:reactor-core:$versions.reactor"
   implementation project(':common')
   integrationCompile project(':inmem:inmem-reactive')
+  integrationCompile project(':inmem:inmem-common')
   integrationCompile project(':tests')
 }

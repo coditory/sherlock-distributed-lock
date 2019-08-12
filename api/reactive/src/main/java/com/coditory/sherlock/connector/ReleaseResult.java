@@ -22,7 +22,7 @@ public final class ReleaseResult {
 
   @Override
   public String toString() {
-    return "ReleaseResult{unlocked=" + released + '}';
+    return "ReleaseResult{released=" + released + '}';
   }
 
   @Override
