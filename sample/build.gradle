@@ -1,5 +1,7 @@
 dependencies {
   compile project(':mongo:mongo-sync')
+  compile project(':api:api-reactor')
+  compile project(':inmem:inmem-reactive')
   compile "ch.qos.logback:logback-core:$versions.logback"
   compile "ch.qos.logback:logback-classic:$versions.logback"
 }

@@ -11,13 +11,14 @@ import java.time.Duration
 import static MongoInitializer.databaseName
 import static MongoInitializer.mongoClient
 import static BlockingReactiveSherlockWrapper.blockingReactiveSherlock
+import static com.coditory.sherlock.ReactiveMongoSherlockBuilder.reactiveMongoSherlock
 
 trait UsesReactiveMongoSherlock implements DistributedLocksCreator {
   static final String locksCollectionName = "locks"
 
   @Override
   Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
-    ReactiveSherlock reactiveLocks = ReactiveMongoSherlock.builder()
+    ReactiveSherlock reactiveLocks = reactiveMongoSherlock()
       .withLocksCollection(getLocksCollection())
       .withOwnerId(ownerId)
       .withLockDuration(duration)

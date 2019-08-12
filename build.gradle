@@ -85,8 +85,8 @@ subprojects {
     classpath = configurations.compileClasspath
     failOnError = false
     options {
-      setMemberLevel JavadocMemberLevel.PUBLIC
-      setAuthor true
+      memberLevel = JavadocMemberLevel.PUBLIC
+      author = true
     }
   }
 }

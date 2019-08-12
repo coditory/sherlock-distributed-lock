@@ -11,19 +11,29 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link ReactiveSherlock} that uses MongoDB for locking mechanism.
  */
-public final class ReactiveMongoSherlock extends
-  ReactiveSherlockWithConnectorBuilder<ReactiveMongoSherlock> {
+public final class ReactiveMongoSherlockBuilder extends
+  ReactiveSherlockWithConnectorBuilder<ReactiveMongoSherlockBuilder> {
   private MongoCollection<Document> collection;
   private Clock clock = DEFAULT_CLOCK;
 
   /**
    * @return new instance of the builder
    */
-  public static ReactiveMongoSherlock builder() {
-    return new ReactiveMongoSherlock();
+  public static ReactiveMongoSherlockBuilder reactiveMongoSherlock() {
+    return new ReactiveMongoSherlockBuilder();
   }
 
-  private ReactiveMongoSherlock() {
+  /**
+   * @param collection mongo collection to be used for locking
+   * @return new instance of mongo sherlock with default configuration
+   */
+  public static ReactiveSherlock reactiveMongoSherlock(MongoCollection<Document> collection) {
+    return reactiveMongoSherlock()
+      .withLocksCollection(collection)
+      .build();
+  }
+
+  private ReactiveMongoSherlockBuilder() {
     // deliberately empty
   }
 
@@ -31,7 +41,7 @@ public final class ReactiveMongoSherlock extends
    * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public ReactiveMongoSherlock withLocksCollection(MongoCollection<Document> collection) {
+  public ReactiveMongoSherlockBuilder withLocksCollection(MongoCollection<Document> collection) {
     this.collection = expectNonNull(collection, "Expected non null collection");
     return this;
   }
@@ -41,7 +51,7 @@ public final class ReactiveMongoSherlock extends
    *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
-  public ReactiveMongoSherlock withClock(Clock clock) {
+  public ReactiveMongoSherlockBuilder withClock(Clock clock) {
     this.clock = expectNonNull(clock, "Expected non null clock");
     return this;
   }

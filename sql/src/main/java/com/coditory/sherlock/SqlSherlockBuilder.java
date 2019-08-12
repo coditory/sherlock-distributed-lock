@@ -10,19 +10,30 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link Sherlock} that uses SQL database for locking mechanism.
  */
-public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock> {
-  private String tableName = "locks";
+public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSherlockBuilder> {
+  public static final String DEFAULT_LOCKS_TABLE_NAME = "locks";
+  private String tableName = DEFAULT_LOCKS_TABLE_NAME;
   private Clock clock = DEFAULT_CLOCK;
   private Connection connection;
 
   /**
    * @return new instance of the builder
    */
-  public static SqlSherlock builder() {
-    return new SqlSherlock();
+  public static SqlSherlockBuilder sqlSherlock() {
+    return new SqlSherlockBuilder();
   }
 
-  private SqlSherlock() {
+  /**
+   * @param connection the connection to the database
+   * @return sql sherlock with default configuration
+   */
+  public static Sherlock sqlSherlock(Connection connection) {
+    return sqlSherlock()
+      .withConnection(connection)
+      .build();
+  }
+
+  private SqlSherlockBuilder() {
     // deliberately empty
   }
 
@@ -30,7 +41,7 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
    * @param connection the connection to the database
    * @return the instance
    */
-  public SqlSherlock withConnection(Connection connection) {
+  public SqlSherlockBuilder withConnection(Connection connection) {
     this.connection = expectNonNull(connection, "Expected non null connection");
     return this;
   }
@@ -39,7 +50,7 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
    * @param tableName the name of the table that stores locks
    * @return the instance
    */
-  public SqlSherlock withLocksTable(String tableName) {
+  public SqlSherlockBuilder withLocksTable(String tableName) {
     this.tableName = expectNonEmpty(tableName, "Expected non empty tableName");
     return this;
   }
@@ -49,7 +60,7 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
    *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
-  public SqlSherlock withClock(Clock clock) {
+  public SqlSherlockBuilder withClock(Clock clock) {
     this.clock = expectNonNull(clock, "Expected non null clock");
     return this;
   }

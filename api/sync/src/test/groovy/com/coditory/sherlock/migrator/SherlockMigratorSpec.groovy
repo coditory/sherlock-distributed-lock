@@ -4,7 +4,7 @@ import com.coditory.sherlock.Sherlock
 import com.coditory.sherlock.base.SpecSimulatedException
 import spock.lang.Specification
 
-import static com.coditory.sherlock.InMemorySherlock.inMemorySherlock
+import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlock
 import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
 import static com.coditory.sherlock.util.UuidGenerator.uuid
 

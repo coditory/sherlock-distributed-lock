@@ -1,12 +1,13 @@
 package com.coditory.sherlock.sample;
 
 import com.coditory.sherlock.DistributedLock;
-import com.coditory.sherlock.MongoSherlock;
 import com.coditory.sherlock.Sherlock;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+
+import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock;
 
 public class MongoSherlockSample {
   private static Sherlock createSherlock() {
@@ -19,7 +20,7 @@ public class MongoSherlockSample {
     MongoCollection<Document> collection = mongoClient
       .getDatabase("sherlock")
       .getCollection("locks");
-    return MongoSherlock.builder()
+    return mongoSherlock()
       .withLocksCollection(collection)
       .build();
   }

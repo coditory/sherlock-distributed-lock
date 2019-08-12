@@ -11,18 +11,28 @@ import static com.coditory.sherlock.util.Preconditions.expectNonNull;
 /**
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
  */
-public final class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherlock> {
+public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<MongoSherlockBuilder> {
   private MongoCollection<Document> collection;
   private Clock clock = DEFAULT_CLOCK;
 
   /**
    * @return new instance of the builder
    */
-  public static MongoSherlock builder() {
-    return new MongoSherlock();
+  public static MongoSherlockBuilder mongoSherlock() {
+    return new MongoSherlockBuilder();
   }
 
-  private MongoSherlock() {
+  /**
+   * @param collection mongo collection to be used for locking
+   * @return new instance of mongo sherlock with default configuration
+   */
+  public static Sherlock mongoSherlock(MongoCollection<Document> collection) {
+    return mongoSherlock()
+      .withLocksCollection(collection)
+      .build();
+  }
+
+  private MongoSherlockBuilder() {
     // deliberately empty
   }
 
@@ -30,7 +40,7 @@ public final class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherl
    * @param collection mongo collection to be used for locking
    * @return the instance
    */
-  public MongoSherlock withLocksCollection(MongoCollection<Document> collection) {
+  public MongoSherlockBuilder withLocksCollection(MongoCollection<Document> collection) {
     this.collection = expectNonNull(collection, "Expected non null collection");
     return this;
   }
@@ -40,7 +50,7 @@ public final class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherl
    *   SherlockDefaults#DEFAULT_CLOCK}
    * @return the instance
    */
-  public MongoSherlock withClock(Clock clock) {
+  public MongoSherlockBuilder withClock(Clock clock) {
     this.clock = expectNonNull(clock, "Expected non null clock");
     return this;
   }

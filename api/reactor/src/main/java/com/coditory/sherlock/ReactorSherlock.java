@@ -14,7 +14,7 @@ public interface ReactorSherlock {
    * @param reactiveSherlock reactive sherlock to be wrapped in Reactor API
    * @return Reactor version of sherlock locks
    */
-  static ReactorSherlock toReactorSherlock(ReactiveSherlock reactiveSherlock) {
+  static ReactorSherlock reactorSherlock(ReactiveSherlock reactiveSherlock) {
     return new ReactorSherlockWrapper(reactiveSherlock);
   }
 

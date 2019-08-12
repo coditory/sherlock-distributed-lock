@@ -1,7 +1,6 @@
 package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.Sherlock
-import com.coditory.sherlock.SqlSherlock
 import com.coditory.sherlock.base.MySqlConnectionProvider
 import com.coditory.sherlock.base.PostgresConnectionProvider
 import org.junit.After
@@ -10,6 +9,7 @@ import spock.lang.Specification
 import java.sql.Connection
 import java.sql.Statement
 
+import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock
 import static com.coditory.sherlock.infrastructure.SqlTableIndexes.listTableIndexes
 
 class PostgresIndexCreationSpec extends SqlIndexCreationSpec implements PostgresConnectionProvider {
@@ -22,7 +22,7 @@ class MySqlIndexCreationSpec extends SqlIndexCreationSpec implements MySqlConnec
 
 abstract class SqlIndexCreationSpec extends Specification {
   String tableName = "other_locks"
-  Sherlock locks = SqlSherlock.builder()
+  Sherlock locks = sqlSherlock()
     .withConnection(connection)
     .withLocksTable(tableName)
     .build()
