@@ -1,10 +1,8 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.util.UuidGenerator;
-
 import java.util.Objects;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 final class OwnerId {
   static OwnerId uniqueOwnerId() {

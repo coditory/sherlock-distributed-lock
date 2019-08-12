@@ -1,6 +1,6 @@
 package com.coditory.sherlock;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 final class SqlQueries {
   private final String tableName;

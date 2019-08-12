@@ -3,7 +3,7 @@ package com.coditory.sherlock;
 import java.time.Clock;
 
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Builds {@link Sherlock} that that stores locks in memory.

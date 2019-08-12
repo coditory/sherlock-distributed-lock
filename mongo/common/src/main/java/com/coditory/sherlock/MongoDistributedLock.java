@@ -15,7 +15,7 @@ import static com.coditory.sherlock.MongoDistributedLock.Fields.ACQUIRED_AT_FIEL
 import static com.coditory.sherlock.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
 import static com.coditory.sherlock.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
 import static com.coditory.sherlock.MongoDistributedLock.Fields.LOCK_ID_FIELD;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class MongoDistributedLock {
   interface Fields {

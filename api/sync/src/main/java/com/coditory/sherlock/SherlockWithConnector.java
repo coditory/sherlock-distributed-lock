@@ -6,7 +6,7 @@ import com.coditory.sherlock.DistributedLockBuilder.LockCreator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class SherlockWithConnector implements Sherlock {
   private final Logger logger = LoggerFactory.getLogger(SherlockWithConnector.class);

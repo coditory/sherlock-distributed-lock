@@ -3,7 +3,7 @@ package com.coditory.sherlock;
 import java.time.Duration;
 import java.util.Objects;
 
-import static com.coditory.sherlock.util.Preconditions.expectTruncatedToMillis;
+import static com.coditory.sherlock.Preconditions.expectTruncatedToMillis;
 
 final class LockDuration {
   static LockDuration of(Duration duration) {

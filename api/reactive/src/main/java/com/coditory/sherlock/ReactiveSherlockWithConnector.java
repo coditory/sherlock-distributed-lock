@@ -10,7 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.Flow.Publisher;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class ReactiveSherlockWithConnector implements ReactiveSherlock {
   private final Logger logger = LoggerFactory.getLogger(ReactiveSherlockWithConnector.class);

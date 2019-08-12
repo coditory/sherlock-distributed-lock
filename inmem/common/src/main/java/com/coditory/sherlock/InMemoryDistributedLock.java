@@ -5,7 +5,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class InMemoryDistributedLock {
   static InMemoryDistributedLock fromLockRequest(

@@ -6,7 +6,7 @@ import com.coditory.sherlock.connector.ReleaseResult;
 import java.time.Duration;
 import java.util.concurrent.Flow.Publisher;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class ReactiveDelegatingDistributedLock implements ReactiveDistributedLock {
   private final LockId lockId;

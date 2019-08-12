@@ -5,7 +5,7 @@ import com.coditory.sherlock.connector.ReleaseResult;
 import reactor.core.publisher.Mono;
 
 import static com.coditory.sherlock.PublisherToMonoConverter.convertToMono;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class ReactorSherlockWrapper implements ReactorSherlock {
   private final ReactiveSherlock sherlock;

@@ -10,9 +10,9 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
-import static com.coditory.sherlock.util.UuidGenerator.uuid;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+import static com.coditory.sherlock.UuidGenerator.uuid;
 
 public final class RxDistributedLockMock implements RxDistributedLock {
   public static RxDistributedLockMock releasedInMemoryLock() {

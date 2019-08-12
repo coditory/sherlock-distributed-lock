@@ -4,8 +4,8 @@ import java.sql.Connection;
 import java.time.Clock;
 
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Builds {@link Sherlock} that uses SQL database for locking mechanism.

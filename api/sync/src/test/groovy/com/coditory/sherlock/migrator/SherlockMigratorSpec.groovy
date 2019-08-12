@@ -1,12 +1,13 @@
 package com.coditory.sherlock.migrator
 
 import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.SherlockMigrator
 import com.coditory.sherlock.base.SpecSimulatedException
 import spock.lang.Specification
 
 import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlock
 import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
-import static com.coditory.sherlock.util.UuidGenerator.uuid
+import static com.coditory.sherlock.UuidGenerator.uuid
 
 class SherlockMigratorSpec extends Specification {
   String migrationId = "db migration"
@@ -111,7 +112,7 @@ class SherlockMigratorSpec extends Specification {
       int migrationFinishExecutions = 0
       int migrationRejectedExecutions = 0
     when:
-      MigrationResult result = migrator.migrate()
+      SherlockMigrator.MigrationResult result = migrator.migrate()
         .onFinish({ migrationFinishExecutions++ })
         .onRejected({ migrationRejectedExecutions++ })
     then:
@@ -128,7 +129,7 @@ class SherlockMigratorSpec extends Specification {
       int migrationFinishExecutions = 0
       int migrationRejectedExecutions = 0
     when:
-      MigrationResult result = migrator.migrate()
+      SherlockMigrator.MigrationResult result = migrator.migrate()
         .onFinish({ migrationFinishExecutions++ })
         .onRejected({ migrationRejectedExecutions++ })
     then:

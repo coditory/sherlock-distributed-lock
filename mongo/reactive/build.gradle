@@ -1,11 +1,10 @@
 description = 'Sherlock Distributed Lock implementation using mongo reactive driver'
 
 dependencies {
-  api project(':api:api-reactive')
-  api "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
-  implementation project(':common')
-  implementation project(':mongo:mongo-common')
-  implementation "io.projectreactor:reactor-core:$versions.reactor"
+  compile project(':api:api-reactive')
+  compile "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
+  compile project(':mongo:mongo-common')
+  compile "io.projectreactor:reactor-core:$versions.reactor"
   integrationCompile project(':tests')
   integrationCompile "org.testcontainers:spock:$versions.testContainers"
 }

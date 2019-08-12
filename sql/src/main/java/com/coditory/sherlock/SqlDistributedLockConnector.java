@@ -8,7 +8,7 @@ import java.sql.Types;
 import java.time.Clock;
 import java.time.Instant;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class SqlDistributedLockConnector implements DistributedLockConnector {
   private final SqlTableInitializer sqlTableInitializer;
