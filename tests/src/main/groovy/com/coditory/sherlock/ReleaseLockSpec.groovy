@@ -6,7 +6,7 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.util.UuidGenerator.uuid
+import static UuidGenerator.uuid
 import static com.coditory.sherlock.base.LockTypes.OVERRIDING
 import static com.coditory.sherlock.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.base.LockTypes.SINGLE_ENTRANT

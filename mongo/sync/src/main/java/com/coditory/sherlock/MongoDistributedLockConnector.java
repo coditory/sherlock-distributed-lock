@@ -17,7 +17,7 @@ import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;

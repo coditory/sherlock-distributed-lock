@@ -1,10 +1,8 @@
 package com.coditory.sherlock;
 
-import com.coditory.sherlock.util.Preconditions;
-
 import java.util.Objects;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class LockRequest {
   private final LockId lockId;

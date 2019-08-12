@@ -20,7 +20,7 @@ import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
 class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockConnector {

@@ -5,7 +5,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class DelegatingDistributedLock implements DistributedLock {
   private final Logger logger = LoggerFactory.getLogger(this.getClass());

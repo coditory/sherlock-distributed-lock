@@ -2,7 +2,7 @@ package com.coditory.sherlock;
 
 import java.util.Objects;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 final class LockId {
   public static LockId of(String value) {

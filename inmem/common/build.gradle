@@ -1,6 +1,6 @@
 description = 'Sherlock Distributed Lock common packages for in-memory implementations'
 
 dependencies {
-  implementation project(':common')
+  compile project(':common')
   integrationCompile project(':tests')
 }

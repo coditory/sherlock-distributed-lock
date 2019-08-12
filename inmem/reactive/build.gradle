@@ -1,10 +1,8 @@
 description = 'Sherlock Distributed Lock in-memory reactive implementation'
 
 dependencies {
-  api project(':api:api-reactive')
-  implementation project(':common')
-  implementation project(':inmem:inmem-common')
-  implementation project(':inmem:inmem-sync')
-  implementation "io.projectreactor:reactor-core:$versions.reactor"
+  compile project(':api:api-reactive')
+  compile project(':inmem:inmem-sync')
+  compile "io.projectreactor:reactor-core:$versions.reactor"
   integrationCompile project(':tests')
 }

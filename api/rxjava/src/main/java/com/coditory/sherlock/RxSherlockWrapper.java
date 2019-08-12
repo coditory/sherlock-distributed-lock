@@ -4,7 +4,7 @@ import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class RxSherlockWrapper implements RxSherlock {
   private final ReactiveSherlock sherlock;

@@ -1,11 +1,11 @@
-package com.coditory.sherlock.util;
+package com.coditory.sherlock;
 
 import java.util.UUID;
 
 /**
  * Random unique id generator
  */
-public final class UuidGenerator {
+final class UuidGenerator {
   private UuidGenerator() {
     throw new IllegalStateException("Do not instantiate utility class");
   }
@@ -15,7 +15,7 @@ public final class UuidGenerator {
    */
   public static String uuid() {
     return UUID.randomUUID()
-        .toString()
-        .replace("-", "");
+      .toString()
+      .replace("-", "");
   }
 }

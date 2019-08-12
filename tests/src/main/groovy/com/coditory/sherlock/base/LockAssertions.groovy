@@ -8,7 +8,6 @@ import groovy.transform.SelfType
 import java.time.Duration
 import java.time.Instant
 
-import static com.coditory.sherlock.util.UuidGenerator.uuid
 import static LockTypes.SINGLE_ENTRANT
 
 @CompileStatic
@@ -51,6 +50,6 @@ trait LockAssertions {
   }
 
   private DistributedLock createLockWithRandomOwner(String lockId) {
-    return createLock(SINGLE_ENTRANT, lockId, uuid())
+    return createLock(SINGLE_ENTRANT, lockId, UUID.randomUUID().toString())
   }
 }

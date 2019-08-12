@@ -1,8 +1,6 @@
-package com.coditory.sherlock.migrator;
+package com.coditory.sherlock;
 
-import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
-import com.coditory.sherlock.Sherlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,7 +9,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import static com.coditory.sherlock.util.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 /**
  * Migration mechanism based on {@link Sherlock} distributed locks.
@@ -134,5 +132,45 @@ public final class SherlockMigrator {
         logger.info("Migration change set skipped: {}. It was already applied", id);
       }
     }
+  }
+
+  public static final class MigrationResult {
+    private final boolean migrated;
+
+    MigrationResult(boolean migrated) {
+      this.migrated = migrated;
+    }
+
+    public boolean isMigrated() {
+      return migrated;
+    }
+
+    /**
+     * Executes the action when migration process finishes. The action is only executed by the
+     * migrator instance that started the migration process.
+     *
+     * @param action the action to be executed after migration
+     * @return migration result for chaining
+     */
+    public MigrationResult onFinish(Runnable action) {
+      if (migrated) {
+        action.run();
+      }
+      return this;
+    }
+
+    /**
+     * Executes the action when migration lock was not acquired.
+     *
+     * @param action the action to be executed when migration lock was not acquired
+     * @return migration result for chaining
+     */
+    public MigrationResult onRejected(Runnable action) {
+      if (!migrated) {
+        action.run();
+      }
+      return this;
+    }
+
   }
 }
