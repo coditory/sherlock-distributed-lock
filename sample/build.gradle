@@ -1,7 +1,14 @@
 dependencies {
+  // Synchronous
+  compile project(':inmem:inmem-sync')
   compile project(':mongo:mongo-sync')
+  compile project(':sql')
+  // Reactive
   compile project(':api:api-reactor')
+  compile project(':api:api-rxjava')
   compile project(':inmem:inmem-reactive')
+  compile project(':mongo:mongo-reactive')
+  // other
   compile "ch.qos.logback:logback-core:$versions.logback"
   compile "ch.qos.logback:logback-classic:$versions.logback"
 }

@@ -34,9 +34,9 @@ class ReactorDistributedLockSpec extends Specification {
       result == 1
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndGet() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(counter.incrementAndGet()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
+        { it.acquireForeverAndExecute(counter.incrementAndGet()) },
       ]
   }
 
@@ -53,9 +53,9 @@ class ReactorDistributedLockSpec extends Specification {
       result == null
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndGet() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(counter.incrementAndGet()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
+        { it.acquireForeverAndExecute(counter.incrementAndGet()) },
       ]
   }
 
@@ -74,9 +74,9 @@ class ReactorDistributedLockSpec extends Specification {
       result == null
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndThrow() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndThrow() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndThrow() }) },
+        { it.acquireAndExecute(counter.incrementAndThrow()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndThrow()) },
+        { it.acquireForeverAndExecute(counter.incrementAndThrow()) },
       ]
   }
 
@@ -84,7 +84,7 @@ class ReactorDistributedLockSpec extends Specification {
     given:
       ReactorDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
-      Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
+      Integer result = lock.releaseAndExecute(counter.incrementAndGet())
         .block()
     then:
       lock.acquisitions() == 0
@@ -97,7 +97,7 @@ class ReactorDistributedLockSpec extends Specification {
     given:
       ReactorDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
-      Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
+      Integer result = lock.releaseAndExecute(counter.incrementAndGet())
         .block()
     then:
       lock.acquisitions() == 0
@@ -119,7 +119,7 @@ class ReactorDistributedLockSpec extends Specification {
 
     Mono<Integer> incrementAndThrow() {
       return Mono.fromCallable({ ++value })
-        .then(Mono.error(new com.coditory.sherlock.base.SpecSimulatedException()))
+        .then(Mono.error(new SpecSimulatedException()))
     }
   }
 }
