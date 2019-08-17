@@ -1,7 +1,7 @@
 # Testing
 
 !!! info "In Memory Connector"
-    The easiest way to setup Sherlock in tests is to use [In-Memory Connector](/connectors/inmem).
+    The easiest way to setup Sherlock in tests is to use [In-Memory Connector](connectors/inmem.md).
     Use stubs when you need more control over the locking mechanism.
 
 For easy stubbing and mocking exposed API consists mostly of interfaces (see: `Sherlock`, `ReactorSherlock`, `DistributedLock`, `ReactorDistributedLock`).

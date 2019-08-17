@@ -7,7 +7,7 @@
 [![Join the chat at https://gitter.im/coditory/sherlock-distributed-lock](https://badges.gitter.im/coditory/sherlock-distributed-lock.svg)](https://gitter.im/coditory/sherlock-distributed-lock?utm_source=badge&utm_medium=badge&utm_campaign=pr-badge&utm_content=badge)
 
 <div style="text-align: center">
-<img src="/assets/img/logo.png" alt="Sherlock Distributed Lock Logo">
+<img src="assets/img/logo.png" alt="Sherlock Distributed Lock Logo">
 </div>
 
 ## Distributed lock JVM library 
@@ -15,6 +15,8 @@
 [Sherlock Distributed Lock](https://github.com/coditory/sherlock-distributed-lock) is a JVM library 
 that provides distributed locking mechanism. It uses a database to store locks and exposes both synchronous and reactive API.
 It was created as a simple solution to manage distributed locks among multiple microservices.
+
+<small>Name Sherlock comes from words "shared lock".</small>
 
 ## The problem
 Distribute locking may be achieved through multiple mechanisms:
@@ -32,7 +34,7 @@ When time passes, lock is expired and is automatically released.
 Add dependency to `build.gradle`:
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:0.4.0"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
 }
 ```
 
@@ -72,4 +74,4 @@ lock.acquireAndExecute(() -> {
 ```
 
 !!! info "Learn more"
-    Learn hot use different [APIs](/api) and [connectors](/connectors).
+    Learn hot use different [APIs](api.md) and [connectors](connectors.md).

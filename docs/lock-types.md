@@ -1,15 +1,5 @@
 # Sherlock Lock Types 
 
-There are 3 types of locks:
-
-- `SingleEntrantDistributedLock` - lock owner cannot acquire the same lock for the second time
-- `ReentrantDistributedLock` - lock owner can acquire the same lock multiple times
-- `OverridingDistributedLock` - lock that acquires and releases the lock with `sudo` rights
-
-`SingleEntrantDistributedLock` and `ReentrantDistributedLock` handles the problem of [releasing a lock](#disclaimer) by using the expiration mechanism.
-
-`OverridingDistributedLock` was created for purely administrative tasks.
-
 ## SingleEntrantDistributedLock
 
 Owner of a `SingleEntrantDistributedLock` cannot acquire the same lock twice.

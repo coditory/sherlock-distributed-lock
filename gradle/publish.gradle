@@ -13,7 +13,7 @@ scmVersion {
   hooks {
     // update version in readme.md
     pre 'fileUpdate', [
-        file       : 'readme.md',
+        files      : ['readme.md', 'mkdocs.yml'],
         pattern    : { v, p -> v },
         replacement: { v, p -> v }
     ]

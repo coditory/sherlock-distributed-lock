@@ -4,8 +4,8 @@ Add dependencies to `build.gradle`:
 
 ```groovy
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.4.0"
-  compile "com.coditory.sherlock:sherlock-api-rxjava:0.4.0"
+  compile "com.coditory.sherlock:sherlock-mongo-reactive:{{ version }}"
+  compile "com.coditory.sherlock:sherlock-api-rxjava:{{ version }}"
 }
 ```
 

@@ -2,6 +2,14 @@ language: java
 jdk: oraclejdk11
 python: 3.7 # for mkdocs
 services: docker # for testcontainers
+dist: bionic
+
+addons:
+  apt:
+    packages:
+      - python3
+      - python3-pip
+      - python3-setuptools
 
 branches:
   except:

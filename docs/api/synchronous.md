@@ -4,7 +4,7 @@ Add dependency to `build.gradle`:
 
 ```groovy
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:0.4.0"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
 }
 ```
 

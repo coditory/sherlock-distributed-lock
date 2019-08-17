@@ -2,6 +2,6 @@
 
 Sherlock exposes synchronous and reactive API in order to fit any code base. Exposed APIs:
 
-- [Synchronous](/api/synchronous) - Synchronous API that uses blocking database connectors
-- [Reactor](/api/reactor) - [Reactor](https://projectreactor.io/) API that uses reactive database connectors
-- [RxJava](/api/rxjava) - [RxJava (v2)](https://github.com/ReactiveX/RxJava) API that uses reactive database connectors
+- [Synchronous API](api/synchronous.md) - Synchronous API that uses blocking database connectors
+- [Reactor API](api/reactor.md) - Reactive API that uses [Reactor](https://projectreactor.io/) and reactive database connectors
+- [RxJava API](api/rxjava.md) - Reactive API that uses [RxJava (v2)](https://github.com/ReactiveX/RxJava) and reactive database connectors

@@ -3,8 +3,11 @@
 VERSION="${1:-PATCH}"
 
 publishDocs() {
-  pip install -r requirements.txt
-  mkdocs gh-deploy --force
+  git remote add gh-token "https://${GITHUB_TOKEN}@github.com/${TRAVIS_REPO_SLUG}.git";
+  git fetch gh-token && git fetch gh-token gh-pages:gh-pages
+  pip3 install --user -r requirements.txt
+  python3 -m mkdocs gh-deploy --force --remote-name gh-token
+  git remote rm gh-token
 }
 
 publish() {
