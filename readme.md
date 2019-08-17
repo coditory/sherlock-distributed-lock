@@ -22,7 +22,7 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:0.4.0"
+  compile "com.coditory.sherlock:sherlock-mongo-sync:0.4.1"
 }
 ```
 
@@ -67,10 +67,10 @@ Add dependency to `build.gradle`:
 
 ```gradle
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.4.0"
-  compile "com.coditory.sherlock:sherlock-api-reactor:0.4.0"
+  compile "com.coditory.sherlock:sherlock-mongo-reactive:0.4.1"
+  compile "com.coditory.sherlock:sherlock-api-reactor:0.4.1"
   // for RxJava API use:
-  // compile "com.coditory.sherlock:sherlock-api-rxjava:0.4.0"
+  // compile "com.coditory.sherlock:sherlock-api-rxjava:0.4.1"
 }
 ```
 
