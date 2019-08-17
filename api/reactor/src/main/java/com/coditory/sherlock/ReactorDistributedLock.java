@@ -57,12 +57,12 @@ public interface ReactorDistributedLock {
    * Acquire a lock and release it after action is executed or fails.
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is acquired
+   * @param mono to be executed subscribed to when lock is acquired
    * @return true if lock is acquired.
    * @see ReactorDistributedLock#acquire()
    */
-  default <T> Mono<T> acquireAndExecute(Supplier<Mono<T>> action) {
-    return ReactorDistributedLockExecutor.executeOnAcquired(acquire(), action, this::release);
+  default <T> Mono<T> acquireAndExecute(Mono<T> mono) {
+    return ReactorDistributedLockExecutor.executeOnAcquired(acquire(), mono, this::release);
   }
 
   /**
@@ -70,37 +70,37 @@ public interface ReactorDistributedLock {
    *
    * @param <T> type od value emitted by the action
    * @param duration how much time must pass for the acquired lock to expire
-   * @param action to be executed when lock is acquired
+   * @param mono to be executed subscribed to when lock is acquired
    * @return true, if lock is acquired
    * @see ReactorDistributedLock#acquire(Duration)
    */
-  default <T> Mono<T> acquireAndExecute(Duration duration, Supplier<Mono<T>> action) {
+  default <T> Mono<T> acquireAndExecute(Duration duration, Mono<T> mono) {
     return ReactorDistributedLockExecutor
-      .executeOnAcquired(acquire(duration), action, this::release);
+      .executeOnAcquired(acquire(duration), mono, this::release);
   }
 
   /**
    * Acquire a lock without expiration time and release it after action is executed.
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is acquired
+   * @param mono to be executed subscribed to when lock is acquired
    * @return true, if lock is acquired
    * @see ReactorDistributedLock#acquireForever()
    */
-  default <T> Mono<T> acquireForeverAndExecute(Supplier<Mono<T>> action) {
+  default <T> Mono<T> acquireForeverAndExecute(Mono<T> mono) {
     return ReactorDistributedLockExecutor
-      .executeOnAcquired(acquireForever(), action, this::release);
+      .executeOnAcquired(acquireForever(), mono, this::release);
   }
 
   /**
    * Run the action when lock is released
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is released
+   * @param mono to be executed subscribed to when lock is released
    * @return true, if lock was release
    * @see ReactorDistributedLock#release()
    */
-  default <T> Mono<T> releaseAndExecute(Supplier<Mono<T>> action) {
-    return ReactorDistributedLockExecutor.executeOnReleased(release(), action);
+  default <T> Mono<T> releaseAndExecute(Mono<T> mono) {
+    return ReactorDistributedLockExecutor.executeOnReleased(release(), mono);
   }
 }

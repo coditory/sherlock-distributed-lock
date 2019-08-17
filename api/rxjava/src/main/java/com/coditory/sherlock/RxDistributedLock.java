@@ -6,7 +6,6 @@ import io.reactivex.Maybe;
 import io.reactivex.Single;
 
 import java.time.Duration;
-import java.util.function.Supplier;
 
 /**
  * A reactive distributed lock with RxJava API.
@@ -58,12 +57,12 @@ public interface RxDistributedLock {
    * Acquire a lock and release it after action is executed.
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is acquired
+   * @param single to be subscribed to when lock is acquired
    * @return true if lock is acquired.
    * @see RxDistributedLock#acquire()
    */
-  default <T> Maybe<T> acquireAndExecute(Supplier<Single<T>> action) {
-    return RxDistributedLockExecutor.executeOnAcquired(acquire(), action, this::release);
+  default <T> Maybe<T> acquireAndExecute(Single<T> single) {
+    return RxDistributedLockExecutor.executeOnAcquired(acquire(), single, this::release);
   }
 
   /**
@@ -71,35 +70,35 @@ public interface RxDistributedLock {
    *
    * @param <T> type od value emitted by the action
    * @param duration how much time must pass for the acquired lock to expire
-   * @param action to be executed when lock is acquired
+   * @param single to be subscribed to when lock is acquired
    * @return true, if lock is acquired
    * @see RxDistributedLock#acquire(Duration)
    */
-  default <T> Maybe<T> acquireAndExecute(Duration duration, Supplier<Single<T>> action) {
-    return RxDistributedLockExecutor.executeOnAcquired(acquire(duration), action, this::release);
+  default <T> Maybe<T> acquireAndExecute(Duration duration, Single<T> single) {
+    return RxDistributedLockExecutor.executeOnAcquired(acquire(duration), single, this::release);
   }
 
   /**
    * Acquire a lock without expiration time and release it after action is executed.
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is acquired
+   * @param single to be subscribed to when lock is acquired
    * @return true, if lock is acquired
    * @see RxDistributedLock#acquireForever()
    */
-  default <T> Maybe<T> acquireForeverAndExecute(Supplier<Single<T>> action) {
-    return RxDistributedLockExecutor.executeOnAcquired(acquireForever(), action, this::release);
+  default <T> Maybe<T> acquireForeverAndExecute(Single<T> single) {
+    return RxDistributedLockExecutor.executeOnAcquired(acquireForever(), single, this::release);
   }
 
   /**
    * Run the action when lock is released
    *
    * @param <T> type od value emitted by the action
-   * @param action to be executed when lock is released
+   * @param single to be subscribed to when lock is released
    * @return true, if lock was release
    * @see RxDistributedLock#release()
    */
-  default <T> Maybe<T> releaseAndExecute(Supplier<Single<T>> action) {
-    return RxDistributedLockExecutor.executeOnReleased(release(), action);
+  default <T> Maybe<T> releaseAndExecute(Single<T> single) {
+    return RxDistributedLockExecutor.executeOnReleased(release(), single);
   }
 }

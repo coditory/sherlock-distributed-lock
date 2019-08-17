@@ -60,6 +60,15 @@ abstract class ReactiveSherlockWithConnectorBuilder<T extends ReactiveSherlockWi
    */
   public abstract ReactiveSherlock build();
 
+  /**
+   * @return sherlock instance with different reactive api
+   * @throws IllegalArgumentException when some required values are missing
+   */
+  public <R> R buildWithApi(ReactiveSherlockApiMapper<R> apiMapper) {
+    ReactiveSherlock reactiveSherlock = build();
+    return apiMapper.mapReactiveApi(reactiveSherlock);
+  }
+
   protected ReactiveSherlock build(ReactiveDistributedLockConnector connector) {
     return new ReactiveSherlockWithConnector(connector, ownerIdPolicy, duration);
   }
@@ -68,6 +77,11 @@ abstract class ReactiveSherlockWithConnectorBuilder<T extends ReactiveSherlockWi
   private T instance() {
     // builder inheritance
     return (T) this;
+  }
+
+  @FunctionalInterface
+  public interface ReactiveSherlockApiMapper<R> {
+    R mapReactiveApi(ReactiveSherlock sherlock);
   }
 }
 

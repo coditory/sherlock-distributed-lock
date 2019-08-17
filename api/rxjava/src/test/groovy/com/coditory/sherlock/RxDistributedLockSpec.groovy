@@ -34,9 +34,9 @@ class RxDistributedLockSpec extends Specification {
       result == 1
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndGet() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(counter.incrementAndGet()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
+        { it.acquireForeverAndExecute(counter.incrementAndGet()) },
       ]
   }
 
@@ -53,9 +53,9 @@ class RxDistributedLockSpec extends Specification {
       result == null
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndGet() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndGet() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndGet() }) },
+        { it.acquireAndExecute(counter.incrementAndGet()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
+        { it.acquireForeverAndExecute(counter.incrementAndGet()) },
       ]
   }
 
@@ -74,9 +74,9 @@ class RxDistributedLockSpec extends Specification {
       result == null
     where:
       action << [
-        { it.acquireAndExecute({ counter.incrementAndThrow() }) },
-        { it.acquireAndExecute(Duration.ofHours(1), { counter.incrementAndThrow() }) },
-        { it.acquireForeverAndExecute({ counter.incrementAndThrow() }) },
+        { it.acquireAndExecute(counter.incrementAndThrow()) },
+        { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndThrow()) },
+        { it.acquireForeverAndExecute(counter.incrementAndThrow()) },
       ]
   }
 
@@ -84,7 +84,7 @@ class RxDistributedLockSpec extends Specification {
     given:
       RxDistributedLockMock lock = acquiredInMemoryLock("sample-lock")
     when:
-      Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
+      Integer result = lock.releaseAndExecute(counter.incrementAndGet())
         .blockingGet()
     then:
       lock.acquisitions() == 0
@@ -97,7 +97,7 @@ class RxDistributedLockSpec extends Specification {
     given:
       RxDistributedLockMock lock = releasedInMemoryLock("sample-lock")
     when:
-      Integer result = lock.releaseAndExecute({ counter.incrementAndGet() })
+      Integer result = lock.releaseAndExecute(counter.incrementAndGet())
         .blockingGet()
     then:
       lock.acquisitions() == 0

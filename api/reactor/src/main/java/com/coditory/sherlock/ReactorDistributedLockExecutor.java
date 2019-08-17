@@ -12,12 +12,12 @@ final class ReactorDistributedLockExecutor {
   }
 
   static <T> Mono<T> executeOnAcquired(
-      Mono<AcquireResult> lockResult, Supplier<Mono<T>> supplier,
+      Mono<AcquireResult> lockResult, Mono<T> mono,
       Supplier<Mono<ReleaseResult>> release) {
     return lockResult
         .filter(AcquireResult::isAcquired)
         .flatMap(acquiredLockResult ->
-            supplier.get()
+          mono
                 .flatMap(result -> release.get().map(__ -> result))
                 .switchIfEmpty(release.get().then(Mono.empty()))
                 .onErrorResume(throwable -> release.get().flatMap(r -> Mono.error(throwable)))
@@ -25,9 +25,9 @@ final class ReactorDistributedLockExecutor {
   }
 
   static <T> Mono<T> executeOnReleased(
-      Mono<ReleaseResult> unlockResult, Supplier<Mono<T>> supplier) {
+      Mono<ReleaseResult> unlockResult, Mono<T> mono) {
     return unlockResult
         .filter(ReleaseResult::isReleased)
-        .flatMap(result -> supplier.get());
+        .flatMap(result -> mono);
   }
 }
