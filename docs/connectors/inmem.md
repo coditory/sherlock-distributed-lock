@@ -1,4 +1,4 @@
-# In Memory Connector
+# In Memory Distributed Lock
 
 In Memory connector was created for local development and testing purposes.
 

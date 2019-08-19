@@ -1,4 +1,4 @@
-# RxJava API
+# Distributed Lock with RxJava API
 
 Add dependencies to `build.gradle`:
 

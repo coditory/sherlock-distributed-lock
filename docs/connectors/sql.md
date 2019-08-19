@@ -1,4 +1,4 @@
-# SQL Connector
+# SQL Distributed Lock
 
 SQL connector enables distributed locking on a relational databases.
 It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)

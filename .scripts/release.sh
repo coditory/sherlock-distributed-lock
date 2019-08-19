@@ -37,7 +37,9 @@ if [[ -z "$CI" ]]; then
 fi
 
 echo "Releasing: $VERSION"
-if [[ "$VERSION" = "SNAPSHOT" ]]; then
+if [[ "$VERSION" = "DOCS" ]]; then
+  publishDocs
+elif [[ "$VERSION" = "SNAPSHOT" ]]; then
   publish
 elif [[ "$VERSION" = "PATCH" ]]; then
   release && publish && publishDocs

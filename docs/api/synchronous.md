@@ -1,4 +1,4 @@
-# Synchronous API
+# Synchronous Distributed Lock
 
 Add dependency to `build.gradle`:
 

@@ -1,4 +1,4 @@
-# Reactor API
+# Distributed Lock with Reactor API
 
 Add dependencies to `build.gradle`:
 

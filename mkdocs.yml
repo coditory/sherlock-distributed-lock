@@ -9,6 +9,7 @@ repo_url: https://github.com/coditory/sherlock-distributed-lock
 
 theme:
   name: 'material'
+  custom_dir: 'docs/theme'
   static_templates:
     - 404.html
   # Don't include MkDocs' JavaScript
