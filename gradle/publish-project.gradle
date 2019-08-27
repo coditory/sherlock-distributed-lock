@@ -3,6 +3,7 @@ import java.time.ZonedDateTime
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'de.marcphilipp.nexus-publish'
+
 if (!project.hasProperty('grgit')) {
   apply plugin: 'org.ajoberstar.grgit'
 }
@@ -124,6 +125,5 @@ if (System.env.GPG_KEY_ID) {
 }
 
 nexusPublishing {
-  serverUrl = uri('https://oss.sonatype.org/service/local/')
-  snapshotRepositoryUrl = uri('https://oss.sonatype.org/content/repositories/snapshots/')
+  sonatype()
 }
