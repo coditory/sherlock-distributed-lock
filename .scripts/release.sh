@@ -12,9 +12,9 @@ publishDocs() {
 
 publish() {
   if [[ "$VERSION" == "SNAPSHOT" ]]; then
-    ./gradlew publishToNexus -Ppublish -Prelease.forceSnapshot
+    ./gradlew publishToSonatype -Ppublish -Prelease.forceSnapshot
   else
-    ./gradlew publishToNexus -Ppublish \
+    ./gradlew publishToSonatype -Ppublish \
       && ./gradlew closeAndReleaseRepository -Ppublish
   fi
 }
