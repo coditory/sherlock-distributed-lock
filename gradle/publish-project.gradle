@@ -125,5 +125,7 @@ if (System.env.GPG_KEY_ID) {
 }
 
 nexusPublishing {
-  sonatype()
+  repositories {
+    sonatype()
+  }
 }
