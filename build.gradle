@@ -11,7 +11,7 @@ buildscript {
       postgresql     : '42.2.6',
       mysql          : '8.0.17',
       // test dependencies:
-      testContainers : '1.12.0',
+      testContainers : '1.12.1',
       groovy         : '2.5.8',
       spock          : '1.3-groovy-2.5'
     ]
