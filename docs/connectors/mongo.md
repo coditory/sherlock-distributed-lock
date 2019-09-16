@@ -51,7 +51,6 @@ MongoCollection<Document> locksCollection = mongoClient
 ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
   .withClock(Clock.systemDefaultZone())
   .withUniqueOwnerId()
-  .withSharedStorage()
   .withLocksCollection(locksCollection)
   .buildWithApi(ReactorSherlock::reactorSherlock);
 // ...or simply
