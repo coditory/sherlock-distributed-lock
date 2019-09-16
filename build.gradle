@@ -8,7 +8,7 @@ buildscript {
       mongodbReactive: '1.12.0',
       slf4j          : '1.7.28',
       logback        : '1.2.3',
-      postgresql     : '42.2.6',
+      postgresql     : '42.2.8',
       mysql          : '8.0.17',
       // test dependencies:
       testContainers : '1.12.1',
