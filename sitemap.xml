@@ -2,82 +2,82 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/installation/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/api/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/api/synchronous/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/api/reactor/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/api/rxjava/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/connectors/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/connectors/mongo/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/connectors/sql/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/connectors/inmem/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/lock-types/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/lock-duration/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/migrator/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/testing/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/about/changelog/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
     <url>
      <loc>https://coditory.github.io/sherlock-distributed-lock/about/license/</loc>
-     <lastmod>2019-08-19</lastmod>
+     <lastmod>2019-10-01</lastmod>
      <changefreq>daily</changefreq>
     </url>
 </urlset>
