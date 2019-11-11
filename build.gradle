@@ -4,7 +4,7 @@ buildscript {
       reactor        : '3.3.0.RELEASE',
       rxjava         : '2.2.14',
       reactiveStreams: '1.0.2',
-      mongodb        : '3.11.0',
+      mongodb        : '3.11.2',
       mongodbReactive: '1.12.0',
       slf4j          : '1.7.29',
       logback        : '1.2.3',
