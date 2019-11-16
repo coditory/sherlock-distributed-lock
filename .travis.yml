@@ -1,5 +1,5 @@
 language: java
-jdk: oraclejdk11
+jdk: openjdk11
 python: 3.7 # for mkdocs
 services: docker # for testcontainers
 dist: bionic
