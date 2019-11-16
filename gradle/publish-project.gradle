@@ -41,8 +41,8 @@ jar {
     include "license.txt"
     into "META-INF"
     expand(
-        copyright: new Date().format("yyyy"),
-        version: project.version
+      copyright: new Date().format("yyyy"),
+      version: project.version
     )
   }
 }
@@ -59,7 +59,7 @@ task sourcesJar(type: Jar) {
 
 // Sonatype does not support Gradle Module Metadata
 // See: https://discuss.gradle.org/t/unable-to-publish-artifact-to-mavencentral/33727/3
-tasks.withType<GenerateModuleMetadata> {
+tasks.withType(GenerateModuleMetadata) {
   enabled = false
 }
 
