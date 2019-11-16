@@ -57,6 +57,12 @@ task sourcesJar(type: Jar) {
   archiveClassifier = 'sources'
 }
 
+// Sonatype does not support Gradle Module Metadata
+// See: https://discuss.gradle.org/t/unable-to-publish-artifact-to-mavencentral/33727/3
+tasks.withType<GenerateModuleMetadata> {
+  enabled = false
+}
+
 artifacts {
   archives javadocJar
   archives sourcesJar
