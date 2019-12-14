@@ -10,6 +10,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Migration mechanism based on {@link Sherlock} distributed locks.
@@ -33,6 +34,14 @@ public final class SherlockMigrator {
   private final DistributedLock migrationLock;
   private final Set<String> migrationLockIds = new HashSet<>();
 
+  public static SherlockMigrator sherlockMigrator(Sherlock sherlock) {
+    return sherlockMigrator(DEFAULT_MIGRATOR_LOCK_ID, sherlock);
+  }
+
+  public static SherlockMigrator sherlockMigrator(String migrationId, Sherlock sherlock) {
+    return new SherlockMigrator(migrationId, sherlock);
+  }
+
   /**
    * @param sherlock sherlock used to manage migration locks
    */
@@ -42,7 +51,7 @@ public final class SherlockMigrator {
 
   /**
    * @param migrationId id used as lock id for the whole migration process
-   * @param sherlock sherlock used to manage migration locks
+   * @param sherlock    sherlock used to manage migration locks
    */
   public SherlockMigrator(String migrationId, Sherlock sherlock) {
     this.migrationId = migrationId;
@@ -59,8 +68,8 @@ public final class SherlockMigrator {
    * Adds change set to migration process.
    *
    * @param changeSetId unique change set id used. This is is used as a lock id in migration
-   *   process.
-   * @param changeSet change set action that should be run if change set was not already applied
+   *                    process.
+   * @param changeSet   change set action that should be run if change set was not already applied
    * @return the migrator
    */
   public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
@@ -68,7 +77,16 @@ public final class SherlockMigrator {
     ensureUniqueChangeSetId(changeSetId);
     migrationLockIds.add(changeSetId);
     DistributedLock changeSetLock = createChangeSetLock(changeSetId);
-    migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
+    MigrationChangeSet migrationChangeSet = new MigrationChangeSet(
+      changeSetId, changeSetLock, changeSet);
+    migrationChangeSets.add(migrationChangeSet);
+    return this;
+  }
+
+  public SherlockMigrator addAnnotatedChangeSets(Object object) {
+    expectNonNull(object, "Expected non null object containing change sets");
+    ChangeSetMethodExtractor.extractChangeSets(object, void.class)
+      .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
     return this;
   }
 
@@ -86,14 +104,18 @@ public final class SherlockMigrator {
    * @return migration result
    */
   public MigrationResult migrate() {
-    AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
+    AcquireAndExecuteResult acquireResult = migrationLock
+      .acquireAndExecute(this::runMigrations)
+      .onNotAcquired(
+        () -> logger.debug("Migration skipped: {}. Migration lock was refused", migrationId));
     return new MigrationResult(acquireResult.isAcquired());
   }
 
   private void runMigrations() {
-    logger.info("Starting migration: {}", migrationId);
+    Timer timer = Timer.start();
+    logger.info("Migration started: {}", migrationId);
     migrationChangeSets.forEach(MigrationChangeSet::execute);
-    logger.info("Migration finished successfully: {}", migrationId);
+    logger.info("Migration finished successfully: {} [{}]", migrationId, timer.elapsed());
   }
 
   private void ensureUniqueChangeSetId(String changeSetId) {
@@ -116,15 +138,16 @@ public final class SherlockMigrator {
     }
 
     void execute() {
+      Timer timer = Timer.start();
       if (lock.acquire()) {
         logger.debug("Executing migration change set: {}", id);
         try {
           action.run();
-          logger.info("Migration change set applied: {}", id);
+          logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
         } catch (Throwable exception) {
           logger.warn(
-            "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
-            id, exception);
+            "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
+            id, timer.elapsed(), exception);
           lock.release();
           throw exception;
         }
@@ -171,6 +194,5 @@ public final class SherlockMigrator {
       }
       return this;
     }
-
   }
 }

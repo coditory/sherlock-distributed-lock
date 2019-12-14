@@ -15,9 +15,9 @@ public final class SherlockStub implements Sherlock {
    *
    * @return the stub instance
    */
-  public static SherlockStub withReleasedLocks() {
+  public static SherlockStub sherlockWithReleasedLocks() {
     return new SherlockStub()
-      .withDefaultAcquireResult(true);
+      .sherlockWithDefaultAcquireResult(true);
   }
 
   /**
@@ -25,9 +25,9 @@ public final class SherlockStub implements Sherlock {
    *
    * @return the stub instance
    */
-  public static SherlockStub withAcquiredLocks() {
+  public static SherlockStub sherlockWithAcquiredLocks() {
     return new SherlockStub()
-      .withDefaultAcquireResult(false);
+      .sherlockWithDefaultAcquireResult(false);
   }
 
   /**
@@ -36,12 +36,12 @@ public final class SherlockStub implements Sherlock {
    * @param lock returned when creating a lock with the same id
    * @return the stub instance
    */
-  public SherlockStub withLock(DistributedLock lock) {
+  public SherlockStub sherlockWithLock(DistributedLock lock) {
     this.locksById.put(lock.getId(), lock);
     return this;
   }
 
-  private SherlockStub withDefaultAcquireResult(boolean result) {
+  private SherlockStub sherlockWithDefaultAcquireResult(boolean result) {
     this.defaultLockResult = result;
     return this;
   }

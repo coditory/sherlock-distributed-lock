@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.function.BiFunction;
 
 /**
@@ -33,6 +34,30 @@ final class Preconditions {
     return value;
   }
 
+  static void expect(boolean invariant) {
+    if (!invariant) {
+      throw new IllegalArgumentException();
+    }
+  }
+
+  static void expect(boolean invariant, String message) {
+    if (!invariant) {
+      throw new IllegalArgumentException(message);
+    }
+  }
+
+  static <T> T expectEqual(T value, T expected) {
+    return expectEqual(
+      value, expected, String.format("Expected %s to be equal %s", value, expected));
+  }
+
+  static <T> T expectEqual(T value, T expected, String message) {
+    if (value != expected) {
+      throw new IllegalArgumentException(message);
+    }
+    return value;
+  }
+
   static String expectNonEmpty(String value) {
     return expectNonEmpty(value, "Expected non empty string. Got: " + value);
   }
@@ -42,6 +67,17 @@ final class Preconditions {
       throw new IllegalArgumentException(message);
     }
     return value;
+  }
+
+  static <K, E> Map<K, E> expectNonEmpty(Map<K, E> map) {
+    return expectNonEmpty(map, "Expected non empty map. Got: " + map);
+  }
+
+  static <K, E> Map<K, E> expectNonEmpty(Map<K, E> map, String message) {
+    if (map == null || map.isEmpty()) {
+      throw new IllegalArgumentException(message);
+    }
+    return map;
   }
 
   static <E> List<E> expectNonEmpty(List<E> list) {

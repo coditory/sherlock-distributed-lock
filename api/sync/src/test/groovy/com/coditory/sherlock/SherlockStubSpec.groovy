@@ -3,12 +3,14 @@ package com.coditory.sherlock
 import spock.lang.Specification
 
 import static com.coditory.sherlock.DistributedLockMock.lockStub
+import static com.coditory.sherlock.SherlockStub.sherlockWithAcquiredLocks
+import static com.coditory.sherlock.SherlockStub.sherlockWithReleasedLocks
 
 class SherlockStubSpec extends Specification {
   def "should create sherlock returning always opened locks"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withReleasedLocks()
+      Sherlock sherlock = sherlockWithReleasedLocks()
 
     expect:
       assertAlwaysOpenedLock(sherlock.createLock(lockId), lockId)
@@ -19,7 +21,7 @@ class SherlockStubSpec extends Specification {
   def "should create sherlock returning always closed locks"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withAcquiredLocks()
+      Sherlock sherlock = sherlockWithAcquiredLocks()
 
     expect:
       assertAlwaysClosedLock(sherlock.createLock(lockId), lockId)
@@ -30,8 +32,8 @@ class SherlockStubSpec extends Specification {
   def "should create sherlock returning closed locks by default and opened lock for specific id"() {
     given:
       String lockId = "some-lock"
-      Sherlock sherlock = SherlockStub.withAcquiredLocks()
-        .withLock(lockStub(lockId, true))
+      Sherlock sherlock = sherlockWithAcquiredLocks()
+        .sherlockWithLock(lockStub(lockId, true))
     expect:
       sherlock.createLock("other-lock").acquire() == false
     and:
