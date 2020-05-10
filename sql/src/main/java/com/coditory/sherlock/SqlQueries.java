@@ -70,4 +70,14 @@ final class SqlQueries {
       + " (ID, ACQUIRED_BY, ACQUIRED_AT, EXPIRES_AT)"
       + " VALUES (?, ?, ?, ?)";
   }
+
+  String isActiveLock() {
+    return "SELECT 1 FROM " + tableName
+        + " WHERE ID = ? AND (EXPIRES_AT > ? OR EXPIRES_AT IS NULL)";
+  }
+
+  String getAcquiredLock() {
+    return "SELECT ACQUIRED_BY FROM " + tableName
+        + " WHERE ID = ? AND (EXPIRES_AT > ? OR EXPIRES_AT IS NULL)";
+  }
 }

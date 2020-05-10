@@ -16,9 +16,13 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.Flow.Publisher;
 
+import static com.coditory.sherlock.LockState.ACQUIRED;
+import static com.coditory.sherlock.LockState.LOCKED;
+import static com.coditory.sherlock.LockState.UNLOCKED;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryLocked;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
@@ -86,6 +90,20 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
   public Publisher<ReleaseResult> forceReleaseAll() {
     return publisherToFlowPublisher(deleteAll()
       .map(ReleaseResult::of));
+  }
+
+  @Override
+  public Publisher<LockState> getLockState(LockId lockId, OwnerId ownerId) {
+    return publisherToFlowPublisher(getLockStateMono(lockId, ownerId));
+  }
+
+  private Mono<LockState> getLockStateMono(LockId lockId, OwnerId ownerId) {
+    return getLockCollection()
+        .map(collection -> collection.find(queryLocked(lockId, now())))
+        .flatMap(Mono::from)
+        .map(MongoDistributedLock::fromDocument)
+        .map(lock -> lock.hasOwner(ownerId) ? ACQUIRED : LOCKED)
+        .defaultIfEmpty(UNLOCKED);
   }
 
   private Mono<Boolean> deleteAll() {

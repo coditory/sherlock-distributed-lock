@@ -27,7 +27,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     then:
       unlockResult == true
     and:
-      assertReleased(lock.id)
+      assertReleased(lock)
 
     where:
       type << allLockTypes()
@@ -43,7 +43,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     then:
       unlockResult == false
     and:
-      assertReleased(lock.id)
+      assertReleased(lock)
 
     where:
       type << allLockTypes()
@@ -59,7 +59,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     when:
       fixedClock.tick(defaultLockDuration)
     then:
-      assertReleased(lock.id)
+      assertReleased(lock)
 
     where:
       type << allLockTypes()
@@ -76,7 +76,7 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     when:
       fixedClock.tick(duration)
     then:
-      assertReleased(lock.id)
+      assertReleased(lock)
 
     where:
       type << allLockTypes()
@@ -94,13 +94,13 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
       boolean unlockResult = lock.release()
     then:
       unlockResult == false
-      assertAcquired(lock.id)
+      assertLocked(lock)
 
     when:
       boolean lockResult = otherLock.release()
     then:
       lockResult == true
-      assertReleased(lock.id)
+      assertReleased(lock)
 
     where:
       type << [REENTRANT, SINGLE_ENTRANT]
@@ -148,9 +148,9 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     when:
       sherlock.forceReleaseAllLocks()
     then:
-      assertReleased(overridingLock.id)
-      assertReleased(reentrantLock.id)
-      assertReleased(singleEntrantLock.id)
+      assertReleased(overridingLock)
+      assertReleased(reentrantLock)
+      assertReleased(singleEntrantLock)
   }
 
   def "should force release single lock"() {
@@ -165,9 +165,9 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     when:
       sherlock.forceReleaseLock(overridingLock.id)
     then:
-      assertReleased(overridingLock.id)
+      assertReleased(overridingLock)
     and:
-      assertAcquired(reentrantLock.id)
-      assertAcquired(singleEntrantLock.id)
+      assertAcquired(reentrantLock)
+      assertAcquired(singleEntrantLock)
   }
 }

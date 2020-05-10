@@ -96,4 +96,22 @@ class BlockingReactiveDistributedLock implements DistributedLock {
     return flowPublisherToFlux(lock.release())
       .single().block().released
   }
+
+  @Override
+  boolean isAcquired() {
+    return flowPublisherToFlux(lock.isAcquired())
+        .single().block()
+  }
+
+  @Override
+  boolean isLocked() {
+    return flowPublisherToFlux(lock.isLocked())
+        .single().block()
+  }
+
+  @Override
+  boolean isUnlocked() {
+    return flowPublisherToFlux(lock.isReleased())
+        .single().block()
+  }
 }

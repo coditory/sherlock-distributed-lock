@@ -17,7 +17,7 @@ abstract class InfiniteAcquireLockSpec extends LocksBaseSpec implements LockAsse
     when:
       fixedClock.tick(defaultLockDuration)
     then:
-      assertAcquired(lock.id)
+      assertAcquired(lock)
 
     where:
       type << allLockTypes()

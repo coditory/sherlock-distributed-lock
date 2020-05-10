@@ -16,7 +16,7 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
   String otherInstanceId = "other-instance-id"
 
   @Unroll
-  def "only one of two different instances may acquire a lock - #type"() {
+  def "only one instance may acquire a lock - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
       DistributedLock otherLock = createLock(type, lockId, otherInstanceId)
@@ -25,13 +25,15 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
       boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
-    and:
       secondResult == false
+    and:
+      assertAcquired(lock)
+      assertLocked(otherLock)
     where:
       type << [REENTRANT, SINGLE_ENTRANT]
   }
 
-  def "overriding lock may acquire lock acquired by a different instance"() {
+  def "overriding lock may acquire not released lock"() {
     given:
       DistributedLock lock = createLock(REENTRANT, lockId, instanceId)
       DistributedLock overridingLock = createLock(OVERRIDING, lockId, otherInstanceId)
@@ -40,12 +42,14 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
       boolean secondResult = overridingLock.acquire()
     then:
       firstResult == true
-    and:
       secondResult == true
+    and:
+      assertLocked(lock)
+      assertAcquired(overridingLock)
   }
 
   @Unroll
-  def "two locks with different lock ids should not block each other - #type"() {
+  def "two locks with different ids should not block each other - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
       DistributedLock otherLock = createLock(REENTRANT, "other-acquire", otherInstanceId)
@@ -54,14 +58,16 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
       boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
-    and:
       secondResult == true
+    and:
+      assertAcquired(lock)
+      assertAcquired(otherLock)
     where:
       type << allLockTypes()
   }
 
   @Unroll
-  def "should throw an error on lock duration with time unit below millis - #type"() {
+  def "should throw error when duration uses nanoseconds - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
     and:
@@ -72,19 +78,23 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
     then:
       IllegalArgumentException exception = thrown(IllegalArgumentException)
       exception.message.startsWith(truncationExceptionPrefix)
+    and:
+      assertReleased(lock)
 
     when:
       lock.acquire(Duration.ofSeconds(1).plusNanos(1))
     then:
       exception = thrown(IllegalArgumentException)
       exception.message.startsWith(truncationExceptionPrefix)
+    and:
+      assertReleased(lock)
 
     where:
       type << allLockTypes()
   }
 
   @Unroll
-  def "newer lock operation should overwrite previous one - #type"() {
+  def "more recent lock operation should overwrite previous one - #type"() {
     given:
       DistributedLock lock = createLock(type, lockId, instanceId)
       Duration duration = Duration.ofHours(1)
@@ -92,17 +102,17 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
     when:
       lock.acquire(duration)
     then:
-      assertAcquired(lock.id, duration)
+      assertAcquiredFor(lock, duration)
 
     when:
       lock.acquireForever()
     then:
-      assertAcquiredForever(lock.id)
+      assertAcquiredForever(lock)
 
     when:
       lock.acquire()
     then:
-      assertAcquired(lock.id, defaultLockDuration)
+      assertAcquiredFor(lock, defaultLockDuration)
 
     where:
       type << [REENTRANT, OVERRIDING]
@@ -122,7 +132,7 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
 
     then:
       result == true
-      assertAcquired(otherLock.id)
+      assertAcquired(otherLock)
 
     where:
       type << [REENTRANT, SINGLE_ENTRANT]

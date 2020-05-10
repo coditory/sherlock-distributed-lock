@@ -101,7 +101,15 @@ final class MongoDistributedLock {
       return false;
     }
     MongoDistributedLock other = MongoDistributedLock.fromDocument(document);
-    return this.ownerId.equals(other.ownerId);
+    return hasOwner(other.ownerId);
+  }
+
+  boolean isAcquired(Instant now, OwnerId ownerId) {
+    return isActive(now) && hasOwner(ownerId);
+  }
+
+  boolean hasOwner(OwnerId ownerId) {
+    return this.ownerId.equals(ownerId);
   }
 
   boolean isActive(Instant now) {

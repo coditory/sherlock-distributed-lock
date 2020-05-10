@@ -67,6 +67,12 @@ class ReactiveInMemoryDistributedLockConnector implements ReactiveDistributedLoc
         .map(ReleaseResult::of));
   }
 
+  @Override
+  public Publisher<LockState> getLockState(LockId lockId, OwnerId ownerId) {
+    return publisherToFlowPublisher(
+        Mono.fromCallable(() -> storage.getLockState(lockId, ownerId, now())));
+  }
+
   private Instant now() {
     return clock.instant();
   }

@@ -2,6 +2,7 @@ description = 'Sherlock Distributed Lock with Reactor based API'
 
 dependencies {
   compile project(':api:api-reactive')
+  compile project(':api:api-common')
   compile "io.projectreactor:reactor-core:$versions.reactor"
   testCompile project(':inmem:inmem-reactive')
   testCompile project(':inmem:inmem-common')

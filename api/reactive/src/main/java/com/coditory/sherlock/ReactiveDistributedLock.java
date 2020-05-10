@@ -48,7 +48,35 @@ public interface ReactiveDistributedLock {
    * Try to release the lock.
    *
    * @return {@link ReleaseResult#SUCCESS} if lock was released by this method invocation. If lock
-   *   has expired or was released earlier  then {@link ReleaseResult#FAILURE} is returned.
+   * has expired or was released earlier  then {@link ReleaseResult#FAILURE} is returned.
    */
   Publisher<ReleaseResult> release();
+
+  /**
+   * Get current lock state.
+   *
+   * @return current lock state
+   */
+  Publisher<LockState> getState();
+
+  /**
+   * Check if lock is acquired by this instance.
+   *
+   * @return true if lock is acquired by this instance
+   */
+  Publisher<Boolean> isAcquired();
+
+  /**
+   * Check if lock is locked by any instance.
+   *
+   * @return true if lock is acquired by any instance
+   */
+  Publisher<Boolean> isLocked();
+
+  /**
+   * Check if lock is released.
+   *
+   * @return true if lock is released
+   */
+  Publisher<Boolean> isReleased();
 }

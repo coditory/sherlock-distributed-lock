@@ -1,6 +1,6 @@
 package com.coditory.sherlock
 
-
+import com.coditory.sherlock.base.LockAssertions
 import com.coditory.sherlock.base.LockTypes
 import spock.lang.Unroll
 
@@ -10,11 +10,12 @@ import static com.coditory.sherlock.base.LockTypes.OVERRIDING
 import static com.coditory.sherlock.base.LockTypes.REENTRANT
 import static com.coditory.sherlock.base.LockTypes.allLockTypes
 
-abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
+abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec
+    implements LockAssertions {
   static List<LockTypes> mayAcquireMultipleTimes = [REENTRANT, OVERRIDING]
 
   @Unroll
-  def "the same owner may acquire lock multiple times - #type"() {
+  def "the same instance may acquire lock multiple times - #type"() {
     given:
       DistributedLock lock = createLock(type)
     when:
@@ -23,6 +24,8 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     then:
       firstResult == true
       secondResult == true
+    and:
+      assertAcquired(lock)
     where:
       type << mayAcquireMultipleTimes
   }
@@ -37,27 +40,14 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     then:
       firstResult == true
       secondResult == false
+    and:
+      assertAcquired(lock)
     where:
       type << allLockTypes() - mayAcquireMultipleTimes
   }
 
   @Unroll
-  def "the same instance may acquire lock multiple times by separate lock objects - #type"() {
-    given:
-      DistributedLock lock = createLock(type)
-      DistributedLock otherObject = createLock(type)
-    when:
-      boolean firstResult = lock.acquire()
-      boolean secondResult = otherObject.acquire()
-    then:
-      firstResult == true
-      secondResult == true
-    where:
-      type << mayAcquireMultipleTimes
-  }
-
-  @Unroll
-  def "only one of two different instances may acquire lock - #type"() {
+  def "two instances may acquire lock multiple times - #type"() {
     given:
       DistributedLock lock = createLock(type)
       DistributedLock otherLock = createLock(type)
@@ -66,13 +56,33 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
       boolean secondResult = otherLock.acquire()
     then:
       firstResult == true
+      secondResult == true
     and:
+      assertAcquired(lock)
+      assertAcquired(otherLock)
+    where:
+      type << mayAcquireMultipleTimes
+  }
+
+  @Unroll
+  def "only one instance may acquire lock in the same time - #type"() {
+    given:
+      DistributedLock lock = createLock(type)
+      DistributedLock otherLock = createLock(type)
+    when:
+      boolean firstResult = lock.acquire()
+      boolean secondResult = otherLock.acquire()
+    then:
+      firstResult == true
       secondResult == false
+    and:
+      assertAcquired(lock)
+      assertAcquired(otherLock)
     where:
       type << allLockTypes() - mayAcquireMultipleTimes
   }
 
-  def "should prolong lock duration when acquired multiple times by reentrant lock"() {
+  def "should prolong lock duration when reentrant lock is acquired multiple times"() {
     given:
       DistributedLock lock = createLock(REENTRANT)
     and:

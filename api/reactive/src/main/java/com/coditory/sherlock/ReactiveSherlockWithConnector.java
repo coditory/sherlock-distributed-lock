@@ -77,7 +77,7 @@ final class ReactiveSherlockWithConnector implements ReactiveSherlock {
     OwnerId ownerId,
     LockDuration duration) {
     ReactiveDistributedLock lock = new ReactiveDelegatingDistributedLock(
-      acquireAction, releaseAction, lockId, ownerId, duration);
+      acquireAction, releaseAction, connector, lockId, ownerId, duration);
     logger.debug("Created lock: {}", lock);
     return lock;
   }

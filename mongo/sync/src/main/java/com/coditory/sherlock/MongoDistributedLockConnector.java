@@ -11,24 +11,29 @@ import org.bson.conversions.Bson;
 
 import java.time.Clock;
 import java.time.Instant;
+import java.util.Optional;
 
+import static com.coditory.sherlock.LockState.ACQUIRED;
+import static com.coditory.sherlock.LockState.LOCKED;
+import static com.coditory.sherlock.LockState.UNLOCKED;
 import static com.coditory.sherlock.MongoDistributedLock.fromLockRequest;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryLocked;
 import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
   private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
   private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
-    .upsert(true)
-    .returnDocument(ReturnDocument.AFTER);
+      .upsert(true)
+      .returnDocument(ReturnDocument.AFTER);
   private final MongoCollectionInitializer collectionInitializer;
   private final Clock clock;
 
   MongoDistributedLockConnector(
-    MongoCollection<Document> collection, Clock clock) {
+      MongoCollection<Document> collection, Clock clock) {
     expectNonNull(collection, "Expected non null collection");
     this.collectionInitializer = new MongoCollectionInitializer(collection);
     this.clock = expectNonNull(clock, "Expected non null clock");
@@ -43,8 +48,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   public boolean acquire(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-      queryReleased(lockRequest.getLockId(), now),
-      fromLockRequest(lockRequest, now)
+        queryReleased(lockRequest.getLockId(), now),
+        fromLockRequest(lockRequest, now)
     );
   }
 
@@ -52,16 +57,16 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   public boolean acquireOrProlong(LockRequest lockRequest) {
     Instant now = now();
     return upsert(
-      queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
-      fromLockRequest(lockRequest, now)
+        queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
+        fromLockRequest(lockRequest, now)
     );
   }
 
   @Override
   public boolean forceAcquire(LockRequest lockRequest) {
     return upsert(
-      queryById(lockRequest.getLockId()),
-      fromLockRequest(lockRequest, now())
+        queryById(lockRequest.getLockId()),
+        fromLockRequest(lockRequest, now())
     );
   }
 
@@ -80,6 +85,17 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     return deleteAll();
   }
 
+  @Override
+  public LockState getLockState(LockId lockId, OwnerId ownerId) {
+    Document document = getLockCollection()
+        .find(queryLocked(lockId, now()))
+        .first();
+    return Optional.ofNullable(document)
+        .map(MongoDistributedLock::fromDocument)
+        .map(lock -> lock.hasOwner(ownerId) ? ACQUIRED : LOCKED)
+        .orElse(UNLOCKED);
+  }
+
   private boolean deleteAll() {
     DeleteResult result = getLockCollection().deleteMany(new BsonDocument());
     return result != null && result.getDeletedCount() > 0;
@@ -88,14 +104,14 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
   private boolean delete(Bson query) {
     Document deleted = getLockCollection().findOneAndDelete(query);
     return deleted != null
-      && MongoDistributedLock.fromDocument(deleted).isActive(now());
+        && MongoDistributedLock.fromDocument(deleted).isActive(now());
   }
 
   private boolean upsert(Bson query, MongoDistributedLock lock) {
     Document documentToUpsert = lock.toDocument();
     try {
       Document current = getLockCollection()
-        .findOneAndReplace(query, documentToUpsert, upsertOptions);
+          .findOneAndReplace(query, documentToUpsert, upsertOptions);
       return lock.hasSameOwner(current);
     } catch (MongoCommandException exception) {
       if (exception.getErrorCode() != DUPLICATE_KEY_ERROR_CODE) {

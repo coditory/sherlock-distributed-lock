@@ -61,4 +61,16 @@ class BlockingDistributedLockConnector implements DistributedLockConnector {
     return flowPublisherToFlux(reactiveConnector.forceReleaseAll())
       .single().block().isReleased()
   }
+
+  @Override
+  boolean isAcquired(LockId lockId, OwnerId ownerId) {
+    return flowPublisherToFlux(reactiveConnector.isAcquired(lockId, ownerId))
+        .single().block()
+  }
+
+  @Override
+  boolean isLocked(LockId lockId) {
+    return flowPublisherToFlux(reactiveConnector.isLocked(lockId))
+        .single().block()
+  }
 }

@@ -1,0 +1,7 @@
+description = 'Sherlock Distributed Lock API shared tests'
+
+dependencies {
+  compile "org.codehaus.groovy:groovy-all:$versions.groovy"
+  compile "org.spockframework:spock-core:$versions.spock"
+  compile project(':common')
+}

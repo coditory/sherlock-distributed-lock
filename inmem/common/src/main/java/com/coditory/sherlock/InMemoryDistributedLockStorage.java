@@ -82,4 +82,15 @@ class InMemoryDistributedLockStorage {
       .collect(toList());
     expired.forEach(locks::remove);
   }
+
+  public LockState getLockState(LockId lockId, OwnerId ownerId, Instant now) {
+    dropExpiredLocks(now);
+    InMemoryDistributedLock lock = locks.get(lockId);
+    if (lock != null) {
+      return lock.isActive(now) && lock.isOwnedBy(ownerId)
+          ? LockState.ACQUIRED
+          : LockState.LOCKED;
+    }
+    return LockState.UNLOCKED;
+  }
 }

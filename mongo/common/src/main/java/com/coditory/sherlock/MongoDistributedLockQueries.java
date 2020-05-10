@@ -7,6 +7,7 @@ import java.time.Instant;
 
 import static com.mongodb.client.model.Filters.and;
 import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.gt;
 import static com.mongodb.client.model.Filters.lte;
 import static com.mongodb.client.model.Filters.or;
 
@@ -41,5 +42,15 @@ final class MongoDistributedLockQueries {
 
   static Bson queryById(LockId lockId) {
     return eq(Fields.LOCK_ID_FIELD, lockId.getValue());
+  }
+
+  static Bson queryLocked(LockId lockId, Instant now) {
+    return and(
+        eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+        or(
+            eq(Fields.EXPIRES_AT_FIELD, null),
+            gt(Fields.EXPIRES_AT_FIELD, now)
+        )
+    );
   }
 }

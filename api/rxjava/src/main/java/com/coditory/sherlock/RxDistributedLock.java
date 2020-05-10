@@ -7,6 +7,10 @@ import io.reactivex.Single;
 
 import java.time.Duration;
 
+import static com.coditory.sherlock.LockState.ACQUIRED;
+import static com.coditory.sherlock.LockState.LOCKED;
+import static com.coditory.sherlock.LockState.UNLOCKED;
+
 /**
  * A reactive distributed lock with RxJava API.
  *
@@ -52,6 +56,40 @@ public interface RxDistributedLock {
    *   has expired or was released earlier  then {@link ReleaseResult#FAILURE} is returned.
    */
   Single<ReleaseResult> release();
+
+  /**
+   * Get current lock state.
+   *
+   * @return current lock state
+   */
+  Single<LockState> getState();
+
+  /**
+   * Check if lock is acquired by this instance.
+   *
+   * @return true if lock is acquired by this instance
+   */
+  default Single<Boolean> isAcquired() {
+    return getState().map(ACQUIRED::equals);
+  }
+
+  /**
+   * Check if lock is locked by any instance.
+   *
+   * @return true if lock is acquired by any instance
+   */
+  default Single<Boolean> isLocked() {
+    return getState().map(LOCKED::equals);
+  }
+
+  /**
+   * Check if lock is released.
+   *
+   * @return true if lock is released
+   */
+  default Single<Boolean> isReleased() {
+    return getState().map(UNLOCKED::equals);
+  }
 
   /**
    * Acquire a lock and release it after action is executed.

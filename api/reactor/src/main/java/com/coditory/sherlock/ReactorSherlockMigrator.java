@@ -29,7 +29,7 @@ public class ReactorSherlockMigrator {
   }
 
   public static ReactorSherlockMigrator reactorSherlockMigrator(
-    String migrationId, ReactorSherlock sherlock) {
+      String migrationId, ReactorSherlock sherlock) {
     return new ReactorSherlockMigrator(migrationId, sherlock);
   }
 
@@ -48,10 +48,10 @@ public class ReactorSherlockMigrator {
     this.migrationId = migrationId;
     this.sherlock = sherlock;
     this.migrationLock = sherlock.createLock()
-      .withLockId(migrationId)
-      .withPermanentLockDuration()
-      .withStaticUniqueOwnerId()
-      .build();
+        .withLockId(migrationId)
+        .withPermanentLockDuration()
+        .withStaticUniqueOwnerId()
+        .build();
     this.migrationLockIds.add(migrationId);
   }
 
@@ -69,7 +69,7 @@ public class ReactorSherlockMigrator {
     migrationLockIds.add(changeSetId);
     ReactorDistributedLock changeSetLock = createChangeSetLock(changeSetId);
     MigrationChangeSet migrationChangeSet = new MigrationChangeSet(
-      changeSetId, changeSetLock, changeSet);
+        changeSetId, changeSetLock, changeSet);
     migrationChangeSets.add(migrationChangeSet);
     return this;
   }
@@ -77,16 +77,16 @@ public class ReactorSherlockMigrator {
   public ReactorSherlockMigrator addAnnotatedChangeSets(Object object) {
     expectNonNull(object, "Expected non null object containing change sets");
     ChangeSetMethodExtractor.extractChangeSets(object, Mono.class)
-      .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet.execute()));
+        .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet.execute()));
     return this;
   }
 
   private ReactorDistributedLock createChangeSetLock(String changeSetId) {
     return sherlock.createLock()
-      .withLockId(changeSetId)
-      .withPermanentLockDuration()
-      .withStaticUniqueOwnerId()
-      .build();
+        .withLockId(changeSetId)
+        .withPermanentLockDuration()
+        .withStaticUniqueOwnerId()
+        .build();
   }
 
   /**
@@ -95,41 +95,28 @@ public class ReactorSherlockMigrator {
    * @return migration result
    */
   public Flux<ChangeSetResult> migrate() {
-    if (migrationChangeSets.isEmpty()) {
-      return Flux.empty();
-    }
-    String lastMigrationId = migrationChangeSets.get(migrationChangeSets.size() - 1).id;
-    return migrationLock.acquire()
-      .doOnNext(this::logMigrationLock)
-      .filter(AcquireResult::isAcquired)
-      .thenMany(runMigrations())
-      .flatMap(result -> lastMigrationId.equals(result.id)
-        ? migrationLock.release().then(Mono.just(result))
-        : Mono.just(result)
-      );
+    return migrationLock.acquireAndExecute(runMigrations(), logNotAcquiredLock());
   }
 
-  private void logMigrationLock(AcquireResult result) {
-    if (!result.isAcquired()) {
-      logger.debug(
-        "Migration skipped: {}. Migration lock refused.",
-        migrationLock.getId());
-    }
+  private Flux<ChangeSetResult> logNotAcquiredLock() {
+    return Flux.<ChangeSetResult>empty()
+        .doOnComplete(() -> logger
+            .debug("Migration skipped: {}. Migration lock refused.", migrationLock.getId()));
   }
 
   private Flux<ChangeSetResult> runMigrations() {
     Timer timer = Timer.start();
     logger.info("Migration started: {}", migrationId);
     return Flux.fromIterable(migrationChangeSets)
-      .flatMap(MigrationChangeSet::execute, 1)
-      .doOnComplete(() -> logger
-        .info("Migration finished successfully: {} [{}]", migrationId, timer.elapsed()));
+        .flatMap(MigrationChangeSet::execute, 1)
+        .doOnComplete(() -> logger
+            .info("Migration finished successfully: {} [{}]", migrationId, timer.elapsed()));
   }
 
   private void ensureUniqueChangeSetId(String changeSetId) {
     if (migrationLockIds.contains(changeSetId)) {
       throw new IllegalArgumentException(
-        "Expected unique change set ids. Duplicated id: " + changeSetId);
+          "Expected unique change set ids. Duplicated id: " + changeSetId);
     }
   }
 
@@ -147,20 +134,35 @@ public class ReactorSherlockMigrator {
 
     Mono<ChangeSetResult> execute() {
       return lock.acquire()
-        .doOnNext(this::logChangeSetLockResult)
-        .filter(AcquireResult::isAcquired)
-        .map(__ -> Timer.start())
-        .flatMap(action::thenReturn)
-        .doOnNext(
-          timer -> logger.info("Migration change set applied: {} [{}]", id, timer.elapsed()))
-        .onErrorResume(exception -> {
-          logger.warn(
-            "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
-            id, exception);
-          return lock.release().then(Mono.error(exception));
-        })
-        .map(__ -> new ChangeSetResult(id, true))
-        .defaultIfEmpty(new ChangeSetResult(id, false));
+          .doOnNext(this::logChangeSetLockResult)
+          .filter(AcquireResult::isAcquired)
+          .map(__ -> Timer.start())
+          .flatMap(action::thenReturn)
+          .doOnNext(
+              timer -> logger.info("Migration change set applied: {} [{}]", id, timer.elapsed()))
+          .onErrorResume(exception -> {
+            logger.warn(
+                "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
+                id, exception);
+            return lock.release().then(Mono.error(exception));
+          })
+          .map(__ -> new ChangeSetResult(id, true))
+          .defaultIfEmpty(new ChangeSetResult(id, false));
+    }
+
+    private Mono<ChangeSetResult> executeAction() {
+      return Mono.fromCallable(Timer::start)
+          .doOnNext(__ -> logger.debug("Executing migration change set: {}", id))
+          .flatMap(action::thenReturn)
+          .doOnNext(
+              timer -> logger.info("Migration change set applied: {} [{}]", id, timer.elapsed()))
+          .doOnError(exception ->
+              logger.warn(
+                  "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
+                  id, exception)
+          )
+          .map(__ -> new ChangeSetResult(id, true))
+          .defaultIfEmpty(new ChangeSetResult(id, false));
     }
 
     private void logChangeSetLockResult(AcquireResult result) {
@@ -207,7 +209,7 @@ public class ReactorSherlockMigrator {
       }
       ChangeSetResult that = (ChangeSetResult) o;
       return migrated == that.migrated &&
-        Objects.equals(id, that.id);
+          Objects.equals(id, that.id);
     }
 
     @Override
@@ -218,9 +220,9 @@ public class ReactorSherlockMigrator {
     @Override
     public String toString() {
       return "ChangeSetResult{" +
-        "id='" + id + '\'' +
-        ", migrated=" + migrated +
-        '}';
+          "id='" + id + '\'' +
+          ", migrated=" + migrated +
+          '}';
     }
   }
 }

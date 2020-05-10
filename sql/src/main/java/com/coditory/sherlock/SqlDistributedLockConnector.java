@@ -2,6 +2,7 @@ package com.coditory.sherlock;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Timestamp;
 import java.sql.Types;
@@ -139,6 +140,25 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
       return statement.executeUpdate() > 0;
     } catch (SQLException e) {
       throw new IllegalStateException("Could not delete all locks", e);
+    }
+  }
+
+  @Override
+  public LockState getLockState(LockId lockId, OwnerId ownerId) {
+    try (PreparedStatement statement = getStatement(sqlQueries.getAcquiredLock())) {
+      statement.setString(1, lockId.getValue());
+      statement.setTimestamp(2, timestamp(now()));
+      ResultSet resultSet = statement.executeQuery();
+      if (resultSet.next()) {
+        String owner = resultSet.getString(0);
+        return ownerId.getValue().equals(owner)
+            ? LockState.ACQUIRED
+            : LockState.LOCKED;
+      } else {
+        return LockState.UNLOCKED;
+      }
+    } catch (SQLException e) {
+      throw new IllegalStateException("Could not read lock state", e);
     }
   }
 

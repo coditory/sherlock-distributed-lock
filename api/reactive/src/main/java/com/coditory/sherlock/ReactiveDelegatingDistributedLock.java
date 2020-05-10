@@ -14,18 +14,21 @@ class ReactiveDelegatingDistributedLock implements ReactiveDistributedLock {
   private final LockDuration duration;
   private final AcquireAction acquireAction;
   private final ReleaseAction releaseAction;
+  private final ReactiveDistributedLockConnector connector;
 
   ReactiveDelegatingDistributedLock(
-    AcquireAction acquireAction,
-    ReleaseAction releaseAction,
-    LockId lockId,
-    OwnerId ownerId,
-    LockDuration duration) {
+      AcquireAction acquireAction,
+      ReleaseAction releaseAction,
+      ReactiveDistributedLockConnector connector,
+      LockId lockId,
+      OwnerId ownerId,
+      LockDuration duration) {
     this.lockId = expectNonNull(lockId);
     this.ownerId = expectNonNull(ownerId);
     this.duration = expectNonNull(duration);
-    this.acquireAction = acquireAction;
-    this.releaseAction = releaseAction;
+    this.acquireAction = expectNonNull(acquireAction);
+    this.releaseAction = expectNonNull(releaseAction);
+    this.connector = expectNonNull(connector);
   }
 
   @Override
@@ -52,6 +55,21 @@ class ReactiveDelegatingDistributedLock implements ReactiveDistributedLock {
   @Override
   public Publisher<ReleaseResult> release() {
     return releaseAction.release(lockId, ownerId);
+  }
+
+  @Override
+  public Publisher<Boolean> isAcquired() {
+    return connector.isAcquired(lockId, ownerId);
+  }
+
+  @Override
+  public Publisher<Boolean> isLocked() {
+    return connector.isLocked(lockId);
+  }
+
+  @Override
+  public Publisher<Boolean> isReleased() {
+    return connector.isReleased(lockId);
   }
 
   @FunctionalInterface

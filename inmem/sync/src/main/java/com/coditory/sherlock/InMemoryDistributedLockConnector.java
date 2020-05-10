@@ -47,6 +47,11 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     return storage.forceReleaseAll(now());
   }
 
+  @Override
+  public LockState getLockState(LockId lockId, OwnerId ownerId) {
+    return storage.getLockState(lockId, ownerId, now());
+  }
+
   private Instant now() {
     return clock.instant();
   }
