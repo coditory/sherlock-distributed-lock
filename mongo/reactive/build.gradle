@@ -6,5 +6,5 @@ dependencies {
   compile project(':mongo:mongo-common')
   compile "io.projectreactor:reactor-core:$versions.reactor"
   integrationCompile project(':tests')
-  integrationCompile "org.testcontainers:spock:$versions.testContainers"
+  integrationCompile "org.testcontainers:mongodb:$versions.testContainers"
 }

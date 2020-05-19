@@ -5,6 +5,5 @@ dependencies {
   compile project(':api:api-reactive')
   compile project(':common')
   compile "io.projectreactor:reactor-core:$versions.reactor"
-  compile "org.codehaus.groovy:groovy-all:$versions.groovy"
   compile "org.spockframework:spock-core:$versions.spock"
 }

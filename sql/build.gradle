@@ -4,7 +4,8 @@ dependencies {
   compile project(':api:api-sync')
   compile project(':common')
   integrationCompile project(':tests')
-  integrationCompile "org.testcontainers:spock:$versions.testContainers"
+  integrationCompile "org.testcontainers:mysql:$versions.testContainers"
+  integrationCompile "org.testcontainers:postgresql:$versions.testContainers"
   integrationCompile "org.postgresql:postgresql:$versions.postgresql"
   integrationCompile "mysql:mysql-connector-java:$versions.mysql"
 }

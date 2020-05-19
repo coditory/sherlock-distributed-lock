@@ -7,8 +7,6 @@ import org.bson.Document
 import java.time.Clock
 import java.time.Duration
 
-import static MongoInitializer.databaseName
-import static MongoInitializer.mongoClient
 import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock
 
 trait UsesMongoSherlock implements DistributedLocksCreator {
@@ -25,7 +23,8 @@ trait UsesMongoSherlock implements DistributedLocksCreator {
   }
 
   MongoCollection<Document> getLocksCollection() {
-    return mongoClient.getDatabase(databaseName)
+    return MongoHolder.getClient()
+      .getDatabase(MongoHolder.databaseName)
       .getCollection(locksCollectionName)
   }
 }

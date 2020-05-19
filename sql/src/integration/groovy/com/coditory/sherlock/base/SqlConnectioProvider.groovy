@@ -6,19 +6,21 @@ import java.sql.Connection
 
 @CompileStatic
 interface SqlConnectionProvider {
-  Connection getConnection();
+    Connection getConnection();
 }
 
 @CompileStatic
 trait PostgresConnectionProvider implements SqlConnectionProvider {
-  Connection getConnection() {
-    return PostgresInitializer.connection;
-  }
+    @Override
+    Connection getConnection() {
+        return PostgresHolder.getConnection()
+    }
 }
 
 @CompileStatic
 trait MySqlConnectionProvider implements SqlConnectionProvider {
-  Connection getConnection() {
-    return MySqlInitializer.connection;
-  }
+    @Override
+    Connection getConnection() {
+        return MySqlHolder.getConnection()
+    }
 }

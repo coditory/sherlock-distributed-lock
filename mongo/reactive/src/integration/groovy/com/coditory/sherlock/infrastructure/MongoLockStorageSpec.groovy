@@ -2,6 +2,7 @@ package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
+import com.coditory.sherlock.MongoHolder
 import com.coditory.sherlock.base.LockTypes
 import com.coditory.sherlock.UsesReactiveMongoSherlock
 import org.bson.BsonDocument
@@ -10,8 +11,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.MongoInitializer.databaseName
-import static com.coditory.sherlock.MongoInitializer.mongoClient
+import static com.coditory.sherlock.MongoHolder.databaseName
+import static com.coditory.sherlock.MongoHolder.mongoClient
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoSherlock {
@@ -44,7 +45,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
       assertJsonEqual(getLockDocument(), """
       {
         "_id": "$sampleLockId",
-        "acquiredBy": "$sampleOwnerId", 
+        "acquiredBy": "$sampleOwnerId",
         "acquiredAt": { "\$date": ${epochMillis()} },
         "expiresAt": { "\$date": ${epochMillis(duration)} }
       }""")
@@ -83,7 +84,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
   }
 
   private String getLockDocument(String lockId = sampleLockId) {
-    return Flux.from(mongoClient.getDatabase(databaseName)
+    return Flux.from(MongoHolder.getClient().getDatabase(databaseName)
         .getCollection(locksCollectionName)
         .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
         .first())

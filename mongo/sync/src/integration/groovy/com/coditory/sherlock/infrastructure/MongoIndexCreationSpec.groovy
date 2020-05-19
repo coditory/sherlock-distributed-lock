@@ -1,19 +1,20 @@
 package com.coditory.sherlock.infrastructure
 
+import com.coditory.sherlock.MongoHolder
 import com.coditory.sherlock.Sherlock
 import com.mongodb.client.MongoCollection
 import org.bson.Document
 import org.junit.After
 import spock.lang.Specification
 
-import static com.coditory.sherlock.MongoInitializer.databaseName
-import static com.coditory.sherlock.MongoInitializer.mongoClient
+import static com.coditory.sherlock.MongoHolder.databaseName
 import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 
 class MongoIndexCreationSpec extends Specification {
   String collectionName = "other-locks"
-  MongoCollection<Document> collection = mongoClient.getDatabase(databaseName)
+  MongoCollection<Document> collection = MongoHolder.getClient()
+      .getDatabase(databaseName)
       .getCollection(collectionName)
   Sherlock locks = mongoSherlock()
       .withLocksCollection(collection)

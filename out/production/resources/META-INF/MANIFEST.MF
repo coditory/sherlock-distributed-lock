@@ -1,0 +1,18 @@
+Manifest-Version: 1.0
+Implementation-Title: sherlock
+Implementation-Group: com.coditory.sherlock
+Implementation-Version: 0.4.4-simplify-modules-SNAPSHOT
+Built-By: mendlik
+Built-Host: mendlik-dell-e6540
+Built-Date: 2020-05-19T21:46:17Z
+Built-OS: Linux 5.4.0-29-generic amd64
+Built-JDK: 14.0.1 AdoptOpenJDK
+SCM-Repository: git@github.com:coditory/sherlock-distributed-lock.git
+SCM-Branch: refs/heads/simplify-modules
+SCM-Commit-Message: Bump com.coditory.integration-test from 1.0.7 to 1.0
+ .8
+SCM-Commit-Hash: 02cf850e59b798bcc654ec8a8cb4dcf92b3c16de
+SCM-Commit-Author: dependabot-preview[bot] <27856297+dependabot-preview[
+ bot]@users.noreply.github.com>
+SCM-Commit-Date: 2019-12-02T07:26:21Z
+

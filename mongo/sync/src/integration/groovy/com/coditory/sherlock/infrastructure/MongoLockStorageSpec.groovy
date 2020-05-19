@@ -2,6 +2,7 @@ package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
+import com.coditory.sherlock.MongoHolder
 import com.coditory.sherlock.base.LockTypes
 import com.coditory.sherlock.UsesMongoSherlock
 import org.bson.BsonDocument
@@ -9,8 +10,6 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.MongoInitializer.databaseName
-import static com.coditory.sherlock.MongoInitializer.mongoClient
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoSherlock {
@@ -43,7 +42,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoSherlock {
       assertJsonEqual(getLockDocument(), """
       {
         "_id": "$sampleLockId",
-        "acquiredBy": "$sampleOwnerId", 
+        "acquiredBy": "$sampleOwnerId",
         "acquiredAt": { "\$date": ${epochMillis()} },
         "expiresAt": { "\$date": ${epochMillis(duration)} }
       }""")
@@ -82,7 +81,8 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoSherlock {
   }
 
   private String getLockDocument(String lockId = sampleLockId) {
-    return mongoClient.getDatabase(databaseName)
+    return MongoHolder.getClient()
+        .getDatabase(MongoHolder.databaseName)
         .getCollection(locksCollectionName)
         .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
         .first()
