@@ -1,7 +1,7 @@
 # Mongo Distributed Lock
 
 MongoDB connector enables distributed locking on [MongoDB](https://www.mongodb.com/).
-It was [tested on MongoDB v3.4]({{ vcs_baseurl }}/mongo/sync/src/integration/groovy/com/coditory/sherlock/MongoInitializer.groovy).
+It was [tested on MongoDB v3.4]({{ vcs_baseurl }}/mongo/sync/src/integration/groovy/com/coditory/sherlock/MongoHolder.groovy).
 
 ### Locks collection
 

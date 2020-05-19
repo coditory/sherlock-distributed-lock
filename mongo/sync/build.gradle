@@ -5,5 +5,5 @@ dependencies {
   compile "org.mongodb:mongodb-driver-sync:$versions.mongodb"
   compile project(':mongo:mongo-common')
   integrationCompile project(':tests')
-  integrationCompile "org.testcontainers:spock:$versions.testContainers"
+  integrationCompile "org.testcontainers:mongodb:$versions.testContainers"
 }
