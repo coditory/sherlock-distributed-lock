@@ -15,30 +15,30 @@ import java.time.Duration;
 import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock;
 
 public class MongoSyncSample {
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private MongoCollection<Document> locksCollection() {
-    String database = "sherlock";
-    MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
-    return mongoClient
-      .getDatabase("sherlock")
-      .getCollection("locks");
-  }
+    private MongoCollection<Document> locksCollection() {
+        String database = "sherlock";
+        MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
+        return mongoClient
+                .getDatabase("sherlock")
+                .getCollection("locks");
+    }
 
-  void sampleMongoSherlock() {
-    Sherlock sherlock = mongoSherlock()
-      .withClock(Clock.systemDefaultZone())
-      .withLockDuration(Duration.ofMinutes(5))
-      .withUniqueOwnerId()
-      .withLocksCollection(locksCollection())
-      .build();
-    // ...or simply
-    // Sherlock sherlockWithDefaults = mongoSherlock(locksCollection());
-    DistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
-  }
+    void sampleMongoSherlock() {
+        Sherlock sherlock = mongoSherlock()
+                .withClock(Clock.systemDefaultZone())
+                .withLockDuration(Duration.ofMinutes(5))
+                .withUniqueOwnerId()
+                .withLocksCollection(locksCollection())
+                .build();
+        // ...or simply
+        // Sherlock sherlockWithDefaults = mongoSherlock(locksCollection());
+        DistributedLock lock = sherlock.createLock("sample-lock");
+        lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+    }
 
-  public static void main(String[] args) {
-    new MongoSyncSample().sampleMongoSherlock();
-  }
+    public static void main(String[] args) {
+        new MongoSyncSample().sampleMongoSherlock();
+    }
 }

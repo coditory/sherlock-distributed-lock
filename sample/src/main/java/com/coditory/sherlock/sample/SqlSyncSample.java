@@ -15,35 +15,35 @@ import java.util.Properties;
 import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock;
 
 public class SqlSyncSample {
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  private Connection dbConnection() {
-    Properties connectionProps = new Properties();
-    connectionProps.put("user", "mysql");
-    connectionProps.put("password", "mysql");
-    try {
-      return DriverManager
-        .getConnection("jdbc:mysql://localhost:${mysql.firstMappedPort}/mysql", connectionProps);
-    } catch (SQLException e) {
-      throw new RuntimeException("Could not create MySQL connection", e);
+    private Connection dbConnection() {
+        Properties connectionProps = new Properties();
+        connectionProps.put("user", "mysql");
+        connectionProps.put("password", "mysql");
+        try {
+            return DriverManager
+                    .getConnection("jdbc:mysql://localhost:${mysql.firstMappedPort}/mysql", connectionProps);
+        } catch (SQLException e) {
+            throw new RuntimeException("Could not create MySQL connection", e);
+        }
     }
-  }
 
-  void sampleSqlSherlock() {
-    Sherlock sherlock = sqlSherlock()
-      .withClock(Clock.systemDefaultZone())
-      .withLockDuration(Duration.ofMinutes(5))
-      .withUniqueOwnerId()
-      .withConnection(dbConnection())
-      .withLocksTable("LOCKS")
-      .build();
-    // ...or simply
-    // Sherlock sherlockWithDefaults = sqlSherlock(dbConnection());
-    DistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
-  }
+    void sampleSqlSherlock() {
+        Sherlock sherlock = sqlSherlock()
+                .withClock(Clock.systemDefaultZone())
+                .withLockDuration(Duration.ofMinutes(5))
+                .withUniqueOwnerId()
+                .withConnection(dbConnection())
+                .withLocksTable("LOCKS")
+                .build();
+        // ...or simply
+        // Sherlock sherlockWithDefaults = sqlSherlock(dbConnection());
+        DistributedLock lock = sherlock.createLock("sample-lock");
+        lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+    }
 
-  public static void main(String[] args) {
-    new SqlSyncSample().sampleSqlSherlock();
-  }
+    public static void main(String[] args) {
+        new SqlSyncSample().sampleSqlSherlock();
+    }
 }

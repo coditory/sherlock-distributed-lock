@@ -1,9 +1,9 @@
 description = 'Sherlock Distributed Lock implementation using mongo synchronous connector'
 
 dependencies {
-  compile project(':api:api-sync')
-  compile "org.mongodb:mongodb-driver-sync:$versions.mongodb"
-  compile project(':mongo:mongo-common')
-  integrationCompile project(':tests')
-  integrationCompile "org.testcontainers:mongodb:$versions.testContainers"
+    compile project(':api:api-sync')
+    compile "org.mongodb:mongodb-driver-sync:$versions.mongodb"
+    compile project(':mongo:mongo-common')
+    integrationCompile project(':tests')
+    integrationCompile "org.testcontainers:mongodb:$versions.testContainers"
 }

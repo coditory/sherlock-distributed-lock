@@ -1,40 +1,40 @@
 // Only report code coverage for projects that are distributed
 def coverProjects = subprojects.findAll {
-  !notPublishableModules.contains(it.path)
+    !notPublishableModules.contains(it.path)
 }
 
 task jacocoMerge(type: JacocoMerge) {
-  coverProjects.each { subproject ->
-    executionData subproject.tasks.withType(Test)
-  }
-  doFirst {
-    executionData = files(executionData.findAll { it.exists() })
-  }
+    coverProjects.each { subproject ->
+        executionData subproject.tasks.withType(Test)
+    }
+    doFirst {
+        executionData = files(executionData.findAll { it.exists() })
+    }
 }
 
 task coverage(type: JacocoReport, group: 'Coverage reports') {
-  description = 'Generates an aggregate report from all subprojects'
-  dependsOn coverProjects.test, jacocoMerge
+    description = 'Generates an aggregate report from all subprojects'
+    dependsOn coverProjects.test, jacocoMerge
 
-  additionalSourceDirs.from(coverProjects.sourceSets.main.allSource.srcDirs)
-  sourceDirectories.from(coverProjects.sourceSets.main.allSource.srcDirs)
-  classDirectories.from(coverProjects.sourceSets.main.output)
-  executionData jacocoMerge.destinationFile
+    additionalSourceDirs.from(coverProjects.sourceSets.main.allSource.srcDirs)
+    sourceDirectories.from(coverProjects.sourceSets.main.allSource.srcDirs)
+    classDirectories.from(coverProjects.sourceSets.main.output)
+    executionData jacocoMerge.destinationFile
 
-  reports {
-    html.enabled = true // human readable
-    xml.enabled = true // required by coveralls
-  }
+    reports {
+        html.enabled = true // human readable
+        xml.enabled = true // required by coveralls
+    }
 }
 
 coveralls {
-  sourceDirs = coverProjects.sourceSets.main.allSource.srcDirs.flatten()
-  jacocoReportPath = "${buildDir}/reports/jacoco/coverage/coverage.xml"
+    sourceDirs = coverProjects.sourceSets.main.allSource.srcDirs.flatten()
+    jacocoReportPath = "${buildDir}/reports/jacoco/coverage/coverage.xml"
 }
 
 tasks.coveralls {
-  group = 'Coverage reports'
-  description = 'Uploads the aggregated coverage report to Coveralls'
-  dependsOn coverage
-  onlyIf { System.env['CI'] }
+    group = 'Coverage reports'
+    description = 'Uploads the aggregated coverage report to Coveralls'
+    dependsOn coverage
+    onlyIf { System.env['CI'] }
 }

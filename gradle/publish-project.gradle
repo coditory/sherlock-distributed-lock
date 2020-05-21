@@ -1,105 +1,103 @@
-import java.time.ZonedDateTime
-
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
 apply plugin: 'de.marcphilipp.nexus-publish'
 
 jar {
-  from(rootProject.projectDir) {
-    include "license.txt"
-    into "META-INF"
-    expand(
-      copyright: new Date().format("yyyy"),
-      version: project.version
-    )
-  }
+    from(rootProject.projectDir) {
+        include "license.txt"
+        into "META-INF"
+        expand(
+                copyright: new Date().format("yyyy"),
+                version: project.version
+        )
+    }
 }
 
 task javadocJar(type: Jar) {
-  from javadoc
-  archiveClassifier = 'javadoc'
+    from javadoc
+    archiveClassifier = 'javadoc'
 }
 
 task sourcesJar(type: Jar) {
-  from sourceSets.main.allJava
-  archiveClassifier = 'sources'
+    from sourceSets.main.allJava
+    archiveClassifier = 'sources'
 }
 
 // Sonatype does not support Gradle Module Metadata
 // See: https://discuss.gradle.org/t/unable-to-publish-artifact-to-mavencentral/33727/3
 tasks.withType(GenerateModuleMetadata) {
-  enabled = false
+    enabled = false
 }
 
 artifacts {
-  archives javadocJar
-  archives sourcesJar
+    archives javadocJar
+    archives sourcesJar
 }
 
 publishing {
-  publications {
-    mavenJava(MavenPublication) {
-      artifactId = archivesBaseName
-      from components.java
-      artifact sourcesJar
-      artifact javadocJar
+    publications {
+        mavenJava(MavenPublication) {
+            artifactId = archivesBaseName
+            from components.java
+            artifact sourcesJar
+            artifact javadocJar
 
-      versionMapping {
-        usage('java-api') {
-          fromResolutionOf('runtimeClasspath')
-        }
-        usage('java-runtime') {
-          fromResolutionResult()
-        }
-      }
+            versionMapping {
+                usage('java-api') {
+                    fromResolutionOf('runtimeClasspath')
+                }
+                usage('java-runtime') {
+                    fromResolutionResult()
+                }
+            }
 
-      pom {
-        name = archivesBaseName
-        description = project.description ?: rootProject.description
-        url = 'https://github.com/coditory/sherlock-distributed-lock'
-        organization {
-          name = "Coditory"
-          url = "https://coditory.com"
+            pom {
+                name = archivesBaseName
+                description = project.description ?: rootProject.description
+                url = 'https://github.com/coditory/sherlock-distributed-lock'
+                organization {
+                    name = "Coditory"
+                    url = "https://coditory.com"
+                }
+                licenses {
+                    license {
+                        name = 'The Apache License, Version 2.0'
+                        url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
+                    }
+                }
+                developers {
+                    developer {
+                        id = 'pawel.mendelski'
+                        name = 'Pawel Mendelski'
+                        email = 'mendelski.pawel@gmail.com'
+                    }
+                }
+                scm {
+                    connection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
+                    developerConnection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
+                    url = 'https://github.com/coditory/sherlock-distributed-lock'
+                }
+                issueManagement {
+                    system = "GitHub"
+                    url = "https://github.com/coditory/sherlock-distributed-lock/issues"
+                }
+            }
         }
-        licenses {
-          license {
-            name = 'The Apache License, Version 2.0'
-            url = 'http://www.apache.org/licenses/LICENSE-2.0.txt'
-          }
-        }
-        developers {
-          developer {
-            id = 'pawel.mendelski'
-            name = 'Pawel Mendelski'
-            email = 'mendelski.pawel@gmail.com'
-          }
-        }
-        scm {
-          connection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
-          developerConnection = 'scm:git@github.com:coditory/sherlock-distributed-lock.git'
-          url = 'https://github.com/coditory/sherlock-distributed-lock'
-        }
-        issueManagement {
-          system = "GitHub"
-          url = "https://github.com/coditory/sherlock-distributed-lock/issues"
-        }
-      }
     }
-  }
 }
 
 signing {
-  sign publishing.publications.mavenJava
+    sign publishing.publications.mavenJava
 }
 
 if (System.env.GPG_KEY_ID) {
-  project.ext['signing.keyId'] = System.env.GPG_KEY_ID
-  project.ext['signing.password'] = System.env.GPG_PASSWORD
-  project.ext['signing.secretKeyRingFile'] = System.env.GPG_KEY_RING_FILE
+    project.ext['signing.keyId'] = System.env.GPG_KEY_ID
+    project.ext['signing.password'] = System.env.GPG_PASSWORD
+    project.ext['signing.secretKeyRingFile'] = System.env.GPG_KEY_RING_FILE
 }
 
 nexusPublishing {
-  repositories {
-    sonatype()
-  }
+    repositories {
+        sonatype()
+    }
 }

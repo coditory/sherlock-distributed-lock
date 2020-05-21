@@ -7,28 +7,28 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 enum LockTypes {
-  SINGLE_ENTRANT{
-    @Override
-    DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
-      return sherlock.createLock()
-    }
-  },
-  REENTRANT{
-    @Override
-    DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
-      return sherlock.createReentrantLock()
-    }
-  },
-  OVERRIDING{
-    @Override
-    DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
-      return sherlock.createOverridingLock()
-    }
-  };
+    SINGLE_ENTRANT{
+        @Override
+        DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
+            return sherlock.createLock()
+        }
+    },
+    REENTRANT{
+        @Override
+        DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
+            return sherlock.createReentrantLock()
+        }
+    },
+    OVERRIDING{
+        @Override
+        DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock) {
+            return sherlock.createOverridingLock()
+        }
+    };
 
-  abstract DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock);
+    abstract DistributedLockBuilder<DistributedLock> createLock(Sherlock sherlock);
 
-  static List<LockTypes> allLockTypes() {
-    return values().toList()
-  }
+    static List<LockTypes> allLockTypes() {
+        return values().toList()
+    }
 }

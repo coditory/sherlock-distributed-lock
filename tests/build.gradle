@@ -1,9 +1,9 @@
 description = 'Sherlock Distributed Lock shared tests'
 
 dependencies {
-  compile project(':api:api-sync')
-  compile project(':api:api-reactive')
-  compile project(':common')
-  compile "io.projectreactor:reactor-core:$versions.reactor"
-  compile "org.spockframework:spock-core:$versions.spock"
+    compile project(':api:api-sync')
+    compile project(':api:api-reactive')
+    compile project(':common')
+    compile "io.projectreactor:reactor-core:$versions.reactor"
+    compile "org.spockframework:spock-core:$versions.spock"
 }
