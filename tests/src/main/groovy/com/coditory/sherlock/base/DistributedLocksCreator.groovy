@@ -8,5 +8,5 @@ import java.time.Duration
 
 @CompileStatic
 interface DistributedLocksCreator {
-  Sherlock createSherlock(String ownerId, Duration duration, Clock clock);
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock);
 }

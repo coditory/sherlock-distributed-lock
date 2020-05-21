@@ -10,22 +10,22 @@ import java.time.Duration
 import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock
 
 trait UsesMongoSherlock implements DistributedLocksCreator {
-  static final String locksCollectionName = "locks"
+    static final String locksCollectionName = "locks"
 
-  @Override
-  Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
-    return mongoSherlock()
-      .withLocksCollection(getLocksCollection())
-      .withOwnerId(instanceId)
-      .withLockDuration(duration)
-      .withClock(clock)
-      .build()
-  }
+    @Override
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+        return mongoSherlock()
+                .withLocksCollection(getLocksCollection())
+                .withOwnerId(instanceId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
+    }
 
-  MongoCollection<Document> getLocksCollection() {
-    return MongoHolder.getClient()
-      .getDatabase(MongoHolder.databaseName)
-      .getCollection(locksCollectionName)
-  }
+    MongoCollection<Document> getLocksCollection() {
+        return MongoHolder.getClient()
+                .getDatabase(MongoHolder.databaseName)
+                .getCollection(locksCollectionName)
+    }
 }
 

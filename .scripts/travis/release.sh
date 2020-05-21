@@ -15,20 +15,20 @@ git config --local user.email "Travis CI"
 git checkout "$TRAVIS_BRANCH" >/dev/null 2>&1
 
 mkdir -p "$HOME/.gnupg"
-echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$GPG_KEY_RING_FILE"
+echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor >"$GPG_KEY_RING_FILE"
 
-if [[ "$RELEASE" = "TRUE" ]]; then
+if [[ "$RELEASE" == "TRUE" ]]; then
   RELEASE="SNAPSHOT"
 fi
 
 if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" == "BRANCH_SNAPSHOT" ]]; then
   .scripts/release "SNAPSHOT"
-  exit 0;
+  exit 0
 fi
 
 if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
   echo "Exiting release: Release is enabled on master branch only"
-  exit 0;
+  exit 0
 fi
 
 .scripts/release.sh "$RELEASE"

@@ -1,91 +1,91 @@
 buildscript {
-  ext {
-    versions = [
-      reactor        : '3.3.5.RELEASE',
-      rxjava         : '2.2.19',
-      mongodb        : '3.12.4',
-      mongodbReactive: '1.13.1',
-      slf4j          : '1.7.29',
-      logback        : '1.2.3',
-      postgresql     : '42.2.12',
-      mysql          : '8.0.20',
-      // test dependencies:
-      testContainers : '1.14.2',
-      spock          : '2.0-M2-groovy-3.0',
-      groovy         : '3.0.3'
-    ]
-    notPublishableModules = [
-      ':api',
-      ':sample',
-      ':mongo',
-      ':tests'
-    ]
-  }
-  repositories {
-    mavenCentral()
-  }
+    ext {
+        versions = [
+                reactor        : '3.3.5.RELEASE',
+                rxjava         : '2.2.19',
+                mongodb        : '3.12.4',
+                mongodbReactive: '1.13.1',
+                slf4j          : '1.7.29',
+                logback        : '1.2.3',
+                postgresql     : '42.2.12',
+                mysql          : '8.0.20',
+                // test dependencies:
+                testContainers : '1.14.2',
+                spock          : '2.0-M2-groovy-3.0',
+                groovy         : '3.0.3'
+        ]
+        notPublishableModules = [
+                ':api',
+                ':sample',
+                ':mongo',
+                ':tests'
+        ]
+    }
+    repositories {
+        mavenCentral()
+    }
 }
 
 plugins {
-  id 'jacoco'
-  id 'signing'
-  id 'pl.allegro.tech.build.axion-release' version '1.11.0'
-  id 'com.github.kt3k.coveralls' version '2.10.1'
-  id 'com.coditory.build' version '0.1.3'
-  id 'io.codearte.nexus-staging' version '0.21.2' apply false
-  id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
+    id 'jacoco'
+    id 'signing'
+    id 'pl.allegro.tech.build.axion-release' version '1.11.0'
+    id 'com.github.kt3k.coveralls' version '2.10.1'
+    id 'com.coditory.build' version '0.1.3'
+    id 'io.codearte.nexus-staging' version '0.21.2' apply false
+    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 
 description = 'Distributed Lock Library for JVM'
 
 scmVersion {
-  versionCreator 'versionWithBranch'
+    versionCreator 'versionWithBranch'
 }
 
 allprojects {
-  group = 'com.coditory.sherlock'
-  version = scmVersion.version
+    group = 'com.coditory.sherlock'
+    version = scmVersion.version
 
-  repositories {
-    mavenCentral()
-  }
+    repositories {
+        mavenCentral()
+    }
 }
 
 subprojects {
-  apply plugin: 'java-library'
-  apply plugin: 'groovy'
-  apply plugin: 'jacoco'
-  apply plugin: 'com.coditory.integration-test'
-  sourceCompatibility = 11
+    apply plugin: 'java-library'
+    apply plugin: 'groovy'
+    apply plugin: 'jacoco'
+    apply plugin: 'com.coditory.integration-test'
+    sourceCompatibility = 11
 
-  // make nicer archive and module names
-  archivesBaseName = rootProject.name + '-' + project.name
-  ext.moduleName = archivesBaseName.replaceAll('-', '.')
+    // make nicer archive and module names
+    archivesBaseName = rootProject.name + '-' + project.name
+    ext.moduleName = archivesBaseName.replaceAll('-', '.')
 
-  dependencies {
-    testCompile "ch.qos.logback:logback-core:$versions.logback"
-    testCompile "ch.qos.logback:logback-classic:$versions.logback"
-    testCompile "org.codehaus.groovy:groovy-all:$versions.groovy"
-    testCompile "org.spockframework:spock-core:$versions.spock"
-  }
-
-  tasks.withType(Test) {
-    useJUnitPlatform()
-  }
-
-  javadoc {
-    source = sourceSets.main.allJava
-    classpath = configurations.compileClasspath
-    failOnError = false
-    options {
-      memberLevel = JavadocMemberLevel.PUBLIC
-      author = true
+    dependencies {
+        testCompile "ch.qos.logback:logback-core:$versions.logback"
+        testCompile "ch.qos.logback:logback-classic:$versions.logback"
+        testCompile "org.codehaus.groovy:groovy-all:$versions.groovy"
+        testCompile "org.spockframework:spock-core:$versions.spock"
     }
-  }
+
+    tasks.withType(Test) {
+        useJUnitPlatform()
+    }
+
+    javadoc {
+        source = sourceSets.main.allJava
+        classpath = configurations.compileClasspath
+        failOnError = false
+        options {
+            memberLevel = JavadocMemberLevel.PUBLIC
+            author = true
+        }
+    }
 }
 
 apply from: "gradle/coverage.gradle"
 
 if (project.hasProperty('publish')) {
-  apply from: "gradle/publish.gradle"
+    apply from: "gradle/publish.gradle"
 }

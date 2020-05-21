@@ -10,19 +10,19 @@ import static com.coditory.sherlock.MongoDistributedLock.INDEX;
 import static com.coditory.sherlock.MongoDistributedLock.INDEX_OPTIONS;
 
 class ReactiveMongoCollectionInitializer {
-  private final MongoCollection<Document> collection;
-  private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
+    private final MongoCollection<Document> collection;
+    private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
 
-  ReactiveMongoCollectionInitializer(MongoCollection<Document> collection) {
-    this.collection = collection;
-  }
-
-  Mono<MongoCollection<Document>> getInitializedCollection() {
-    boolean shouldCreateIndexes = indexesCreated.compareAndSet(false, true);
-    if (!shouldCreateIndexes) {
-      return Mono.just(collection);
+    ReactiveMongoCollectionInitializer(MongoCollection<Document> collection) {
+        this.collection = collection;
     }
-    return Mono.from(collection.createIndex(INDEX, INDEX_OPTIONS))
-      .map(result -> collection);
-  }
+
+    Mono<MongoCollection<Document>> getInitializedCollection() {
+        boolean shouldCreateIndexes = indexesCreated.compareAndSet(false, true);
+        if (!shouldCreateIndexes) {
+            return Mono.just(collection);
+        }
+        return Mono.from(collection.createIndex(INDEX, INDEX_OPTIONS))
+                .map(result -> collection);
+    }
 }

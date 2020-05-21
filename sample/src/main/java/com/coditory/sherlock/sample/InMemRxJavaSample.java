@@ -11,24 +11,24 @@ import java.time.Clock;
 import static com.coditory.sherlock.ReactiveInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
 
 public class InMemRxJavaSample {
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-  void sampleInMemSherlock() {
-    RxSherlock sherlock = reactiveInMemorySherlockBuilder()
-      .withClock(Clock.systemDefaultZone())
-      .withUniqueOwnerId()
-      .withSharedStorage()
-      .buildWithApi(RxSherlock::rxSherlock);
-    // ...or simply
-    // RxSherlock sherlockWithDefaults = rxSherlock(reactiveInMemorySherlock());
-    RxDistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(Single.fromCallable(() -> {
-      logger.info("Lock acquired!");
-      return true;
-    })).blockingGet();
-  }
+    void sampleInMemSherlock() {
+        RxSherlock sherlock = reactiveInMemorySherlockBuilder()
+                .withClock(Clock.systemDefaultZone())
+                .withUniqueOwnerId()
+                .withSharedStorage()
+                .buildWithApi(RxSherlock::rxSherlock);
+        // ...or simply
+        // RxSherlock sherlockWithDefaults = rxSherlock(reactiveInMemorySherlock());
+        RxDistributedLock lock = sherlock.createLock("sample-lock");
+        lock.acquireAndExecute(Single.fromCallable(() -> {
+            logger.info("Lock acquired!");
+            return true;
+        })).blockingGet();
+    }
 
-  public static void main(String[] args) {
-    new InMemRxJavaSample().sampleInMemSherlock();
-  }
+    public static void main(String[] args) {
+        new InMemRxJavaSample().sampleInMemSherlock();
+    }
 }

@@ -9,4 +9,5 @@ bin
 # IntelliJ
 *.iml
 .idea
+!.idea/codeStyles
 .attach_pid*

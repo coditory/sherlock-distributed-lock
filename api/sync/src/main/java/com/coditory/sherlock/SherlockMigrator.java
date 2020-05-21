@@ -25,152 +25,152 @@ import static com.coditory.sherlock.Preconditions.expectNonEmpty;
  * </ul>
  */
 public final class SherlockMigrator {
-  private static final String DEFAULT_MIGRATOR_LOCK_ID = "migrator";
-  private final Logger logger = LoggerFactory.getLogger(this.getClass());
-  private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();
-  private final String migrationId;
-  private final Sherlock sherlock;
-  private final DistributedLock migrationLock;
-  private final Set<String> migrationLockIds = new HashSet<>();
-
-  /**
-   * @param sherlock sherlock used to manage migration locks
-   */
-  public SherlockMigrator(Sherlock sherlock) {
-    this(DEFAULT_MIGRATOR_LOCK_ID, sherlock);
-  }
-
-  /**
-   * @param migrationId id used as lock id for the whole migration process
-   * @param sherlock sherlock used to manage migration locks
-   */
-  public SherlockMigrator(String migrationId, Sherlock sherlock) {
-    this.migrationId = migrationId;
-    this.sherlock = sherlock;
-    this.migrationLock = sherlock.createLock()
-      .withLockId(migrationId)
-      .withPermanentLockDuration()
-      .withStaticUniqueOwnerId()
-      .build();
-    this.migrationLockIds.add(migrationId);
-  }
-
-  /**
-   * Adds change set to migration process.
-   *
-   * @param changeSetId unique change set id used. This is is used as a lock id in migration
-   *   process.
-   * @param changeSet change set action that should be run if change set was not already applied
-   * @return the migrator
-   */
-  public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
-    expectNonEmpty(changeSetId, "Expected non empty changeSetId");
-    ensureUniqueChangeSetId(changeSetId);
-    migrationLockIds.add(changeSetId);
-    DistributedLock changeSetLock = createChangeSetLock(changeSetId);
-    migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
-    return this;
-  }
-
-  private DistributedLock createChangeSetLock(String migrationId) {
-    return sherlock.createLock()
-      .withLockId(migrationId)
-      .withPermanentLockDuration()
-      .withStaticUniqueOwnerId()
-      .build();
-  }
-
-  /**
-   * Runs the migration process.
-   *
-   * @return migration result
-   */
-  public MigrationResult migrate() {
-    AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
-    return new MigrationResult(acquireResult.isAcquired());
-  }
-
-  private void runMigrations() {
-    logger.info("Starting migration: {}", migrationId);
-    migrationChangeSets.forEach(MigrationChangeSet::execute);
-    logger.info("Migration finished successfully: {}", migrationId);
-  }
-
-  private void ensureUniqueChangeSetId(String changeSetId) {
-    if (migrationLockIds.contains(changeSetId)) {
-      throw new IllegalArgumentException(
-        "Expected unique change set ids. Duplicated id: " + changeSetId);
-    }
-  }
-
-  private static class MigrationChangeSet {
+    private static final String DEFAULT_MIGRATOR_LOCK_ID = "migrator";
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final String id;
-    private final DistributedLock lock;
-    private final Runnable action;
+    private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();
+    private final String migrationId;
+    private final Sherlock sherlock;
+    private final DistributedLock migrationLock;
+    private final Set<String> migrationLockIds = new HashSet<>();
 
-    MigrationChangeSet(String id, DistributedLock lock, Runnable action) {
-      this.id = id;
-      this.lock = lock;
-      this.action = action;
+    /**
+     * @param sherlock sherlock used to manage migration locks
+     */
+    public SherlockMigrator(Sherlock sherlock) {
+        this(DEFAULT_MIGRATOR_LOCK_ID, sherlock);
     }
 
-    void execute() {
-      if (lock.acquire()) {
-        logger.debug("Executing migration change set: {}", id);
-        try {
-          action.run();
-          logger.info("Migration change set applied: {}", id);
-        } catch (Throwable exception) {
-          logger.warn(
-            "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
-            id, exception);
-          lock.release();
-          throw exception;
+    /**
+     * @param migrationId id used as lock id for the whole migration process
+     * @param sherlock    sherlock used to manage migration locks
+     */
+    public SherlockMigrator(String migrationId, Sherlock sherlock) {
+        this.migrationId = migrationId;
+        this.sherlock = sherlock;
+        this.migrationLock = sherlock.createLock()
+                .withLockId(migrationId)
+                .withPermanentLockDuration()
+                .withStaticUniqueOwnerId()
+                .build();
+        this.migrationLockIds.add(migrationId);
+    }
+
+    /**
+     * Adds change set to migration process.
+     *
+     * @param changeSetId unique change set id used. This is is used as a lock id in migration
+     *                    process.
+     * @param changeSet   change set action that should be run if change set was not already applied
+     * @return the migrator
+     */
+    public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
+        expectNonEmpty(changeSetId, "Expected non empty changeSetId");
+        ensureUniqueChangeSetId(changeSetId);
+        migrationLockIds.add(changeSetId);
+        DistributedLock changeSetLock = createChangeSetLock(changeSetId);
+        migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
+        return this;
+    }
+
+    private DistributedLock createChangeSetLock(String migrationId) {
+        return sherlock.createLock()
+                .withLockId(migrationId)
+                .withPermanentLockDuration()
+                .withStaticUniqueOwnerId()
+                .build();
+    }
+
+    /**
+     * Runs the migration process.
+     *
+     * @return migration result
+     */
+    public MigrationResult migrate() {
+        AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
+        return new MigrationResult(acquireResult.isAcquired());
+    }
+
+    private void runMigrations() {
+        logger.info("Starting migration: {}", migrationId);
+        migrationChangeSets.forEach(MigrationChangeSet::execute);
+        logger.info("Migration finished successfully: {}", migrationId);
+    }
+
+    private void ensureUniqueChangeSetId(String changeSetId) {
+        if (migrationLockIds.contains(changeSetId)) {
+            throw new IllegalArgumentException(
+                    "Expected unique change set ids. Duplicated id: " + changeSetId);
         }
-      } else {
-        logger.info("Migration change set skipped: {}. It was already applied", id);
-      }
-    }
-  }
-
-  public static final class MigrationResult {
-    private final boolean migrated;
-
-    MigrationResult(boolean migrated) {
-      this.migrated = migrated;
     }
 
-    public boolean isMigrated() {
-      return migrated;
+    private static class MigrationChangeSet {
+        private final Logger logger = LoggerFactory.getLogger(this.getClass());
+        private final String id;
+        private final DistributedLock lock;
+        private final Runnable action;
+
+        MigrationChangeSet(String id, DistributedLock lock, Runnable action) {
+            this.id = id;
+            this.lock = lock;
+            this.action = action;
+        }
+
+        void execute() {
+            if (lock.acquire()) {
+                logger.debug("Executing migration change set: {}", id);
+                try {
+                    action.run();
+                    logger.info("Migration change set applied: {}", id);
+                } catch (Throwable exception) {
+                    logger.warn(
+                            "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
+                            id, exception);
+                    lock.release();
+                    throw exception;
+                }
+            } else {
+                logger.info("Migration change set skipped: {}. It was already applied", id);
+            }
+        }
     }
 
-    /**
-     * Executes the action when migration process finishes. The action is only executed by the
-     * migrator instance that started the migration process.
-     *
-     * @param action the action to be executed after migration
-     * @return migration result for chaining
-     */
-    public MigrationResult onFinish(Runnable action) {
-      if (migrated) {
-        action.run();
-      }
-      return this;
-    }
+    public static final class MigrationResult {
+        private final boolean migrated;
 
-    /**
-     * Executes the action when migration lock was not acquired.
-     *
-     * @param action the action to be executed when migration lock was not acquired
-     * @return migration result for chaining
-     */
-    public MigrationResult onRejected(Runnable action) {
-      if (!migrated) {
-        action.run();
-      }
-      return this;
-    }
+        MigrationResult(boolean migrated) {
+            this.migrated = migrated;
+        }
 
-  }
+        public boolean isMigrated() {
+            return migrated;
+        }
+
+        /**
+         * Executes the action when migration process finishes. The action is only executed by the
+         * migrator instance that started the migration process.
+         *
+         * @param action the action to be executed after migration
+         * @return migration result for chaining
+         */
+        public MigrationResult onFinish(Runnable action) {
+            if (migrated) {
+                action.run();
+            }
+            return this;
+        }
+
+        /**
+         * Executes the action when migration lock was not acquired.
+         *
+         * @param action the action to be executed when migration lock was not acquired
+         * @return migration result for chaining
+         */
+        public MigrationResult onRejected(Runnable action) {
+            if (!migrated) {
+                action.run();
+            }
+            return this;
+        }
+
+    }
 }

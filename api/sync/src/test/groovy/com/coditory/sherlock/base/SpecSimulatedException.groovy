@@ -4,15 +4,15 @@ import groovy.transform.CompileStatic
 
 @CompileStatic
 class SpecSimulatedException extends RuntimeException {
-  static throwSpecSimulatedException() {
-    throw new SpecSimulatedException()
-  }
+    static throwSpecSimulatedException() {
+        throw new SpecSimulatedException()
+    }
 
-  SpecSimulatedException() {
-    this("Simulated exception for test")
-  }
+    SpecSimulatedException() {
+        this("Simulated exception for test")
+    }
 
-  SpecSimulatedException(String message) {
-    super(message)
-  }
+    SpecSimulatedException(String message) {
+        super(message)
+    }
 }
