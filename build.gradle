@@ -31,7 +31,7 @@ plugins {
     id 'signing'
     id 'pl.allegro.tech.build.axion-release' version '1.11.0'
     id 'com.github.kt3k.coveralls' version '2.10.1'
-    id 'com.coditory.build' version '0.1.3'
+    id 'com.coditory.build' version '0.1.4' apply false
     id 'io.codearte.nexus-staging' version '0.21.2' apply false
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
@@ -55,7 +55,7 @@ subprojects {
     apply plugin: 'java-library'
     apply plugin: 'groovy'
     apply plugin: 'jacoco'
-    apply plugin: 'com.coditory.integration-test'
+    apply plugin: 'com.coditory.build'
     sourceCompatibility = 11
 
     // make nicer archive and module names
