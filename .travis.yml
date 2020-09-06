@@ -26,13 +26,13 @@ install: echo "skip 'gradle assemble' step"
 script: ./gradlew build --scan --stacktrace
 after_success: bash .scripts/travis/coverage.sh
 
-# Try to release
+# Release
 deploy:
   skip_cleanup: true
   provider: script
   script: bash .scripts/travis/release.sh
   on:
-    tags: false
+    branch: master
 
 # Cache some gradle folders
 before_cache:
@@ -43,7 +43,6 @@ cache:
     - $HOME/.gradle/caches/
     - $HOME/.gradle/wrapper/
 
-# Send notification on slack
+# Send notification to slack
 notifications:
-  slack:
-    coditory:q1sUsgYeeAGZ7KSogB9GZvjZ
+  slack: $SLACK

@@ -1,5 +1,7 @@
 #!/bin/bash -e
 
+: ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
+
 VERSION="${1:-PATCH}"
 
 publishDocs() {
