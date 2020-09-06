@@ -1,8 +1,9 @@
+os: linux
+dist: bionic
 language: java
 jdk: openjdk11
 python: 3.7 # for mkdocs
 services: docker # for testcontainers
-dist: bionic
 
 addons:
   apt:
@@ -21,6 +22,7 @@ before_install:
   - "echo 'org.gradle.configureondemand=true' >> $HOME/.gradle/gradle.properties"
   - "echo 'org.gradle.daemon=true' >> $HOME/.gradle/gradle.properties"
   - "echo 'org.gradle.parallel=true' >> $HOME/.gradle/gradle.properties"
+  - "echo 'systemProp.jdk.tls.client.protocols=\"TLSv1,TLSv1.1,TLSv1.2\"' >> $HOME/.gradle/gradle.properties"
 
 install: echo "skip 'gradle assemble' step"
 script: ./gradlew build --scan --stacktrace
