@@ -46,8 +46,8 @@ cleanup() {
 }
 trap cleanup EXIT INT TERM
 
-git config --local user.name "travis@travis-ci.org"
-git config --local user.email "Travis CI"
+git config --local user.name "Coditory CI"
+git config --local user.email "ci@coditory.com"
 git checkout "$TRAVIS_BRANCH" >/dev/null 2>&1
 
 .scripts/release.sh "$RELEASE"
