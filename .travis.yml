@@ -10,6 +10,7 @@ addons:
     packages:
       - python3
       - python3-pip
+      - python3-wheel
       - python3-setuptools
 
 branches:
@@ -35,6 +36,7 @@ deploy:
   script: bash .scripts/travis/release.sh
   on:
     branch: master
+    tags: false
 
 # Cache some gradle folders
 before_cache:
