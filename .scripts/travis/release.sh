@@ -39,7 +39,7 @@ fi
 : ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
 export GPG_KEY_RING_FILE="$HOME/.gnupg/keyring.gpg"
 mkdir -p "$HOME/.gnupg"
-echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor >"$GPG_KEY_RING_FILE"
+echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor > "$GPG_KEY_RING_FILE"
 
 cleanup() {
   rm -rf "$GPG_KEY_RING_FILE"
@@ -48,6 +48,6 @@ trap cleanup EXIT INT TERM
 
 git config --local user.name "Coditory CI"
 git config --local user.email "ci@coditory.com"
-git checkout "$TRAVIS_BRANCH" >/dev/null 2>&1
+git checkout "$TRAVIS_BRANCH" > /dev/null 2>&1
 
 .scripts/release.sh "$RELEASE"
