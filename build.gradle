@@ -1,18 +1,18 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.3.5.RELEASE',
+                reactor        : '3.3.9.RELEASE',
                 rxjava         : '2.2.19',
-                mongodb        : '3.12.4',
-                mongodbReactive: '1.13.1',
-                slf4j          : '1.7.29',
+                mongodb        : '4.1.0',
+                mongodbReactive: '4.1.0',
+                slf4j          : '1.7.30',
                 logback        : '1.2.3',
-                postgresql     : '42.2.12',
-                mysql          : '8.0.20',
+                postgresql     : '42.2.16',
+                mysql          : '8.0.21',
                 // test dependencies:
-                testContainers : '1.14.2',
-                spock          : '2.0-M2-groovy-3.0',
-                groovy         : '3.0.3'
+                groovy         : '3.0.5',
+                testContainers : '1.14.3',
+                spock          : '2.0-M3-groovy-3.0'
         ]
         notPublishableModules = [
                 ':api',
@@ -30,9 +30,9 @@ plugins {
     id 'jacoco'
     id 'signing'
     id 'pl.allegro.tech.build.axion-release' version '1.11.0'
-    id 'com.github.kt3k.coveralls' version '2.10.1'
-    id 'com.coditory.build' version '0.1.4' apply false
-    id 'io.codearte.nexus-staging' version '0.21.2' apply false
+    id 'com.github.kt3k.coveralls' version '2.10.2'
+    id 'com.coditory.build' version '0.1.6' apply false
+    id 'io.codearte.nexus-staging' version '0.22.0' apply false
     id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
 }
 

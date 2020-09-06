@@ -3,7 +3,6 @@ package com.coditory.sherlock.infrastructure
 import com.coditory.sherlock.Sherlock
 import com.coditory.sherlock.base.MySqlConnectionProvider
 import com.coditory.sherlock.base.PostgresConnectionProvider
-import org.junit.After
 import spock.lang.Specification
 
 import java.sql.Connection
@@ -31,8 +30,7 @@ abstract class SqlIndexCreationSpec extends Specification {
 
     abstract Connection getConnection();
 
-    @After
-    void dropTable() {
+    void cleanup() {
         Statement statement
         try {
             statement = connection.createStatement()

@@ -10,9 +10,12 @@ import reactor.core.publisher.Flux
 import spock.lang.Unroll
 
 import java.time.Duration
+import java.time.Instant
+import java.time.format.DateTimeFormatter
 
 import static com.coditory.sherlock.MongoHolder.databaseName
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
+import static java.time.temporal.ChronoUnit.MILLIS
 
 class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoSherlock {
     @Unroll
@@ -26,8 +29,8 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
       {
         "_id": "$sampleLockId",
         "acquiredBy": "$sampleOwnerId",
-        "acquiredAt": { "\$date": ${epochMillis()} },
-        "expiresAt": { "\$date": ${epochMillis(defaultLockDuration)} }
+        "acquiredAt": { "\$date": "${now()}" },
+        "expiresAt": { "\$date": "${now(defaultLockDuration)}" }
       }""")
         where:
             type << LockTypes.allLockTypes()
@@ -42,12 +45,13 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
             lock.acquire(duration)
         then:
             assertJsonEqual(getLockDocument(), """
-      {
-        "_id": "$sampleLockId",
-        "acquiredBy": "$sampleOwnerId",
-        "acquiredAt": { "\$date": ${epochMillis()} },
-        "expiresAt": { "\$date": ${epochMillis(duration)} }
-      }""")
+              {
+                "_id": "$sampleLockId",
+                "acquiredBy": "$sampleOwnerId",
+                "acquiredAt": { "\$date": "${now()}" },
+                "expiresAt": { "\$date": "${now(duration)}" }
+              }
+            """)
         where:
             type << LockTypes.allLockTypes()
     }
@@ -60,11 +64,12 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
             lock.acquireForever()
         then:
             assertJsonEqual(getLockDocument(), """
-      {
-        "_id": "$sampleLockId",
-        "acquiredBy": "$sampleOwnerId",
-        "acquiredAt": { "\$date": ${epochMillis()} },
-      }""")
+              {
+                "_id": "$sampleLockId",
+                "acquiredBy": "$sampleOwnerId",
+                "acquiredAt": { "\$date": "${now()}" },
+              }
+            """)
         where:
             type << LockTypes.allLockTypes()
     }
@@ -91,9 +96,10 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
                 ?.toJson()
     }
 
-    private long epochMillis(Duration duration = Duration.ZERO) {
-        return fixedClock.instant()
+    private String now(Duration duration = Duration.ZERO) {
+        Instant instant = fixedClock.instant()
                 .plus(duration)
-                .toEpochMilli()
+                .truncatedTo(MILLIS)
+        return DateTimeFormatter.ISO_INSTANT.format(instant)
     }
 }

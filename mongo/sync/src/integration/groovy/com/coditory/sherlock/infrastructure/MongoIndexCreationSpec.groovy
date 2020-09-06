@@ -4,7 +4,6 @@ import com.coditory.sherlock.MongoHolder
 import com.coditory.sherlock.Sherlock
 import com.mongodb.client.MongoCollection
 import org.bson.Document
-import org.junit.After
 import spock.lang.Specification
 
 import static com.coditory.sherlock.MongoHolder.databaseName
@@ -20,8 +19,7 @@ class MongoIndexCreationSpec extends Specification {
             .withLocksCollection(collection)
             .build()
 
-    @After
-    def removeCollection() {
+    def cleanup() {
         collection.drop()
     }
 

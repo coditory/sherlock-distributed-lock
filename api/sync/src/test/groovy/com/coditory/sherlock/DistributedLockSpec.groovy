@@ -1,7 +1,6 @@
 package com.coditory.sherlock
 
 import com.coditory.sherlock.base.SpecSimulatedException
-import org.junit.Before
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
@@ -16,8 +15,7 @@ class DistributedLockSpec extends Specification {
     @Shared
     Counter counter = new Counter()
 
-    @Before
-    void resetCounter() {
+    void setup() {
         counter.reset()
     }
 
