@@ -1,9 +1,45 @@
 #!/bin/bash -e
 
-: ${RELEASE:?Exiting release: No RELEASE variable}
-: ${GITHUB_TOKEN:?Exiting release: No GITHUB_TOKEN variable}
+if [[ -z "$RELEASE" ]]; then
+  echo "Exiting release: RELEASE env variable not found"
+  exit 0
+fi
+
+if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
+  echo "Exiting release: Release should be enabled on master branch only"
+  exit 0
+fi
+
+RELEASE_TAG="$(git tag --points-at HEAD | grep -P "^release-\d+(\.\d+){0,2}$")"
+if [[ -n "$RELEASE_TAG" ]]; then
+  echo "Exiting release: Current commit is already tagged as $RELEASE_TAG"
+  exit 0
+fi
+
+# Deduce release version from commit message
+if [[ "$RELEASE" == "AUTO" ]]; then
+  if echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *skip *\].*$'; then
+    echo "Exiting release: Commit message contains release skip command"
+    exit 0
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *snapshot *\].*$'; then
+    RELEASE="SNAPSHOT"
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *\].*$'; then
+    RELEASE="PATCH"
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *minor *\].*$'; then
+    RELEASE="MINOR"
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *major *\].*$'; then
+    RELEASE="MAJOR"
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci +release +\d+(\.\d+){0,2} *\].*$'; then
+    RELEASE="$(echo "$TRAVIS_COMMIT_MESSAGE" | sed -nE 's|^.*\[ *ci +release +([0-9]+(\.[0-9]+){0,2}) *\].*$|\1|p')"
+  else
+    RELEASE="PATCH"
+  fi
+fi
+
 : ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
 export GPG_KEY_RING_FILE="$HOME/.gnupg/keyring.gpg"
+mkdir -p "$HOME/.gnupg"
+echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor >"$GPG_KEY_RING_FILE"
 
 cleanup() {
   rm -rf "$GPG_KEY_RING_FILE"
@@ -13,22 +49,5 @@ trap cleanup EXIT INT TERM
 git config --local user.name "travis@travis-ci.org"
 git config --local user.email "Travis CI"
 git checkout "$TRAVIS_BRANCH" >/dev/null 2>&1
-
-mkdir -p "$HOME/.gnupg"
-echo $GPG_SECRET_KEY | base64 --decode | gpg --dearmor >"$GPG_KEY_RING_FILE"
-
-if [[ "$RELEASE" == "TRUE" ]]; then
-  RELEASE="SNAPSHOT"
-fi
-
-if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" == "BRANCH_SNAPSHOT" ]]; then
-  .scripts/release "SNAPSHOT"
-  exit 0
-fi
-
-if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
-  echo "Exiting release: Release is enabled on master branch only"
-  exit 0
-fi
 
 .scripts/release.sh "$RELEASE"
