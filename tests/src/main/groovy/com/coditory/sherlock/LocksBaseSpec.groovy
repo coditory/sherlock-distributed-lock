@@ -3,8 +3,6 @@ package com.coditory.sherlock
 import com.coditory.sherlock.base.DistributedLocksCreator
 import com.coditory.sherlock.base.LockTypes
 import com.coditory.sherlock.base.UpdatableFixedClock
-import org.junit.After
-import org.junit.Before
 import spock.lang.Specification
 
 import java.time.Duration
@@ -18,18 +16,12 @@ abstract class LocksBaseSpec extends Specification implements DistributedLocksCr
     static final String sampleLockId = "sample_acquire_id"
     Sherlock sherlock
 
-    @Before
-    void setupSherlock() {
+    void setup() {
         sherlock = createSherlock()
     }
 
-    @After
-    void resetClock() {
+    void cleanup() {
         fixedClock.reset()
-    }
-
-    @After
-    void releaseAllLocks() {
         createSherlock().forceReleaseAllLocks()
     }
 

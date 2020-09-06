@@ -4,6 +4,7 @@ dependencies {
     compile project(':api:api-sync')
     compile project(':api:api-reactive')
     compile project(':common')
+    compile "org.codehaus.groovy:groovy-all:$versions.groovy"
     compile "io.projectreactor:reactor-core:$versions.reactor"
     compile "org.spockframework:spock-core:$versions.spock"
 }

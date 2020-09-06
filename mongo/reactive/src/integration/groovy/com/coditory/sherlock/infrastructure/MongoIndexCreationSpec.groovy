@@ -4,7 +4,6 @@ import com.coditory.sherlock.MongoHolder
 import com.coditory.sherlock.ReactiveSherlock
 import com.mongodb.reactivestreams.client.MongoCollection
 import org.bson.Document
-import org.junit.After
 import reactor.core.publisher.Flux
 import spock.lang.Specification
 
@@ -24,8 +23,7 @@ class MongoIndexCreationSpec extends Specification {
             .withLocksCollection(collection)
             .build()
 
-    @After
-    def removeCollection() {
+    def cleanup() {
         Flux.from(collection.drop())
                 .blockLast()
     }
