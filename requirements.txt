@@ -5,4 +5,3 @@ mkdocs-markdownextradata-plugin>=0.1.7
 Pygments>=2.6
 pymdown-extensions>=8
 wheel >= 0.35.1
-setuptools >= 50.3.0
