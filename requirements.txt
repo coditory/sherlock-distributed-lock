@@ -4,4 +4,3 @@ mkdocs-material>=5
 mkdocs-markdownextradata-plugin>=0.1.7
 Pygments>=2.6
 pymdown-extensions>=8
-wheel >= 0.35.1

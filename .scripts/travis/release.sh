@@ -16,6 +16,8 @@ if [[ "$RELEASE" == "AUTO" ]]; then
   if echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *skip *\].*$'; then
     echo "Exiting release: Commit message contains release skip command"
     exit 0
+  elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *docs *\].*$'; then
+    RELEASE="DOCS"
   elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *snapshot *\].*$'; then
     RELEASE="SNAPSHOT"
   elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci *release *\].*$'; then
@@ -50,6 +52,8 @@ trap cleanup EXIT INT TERM
 
 git config --local user.name "Coditory CI"
 git config --local user.email "ci@coditory.com"
+git config --local user.signingkey 3943560B44D0A440
+git config --local commit.gpgsign true
 git checkout "$TRAVIS_BRANCH" > /dev/null 2>&1
 
 .scripts/release.sh "$RELEASE"
