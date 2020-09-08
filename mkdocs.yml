@@ -65,7 +65,7 @@ markdown_extensions:
   - pymdownx.tilde
 
 extra:
-  version: '0.4.6'
+  version: '0.4.7'
   vcs_baseurl: https://github.com/coditory/sherlock-distributed-lock/blob/master
   social:
     - icon: fontawesome/solid/globe
