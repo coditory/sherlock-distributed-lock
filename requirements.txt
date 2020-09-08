@@ -1,6 +1,8 @@
 mkdocs>=1
-mkdocs-minify-plugin>=0.2
-mkdocs-material>=4.4
-mkdocs-markdownextradata-plugin>=0.0.6
-Pygments>=2.2
-pymdown-extensions>=4.11
+mkdocs-minify-plugin>=0.3
+mkdocs-material>=5
+mkdocs-markdownextradata-plugin>=0.1.7
+Pygments>=2.6
+pymdown-extensions>=8
+wheel >= 0.35.1
+setuptools >= 50.3.0

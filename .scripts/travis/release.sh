@@ -5,11 +5,6 @@ if [[ -z "$RELEASE" ]]; then
   exit 0
 fi
 
-if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ -n "$TRAVIS_PULL_REQUEST_SHA" ]]; then
-  echo "Exiting release: Release should be enabled on master branch only"
-  exit 0
-fi
-
 RELEASE_TAG="$(git tag --points-at HEAD | grep -P "^release-\d+(\.\d+){0,2}$")"
 if [[ -n "$RELEASE_TAG" ]]; then
   echo "Exiting release: Current commit is already tagged as $RELEASE_TAG"
@@ -31,9 +26,16 @@ if [[ "$RELEASE" == "AUTO" ]]; then
     RELEASE="MAJOR"
   elif echo "$TRAVIS_COMMIT_MESSAGE" | grep -P -q '^.*\[ *ci +release +\d+(\.\d+){0,2} *\].*$'; then
     RELEASE="$(echo "$TRAVIS_COMMIT_MESSAGE" | sed -nE 's|^.*\[ *ci +release +([0-9]+(\.[0-9]+){0,2}) *\].*$|\1|p')"
+  elif [[ "$TRAVIS_BRANCH" != "master" ]]; then
+    RELEASE="SNAPSHOT"
   else
     RELEASE="PATCH"
   fi
+fi
+
+if [[ "$TRAVIS_BRANCH" != "master" ]] && [[ "$RELEASE" != "SNAPSHOT" ]]; then
+  echo "Exiting release: Non snapshot releases may be invoked on master branch only. Branch: $TRAVIS_BRANCH"
+  exit 0
 fi
 
 : ${GPG_SECRET_KEY:?Exiting release: Missing GPG key}
