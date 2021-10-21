@@ -82,7 +82,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
 
     private boolean deleteAll() {
         DeleteResult result = getLockCollection().deleteMany(new BsonDocument());
-        return result != null && result.getDeletedCount() > 0;
+        return result.getDeletedCount() > 0;
     }
 
     private boolean delete(Bson query) {

@@ -147,7 +147,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     private Instant expiresAt(Instant now, LockDuration duration) {
-        if (duration == null) {
+        if (duration == null || duration.getValue() == null) {
             return null;
         }
         return now.plus(duration.getValue());
