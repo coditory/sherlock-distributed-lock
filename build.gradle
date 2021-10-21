@@ -29,23 +29,15 @@ buildscript {
 plugins {
     id 'jacoco'
     id 'signing'
-    id 'pl.allegro.tech.build.axion-release' version '1.11.0'
-    id 'com.github.kt3k.coveralls' version '2.10.2'
-    id 'com.coditory.build' version '0.1.6' apply false
-    id 'io.codearte.nexus-staging' version '0.22.0' apply false
-    id 'de.marcphilipp.nexus-publish' version '0.4.0' apply false
+    id 'com.github.kt3k.coveralls' version '2.12.0'
+    id 'com.coditory.build' version '0.1.13' apply false
+    id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
 description = 'Distributed Lock Library for JVM'
 
-scmVersion {
-    versionCreator 'versionWithBranch'
-}
-
 allprojects {
     group = 'com.coditory.sherlock'
-    version = scmVersion.version
-
     repositories {
         mavenCentral()
     }
@@ -86,6 +78,6 @@ subprojects {
 
 apply from: "gradle/coverage.gradle"
 
-if (project.hasProperty('publish')) {
-    apply from: "gradle/publish.gradle"
+if (project.hasProperty("release") && project.property("release") == "true") {
+    apply from: "gradle/release.gradle"
 }
