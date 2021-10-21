@@ -1,15 +1,11 @@
 apply plugin: 'maven-publish'
 apply plugin: 'signing'
-apply plugin: 'de.marcphilipp.nexus-publish'
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 jar {
     from(rootProject.projectDir) {
-        include "license.txt"
+        include "LICENSE"
         into "META-INF"
-        expand(
-                copyright: new Date().format("yyyy"),
-                version: project.version
-        )
     }
 }
 
@@ -87,17 +83,19 @@ publishing {
 }
 
 signing {
+    if (System.getenv('SIGNING_KEY') && System.getenv('SIGNING_PASSWORD')) {
+        useInMemoryPgpKeys(System.getenv('SIGNING_KEY'), System.getenv('SIGNING_PASSWORD'))
+    }
     sign publishing.publications.mavenJava
 }
 
-if (System.env.GPG_KEY_ID) {
-    project.ext['signing.keyId'] = System.env.GPG_KEY_ID
-    project.ext['signing.password'] = System.env.GPG_PASSWORD
-    project.ext['signing.secretKeyRingFile'] = System.env.GPG_KEY_RING_FILE
-}
-
 nexusPublishing {
+    connectTimeout = Duration.ofMinutes(5)
+    clientTimeout = Duration.ofMinutes(5)
     repositories {
-        sonatype()
+        sonatype {
+            username = project.findProperty('nexusUsername') ?: System.getenv('NEXUS_USERNAME')
+            password = project.findProperty('nexusPassword') ?: System.getenv('NEXUS_PASSWORD')
+        }
     }
 }

@@ -1,0 +1,15 @@
+
+// Don't publish the default jar for the root project
+// and other not publishable modules
+configurations.archives.artifacts.clear()
+subprojects
+        .findAll { notPublishableModules.contains(it.path) }
+        .each { subproject ->
+            configurations.archives.artifacts.clear()
+        }
+
+subprojects
+        .findAll { !notPublishableModules.contains(it.path) }
+        .each { subproject ->
+            subproject.apply from: "${rootDir}/gradle/release-project.gradle"
+        }

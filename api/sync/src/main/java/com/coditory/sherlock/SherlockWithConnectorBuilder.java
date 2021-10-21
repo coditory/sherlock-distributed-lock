@@ -8,7 +8,7 @@ import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
-abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder> {
+abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder<?>> {
     private LockDuration duration = DEFAULT_LOCK_DURATION;
     private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
 
