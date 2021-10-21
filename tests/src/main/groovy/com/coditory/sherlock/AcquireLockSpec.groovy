@@ -31,6 +31,22 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
             type << [REENTRANT, SINGLE_ENTRANT]
     }
 
+    @Unroll
+    def "only one of two different permanent instances may acquire a lock - #type"() {
+        given:
+            DistributedLock lock = createPermanentLock(type, lockId, instanceId)
+            DistributedLock otherLock = createPermanentLock(type, lockId, otherInstanceId)
+        when:
+            boolean firstResult = lock.acquire()
+            boolean secondResult = otherLock.acquire()
+        then:
+            firstResult == true
+        and:
+            secondResult == false
+        where:
+            type << [REENTRANT, SINGLE_ENTRANT]
+    }
+
     def "overriding lock may acquire lock acquired by a different instance"() {
         given:
             DistributedLock lock = createLock(REENTRANT, lockId, instanceId)
