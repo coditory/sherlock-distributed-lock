@@ -11,7 +11,7 @@ buildscript {
                 mysql          : '8.0.21',
                 // test dependencies:
                 groovy         : '3.0.5',
-                testContainers : '1.14.3',
+                testContainers : '1.16.1',
                 spock          : '2.0-M3-groovy-3.0'
         ]
         notPublishableModules = [
