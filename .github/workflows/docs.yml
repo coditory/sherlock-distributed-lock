@@ -4,6 +4,10 @@ on:
   workflow_dispatch:
   push:
     branches: [master]
+    paths:
+      - 'docs/**'
+      - 'mkdocs.yml'
+      - 'requirements.txt'
 
 jobs:
   docs:
