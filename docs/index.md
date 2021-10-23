@@ -16,8 +16,6 @@
 that provides distributed locking mechanism. It uses a database to store locks and exposes both synchronous and reactive API.
 It was created as a simple solution to manage distributed locks among multiple microservices.
 
-<small>Name Sherlock comes from words "shared lock".</small>
-
 ## The problem
 Distribute locking may be achieved through multiple mechanisms:
 
@@ -74,4 +72,4 @@ lock.acquireAndExecute(() -> {
 ```
 
 !!! info "Learn more"
-    Learn hot use different [APIs](api.md) and [connectors](connectors.md).
+    Learn how to use different [APIs](api.md) and [connectors](connectors.md).
