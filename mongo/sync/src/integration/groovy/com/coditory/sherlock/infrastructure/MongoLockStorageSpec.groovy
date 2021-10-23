@@ -66,7 +66,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesMongoSherlock {
               {
                 "_id": "$sampleLockId",
                 "acquiredBy": "$sampleOwnerId",
-                "acquiredAt": { "\$date": "${now()}" },
+                "acquiredAt": { "\$date": "${now()}" }
               }
               """)
         where:

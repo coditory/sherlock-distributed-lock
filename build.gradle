@@ -10,9 +10,10 @@ buildscript {
                 postgresql     : '42.2.16',
                 mysql          : '8.0.21',
                 // test dependencies:
-                groovy         : '3.0.5',
+                // groovy         : '3.0.5',
+                jsonAssert     : '1.5.0',
                 testContainers : '1.16.1',
-                spock          : '2.0-M3-groovy-3.0'
+                spock          : '2.0-groovy-3.0'
         ]
         notPublishableModules = [
                 ':api',
@@ -34,13 +35,14 @@ plugins {
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
+repositories {
+    mavenCentral()
+}
+
 description = 'Distributed Lock Library for JVM'
 
 allprojects {
     group = 'com.coditory.sherlock'
-    repositories {
-        mavenCentral()
-    }
 }
 
 subprojects {
@@ -55,24 +57,9 @@ subprojects {
     ext.moduleName = archivesBaseName.replaceAll('-', '.')
 
     dependencies {
-        testCompile "ch.qos.logback:logback-core:$versions.logback"
-        testCompile "ch.qos.logback:logback-classic:$versions.logback"
-        testCompile "org.codehaus.groovy:groovy-all:$versions.groovy"
-        testCompile "org.spockframework:spock-core:$versions.spock"
-    }
-
-    tasks.withType(Test) {
-        useJUnitPlatform()
-    }
-
-    javadoc {
-        source = sourceSets.main.allJava
-        classpath = configurations.compileClasspath
-        failOnError = false
-        options {
-            memberLevel = JavadocMemberLevel.PUBLIC
-            author = true
-        }
+        testImplementation "ch.qos.logback:logback-core:$versions.logback"
+        testImplementation "ch.qos.logback:logback-classic:$versions.logback"
+        testImplementation "org.spockframework:spock-core:$versions.spock"
     }
 }
 

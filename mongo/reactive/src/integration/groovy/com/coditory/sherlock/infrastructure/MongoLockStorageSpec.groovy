@@ -26,12 +26,12 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
             lock.acquire()
         then:
             assertJsonEqual(getLockDocument(), """
-      {
-        "_id": "$sampleLockId",
-        "acquiredBy": "$sampleOwnerId",
-        "acquiredAt": { "\$date": "${now()}" },
-        "expiresAt": { "\$date": "${now(defaultLockDuration)}" }
-      }""")
+          {
+            "_id": "$sampleLockId",
+            "acquiredBy": "$sampleOwnerId",
+            "acquiredAt": { "\$date": "${now()}" },
+            "expiresAt": { "\$date": "${now(defaultLockDuration)}" }
+          }""")
         where:
             type << LockTypes.allLockTypes()
     }
@@ -67,7 +67,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
               {
                 "_id": "$sampleLockId",
                 "acquiredBy": "$sampleOwnerId",
-                "acquiredAt": { "\$date": "${now()}" },
+                "acquiredAt": { "\$date": "${now()}" }
               }
             """)
         where:

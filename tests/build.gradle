@@ -1,10 +1,11 @@
 description = 'Sherlock Distributed Lock shared tests'
 
 dependencies {
-    compile project(':api:api-sync')
-    compile project(':api:api-reactive')
-    compile project(':common')
-    compile "org.codehaus.groovy:groovy-all:$versions.groovy"
-    compile "io.projectreactor:reactor-core:$versions.reactor"
-    compile "org.spockframework:spock-core:$versions.spock"
+    api project(':api:api-sync')
+    api project(':api:api-reactive')
+    api project(':common')
+    api "io.projectreactor:reactor-core:$versions.reactor"
+    api "org.spockframework:spock-core:$versions.spock"
+    api "org.skyscreamer:jsonassert:$versions.jsonAssert"
+
 }

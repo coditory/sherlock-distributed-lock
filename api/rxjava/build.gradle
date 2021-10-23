@@ -1,9 +1,9 @@
 description = 'Sherlock Distributed Lock with RxJava based API'
 
 dependencies {
-    compile project(':api:api-reactive')
-    compile "io.reactivex.rxjava2:rxjava:$versions.rxjava"
-    compile "org.reactivestreams:reactive-streams-flow-adapters:1.0.2"
-    integrationCompile project(':inmem:inmem-reactive')
-    integrationCompile project(':tests')
+    api project(':api:api-reactive')
+    api "io.reactivex.rxjava2:rxjava:$versions.rxjava"
+    api "org.reactivestreams:reactive-streams-flow-adapters:1.0.2"
+    integrationImplementation project(':inmem:inmem-reactive')
+    integrationImplementation project(':tests')
 }

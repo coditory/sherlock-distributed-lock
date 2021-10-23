@@ -1,8 +1,8 @@
 description = 'Sherlock Distributed Lock synchronous API'
 
 dependencies {
-    compile "org.slf4j:slf4j-api:$versions.slf4j"
-    compile project(':common')
-    testCompile project(':inmem:inmem-sync')
-    testCompile project(':inmem:inmem-common')
+    api "org.slf4j:slf4j-api:$versions.slf4j"
+    implementation project(':common')
+    testImplementation project(':inmem:inmem-sync')
+    testImplementation project(':inmem:inmem-common')
 }
