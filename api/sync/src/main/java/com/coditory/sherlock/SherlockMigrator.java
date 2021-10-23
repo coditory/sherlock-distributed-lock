@@ -129,7 +129,7 @@ public final class SherlockMigrator {
                     throw exception;
                 }
             } else {
-                logger.info("Migration change set skipped: {}. It was already applied", id);
+                logger.info("Migration change set skipped: {}", id);
             }
         }
     }

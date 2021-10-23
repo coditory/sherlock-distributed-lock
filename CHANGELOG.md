@@ -2,6 +2,10 @@
 
 ## [Unreleased]
 
+## [0.4.10] - 2021-11-23
+### Changed
+- Clean up migration logs
+
 ## [0.4.9] - 2021-11-23
 ### Changed
 - Fix NPE in SQL Connector [#61](https://github.com/coditory/sherlock-distributed-lock/issues/61)
@@ -11,7 +15,8 @@
 ### Changed
 - Fix documentation
 
-[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.9...HEAD
+[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.10...HEAD
+[0.4.10]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.10
 [0.4.9]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.9
 [0.4.8]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.8
 [0.4.7]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.7
