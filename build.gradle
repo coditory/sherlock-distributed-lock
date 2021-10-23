@@ -1,16 +1,15 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.3.9.RELEASE',
-                rxjava         : '2.2.19',
-                mongodb        : '4.1.0',
-                mongodbReactive: '4.1.0',
-                slf4j          : '1.7.30',
-                logback        : '1.2.3',
-                postgresql     : '42.2.16',
-                mysql          : '8.0.21',
+                reactor        : '3.4.11',
+                rxjava         : '2.2.21',
+                mongodb        : '4.3.3',
+                mongodbReactive: '4.3.3',
+                slf4j          : '1.7.32',
+                logback        : '1.2.6',
+                postgresql     : '42.3.0',
+                mysql          : '8.0.27',
                 // test dependencies:
-                // groovy         : '3.0.5',
                 jsonAssert     : '1.5.0',
                 testContainers : '1.16.1',
                 spock          : '2.0-groovy-3.0'
@@ -31,7 +30,7 @@ plugins {
     id 'jacoco'
     id 'signing'
     id 'com.github.kt3k.coveralls' version '2.12.0'
-    id 'com.coditory.build' version '0.1.13' apply false
+    id 'com.coditory.build' version '0.1.15' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
