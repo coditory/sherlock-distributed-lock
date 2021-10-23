@@ -1,7 +1,18 @@
+apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
-// Don't publish the default jar for the root project
-// and other not publishable modules
+nexusPublishing {
+    connectTimeout = Duration.ofMinutes(5)
+    clientTimeout = Duration.ofMinutes(5)
+    repositories {
+        sonatype {
+            username = project.findProperty('nexusUsername') ?: System.getenv('NEXUS_USERNAME')
+            password = project.findProperty('nexusPassword') ?: System.getenv('NEXUS_PASSWORD')
+        }
+    }
+}
+
 configurations.archives.artifacts.clear()
+
 subprojects
         .findAll { notPublishableModules.contains(it.path) }
         .each { subproject ->

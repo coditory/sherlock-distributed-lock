@@ -3,8 +3,6 @@ name: Build
 on:
   workflow_dispatch:
   push:
-    paths-ignore:
-      - 'README.md'
 
 jobs:
   build:
@@ -76,7 +74,7 @@ jobs:
           SIGNING_PASSWORD: ${{ secrets.SIGNING_PASSWORD }}
           NEXUS_USERNAME: ${{ secrets.NEXUS_USERNAME }}
           NEXUS_PASSWORD: ${{ secrets.NEXUS_PASSWORD }}
-        run: ./gradlew publishToSonatype -Pversion="${PREV_VERSION}-${GITHUB_REF#refs/heads/}-SNAPSHOT" -Ppublish
+        run: ./gradlew publishToSonatype -Pversion="${PREV_VERSION}-${GITHUB_REF#refs/heads/}-SNAPSHOT" -Prelease=true
       - name: Publish Release
         if: "github.ref == 'refs/heads/master' && steps.changelog.outputs.version != steps.lasttag.outputs.version"
         env:
