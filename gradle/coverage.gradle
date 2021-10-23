@@ -1,34 +1,25 @@
 // Only report code coverage for projects that are distributed
-def coverProjects = subprojects.findAll {
-    !notPublishableModules.contains(it.path)
+Set<Project> coveredProjects = subprojects.findAll {
+    !notPublishableModules.contains(it.path) &&
+            it.getExtensions().findByType(JavaPluginExtension) != null
 }
 
-task jacocoMerge(type: JacocoMerge) {
-    coverProjects.each { subproject ->
-        executionData subproject.tasks.withType(Test)
+task coverage(type: JacocoReport) {
+    coveredProjects.each {
+        executionData fileTree(it.buildDir).include("/jacoco/*.exec")
+        sourceSets it.getExtensions().findByType(JavaPluginExtension).getSourceSets().getByName("main")
     }
-    doFirst {
-        executionData = files(executionData.findAll { it.exists() })
-    }
-}
-
-task coverage(type: JacocoReport, group: 'Coverage reports') {
-    description = 'Generates an aggregate report from all subprojects'
-    dependsOn coverProjects.test, jacocoMerge
-
-    additionalSourceDirs.from(coverProjects.sourceSets.main.allSource.srcDirs)
-    sourceDirectories.from(coverProjects.sourceSets.main.allSource.srcDirs)
-    classDirectories.from(coverProjects.sourceSets.main.output)
-    executionData jacocoMerge.destinationFile
 
     reports {
-        html.enabled = true // human readable
-        xml.enabled = true // required by coveralls
+        xml.enabled true
+        html.enabled true
     }
+
+    dependsOn { coveredProjects*.test + coveredProjects*.integrationTest }
 }
 
 coveralls {
-    sourceDirs = coverProjects.sourceSets.main.allSource.srcDirs.flatten()
+    sourceDirs = coveredProjects.sourceSets.main.allSource.srcDirs.flatten()
     jacocoReportPath = "${buildDir}/reports/jacoco/coverage/coverage.xml"
 }
 
