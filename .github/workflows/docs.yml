@@ -8,6 +8,10 @@ on:
       - 'docs/**'
       - 'mkdocs.yml'
       - 'mkdocs-requirements.txt'
+  workflow_run:
+    workflows: ["Build"]
+    branches: [master]
+    types: [completed]
 
 jobs:
   docs:
