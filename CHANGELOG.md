@@ -2,9 +2,10 @@
 
 ## [Unreleased]
 
-## [0.4.11] - 2021-11-23
+## [0.4.11] - 2021-11-24
 ### Changed
 - Update dependencies
+- Clean up documentation
 
 ## [0.4.10] - 2021-11-23
 ### Changed
@@ -18,7 +19,6 @@
 ## [0.4.8] - 2020-09-08
 ### Changed
 - Fix documentation
-
 
 [Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.11...HEAD
 [0.4.11]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.11

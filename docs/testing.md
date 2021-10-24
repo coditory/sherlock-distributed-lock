@@ -1,13 +1,10 @@
 # Testing
 
-!!! info "In Memory Connector"
-    The easiest way to setup Sherlock in tests is to use [In-Memory Connector](connectors/inmem.md).
-    Use stubs when you need more control over the locking mechanism.
-
-For easy stubbing and mocking exposed API consists mostly of interfaces (see: `Sherlock`, `ReactorSherlock`, `DistributedLock`, `ReactorDistributedLock`).
-
-The library provides also stubs or mocks. See:
+Sherlock provides stubs and mocks for testing purposes. Try it out:
 `SherlockStub`, `ReactorSherlockStub`, `DistributedLockMock` and `ReactorDistributedLockMock`.
+
+!!! info "Creating own stub and mocks"
+    Sherlock API consists mostly of interfaces, so it's easy to create stubs and mocks for your own purposes.
 
 Sample usage in spock tests:
 
@@ -36,3 +33,7 @@ def "should not perform single instance action when lock is locked"() {
     lock.wasReleaseInvoked == false
 }
 ```
+
+!!! info "In Memory Connector"
+    The easiest way to setup Sherlock in tests is to use [In-Memory Connector](connectors/inmem.md).
+    Use stubs when you need more control over the locking mechanism.

@@ -1,6 +1,6 @@
 ## Sherlock Installation
 
-Different [APIs](api.md) and [Connectors](connectors.md) require different dependencies defined in `build.gradle`.
+Different [APIs](api) and [Connectors](connectors) require different dependencies defined in `build.gradle`.
 
 Installing [synchronous Sherlock](api/synchronous.md) with [MongoDB Connector](connectors/mongo.md):
 ```groovy

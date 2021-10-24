@@ -1,5 +1,5 @@
-site_name: sherlock-distributed-lock
-site_description: Dostributed lock library for JVM
+site_name: Sherlock Distributed Lock
+site_description: Distributed lock library for JVM
 site_author: coditory
 site_url: https://coditory.github.io/sherlock-distributed-lock
 site_dir: build/docs
@@ -10,6 +10,7 @@ repo_url: https://github.com/coditory/sherlock-distributed-lock
 theme:
   name: 'material'
   custom_dir: 'docs/theme'
+  logo: assets/img/icon.png
   static_templates:
     - 404.html
   # Don't include MkDocs' JavaScript
@@ -18,8 +19,10 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   features:
-    - tabs
     - instant
+    - navigation.indexes
+    - navigation.sections
+    - navigation.expand
   palette:
     primary: indigo
     accent: indigo
@@ -51,7 +54,6 @@ markdown_extensions:
   - pymdownx.details
   - pymdownx.emoji:
       emoji_generator: !!python/name:pymdownx.emoji.to_svg
-  - pymdownx.inlinehilite
   - pymdownx.keys
   - pymdownx.magiclink:
       repo_url_shorthand: true
@@ -59,10 +61,13 @@ markdown_extensions:
       repo: mkdocs-material
   - pymdownx.mark
   - pymdownx.smartsymbols
-  - pymdownx.superfences
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
+  - pymdownx.highlight
+  - pymdownx.inlinehilite
+  - pymdownx.superfences
+  - pymdownx.snippets
 
 extra:
   version: '0.4.10'
@@ -81,21 +86,18 @@ extra:
 # Site navigation
 nav:
   - Home: index.md
+  - Locks: locks.md
+  - Migrator: migrator.md
+  - Testing: testing.md
   - Installation: installation.md
-  - API: api.md
   - API:
+      - api/index.md
       - Synchronous: api/synchronous.md
       - Reactor: api/reactor.md
       - RxJava: api/rxjava.md
-  - Connectors: connectors.md
   - Connectors:
+      - connectors/index.md
       - MongoDb: connectors/mongo.md
       - SQL: connectors/sql.md
       - InMemory: connectors/inmem.md
-  - Lock Types: lock-types.md
-  - Lock Duration: lock-duration.md
-  - Migrator: migrator.md
-  - Testing: testing.md
-  - About:
-      - Changelog: about/changelog.md
-      - License: about/license.md
+  - About: about.md
