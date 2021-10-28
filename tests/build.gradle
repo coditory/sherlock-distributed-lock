@@ -7,5 +7,4 @@ dependencies {
     api "io.projectreactor:reactor-core:$versions.reactor"
     api "org.spockframework:spock-core:$versions.spock"
     api "org.skyscreamer:jsonassert:$versions.jsonAssert"
-
 }

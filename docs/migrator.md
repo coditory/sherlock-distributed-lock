@@ -13,7 +13,7 @@ SherlockMigrator migrator = new SherlockMigrator("db-migration", sherlock)
   .addChangeSet("add db index", () -> /* ... */)
   .addChangeSet("remove stale collection", () -> /* ... */)
 
-// run the migrtion
+// run the migration
 migrator.migrate();
 ```
 

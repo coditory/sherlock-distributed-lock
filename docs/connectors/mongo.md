@@ -3,6 +3,10 @@
 MongoDB connector enables distributed locking on [MongoDB](https://www.mongodb.com/).
 It was [tested on MongoDB v3.4]({{ vcs_baseurl }}/mongo/sync/src/integration/groovy/com/coditory/sherlock/MongoHolder.groovy).
 
+!!! warning "Read and write from the same DB node"
+    Set mongo driver [`readPreference=primary`](https://docs.mongodb.com/manual/core/read-preference/#mongodb-readmode-primary)
+    so every lock change is visible to all of your services.
+
 ### Locks collection
 
 Sample lock document:
@@ -36,7 +40,7 @@ Sherlock sherlock = mongoSherlock()
 ```
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/MongoSyncSample.java),
+    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mongo/MongoSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-mongo-sync/latest/com/coditory/sherlock/MongoSherlockBuilder.html).
 
 ### Reactive MongoDB Sherlock

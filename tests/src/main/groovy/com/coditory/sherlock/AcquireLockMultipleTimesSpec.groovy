@@ -27,6 +27,20 @@ abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     }
 
     @Unroll
+    def "the same owner may acquire permanent lock multiple times - #type"() {
+        given:
+            DistributedLock lock = createPermanentLock(type)
+        when:
+            boolean firstResult = lock.acquire()
+            boolean secondResult = lock.acquire()
+        then:
+            firstResult == true
+            secondResult == true
+        where:
+            type << mayAcquireMultipleTimes
+    }
+
+    @Unroll
     def "the same instance may acquire lock only once - #type"() {
         given:
             DistributedLock lock = createLock(type)

@@ -25,7 +25,7 @@ final class MongoDistributedLockQueries {
     static Bson queryAcquired(LockId lockId, OwnerId ownerId) {
         return and(
                 eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-                lte(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
+                eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
         );
     }
 

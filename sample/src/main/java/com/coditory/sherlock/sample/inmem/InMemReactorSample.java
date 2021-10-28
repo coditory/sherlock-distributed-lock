@@ -1,4 +1,4 @@
-package com.coditory.sherlock.sample;
+package com.coditory.sherlock.sample.inmem;
 
 import com.coditory.sherlock.ReactorDistributedLock;
 import com.coditory.sherlock.ReactorSherlock;
@@ -13,7 +13,7 @@ import static com.coditory.sherlock.ReactiveInMemorySherlockBuilder.reactiveInMe
 public class InMemReactorSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    void sampleInMemSherlock() {
+    void sampleInMemLockUsage() {
         ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
                 .withClock(Clock.systemDefaultZone())
                 .withUniqueOwnerId()
@@ -29,6 +29,6 @@ public class InMemReactorSample {
     }
 
     public static void main(String[] args) {
-        new InMemReactorSample().sampleInMemSherlock();
+        new InMemReactorSample().sampleInMemLockUsage();
     }
 }

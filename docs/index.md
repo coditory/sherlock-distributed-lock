@@ -17,6 +17,10 @@ By default, locks are acquired for a [specific duration](locks#lock-duration).
 Thanks to this approach when lock owning instance unexpectedly goes down,
 lock is automatically released after expiration.
 
+!!! important "Read and write from the same DB node"
+    Make sure that DB connection passed to Sherlock reads and writes to the same DB node
+    so every lock change is visible to all of your services.
+
 ## Quick start
 
 Add dependency to `build.gradle`:

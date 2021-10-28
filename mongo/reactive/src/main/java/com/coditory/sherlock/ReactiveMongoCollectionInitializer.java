@@ -14,6 +14,7 @@ class ReactiveMongoCollectionInitializer {
     private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
 
     ReactiveMongoCollectionInitializer(MongoCollection<Document> collection) {
+        validateConnection(collection);
         this.collection = collection;
     }
 
@@ -24,5 +25,12 @@ class ReactiveMongoCollectionInitializer {
         }
         return Mono.from(collection.createIndex(INDEX, INDEX_OPTIONS))
                 .map(result -> collection);
+    }
+
+    private void validateConnection(MongoCollection<Document> collection) {
+        String readPreference = collection.getReadPreference().getName();
+        if (!"primary".equalsIgnoreCase(readPreference)) {
+            throw new IllegalArgumentException("Expected Mongo connection with readPreference=primary");
+        }
     }
 }

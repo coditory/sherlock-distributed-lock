@@ -4,6 +4,10 @@ SQL connector enables distributed locking on a relational databases.
 It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
 and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/MySqlInitializer.groovy).
 
+!!! warning "Read and write from the same DB node"
+    Make sure that DB connection passed to sherlock reads and writes from the same DB node 
+    so every lock change is visible to all of your services.
+
 ### Locks Table
 
 Locks table is automatically created if it did not already exist.
@@ -30,8 +34,8 @@ Table name may be changed during sherlock creation.
 Properties connectionProps = new Properties();
 connectionProps.put("user", "mysql");
 connectionProps.put("password", "mysql");
-Connection dbConnection = return DriverManager
-    .getConnection("jdbc:mysql://localhost:${mysql.firstMappedPort}/mysql", connectionProps);
+Connection dbConnection = DriverManager
+    .getConnection("jdbc:mysql://localhost:3306/test", connectionProps);
 Sherlock sherlock = sqlSherlock()
   .withClock(Clock.systemDefaultZone())
   .withLockDuration(Duration.ofMinutes(5))
@@ -44,5 +48,5 @@ Sherlock sherlock = sqlSherlock()
 ```
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/SqlSyncSample.java),
+    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mysql/MySqlSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/SqlSherlockBuilder.html).

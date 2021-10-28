@@ -15,7 +15,7 @@ Sherlock sherlock = inMemorySherlockBuilder()
 ```
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/InMemSyncSample.java),
+    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/inmem/InMemSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/InMemorySherlockBuilder.html).
 
 ### Reactive in-memory sherlock

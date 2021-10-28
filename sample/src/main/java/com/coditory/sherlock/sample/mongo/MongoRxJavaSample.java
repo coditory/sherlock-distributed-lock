@@ -1,4 +1,4 @@
-package com.coditory.sherlock.sample;
+package com.coditory.sherlock.sample.mongo;
 
 import com.coditory.sherlock.RxDistributedLock;
 import com.coditory.sherlock.RxSherlock;
@@ -26,7 +26,7 @@ public class MongoRxJavaSample {
                 .getCollection("locks");
     }
 
-    void sampleMongoSherlock() {
+    void sampleMongoLockUsage() {
         RxSherlock sherlock = reactiveMongoSherlock()
                 .withClock(Clock.systemDefaultZone())
                 .withLockDuration(Duration.ofMinutes(5))
@@ -43,6 +43,6 @@ public class MongoRxJavaSample {
     }
 
     public static void main(String[] args) {
-        new MongoRxJavaSample().sampleMongoSherlock();
+        new MongoRxJavaSample().sampleMongoLockUsage();
     }
 }

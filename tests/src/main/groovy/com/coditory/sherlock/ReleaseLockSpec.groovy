@@ -33,6 +33,24 @@ abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     }
 
     @Unroll
+    def "only one of two different permanent instances may acquire a lock - #type"() {
+        given:
+            DistributedLock lock = createPermanentLock(type, sampleLockId, sampleOwnerId)
+        and:
+            lock.acquire()
+
+        when:
+            boolean unlockResult = lock.release()
+        then:
+            unlockResult == true
+        and:
+            assertReleased(lock.id)
+
+        where:
+            type << allLockTypes()
+    }
+
+    @Unroll
     def "should not release a lock that was not acquired - #type"() {
         given:
             DistributedLock lock = createLock(type, sampleLockId, sampleOwnerId)
