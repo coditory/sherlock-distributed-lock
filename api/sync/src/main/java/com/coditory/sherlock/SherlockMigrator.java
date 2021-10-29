@@ -91,9 +91,10 @@ public final class SherlockMigrator {
     }
 
     private void runMigrations() {
+        Timer timer = Timer.start();
         logger.info("Starting migration: {}", migrationId);
         migrationChangeSets.forEach(MigrationChangeSet::execute);
-        logger.info("Migration finished successfully: {}", migrationId);
+        logger.info("Migration finished successfully: {} [{}]", migrationId, timer.elapsed());
     }
 
     private void ensureUniqueChangeSetId(String changeSetId) {
@@ -116,15 +117,16 @@ public final class SherlockMigrator {
         }
 
         void execute() {
+            Timer timer = Timer.start();
             if (lock.acquire()) {
                 logger.debug("Executing migration change set: {}", id);
                 try {
                     action.run();
-                    logger.info("Migration change set applied: {}", id);
+                    logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
                 } catch (Throwable exception) {
                     logger.warn(
-                            "Migration change set failure: {}. Stopping migration process. Fix problem and rerun the migration.",
-                            id, exception);
+                            "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
+                            id, timer.elapsed(), exception);
                     lock.release();
                     throw exception;
                 }
