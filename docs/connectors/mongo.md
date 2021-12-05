@@ -3,9 +3,13 @@
 MongoDB connector enables distributed locking on [MongoDB](https://www.mongodb.com/).
 It was [tested on MongoDB v3.4]({{ vcs_baseurl }}/mongo/sync/src/integration/groovy/com/coditory/sherlock/MongoHolder.groovy).
 
-!!! warning "Read and write from the same DB node"
-    Set mongo driver [`readPreference=primary`](https://docs.mongodb.com/manual/core/read-preference/#mongodb-readmode-primary)
-    so every lock change is visible to all of your services.
+!!! info "Mongo Client"
+    There is no need for a special MongoClient configuration. Default settings, where all writes use master node, are sufficient.
+    Sherlock uses no read queries and only the following modification operations:
+    [`findOneAndReplace`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndReplace/),
+    [`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/),
+    [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/).
+
 
 ### Locks collection
 
@@ -40,7 +44,7 @@ Sherlock sherlock = mongoSherlock()
 ```
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mongo/MongoSyncSample.java),
+    See the full synchronous example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mongo/MongoSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-mongo-sync/latest/com/coditory/sherlock/MongoSherlockBuilder.html).
 
 ### Reactive MongoDB Sherlock
@@ -62,7 +66,7 @@ ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
 ```
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/MongoReactorSample.java),
+    See the full reactive example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/MongoReactorSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-mongo-sync/latest/com/coditory/sherlock/ReactiveMongoSherlockBuilder.html).
 
 RxJava can be created in a similar way, see the sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/MongoRxJavaSample.java).

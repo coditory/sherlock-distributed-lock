@@ -4,10 +4,6 @@ SQL connector enables distributed locking on a relational databases.
 It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
 and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/MySqlInitializer.groovy).
 
-!!! warning "Read and write from the same DB node"
-    Make sure that DB connection passed to sherlock reads and writes from the same DB node 
-    so every lock change is visible to all of your services.
-
 ### Locks Table
 
 Locks table is automatically created if it did not already exist.
@@ -28,7 +24,7 @@ Table name may be changed during sherlock creation.
 ### Synchronous SQL Sherlock
 
 !!! warning "Synchronous API only"
-    SQL connector provides synchronous API only. There is no reliable reactive jdbc driver.
+    SQL connector provides synchronous API only.
 
 ```java
 Properties connectionProps = new Properties();

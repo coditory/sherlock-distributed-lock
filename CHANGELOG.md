@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+### Changed
+- Remove unnecessary check for MongoClient configuration
 
 ## [0.4.12] - 2021-11-28
 ### Changed
