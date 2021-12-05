@@ -4,21 +4,21 @@
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.coditory.sherlock/sherlock-api-sync/badge.svg)](https://search.maven.org/search?q=com.coditory.sherlock)
 [![JavaDoc](http://www.javadoc.io/badge/com.coditory.sherlock/sherlock-api-sync.svg)](http://www.javadoc.io/doc/com.coditory.sherlock/sherlock-api-sync)
 
-> Distributed lock library for JVM projects with database migration capabilities
+> Java Distributed lock library with database migration capabilities
 
 Look for details in the [documentation](https://coditory.github.io/sherlock-distributed-lock/).
 
-- **minimal dependency** - the main dependency is database driver that is probably already used in your project
-- **provides different [types of locks](https://coditory.github.io/sherlock-distributed-lock/locs)** - small but flexible
-- **provides [migration capabilities](https://coditory.github.io/sherlock-distributed-lock/migrator)** - no need for another library for database migration process
-- **exposes [synchronous and reactive API](https://coditory.github.io/sherlock-distributed-lock/api)** - changing API should not be a revolution
+- **minimal set of dependencies** - the main dependency is a database driver
+- **[multiple types of locks](https://coditory.github.io/sherlock-distributed-lock/locks)** - multiple ways to acquire a lock
+- **[basic DB migration](https://coditory.github.io/sherlock-distributed-lock/migrator)** - basic database migration process using locks, no need for another library
+- **[synchronous and reactive API](https://coditory.github.io/sherlock-distributed-lock/api)** - exposes synchronous and reactive API (supports Reactor and RxJava)
 
 ## Sample usage
 
 Add dependency to `build.gradle`:
 ```groovy
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:1.4.12"
+  implementation "com.coditory.sherlock:sherlock-mongo-sync:0.4.12"
 }
 ```
 

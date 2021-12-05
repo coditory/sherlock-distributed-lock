@@ -4,24 +4,19 @@ SQL connector enables distributed locking on a relational databases.
 It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
 and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/MySqlInitializer.groovy).
 
-### Locks Table
+## Synchronous SQL Sherlock
 
-Locks table is automatically created if it did not already exist.
-Table is created with a following SQL:
+Add dependency to `build.gradle`:
 
-```sql
-CREATE TABLE LOCKS (
-  ID VARCHAR(100) NOT NULL,
-  ACQUIRED_BY VARCHAR(100) NOT NULL,
-  ACQUIRED_AT TIMESTAMP(3) NOT NULL,
-  EXPIRES_AT TIMESTAMP(3),
-  PRIMARY KEY (ID)
-)
+```groovy
+dependencies {
+    implementation "org.postgresql:postgresql:42.3.0"
+    // ...or MySQL
+    // implementation "mysql:mysql-connector-java:8.0.27"
+    // ...or any other SQL driver
+    implementation "com.coditory.sherlock:sherlock-sql:$versions.sherlock"
+}
 ```
-
-Table name may be changed during sherlock creation.
-
-### Synchronous SQL Sherlock
 
 !!! warning "Synchronous API only"
     SQL connector provides synchronous API only.
@@ -46,3 +41,20 @@ Sherlock sherlock = sqlSherlock()
 !!! info "Learn more"
     See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mysql/MySqlSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/SqlSherlockBuilder.html).
+
+## Locks Table
+
+Locks table is automatically created if it did not already exist.
+Table is created with a following SQL:
+
+```sql
+CREATE TABLE LOCKS (
+  ID VARCHAR(100) NOT NULL,
+  ACQUIRED_BY VARCHAR(100) NOT NULL,
+  ACQUIRED_AT TIMESTAMP(3) NOT NULL,
+  EXPIRES_AT TIMESTAMP(3),
+  PRIMARY KEY (ID)
+)
+```
+
+Table name may be changed during sherlock creation.

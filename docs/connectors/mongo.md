@@ -10,23 +10,16 @@ It was [tested on MongoDB v3.4]({{ vcs_baseurl }}/mongo/sync/src/integration/gro
     [`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/),
     [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/).
 
+## Synchronous MongoDB Sherlock
+Add dependency to `build.gradle`:
 
-### Locks collection
-
-Sample lock document:
-
-```json
-{
-  "_id": "lock-id",
-  "acquiredBy": "owner-id",
-  "acquiredAt": { "$date": 1562502838189 },
-  "expiresAt": { "$date": 1562503458189 }
+```build.gradle
+dependencies {
+    implementation "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
 }
 ```
 
-### Synchronous MongoDB Sherlock
-
-Creating synchronous mongo sherlock:
+Create synchronous mongo sherlock:
 ```java
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
@@ -47,9 +40,19 @@ Sherlock sherlock = mongoSherlock()
     See the full synchronous example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mongo/MongoSyncSample.java),
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-mongo-sync/latest/com/coditory/sherlock/MongoSherlockBuilder.html).
 
-### Reactive MongoDB Sherlock
+## Reactive MongoDB Sherlock
+Add dependencies to `build.gradle`:
 
-Creating reactive mongo sherlock:
+```build.gradle
+dependencies {
+    implementation "com.coditory.sherlock:sherlock-mongo-reactive:{{ version }}"
+    implementation "com.coditory.sherlock:sherlock-api-reactor:{{ version }}"
+    // ...or use rxjava api
+    // implementation "com.coditory.sherlock:sherlock-api-rxjava:0.4.12"
+}
+```
+
+Create reactive mongo sherlock:
 ```java
 String database = "sherlock";
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
@@ -70,3 +73,16 @@ ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
     read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-mongo-sync/latest/com/coditory/sherlock/ReactiveMongoSherlockBuilder.html).
 
 RxJava can be created in a similar way, see the sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/MongoRxJavaSample.java).
+
+## Locks collection
+
+Sample lock document:
+
+```json
+{
+  "_id": "lock-id",
+  "acquiredBy": "owner-id",
+  "acquiredAt": { "$date": 1562502838189 },
+  "expiresAt": { "$date": 1562503458189 }
+}
+```

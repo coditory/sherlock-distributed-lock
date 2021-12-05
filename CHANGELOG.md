@@ -1,8 +1,11 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.4.13] - 2021-12-05
 ### Changed
 - Remove unnecessary check for MongoClient configuration
+- Updated documentation
 
 ## [0.4.12] - 2021-11-28
 ### Changed
@@ -27,7 +30,8 @@
 ### Changed
 - Fix documentation
 
-[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.12...HEAD
+[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.13...HEAD
+[0.4.13]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.13
 [0.4.12]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.12
 [0.4.11]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.11
 [0.4.10]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.10
