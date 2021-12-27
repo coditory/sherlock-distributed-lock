@@ -34,17 +34,17 @@ final class SqlQueries {
     }
 
     String deleteAll() {
-        return "DELETE FROM " + tableName + ";";
+        return "DELETE FROM " + tableName;
     }
 
     String deleteAcquiredByIdAndOwnerId() {
         return "DELETE FROM " + tableName
-                + " WHERE ID = ? AND ACQUIRED_BY = ? AND (EXPIRES_AT IS NULL OR EXPIRES_AT > ?);";
+                + " WHERE ID = ? AND ACQUIRED_BY = ? AND (EXPIRES_AT IS NULL OR EXPIRES_AT > ?)";
     }
 
     String deleteAcquiredById() {
         return "DELETE FROM " + tableName
-                + " WHERE ID = ? AND (EXPIRES_AT IS NULL OR EXPIRES_AT > ?);";
+                + " WHERE ID = ? AND (EXPIRES_AT IS NULL OR EXPIRES_AT > ?)";
     }
 
     String updateLockById() {
