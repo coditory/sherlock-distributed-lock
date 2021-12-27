@@ -1,18 +1,18 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.4.11',
+                reactor        : '3.4.13',
                 rxjava         : '2.2.21',
-                mongodb        : '4.3.3',
-                mongodbReactive: '4.3.3',
+                mongodb        : '4.4.0',
+                mongodbReactive: '4.4.0',
                 slf4j          : '1.7.32',
-                logback        : '1.2.6',
-                postgresql     : '42.3.0',
+                logback        : '1.2.10',
+                postgresql     : '42.3.1',
                 mysql          : '8.0.27',
                 // test dependencies:
                 jsonAssert     : '1.5.0',
-                testContainers : '1.16.1',
-                spock          : '2.0-groovy-3.0'
+                testContainers : '1.16.2',
+                spock          : '2.1-M2-groovy-3.0'
         ]
         notPublishableModules = [
                 ':api',

@@ -3,6 +3,7 @@
 ## [Unreleased]
 ### Changed
 - Drop semicolons from SQL queries for compatibility with Oracle [#65](https://github.com/coditory/sherlock-distributed-lock/issues/65)
+- Update dependencies
 
 ## [0.4.13] - 2021-12-05
 ### Changed
