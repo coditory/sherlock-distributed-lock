@@ -1,6 +1,8 @@
 # Changelog
 
 ## [Unreleased]
+
+## [0.4.14] - 2021-12-27
 ### Changed
 - Drop semicolons from SQL queries for compatibility with Oracle [#65](https://github.com/coditory/sherlock-distributed-lock/issues/65)
 - Update dependencies
@@ -33,7 +35,8 @@
 ### Changed
 - Fix documentation
 
-[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.13...HEAD
+[Unreleased]: https://github.com/coditory/sherlock-distributed-lock/compare/v0.4.14...HEAD
+[0.4.14]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.14
 [0.4.13]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.13
 [0.4.12]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.12
 [0.4.11]: https://github.com/coditory/sherlock-distributed-lock/releases/tag/v0.4.11
