@@ -18,7 +18,7 @@ Look for details in the [documentation](https://coditory.github.io/sherlock-dist
 Add dependency to `build.gradle`:
 ```groovy
 dependencies {
-  implementation "com.coditory.sherlock:sherlock-mongo-sync:0.4.13"
+  implementation "com.coditory.sherlock:sherlock-mongo-sync:0.4.14"
 }
 ```
 
