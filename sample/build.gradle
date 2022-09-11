@@ -13,6 +13,6 @@ dependencies {
     implementation "ch.qos.logback:logback-classic:$versions.logback"
     // drivers
     implementation "org.postgresql:postgresql:42.5.0"
-    implementation "mysql:mysql-connector-java:8.0.27"
+    implementation "mysql:mysql-connector-java:8.0.30"
 
 }
