@@ -5,9 +5,9 @@ on:
   push:
     branches: [master]
     paths:
-      - 'docs/**'
-      - 'mkdocs.yml'
-      - 'mkdocs-requirements.txt'
+      - "docs/**"
+      - "mkdocs.yml"
+      - "mkdocs-requirements.txt"
   workflow_run:
     workflows: ["Build"]
     branches: [master]
