@@ -9,7 +9,7 @@ on:
       - "mkdocs.yml"
       - "mkdocs-requirements.txt"
   workflow_run:
-    workflows: ["Build"]
+    workflows: ["Release"]
     branches: [master]
     types: [completed]
 

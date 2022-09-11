@@ -153,7 +153,6 @@ jobs:
           draft: ${{ inputs.publish == 'SKIP' }}
           tag: v${{ steps.versions.outputs.next_version }}
           token: ${{ secrets.GITHUB_TOKEN }}
-          artifacts: "build/libs/*.jar"
 
       - name: Publish snapshot
         if: |
