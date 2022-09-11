@@ -1,18 +1,18 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.4.13',
+                reactor        : '3.4.22',
                 rxjava         : '2.2.21',
-                mongodb        : '4.4.0',
-                mongodbReactive: '4.4.0',
-                slf4j          : '1.7.32',
-                logback        : '1.2.10',
-                postgresql     : '42.3.1',
-                mysql          : '8.0.27',
+                mongodb        : '4.7.1',
+                mongodbReactive: '4.7.1',
+                slf4j          : '2.0.0',
+                logback        : '1.4.0',
+                postgresql     : '42.5.0',
+                mysql          : '8.0.30',
                 // test dependencies:
-                jsonAssert     : '1.5.0',
-                testContainers : '1.16.2',
-                spock          : '2.1-M2-groovy-3.0'
+                jsonAssert     : '1.5.1',
+                testContainers : '1.17.3',
+                spock          : '2.2-groovy-4.0'
         ]
         notPublishableModules = [
                 ':api',
@@ -30,7 +30,7 @@ plugins {
     id 'jacoco'
     id 'signing'
     id 'com.github.kt3k.coveralls' version '2.12.0'
-    id 'com.coditory.build' version '0.1.15' apply false
+    id 'com.coditory.build' version '0.1.18' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
@@ -64,6 +64,6 @@ subprojects {
 
 apply from: "gradle/coverage.gradle"
 
-if (project.hasProperty("release") && project.property("release") == "true") {
-    apply from: "gradle/release.gradle"
+if (project.hasProperty("publish")) {
+    apply from: "gradle/publish.gradle"
 }

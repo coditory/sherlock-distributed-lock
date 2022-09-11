@@ -22,5 +22,5 @@ subprojects
 subprojects
         .findAll { !notPublishableModules.contains(it.path) }
         .each { subproject ->
-            subproject.apply from: "${rootDir}/gradle/release-project.gradle"
+            subproject.apply from: "${rootDir}/gradle/publish-project.gradle"
         }
