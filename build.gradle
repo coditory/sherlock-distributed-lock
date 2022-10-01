@@ -11,8 +11,8 @@ buildscript {
                 mysql          : '8.0.30',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
-                testContainers : '1.17.3',
-                spock          : '2.2-groovy-4.0'
+                testContainers : '1.17.4',
+                spock          : '2.3-groovy-4.0'
         ]
         notPublishableModules = [
                 ':api',
