@@ -40,7 +40,7 @@ jobs:
           fi
 
       - name: Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           fetch-depth: 0
           token: ${{ secrets.CI_TOKEN }}
@@ -62,8 +62,8 @@ jobs:
           declare -r NEXT_MANUAL_VERSION="${NEXT_INPUT_VERSION:-$NEXT_TAG_VERSION}"
           declare -r NEXT_PATCH_VERSION="$MAJOR.$MINOR.$(( $PATCH + 1 ))"
           declare -r NEXT_VERSION="${NEXT_MANUAL_VERSION:-$NEXT_PATCH_VERSION}"
-          echo ::set-output name=version::$VERSION
-          echo ::set-output name=next_version::$NEXT_VERSION
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
           echo -e "VERSION: $VERSION\nNEXT_VERSION: $NEXT_VERSION"
 
       - name: Import GPG key
@@ -142,7 +142,7 @@ jobs:
             -f previous_tag_name="v$PREV_VERSION" \
             | jq -r '.body')"
           declare -r ESCAPED="${NOTES//$'\n'/'%0A'}"
-          echo ::set-output name=notes::$ESCAPED
+          echo "notes=$ESCAPED" >> $GITHUB_OUTPUT
 
       - name: Create github release (master only)
         if: steps.notes.conclusion == 'success'

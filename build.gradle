@@ -1,17 +1,17 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.4.22',
+                reactor        : '3.4.24',
                 rxjava         : '2.2.21',
-                mongodb        : '4.7.1',
-                mongodbReactive: '4.7.1',
-                slf4j          : '2.0.0',
-                logback        : '1.4.0',
+                mongodb        : '4.7.2',
+                mongodbReactive: '4.7.2',
+                slf4j          : '2.0.3',
+                logback        : '1.4.4',
                 postgresql     : '42.5.0',
-                mysql          : '8.0.30',
+                mysql          : '8.0.31',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
-                testContainers : '1.17.3',
+                testContainers : '1.17.5',
                 spock          : '2.3-groovy-4.0'
         ]
         notPublishableModules = [
@@ -30,7 +30,7 @@ plugins {
     id 'jacoco'
     id 'signing'
     id 'com.github.kt3k.coveralls' version '2.12.0'
-    id 'com.coditory.build' version '0.1.18' apply false
+    id 'com.coditory.build' version '0.1.19' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
