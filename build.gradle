@@ -1,7 +1,7 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.4.24',
+                reactor        : '3.5.0',
                 rxjava         : '2.2.21',
                 mongodb        : '4.7.2',
                 mongodbReactive: '4.7.2',
