@@ -1,17 +1,10 @@
 package com.coditory.sherlock.infrastructure
 
-import com.coditory.sherlock.DistributedLock
-import com.coditory.sherlock.LocksBaseSpec
-import com.coditory.sherlock.UsesSqlSherlock
+import com.coditory.sherlock.*
 import com.coditory.sherlock.base.LockTypes
-import com.coditory.sherlock.base.MySqlConnectionProvider
-import com.coditory.sherlock.base.PostgresConnectionProvider
 import spock.lang.Unroll
 
-import java.sql.ResultSet
-import java.sql.ResultSetMetaData
-import java.sql.Statement
-import java.sql.Timestamp
+import java.sql.*
 import java.time.Duration
 import java.time.Instant
 
@@ -86,16 +79,13 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
     }
 
     private Map<String, Object> getLockRow(String lockId = sampleLockId) {
-        Statement statement
-        ResultSet resultSet
         Map<String, Object> result
-        try {
-            statement = connection.createStatement()
-            resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
+        try (
+                Connection connection = connectionPool.getConnection()
+                Statement statement = connection.createStatement()
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
+        ) {
             result = resultSetToList(resultSet)[0]
-        } finally {
-            if (resultSet != null) resultSet.close()
-            if (statement != null) statement.close()
         }
         return result
     }

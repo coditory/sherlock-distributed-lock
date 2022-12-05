@@ -13,10 +13,7 @@ import java.time.Clock;
 import java.time.Instant;
 
 import static com.coditory.sherlock.MongoDistributedLock.fromLockRequest;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
+import static com.coditory.sherlock.MongoDistributedLockQueries.*;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class MongoDistributedLockConnector implements DistributedLockConnector {
@@ -36,48 +33,76 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
 
     @Override
     public void initialize() {
-        collectionInitializer.getInitializedCollection();
+        try {
+            collectionInitializer.getInitializedCollection();
+        } catch (Throwable e) {
+            throw new SherlockException("Could not initialize Mongo collection", e);
+        }
     }
 
     @Override
     public boolean acquire(LockRequest lockRequest) {
         Instant now = now();
-        return upsert(
-                queryReleased(lockRequest.getLockId(), now),
-                fromLockRequest(lockRequest, now)
-        );
+        try {
+            return upsert(
+                    queryReleased(lockRequest.getLockId(), now),
+                    fromLockRequest(lockRequest, now)
+            );
+        } catch (Throwable e) {
+            throw new SherlockException("Could not acquire lock: " + lockRequest, e);
+        }
     }
 
     @Override
     public boolean acquireOrProlong(LockRequest lockRequest) {
         Instant now = now();
-        return upsert(
-                queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
-                fromLockRequest(lockRequest, now)
-        );
+        try {
+            return upsert(
+                    queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
+                    fromLockRequest(lockRequest, now)
+            );
+        } catch (Throwable e) {
+            throw new SherlockException("Could not acquire or prolong lock: " + lockRequest, e);
+        }
     }
 
     @Override
     public boolean forceAcquire(LockRequest lockRequest) {
-        return upsert(
-                queryById(lockRequest.getLockId()),
-                fromLockRequest(lockRequest, now())
-        );
+        try {
+            return upsert(
+                    queryById(lockRequest.getLockId()),
+                    fromLockRequest(lockRequest, now())
+            );
+        } catch (Throwable e) {
+            throw new SherlockException("Could not acquire or prolong lock: " + lockRequest, e);
+        }
     }
 
     @Override
     public boolean release(LockId lockId, OwnerId ownerId) {
-        return delete(queryAcquired(lockId, ownerId));
+        try {
+            return delete(queryAcquired(lockId, ownerId));
+        } catch (Throwable e) {
+            throw new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e);
+        }
     }
 
     @Override
     public boolean forceRelease(LockId lockId) {
-        return delete(queryById(lockId));
+        try {
+            return delete(queryById(lockId));
+        } catch (Throwable e) {
+            throw new SherlockException("Could not force release lock: " + lockId.getValue(), e);
+        }
     }
 
     @Override
     public boolean forceReleaseAll() {
-        return deleteAll();
+        try {
+            return deleteAll();
+        } catch (Throwable e) {
+            throw new SherlockException("Could not force release all locks", e);
+        }
     }
 
     private boolean deleteAll() {

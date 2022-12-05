@@ -1,6 +1,6 @@
 package com.coditory.sherlock
 
-
+import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.DistributedLocksCreator
 
 import java.time.Clock

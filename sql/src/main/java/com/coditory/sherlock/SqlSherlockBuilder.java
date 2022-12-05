@@ -1,7 +1,9 @@
 package com.coditory.sherlock;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.time.Clock;
+import java.util.function.Supplier;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
@@ -14,7 +16,7 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
     public static final String DEFAULT_LOCKS_TABLE_NAME = "locks";
     private String tableName = DEFAULT_LOCKS_TABLE_NAME;
     private Clock clock = DEFAULT_CLOCK;
-    private Connection connection;
+    private ConnectionPool connectionPool;
 
     /**
      * @return new instance of the builder
@@ -25,11 +27,24 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
 
     /**
      * @param connection the connection to the database
+     * @deprecated Use {@link #withConnectionPool(DataSource)} instead.
+     * @see <a href="https://github.com/coditory/sherlock-distributed-lock/issues/79">Recovery after DB outage is failing</a>
      * @return sql sherlock with default configuration
      */
+    @Deprecated(since = "0.4.17")
     public static Sherlock sqlSherlock(Connection connection) {
         return sqlSherlock()
                 .withConnection(connection)
+                .build();
+    }
+
+    /**
+     * @param connectionPool the connection to the database
+     * @return sql sherlock with default configuration
+     */
+    public static Sherlock sqlSherlock(DataSource connectionPool) {
+        return sqlSherlock()
+                .withConnectionPool(connectionPool)
                 .build();
     }
 
@@ -39,10 +54,24 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
 
     /**
      * @param connection the connection to the database
+     * @deprecated Use {@link #withConnectionPool(DataSource)} instead.
+     * @see <a href="https://github.com/coditory/sherlock-distributed-lock/issues/79">Recovery after DB outage is failing</a>
      * @return the instance
      */
+    @Deprecated(since = "0.4.17")
     public SqlSherlockBuilder withConnection(Connection connection) {
-        this.connection = expectNonNull(connection, "Expected non null connection");
+        expectNonNull(connection, "Expected non null connection");
+        this.connectionPool = ConnectionPool.of(connection);
+        return this;
+    }
+
+    /**
+     * @param connectionPool the connection pool to the database
+     * @return the instance
+     */
+    public SqlSherlockBuilder withConnectionPool(DataSource connectionPool) {
+        expectNonNull(connectionPool, "Expected non null connectionPool");
+        this.connectionPool = ConnectionPool.of(connectionPool);
         return this;
     }
 
@@ -70,9 +99,9 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
      * @throws IllegalArgumentException when some required values are missing
      */
     public Sherlock build() {
-        expectNonNull(connection, "Expected non null connection");
+        expectNonNull(connectionPool, "connectionPool");
         SqlDistributedLockConnector connector = new SqlDistributedLockConnector(
-                connection, tableName, clock);
+                connectionPool, tableName, clock);
         return super.build(connector);
     }
 }

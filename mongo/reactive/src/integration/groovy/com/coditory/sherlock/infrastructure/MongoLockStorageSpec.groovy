@@ -2,7 +2,7 @@ package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
-import com.coditory.sherlock.MongoHolder
+import com.coditory.sherlock.ReactiveMongoHolder
 import com.coditory.sherlock.UsesReactiveMongoSherlock
 import com.coditory.sherlock.base.LockTypes
 import org.bson.BsonDocument
@@ -13,7 +13,7 @@ import java.time.Duration
 import java.time.Instant
 import java.time.format.DateTimeFormatter
 
-import static com.coditory.sherlock.MongoHolder.databaseName
+import static com.coditory.sherlock.ReactiveMongoHolder.databaseName
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 import static java.time.temporal.ChronoUnit.MILLIS
 
@@ -88,7 +88,7 @@ class MongoLockStorageSpec extends LocksBaseSpec implements UsesReactiveMongoShe
     }
 
     private String getLockDocument(String lockId = sampleLockId) {
-        return Flux.from(MongoHolder.getClient().getDatabase(databaseName)
+        return Flux.from(ReactiveMongoHolder.getClient().getDatabase(databaseName)
                 .getCollection(locksCollectionName)
                 .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
                 .first())

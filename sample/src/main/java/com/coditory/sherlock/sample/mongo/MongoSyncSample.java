@@ -3,7 +3,6 @@ package com.coditory.sherlock.sample.mongo;
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.SherlockMigrator;
-import com.coditory.sherlock.sample.inmem.InMemSyncSample;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -55,12 +54,12 @@ public class MongoSyncSample {
                 .migrate();
     }
 
-    void runSamples() {
+    void runSamples() throws Exception {
         sampleMongoLockUsage();
         sampleInMemMigration();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new MongoSyncSample().runSamples();
     }
 }

@@ -1,24 +1,21 @@
 package com.coditory.sherlock;
 
-import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class SqlTableInitializer {
-    private final Connection connection;
     private final SqlQueries sqlQueries;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    SqlTableInitializer(SqlQueries sqlQueries, Connection connection) {
-        this.connection = connection;
+    SqlTableInitializer(SqlQueries sqlQueries) {
         this.sqlQueries = sqlQueries;
     }
 
-    PreparedStatement getInitializedStatement(String sql) {
+    PreparedStatement getInitializedStatement(SqlConnection connection, String sql) {
         if (initialized.compareAndSet(false, true)) {
-            initialize();
+            initialize(connection);
         }
         try {
             return connection.prepareStatement(sql);
@@ -27,7 +24,7 @@ class SqlTableInitializer {
         }
     }
 
-    void initialize() {
+    void initialize(SqlConnection connection) {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlQueries.createLocksTable());
             // TODO: Setup indexes

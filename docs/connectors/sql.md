@@ -1,7 +1,8 @@
 # SQL Distributed Lock
 
 SQL connector enables distributed locking on a relational databases.
-It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
+It was tested on [Postrgres v11]({{ vcs_baseurl
+}}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
 and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/MySqlInitializer.groovy).
 
 ## Synchronous SQL Sherlock
@@ -10,37 +11,46 @@ Add dependency to `build.gradle`:
 
 ```groovy
 dependencies {
-    implementation "org.postgresql:postgresql:42.3.0"
+    implementation "org.postgresql:postgresql:$versions.postgresql"
     // ...or MySQL
     // implementation "mysql:mysql-connector-java:8.0.27"
     // ...or any other SQL driver
-    implementation "com.coditory.sherlock:sherlock-sql:$versions.sherlock"
+    implementation "com.zaxxer:HikariCP:$versions.hikaricp"
+    // ...or any other SQL Connection Pool
+    implementation "com.coditory.sherlock:sherlock-sql:{{ version }}"
 }
 ```
 
 !!! warning "Synchronous API only"
-    SQL connector provides synchronous API only.
+SQL connector provides synchronous API only.
 
 ```java
-Properties connectionProps = new Properties();
-connectionProps.put("user", "mysql");
-connectionProps.put("password", "mysql");
-Connection dbConnection = DriverManager
-    .getConnection("jdbc:mysql://localhost:3306/test", connectionProps);
-Sherlock sherlock = sqlSherlock()
-  .withClock(Clock.systemDefaultZone())
-  .withLockDuration(Duration.ofMinutes(5))
-  .withUniqueOwnerId()
-  .withConnection(dbConnection)
-  .withLocksTable("LOCKS")
-  .build();
+HikariConfig config=new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+        config.setUsername("postgres");
+        config.setPassword("postgres");
+        DataSource connectionPool=new HikariDataSource(config);
+
+        Sherlock sherlock=sqlSherlock()
+        .withClock(Clock.systemDefaultZone())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withUniqueOwnerId()
+        .withConnectionPool(connectionPool)
+        .withLocksTable("LOCKS")
+        .build();
 // ...or simply
 // Sherlock sherlockWithDefaults = sqlSherlock(dbConnection);
 ```
 
+This example uses [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP), but any implementation
+of `java.sql.DataSource` will suffice.
+
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mysql/MySqlSyncSample.java),
-    read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/SqlSherlockBuilder.html).
+See the full sample on [Github]({{ vcs_baseurl
+}}/sample/src/main/java/com/coditory/sherlock/sample/mysql/MySqlSyncSample.java),
+read sherlock
+builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/SqlSherlockBuilder.html)
+.
 
 ## Locks Table
 

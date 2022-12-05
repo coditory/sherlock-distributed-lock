@@ -1,5 +1,6 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.UsesReactorSherlock
 
 class ReactorInMemoryReleaseLockSpec extends ReleaseLockSpec

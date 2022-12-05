@@ -11,3 +11,6 @@ class ReactiveMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimes
 
 class ReactiveMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
         implements UsesReactiveMongoSherlock {}
+
+class ReactiveMongoHandleDbFailureSpec extends HandleDbFailureSpec
+        implements UsesReactiveMongoSherlock {}

@@ -8,11 +8,11 @@ dependencies {
     implementation project(':api:api-rxjava')
     implementation project(':inmem:inmem-reactive')
     implementation project(':mongo:mongo-reactive')
-    // other
-    implementation "ch.qos.logback:logback-core:$versions.logback"
-    implementation "ch.qos.logback:logback-classic:$versions.logback"
     // drivers
     implementation "org.postgresql:postgresql:42.5.0"
     implementation "mysql:mysql-connector-java:8.0.30"
-
+    // other
+    implementation "ch.qos.logback:logback-core:$versions.logback"
+    implementation "ch.qos.logback:logback-classic:$versions.logback"
+    implementation "com.zaxxer:HikariCP:$versions.hikaricp"
 }
