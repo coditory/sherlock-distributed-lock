@@ -26,20 +26,20 @@ SQL connector provides synchronous API only.
 
 ```java
 HikariConfig config=new HikariConfig();
-        config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
-        config.setUsername("postgres");
-        config.setPassword("postgres");
-        DataSource connectionPool=new HikariDataSource(config);
+config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+config.setUsername("postgres");
+config.setPassword("postgres");
+DataSource connectionPool=new HikariDataSource(config);
 
-        Sherlock sherlock=sqlSherlock()
-        .withClock(Clock.systemDefaultZone())
-        .withLockDuration(Duration.ofMinutes(5))
-        .withUniqueOwnerId()
-        .withConnectionPool(connectionPool)
-        .withLocksTable("LOCKS")
-        .build();
+Sherlock sherlock=sqlSherlock()
+  .withClock(Clock.systemDefaultZone())
+  .withLockDuration(Duration.ofMinutes(5))
+  .withUniqueOwnerId()
+  .withConnectionPool(connectionPool)
+  .withLocksTable("LOCKS")
+  .build();
 // ...or simply
-// Sherlock sherlockWithDefaults = sqlSherlock(dbConnection);
+// Sherlock sherlockWithDefaults = sqlSherlock(connectionPool);
 ```
 
 This example uses [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP), but any implementation
