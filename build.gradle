@@ -1,12 +1,12 @@
 buildscript {
     ext {
         versions = [
-                reactor        : '3.4.24',
+                reactor        : '3.5.0',
                 rxjava         : '2.2.21',
                 mongodb        : '4.7.2',
                 mongodbReactive: '4.7.2',
-                slf4j          : '2.0.3',
-                logback        : '1.4.4',
+                slf4j          : '2.0.5',
+                logback        : '1.4.5',
                 postgresql     : '42.5.0',
                 mysql          : '8.0.31',
                 // test dependencies:
