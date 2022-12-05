@@ -1,6 +1,6 @@
 package com.coditory.sherlock.infrastructure
 
-import com.coditory.sherlock.MongoHolder
+import com.coditory.sherlock.ReactiveMongoHolder
 import com.coditory.sherlock.ReactiveSherlock
 import com.mongodb.reactivestreams.client.MongoCollection
 import org.bson.Document
@@ -9,14 +9,14 @@ import spock.lang.Specification
 
 import java.util.concurrent.Flow.Publisher
 
-import static com.coditory.sherlock.MongoHolder.databaseName
+import static com.coditory.sherlock.ReactiveMongoHolder.databaseName
 import static com.coditory.sherlock.ReactiveMongoSherlockBuilder.reactiveMongoSherlock
 import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 import static reactor.adapter.JdkFlowAdapter.flowPublisherToFlux
 
 class MongoIndexCreationSpec extends Specification {
     String collectionName = "other-locks"
-    MongoCollection<Document> collection = MongoHolder.getClient()
+    MongoCollection<Document> collection = ReactiveMongoHolder.getClient()
             .getDatabase(databaseName)
             .getCollection(collectionName)
     ReactiveSherlock locks = reactiveMongoSherlock()

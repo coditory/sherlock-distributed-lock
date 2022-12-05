@@ -1,10 +1,11 @@
 package com.coditory.sherlock.infrastructure
 
+import com.coditory.sherlock.MySqlConnectionProvider
+import com.coditory.sherlock.PostgresConnectionProvider
 import com.coditory.sherlock.Sherlock
-import com.coditory.sherlock.base.MySqlConnectionProvider
-import com.coditory.sherlock.base.PostgresConnectionProvider
 import spock.lang.Specification
 
+import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.Statement
 
@@ -22,21 +23,20 @@ class MySqlIndexCreationSpec extends SqlIndexCreationSpec implements MySqlConnec
 abstract class SqlIndexCreationSpec extends Specification {
     String tableName = "other_locks"
     Sherlock locks = sqlSherlock()
-            .withConnection(connection)
+            .withConnectionPool(connectionPool)
             .withLocksTable(tableName)
             .build()
 
     abstract List<String> getExpectedIndexNames()
 
-    abstract Connection getConnection();
+    abstract DataSource getConnectionPool();
 
     void cleanup() {
-        Statement statement
-        try {
-            statement = connection.createStatement()
+        try (
+                Connection connection = connectionPool.getConnection()
+                Statement statement = connection.createStatement()
+        ) {
             statement.executeUpdate("DROP TABLE " + tableName)
-        } finally {
-            if (statement != null) statement.close()
         }
     }
 
@@ -60,12 +60,16 @@ abstract class SqlIndexCreationSpec extends Specification {
     }
 
     boolean assertNoIndexes() {
-        assert listTableIndexes(connection, tableName).empty
+        try (Connection connection = connectionPool.getConnection()) {
+            assert listTableIndexes(connection, tableName).empty
+        }
         return true
     }
 
     boolean assertIndexesCreated() {
-        assert listTableIndexes(connection, tableName) == expectedIndexNames
+        try (Connection connection = connectionPool.getConnection()) {
+            assert listTableIndexes(connection, tableName) == expectedIndexNames
+        }
         return true
     }
 

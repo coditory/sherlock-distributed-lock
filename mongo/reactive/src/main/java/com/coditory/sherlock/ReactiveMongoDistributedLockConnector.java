@@ -16,10 +16,7 @@ import java.time.Clock;
 import java.time.Instant;
 import java.util.concurrent.Flow.Publisher;
 
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
-import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
+import static com.coditory.sherlock.MongoDistributedLockQueries.*;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static reactor.adapter.JdkFlowAdapter.publisherToFlowPublisher;
 
@@ -41,7 +38,8 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
     public Publisher<InitializationResult> initialize() {
         return publisherToFlowPublisher(
                 collectionInitializer.getInitializedCollection()
-                        .map(collection -> InitializationResult.of(true)));
+                        .map(collection -> InitializationResult.of(true))
+                        .onErrorMap(e -> new SherlockException("Could not initialize Mongo collection", e)));
     }
 
     @Override
@@ -50,7 +48,10 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
         return publisherToFlowPublisher(upsert(
                 queryReleased(lockRequest.getLockId(), now),
                 MongoDistributedLock.fromLockRequest(lockRequest, now)
-        ).map(AcquireResult::of));
+        )
+                .map(AcquireResult::of)
+                .onErrorMap(e -> new SherlockException("Could not acquire lock: " + lockRequest, e))
+        );
     }
 
     @Override
@@ -59,7 +60,9 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
         return publisherToFlowPublisher(upsert(
                 queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
                 MongoDistributedLock.fromLockRequest(lockRequest, now)
-        ).map(AcquireResult::of));
+        )
+                .map(AcquireResult::of)
+                .onErrorMap(e -> new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)));
     }
 
     @Override
@@ -67,25 +70,30 @@ class ReactiveMongoDistributedLockConnector implements ReactiveDistributedLockCo
         return publisherToFlowPublisher(upsert(
                 queryById(lockRequest.getLockId()),
                 MongoDistributedLock.fromLockRequest(lockRequest, now())
-        ).map(AcquireResult::of));
+        )
+                .map(AcquireResult::of)
+                .onErrorMap(e -> new SherlockException("Could not force acquire lock: " + lockRequest, e)));
     }
 
     @Override
     public Publisher<ReleaseResult> release(LockId lockId, OwnerId ownerId) {
         return publisherToFlowPublisher(delete(queryAcquired(lockId, ownerId))
-                .map(ReleaseResult::of));
+                .map(ReleaseResult::of)
+                .onErrorMap(e -> new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e)));
     }
 
     @Override
     public Publisher<ReleaseResult> forceRelease(LockId lockId) {
         return publisherToFlowPublisher(delete(queryById(lockId))
-                .map(ReleaseResult::of));
+                .map(ReleaseResult::of)
+                .onErrorMap(e -> new SherlockException("Could not force release lock: " + lockId.getValue(), e)));
     }
 
     @Override
     public Publisher<ReleaseResult> forceReleaseAll() {
         return publisherToFlowPublisher(deleteAll()
-                .map(ReleaseResult::of));
+                .map(ReleaseResult::of)
+                .onErrorMap(e -> new SherlockException("Could not force release all locks", e)));
     }
 
     private Mono<Boolean> deleteAll() {

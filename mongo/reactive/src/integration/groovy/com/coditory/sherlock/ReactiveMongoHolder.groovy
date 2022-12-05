@@ -1,16 +1,16 @@
 package com.coditory.sherlock
 
-import com.mongodb.client.MongoClient
-import com.mongodb.client.MongoClients
+import com.mongodb.reactivestreams.client.MongoClient
+import com.mongodb.reactivestreams.client.MongoClients
 import groovy.transform.CompileStatic
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.MongoDBContainer
 
 @CompileStatic
-class MongoHolder {
+class ReactiveMongoHolder {
     static final String databaseName = "test"
-    private static final Logger LOGGER = LoggerFactory.getLogger(MongoHolder)
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactiveMongoHolder)
     private static ResumableMongoDBContainer db
     private static started = false
     private static MongoClient mongoClient

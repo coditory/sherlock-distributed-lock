@@ -3,15 +3,14 @@ package com.coditory.sherlock.sample.postgres;
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.SherlockMigrator;
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.SQLException;
+import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.Duration;
-import java.util.Properties;
 
 import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock;
 
@@ -22,29 +21,25 @@ public class PostgresSyncSample {
             .withClock(Clock.systemDefaultZone())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
-            .withConnection(connect())
+            .withConnectionPool(connectionPool())
             .withLocksTable("LOCKS")
             .build();
 
-    private static Connection connect() {
-        Properties connectionProps = new Properties();
-        connectionProps.put("user", "postgres");
-        connectionProps.put("password", "postgres");
-        try {
-            return DriverManager
-                    .getConnection("jdbc:postgresql://localhost:5432/test", connectionProps);
-        } catch (SQLException e) {
-            throw new RuntimeException("Could not create PostgreSQL connection", e);
-        }
+    private static DataSource connectionPool() {
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
+        config.setUsername("postgres");
+        config.setPassword("postgres");
+        return new HikariDataSource(config);
     }
 
-    void sampleMySqlLockUsage() {
+    void samplePostgresLockUsage() throws Exception {
         logger.info(">>> SAMPLE: Lock usage");
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
     }
 
-    private void sampleMySqlMigration() {
+    private void samplePostgresMigration() {
         logger.info(">>> SAMPLE: Migration");
         // first commit - all migrations are executed
         new SherlockMigrator("db-migration", sherlock)
@@ -59,12 +54,12 @@ public class PostgresSyncSample {
                 .migrate();
     }
 
-    void runSamples() {
-        sampleMySqlLockUsage();
-        sampleMySqlMigration();
+    void runSamples() throws Exception {
+        samplePostgresLockUsage();
+        samplePostgresMigration();
     }
 
-    public static void main(String[] args) {
+    public static void main(String[] args) throws Exception {
         new PostgresSyncSample().runSamples();
     }
 }

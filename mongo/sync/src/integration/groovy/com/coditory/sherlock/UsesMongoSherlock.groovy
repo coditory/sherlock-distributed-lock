@@ -1,5 +1,6 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.DistributedLocksCreator
 import com.mongodb.client.MongoCollection
 import org.bson.Document
@@ -9,7 +10,7 @@ import java.time.Duration
 
 import static com.coditory.sherlock.MongoSherlockBuilder.mongoSherlock
 
-trait UsesMongoSherlock implements DistributedLocksCreator {
+trait UsesMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     static final String locksCollectionName = "locks"
 
     @Override
@@ -26,6 +27,16 @@ trait UsesMongoSherlock implements DistributedLocksCreator {
         return MongoHolder.getClient()
                 .getDatabase(MongoHolder.databaseName)
                 .getCollection(locksCollectionName)
+    }
+
+    @Override
+    void stopDatabase() {
+        MongoHolder.stopDb()
+    }
+
+    @Override
+    void startDatabase() {
+        MongoHolder.startDb()
     }
 }
 

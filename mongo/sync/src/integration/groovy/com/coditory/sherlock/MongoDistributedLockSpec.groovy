@@ -12,3 +12,5 @@ class MongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
 class MongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
         implements UsesMongoSherlock {}
 
+class MongoHandleDbFailureSpec extends HandleDbFailureSpec
+        implements UsesMongoSherlock {}
