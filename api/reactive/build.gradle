@@ -1,5 +1,0 @@
-description = 'Sherlock Distributed Lock reactive API'
-
-dependencies {
-    api project(':common')
-}

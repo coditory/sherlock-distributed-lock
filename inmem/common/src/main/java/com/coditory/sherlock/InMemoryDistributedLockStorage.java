@@ -77,9 +77,9 @@ class InMemoryDistributedLockStorage {
 
     private void dropExpiredLocks(Instant now) {
         List<LockId> expired = locks.values().stream()
-                .filter(lock -> lock.isExpired(now))
-                .map(InMemoryDistributedLock::getId)
-                .collect(toList());
+            .filter(lock -> lock.isExpired(now))
+            .map(InMemoryDistributedLock::getId)
+            .collect(toList());
         expired.forEach(locks::remove);
     }
 }

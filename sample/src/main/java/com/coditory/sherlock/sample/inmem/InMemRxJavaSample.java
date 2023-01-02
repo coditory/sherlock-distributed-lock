@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.ReactiveInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
+import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
 
 public class InMemRxJavaSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

@@ -21,7 +21,7 @@ public final class RxSherlockStub implements RxSherlock {
      */
     static public RxSherlockStub withReleasedLocks() {
         return new RxSherlockStub()
-                .withDefaultAcquireResult(true);
+            .withDefaultAcquireResult(true);
     }
 
     /**
@@ -31,7 +31,7 @@ public final class RxSherlockStub implements RxSherlock {
      */
     static public RxSherlockStub withAcquiredLocks() {
         return new RxSherlockStub()
-                .withDefaultAcquireResult(false);
+            .withDefaultAcquireResult(false);
     }
 
     /**
@@ -80,9 +80,9 @@ public final class RxSherlockStub implements RxSherlock {
     }
 
     private RxDistributedLock getLockOrDefault(
-            LockId id, LockDuration duration, OwnerId ownerId) {
+        LockId id, LockDuration duration, OwnerId ownerId) {
         RxDistributedLockMock defaultLock = RxDistributedLockMock
-                .lockStub(id.getValue(), defaultLockResult);
+            .lockStub(id.getValue(), defaultLockResult);
         return locksById.getOrDefault(id.getValue(), defaultLock);
     }
 }

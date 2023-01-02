@@ -1,0 +1,13 @@
+description = 'Sherlock Distributed Lock implementation using SQL synchronous connector'
+
+dependencies {
+    api project(':api:api-sync')
+    implementation project(':common')
+    implementation project(':sql:sql-common')
+    integrationImplementation project(':tests')
+    integrationImplementation "org.testcontainers:mysql:$versions.testContainers"
+    integrationImplementation "org.testcontainers:postgresql:$versions.testContainers"
+    integrationImplementation "org.postgresql:postgresql:$versions.postgresql"
+    integrationImplementation "mysql:mysql-connector-java:$versions.mysql"
+    integrationImplementation "com.zaxxer:HikariCP:$versions.hikaricp"
+}

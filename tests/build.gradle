@@ -2,9 +2,9 @@ description = 'Sherlock Distributed Lock shared tests'
 
 dependencies {
     api project(':api:api-sync')
-    api project(':api:api-reactive')
+    api project(':api:api-reactor')
+    api project(':api:api-rxjava')
     api project(':common')
-    api "io.projectreactor:reactor-core:$versions.reactor"
     api "org.spockframework:spock-core:$versions.spock"
     api "org.skyscreamer:jsonassert:$versions.jsonAssert"
 }

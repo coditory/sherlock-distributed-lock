@@ -68,19 +68,19 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
     }
 
     public static ReactorDistributedLockMock lockStub(
-            String lockId, boolean acquireResult, boolean releaseResult) {
+        String lockId, boolean acquireResult, boolean releaseResult) {
         SequencedDistributedLockStub lock = new SequencedDistributedLockStub(
-                lockId, List.of(acquireResult), List.of(releaseResult));
+            lockId, List.of(acquireResult), List.of(releaseResult));
         return of(lock);
     }
 
     public static ReactorDistributedLockMock sequencedLock(
-            List<Boolean> acquireResults, List<Boolean> releaseResults) {
+        List<Boolean> acquireResults, List<Boolean> releaseResults) {
         return of(sequencedLock(uuid(), acquireResults, releaseResults));
     }
 
     public static ReactorDistributedLockMock sequencedLock(
-            String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
+        String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
         return of(new SequencedDistributedLockStub(lockId, acquireResults, releaseResults));
     }
 
@@ -106,7 +106,7 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
     @Override
     public Mono<AcquireResult> acquire() {
         return lock.acquire()
-                .map(this::incrementAcquireCounters);
+            .map(this::incrementAcquireCounters);
     }
 
     @Override
@@ -130,7 +130,7 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
     @Override
     public Mono<ReleaseResult> release() {
         return lock.release()
-                .map(this::incrementReleaseCounters);
+            .map(this::incrementReleaseCounters);
     }
 
     private ReleaseResult incrementReleaseCounters(ReleaseResult result) {
@@ -259,7 +259,7 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
         @Override
         public Mono<AcquireResult> acquire() {
             return Mono.fromCallable(this::acquireSync)
-                    .map(AcquireResult::of);
+                .map(AcquireResult::of);
         }
 
         private boolean acquireSync() {
@@ -284,7 +284,7 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
         @Override
         public Mono<ReleaseResult> release() {
             return Mono.fromCallable(this::releaseSync)
-                    .map(ReleaseResult::of);
+                .map(ReleaseResult::of);
         }
 
         private boolean releaseSync() {
@@ -300,12 +300,12 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
         private final boolean defaultReleaseResult;
 
         private SequencedDistributedLockStub(
-                String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
+            String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
             this(LockId.of(lockId), acquireResults, releaseResults);
         }
 
         private SequencedDistributedLockStub(
-                LockId lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
+            LockId lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
             expectNonEmpty(acquireResults, "Expected non empty acquire results");
             expectNonEmpty(releaseResults, "Expected non empty release results");
             this.lockId = expectNonNull(lockId, "Expected non null lockId");
@@ -323,7 +323,7 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
         @Override
         public Mono<AcquireResult> acquire() {
             return pollOrDefault(acquireResults, defaultAcquireResult)
-                    .map(AcquireResult::of);
+                .map(AcquireResult::of);
         }
 
         @Override
@@ -339,11 +339,11 @@ public final class ReactorDistributedLockMock implements ReactorDistributedLock 
         @Override
         public Mono<ReleaseResult> release() {
             return pollOrDefault(releaseResults, defaultReleaseResult)
-                    .map(ReleaseResult::of);
+                .map(ReleaseResult::of);
         }
 
         private Mono<Boolean> pollOrDefault(
-                ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
+            ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
             return Mono.fromCallable(() -> {
                 Boolean value = queue.poll();
                 return value != null ? value : defaultValue;

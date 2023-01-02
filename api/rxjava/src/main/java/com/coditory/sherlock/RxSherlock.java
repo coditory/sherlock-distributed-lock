@@ -5,19 +5,9 @@ import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
 
 /**
- * Manages distributed locks using RXJava API.
+ * Manages distributed locks using RxJava API.
  */
 public interface RxSherlock {
-    /**
-     * Maps reactive sherlock to a one using RxJava API
-     *
-     * @param locks reactive locks to be wrapped in RxJava api
-     * @return RxJava version of sherlock locks
-     */
-    static RxSherlock rxSherlock(ReactiveSherlock locks) {
-        return new RxSherlockWrapper(locks);
-    }
-
     /**
      * Initializes underlying infrastructure. If this method is not invoked explicitly then it can be
      * invoked implicitly when acquiring or releasing a lock for the first time.
@@ -49,9 +39,7 @@ public interface RxSherlock {
      * @see RxSherlock#createLock()
      */
     default RxDistributedLock createLock(String lockId) {
-        return createLock()
-                .withLockId(lockId)
-                .build();
+        return createLock().withLockId(lockId).build();
     }
 
     /**
@@ -75,9 +63,7 @@ public interface RxSherlock {
      * @see RxSherlock#createReentrantLock()
      */
     default RxDistributedLock createReentrantLock(String lockId) {
-        return createReentrantLock()
-                .withLockId(lockId)
-                .build();
+        return createReentrantLock().withLockId(lockId).build();
     }
 
     /**
@@ -103,9 +89,7 @@ public interface RxSherlock {
      * @see RxSherlock#createOverridingLock()
      */
     default RxDistributedLock createOverridingLock(String lockId) {
-        return createOverridingLock()
-                .withLockId(lockId)
-                .build();
+        return createOverridingLock().withLockId(lockId).build();
     }
 
     /**
@@ -128,7 +112,6 @@ public interface RxSherlock {
      * ReleaseResult#FAILURE} is returned
      */
     default Single<ReleaseResult> forceReleaseLock(String lockId) {
-        return createOverridingLock(lockId)
-                .release();
+        return createOverridingLock(lockId).release();
     }
 }

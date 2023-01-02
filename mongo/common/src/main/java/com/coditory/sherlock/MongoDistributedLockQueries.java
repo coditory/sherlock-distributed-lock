@@ -5,10 +5,7 @@ import org.bson.conversions.Bson;
 
 import java.time.Instant;
 
-import static com.mongodb.client.model.Filters.and;
-import static com.mongodb.client.model.Filters.eq;
-import static com.mongodb.client.model.Filters.lte;
-import static com.mongodb.client.model.Filters.or;
+import static com.mongodb.client.model.Filters.*;
 
 final class MongoDistributedLockQueries {
     private MongoDistributedLockQueries() {
@@ -17,25 +14,25 @@ final class MongoDistributedLockQueries {
 
     static Bson queryReleased(LockId lockId, Instant now) {
         return and(
-                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-                lte(Fields.EXPIRES_AT_FIELD, now)
+            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+            lte(Fields.EXPIRES_AT_FIELD, now)
         );
     }
 
     static Bson queryAcquired(LockId lockId, OwnerId ownerId) {
         return and(
-                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-                eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
+            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+            eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
         );
     }
 
     static Bson queryAcquiredOrReleased(LockId lockId, OwnerId ownerId, Instant now) {
         return and(
-                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-                or(
-                        eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
-                        lte(Fields.EXPIRES_AT_FIELD, now)
-                )
+            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+            or(
+                eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
+                lte(Fields.EXPIRES_AT_FIELD, now)
+            )
         );
     }
 

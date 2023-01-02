@@ -13,22 +13,22 @@ final class RxDistributedLockExecutor {
     }
 
     static <T> Maybe<T> executeOnAcquired(
-            Single<AcquireResult> lockResult, Single<T> single,
+        Single<AcquireResult> lockResult, Single<T> single,
             Supplier<Single<ReleaseResult>> release) {
         return lockResult
                 .filter(AcquireResult::isAcquired)
                 .flatMap(acquiredLockResult ->
-                        Maybe.fromSingle(single)
-                                .flatMap(result -> release.get().flatMapMaybe(__ -> Maybe.just(result)))
-                                .switchIfEmpty(release.get().flatMapMaybe(__ -> Maybe.empty()))
-                                .onErrorResumeNext((Throwable throwable) -> release.get().flatMapMaybe(r -> Maybe.error(throwable)))
+                    Maybe.fromSingle(single)
+                        .flatMap(result -> release.get().flatMapMaybe(__ -> Maybe.just(result)))
+                        .switchIfEmpty(release.get().flatMapMaybe(__ -> Maybe.empty()))
+                        .onErrorResumeNext((Throwable throwable) -> release.get().flatMapMaybe(r -> Maybe.error(throwable)))
                 );
     }
 
     static <T> Maybe<T> executeOnReleased(
-            Single<ReleaseResult> unlockResult, Single<T> single) {
+        Single<ReleaseResult> unlockResult, Single<T> single) {
         return unlockResult
-                .filter(ReleaseResult::isReleased)
-                .flatMap(releasedLockResult -> single.flatMapMaybe(Maybe::just));
+            .filter(ReleaseResult::isReleased)
+            .flatMap(releasedLockResult -> single.flatMapMaybe(Maybe::just));
     }
 }

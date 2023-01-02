@@ -8,7 +8,7 @@ import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.ReactiveInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
+import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
 
 public class InMemReactorSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

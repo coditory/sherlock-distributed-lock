@@ -75,7 +75,7 @@ public interface ReactorDistributedLock {
      */
     default <T> Mono<T> acquireAndExecute(Duration duration, Mono<T> mono) {
         return ReactorDistributedLockExecutor
-                .executeOnAcquired(acquire(duration), mono, this::release);
+            .executeOnAcquired(acquire(duration), mono, this::release);
     }
 
     /**
@@ -88,7 +88,7 @@ public interface ReactorDistributedLock {
      */
     default <T> Mono<T> acquireForeverAndExecute(Mono<T> mono) {
         return ReactorDistributedLockExecutor
-                .executeOnAcquired(acquireForever(), mono, this::release);
+            .executeOnAcquired(acquireForever(), mono, this::release);
     }
 
     /**

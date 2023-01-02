@@ -21,7 +21,7 @@ public final class ReactorSherlockStub implements ReactorSherlock {
      */
     static public ReactorSherlockStub withReleasedLocks() {
         return new ReactorSherlockStub()
-                .withDefaultAcquireResult(true);
+            .withDefaultAcquireResult(true);
     }
 
     /**
@@ -31,7 +31,7 @@ public final class ReactorSherlockStub implements ReactorSherlock {
      */
     static public ReactorSherlockStub withAcquiredLocks() {
         return new ReactorSherlockStub()
-                .withDefaultAcquireResult(false);
+            .withDefaultAcquireResult(false);
     }
 
     /**
@@ -80,9 +80,9 @@ public final class ReactorSherlockStub implements ReactorSherlock {
     }
 
     private ReactorDistributedLock getLockOrDefault(
-            LockId id, LockDuration duration, OwnerId ownerId) {
+        LockId id, LockDuration duration, OwnerId ownerId) {
         ReactorDistributedLockMock defaultLock = ReactorDistributedLockMock
-                .lockStub(id.getValue(), defaultLockResult);
+            .lockStub(id.getValue(), defaultLockResult);
         return locksById.getOrDefault(id.getValue(), defaultLock);
     }
 }

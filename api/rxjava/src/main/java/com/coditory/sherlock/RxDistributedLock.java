@@ -54,10 +54,10 @@ public interface RxDistributedLock {
     Single<ReleaseResult> release();
 
     /**
-     * Acquire a lock and release it after action is executed.
+     * Acquire a lock and release it after action is executed or fails.
      *
-     * @param <T>    type od value emitted by the action
-     * @param single to be subscribed to when lock is acquired
+     * @param <T>  type od value emitted by the action
+     * @param single to be executed subscribed to when lock is acquired
      * @return true if lock is acquired.
      * @see RxDistributedLock#acquire()
      */
@@ -70,35 +70,38 @@ public interface RxDistributedLock {
      *
      * @param <T>      type od value emitted by the action
      * @param duration how much time must pass for the acquired lock to expire
-     * @param single   to be subscribed to when lock is acquired
+     * @param single     to be executed subscribed to when lock is acquired
      * @return true, if lock is acquired
      * @see RxDistributedLock#acquire(Duration)
      */
     default <T> Maybe<T> acquireAndExecute(Duration duration, Single<T> single) {
-        return RxDistributedLockExecutor.executeOnAcquired(acquire(duration), single, this::release);
+        return RxDistributedLockExecutor
+                .executeOnAcquired(acquire(duration), single, this::release);
     }
 
     /**
      * Acquire a lock without expiration time and release it after action is executed.
      *
-     * @param <T>    type od value emitted by the action
-     * @param single to be subscribed to when lock is acquired
+     * @param <T>  type od value emitted by the action
+     * @param single to be executed subscribed to when lock is acquired
      * @return true, if lock is acquired
      * @see RxDistributedLock#acquireForever()
      */
     default <T> Maybe<T> acquireForeverAndExecute(Single<T> single) {
-        return RxDistributedLockExecutor.executeOnAcquired(acquireForever(), single, this::release);
+        return RxDistributedLockExecutor
+                .executeOnAcquired(acquireForever(), single, this::release);
     }
 
     /**
      * Run the action when lock is released
      *
-     * @param <T>    type od value emitted by the action
-     * @param single to be subscribed to when lock is released
+     * @param <T>  type od value emitted by the action
+     * @param single to be executed subscribed to when lock is released
      * @return true, if lock was release
      * @see RxDistributedLock#release()
      */
     default <T> Maybe<T> releaseAndExecute(Single<T> single) {
-        return RxDistributedLockExecutor.executeOnReleased(release(), single);
+        return RxDistributedLockExecutor
+            .executeOnReleased(release(), single);
     }
 }

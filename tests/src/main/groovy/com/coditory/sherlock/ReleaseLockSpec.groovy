@@ -6,10 +6,7 @@ import spock.lang.Unroll
 import java.time.Duration
 
 import static UuidGenerator.uuid
-import static com.coditory.sherlock.base.LockTypes.OVERRIDING
-import static com.coditory.sherlock.base.LockTypes.REENTRANT
-import static com.coditory.sherlock.base.LockTypes.SINGLE_ENTRANT
-import static com.coditory.sherlock.base.LockTypes.allLockTypes
+import static com.coditory.sherlock.base.LockTypes.*
 
 abstract class ReleaseLockSpec extends LocksBaseSpec implements LockAssertions {
     String otherOwnerId = "other-instance-id"

@@ -2,12 +2,12 @@ dependencies {
     // Synchronous
     implementation project(':inmem:inmem-sync')
     implementation project(':mongo:mongo-sync')
-    implementation project(':sql')
-    // Reactive
+    implementation project(':sql:sql-sync')
+    // Reactor
     implementation project(':api:api-reactor')
-    implementation project(':api:api-rxjava')
-    implementation project(':inmem:inmem-reactive')
-    implementation project(':mongo:mongo-reactive')
+    implementation project(':inmem:inmem-reactor')
+    implementation project(':mongo:mongo-reactor')
+    implementation project(':sql:sql-reactor')
     // drivers
     implementation "org.postgresql:postgresql:$versions.postgresql"
     implementation "mysql:mysql-connector-java:$versions.mysql"

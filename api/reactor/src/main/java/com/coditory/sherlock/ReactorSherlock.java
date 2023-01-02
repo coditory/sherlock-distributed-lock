@@ -9,16 +9,6 @@ import reactor.core.publisher.Mono;
  */
 public interface ReactorSherlock {
     /**
-     * Maps {@link ReactiveSherlock} to Reactor API
-     *
-     * @param reactiveSherlock reactive sherlock to be wrapped in Reactor API
-     * @return Reactor version of sherlock locks
-     */
-    static ReactorSherlock reactorSherlock(ReactiveSherlock reactiveSherlock) {
-        return new ReactorSherlockWrapper(reactiveSherlock);
-    }
-
-    /**
      * Initializes underlying infrastructure. If this method is not invoked explicitly then it can be
      * invoked implicitly when acquiring or releasing a lock for the first time.
      * <p>
