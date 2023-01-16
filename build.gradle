@@ -50,7 +50,10 @@ subprojects {
     apply plugin: 'groovy'
     apply plugin: 'jacoco'
     apply plugin: 'com.coditory.build'
-    sourceCompatibility = 11
+    compileJava {
+        sourceCompatibility = 11
+        targetCompatibility = 11
+    }
 
     // make nicer archive and module names
     archivesBaseName = rootProject.name + '-' + project.name
