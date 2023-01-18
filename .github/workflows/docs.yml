@@ -9,7 +9,7 @@ on:
       - "mkdocs.yml"
       - "mkdocs-requirements.txt"
   workflow_run:
-    workflows: ["Release"]
+    workflows: [Release]
     branches: [master]
     types: [completed]
 
@@ -17,9 +17,16 @@ jobs:
   docs:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-python@v2
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
         with:
           python-version: 3.x
-      - run: pip install mkdocs -r mkdocs-requirements.txt
-      - run: mkdocs gh-deploy --force
+
+      - name: Install mkdocs
+        run: pip install mkdocs -r mkdocs-requirements.txt
+
+      - name: Deploy docs
+        run: mkdocs gh-deploy --force

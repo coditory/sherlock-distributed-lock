@@ -9,8 +9,8 @@ dependencies {
     implementation project(':inmem:inmem-reactive')
     implementation project(':mongo:mongo-reactive')
     // drivers
-    implementation "org.postgresql:postgresql:42.5.0"
-    implementation "mysql:mysql-connector-java:8.0.30"
+    implementation "org.postgresql:postgresql:$versions.postgresql"
+    implementation "mysql:mysql-connector-java:$versions.mysql"
     // other
     implementation "ch.qos.logback:logback-core:$versions.logback"
     implementation "ch.qos.logback:logback-classic:$versions.logback"
