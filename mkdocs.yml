@@ -70,7 +70,7 @@ markdown_extensions:
   - pymdownx.snippets
 
 extra:
-  version: '0.4.17'
+  version: '0.4.18'
   vcs_baseurl: https://github.com/coditory/sherlock-distributed-lock/blob/master
   social:
     - icon: fontawesome/solid/globe
