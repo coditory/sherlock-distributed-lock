@@ -11,7 +11,7 @@ buildscript {
                 mysql          : '8.0.31',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
-                testContainers : '1.17.5',
+                testContainers : '1.17.6',
                 hikaricp       : '5.0.1',
                 spock          : '2.3-groovy-4.0'
         ]
@@ -31,7 +31,7 @@ plugins {
     id 'jacoco'
     id 'signing'
     id 'com.github.kt3k.coveralls' version '2.12.0'
-    id 'com.coditory.build' version '0.1.19' apply false
+    id 'com.coditory.build' version '0.1.20' apply false
     id 'io.github.gradle-nexus.publish-plugin' version '1.1.0' apply false
 }
 
@@ -50,9 +50,11 @@ subprojects {
     apply plugin: 'groovy'
     apply plugin: 'jacoco'
     apply plugin: 'com.coditory.build'
-    compileJava {
-        sourceCompatibility = 11
-        targetCompatibility = 11
+
+    java {
+        toolchain {
+            languageVersion = JavaLanguageVersion.of(11)
+        }
     }
 
     // make nicer archive and module names
