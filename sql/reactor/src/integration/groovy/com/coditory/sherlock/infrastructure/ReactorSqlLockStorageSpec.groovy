@@ -2,6 +2,7 @@ package com.coditory.sherlock.infrastructure
 
 import com.coditory.sherlock.*
 import com.coditory.sherlock.base.LockTypes
+import spock.lang.Ignore
 import spock.lang.Unroll
 
 import java.sql.*
@@ -10,9 +11,10 @@ import java.time.Instant
 
 class PostgresLockStorageSpec extends SqlLockStorageSpec implements PostgresConnectionProvider {}
 
+@Ignore
 class MySqlLockStorageSpec extends SqlLockStorageSpec implements MySqlConnectionProvider {}
 
-abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlock {
+abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesReactorSqlSherlock {
     @Unroll
     def "should preserve lock state for acquired lock - #type"() {
         given:
@@ -81,7 +83,7 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
     private Map<String, Object> getLockRow(String lockId = sampleLockId) {
         Map<String, Object> result
         try (
-                Connection connection = connectionPool.getConnection()
+                Connection connection = getBlockingConnection()
                 Statement statement = connection.createStatement()
                 ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
         ) {
@@ -91,17 +93,17 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
     }
 
     private List<Map<String, Object>> resultSetToList(ResultSet rs) {
-        ResultSetMetaData md = rs.getMetaData();
-        int columns = md.getColumnCount();
-        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        ResultSetMetaData md = rs.getMetaData()
+        int columns = md.getColumnCount()
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>()
         while (rs.next()) {
-            Map<String, Object> row = new HashMap<String, Object>(columns);
+            Map<String, Object> row = new HashMap<String, Object>(columns)
             for (int i = 1; i <= columns; ++i) {
-                row.put(md.getColumnName(i).toLowerCase(), rs.getObject(i));
+                row.put(md.getColumnName(i).toLowerCase(), rs.getObject(i))
             }
-            rows.add(row);
+            rows.add(row)
         }
-        return rows;
+        return rows
     }
 
     private Timestamp timestamp(Duration duration = Duration.ZERO) {

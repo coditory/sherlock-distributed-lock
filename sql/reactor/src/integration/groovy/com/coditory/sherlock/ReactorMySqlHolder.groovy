@@ -1,43 +1,45 @@
 package com.coditory.sherlock
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import groovy.transform.CompileStatic
+import io.r2dbc.spi.ConnectionFactories
+import io.r2dbc.spi.ConnectionFactory
+import io.r2dbc.spi.ConnectionFactoryOptions
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.MySQLContainer
 
-import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.DriverManager
 
 @CompileStatic
-class MySqlHolder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(MySqlHolder)
+class ReactorMySqlHolder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorMySqlHolder)
     private static ResumableMySQLContainer db
     private static started = false
-    private static DataSource connectionPool = null
+    private static ConnectionFactory connectionFactory = null
 
-    synchronized static Connection getConnection() {
+    synchronized static ConnectionFactory getConnectionFactory() {
+        startDb()
+        if (connectionFactory != null) {
+            return connectionFactory
+        }
+        ConnectionFactoryOptions options = ConnectionFactoryOptions
+                .parse(db.getJdbcUrl().replace("jdbc:", "r2dbc:"))
+                .mutate()
+                .option(ConnectionFactoryOptions.USER, db.getUsername())
+                .option(ConnectionFactoryOptions.PASSWORD, db.getPassword())
+                .option(ConnectionFactoryOptions.DATABASE, db.getDatabaseName())
+                .build()
+        connectionFactory = ConnectionFactories.get(options)
+        return connectionFactory
+    }
+
+    synchronized static Connection getBlockingConnection() {
         startDb()
         Properties properties = new Properties()
         properties.put("user", db.getUsername())
         properties.put("password", db.getPassword())
         return DriverManager.getConnection(db.getJdbcUrl(), properties)
-    }
-
-    synchronized static DataSource getConnectionPool() {
-        if (connectionPool != null) {
-            return connectionPool
-        }
-        startDb()
-        HikariConfig config = new HikariConfig()
-        config.setJdbcUrl(db.getJdbcUrl())
-        config.setUsername(db.getUsername())
-        config.setPassword(db.getPassword())
-        config.setConnectionTimeout(10000)
-        connectionPool = new HikariDataSource(config)
-        return connectionPool
     }
 
     synchronized static void startDb() {

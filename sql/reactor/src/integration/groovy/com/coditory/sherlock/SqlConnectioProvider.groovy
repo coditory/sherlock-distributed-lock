@@ -2,46 +2,63 @@ package com.coditory.sherlock
 
 import com.coditory.sherlock.base.DatabaseManager
 import groovy.transform.CompileStatic
+import io.r2dbc.spi.ConnectionFactory
 
-import javax.sql.DataSource
+import java.sql.Connection
 
 @CompileStatic
-interface SqlConnectionProvider {
-    DataSource getConnectionPool();
+interface SqlConnectionFactoryProvider {
+    ConnectionFactory getConnectionFactory();
+
+    Connection getBlockingConnection();
 }
 
 @CompileStatic
-trait PostgresConnectionProvider implements SqlConnectionProvider, DatabaseManager {
+trait PostgresConnectionProvider implements SqlConnectionFactoryProvider, DatabaseManager {
+    BindingParameterMapper bindingParameterMapper = BindingParameterMapper.POSTGRES_MAPPER
+
     @Override
-    DataSource getConnectionPool() {
-        return PostgresHolder.getConnectionPool()
+    ConnectionFactory getConnectionFactory() {
+        return ReactorPostgresHolder.getConnectionFactory()
+    }
+
+    @Override
+    Connection getBlockingConnection() {
+        return ReactorPostgresHolder.getBlockingConnection()
     }
 
     @Override
     void stopDatabase() {
-        PostgresHolder.stopDb()
+        ReactorPostgresHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        PostgresHolder.startDb()
+        ReactorPostgresHolder.startDb()
     }
 }
 
 @CompileStatic
-trait MySqlConnectionProvider implements SqlConnectionProvider, DatabaseManager {
+trait MySqlConnectionProvider implements SqlConnectionFactoryProvider, DatabaseManager {
+    BindingParameterMapper bindingParameterMapper = BindingParameterMapper.MYSQL_MAPPER
+
     @Override
-    DataSource getConnectionPool() {
-        return MySqlHolder.getConnectionPool()
+    ConnectionFactory getConnectionFactory() {
+        return ReactorMySqlHolder.getConnectionFactory()
+    }
+
+    @Override
+    Connection getBlockingConnection() {
+        return ReactorMySqlHolder.getBlockingConnection()
     }
 
     @Override
     void stopDatabase() {
-        MySqlHolder.stopDb()
+        ReactorMySqlHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        MySqlHolder.startDb()
+        ReactorMySqlHolder.startDb()
     }
 }

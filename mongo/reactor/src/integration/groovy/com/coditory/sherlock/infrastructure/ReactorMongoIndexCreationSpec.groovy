@@ -14,15 +14,15 @@ import static com.coditory.sherlock.base.JsonAssert.assertJsonEqual
 class ReactorMongoIndexCreationSpec extends Specification {
     String collectionName = "other-locks"
     MongoCollection<Document> collection = ReactorMongoHolder.getClient()
-        .getDatabase(databaseName)
-        .getCollection(collectionName)
+            .getDatabase(databaseName)
+            .getCollection(collectionName)
     ReactorSherlock locks = reactorMongoSherlock()
-        .withLocksCollection(collection)
-        .build()
+            .withLocksCollection(collection)
+            .build()
 
     def cleanup() {
         Flux.from(collection.drop())
-            .blockLast()
+                .blockLast()
     }
 
     def "should create mongo indexes on initialize"() {
@@ -39,7 +39,7 @@ class ReactorMongoIndexCreationSpec extends Specification {
             assertNoIndexes()
         when:
             locks.createLock("some-acquire")
-                .acquire().block()
+                    .acquire().block()
         then:
             assertIndexesCreated()
     }
@@ -51,7 +51,7 @@ class ReactorMongoIndexCreationSpec extends Specification {
 
     private boolean assertIndexesCreated() {
         assertJsonEqual(getCollectionIndexes(), """[
-        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "acquiredAt": 1}, "name": "_id_1_acquiredBy_1_acquiredAt_1", "ns": "$databaseName.$collectionName", "background": true},
+        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "expiresAt": 1}, "name": "_id_1_acquiredBy_1_expiresAt_1", "ns": "$databaseName.$collectionName", "background": true},
         {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "$databaseName.$collectionName"}
       ]""")
         return true
@@ -59,10 +59,10 @@ class ReactorMongoIndexCreationSpec extends Specification {
 
     private String getCollectionIndexes() {
         List<String> indexes = Flux.from(collection.listIndexes())
-            .collectList()
-            .block()
-            .collect { it.toJson() }
-            .sort()
+                .collectList()
+                .block()
+                .collect { it.toJson() }
+                .sort()
         return "[" + indexes.join(",\n") + "]"
     }
 }

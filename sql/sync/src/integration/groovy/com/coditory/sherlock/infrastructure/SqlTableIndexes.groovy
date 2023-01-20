@@ -15,7 +15,7 @@ class SqlTableIndexes {
         for (int i = 0; i < schemaList.size(); i++) {
             ResultSet indexValues
             try {
-                indexValues = metaData.getIndexInfo(null, schemaList.get(i), tableName, true, false)
+                indexValues = metaData.getIndexInfo(null, schemaList.get(i), tableName, false, false)
                 while (indexValues.next()) {
                     String dbIndexName = indexValues.getString("INDEX_NAME")
                     if (dbIndexName != null) {

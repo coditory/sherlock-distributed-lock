@@ -9,6 +9,7 @@ buildscript {
                 logback        : '1.4.11',
                 postgresql     : '42.6.0',
                 mysql          : '8.0.33',
+                r2dbc          : '1.0.0.RELEASE',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
                 testContainers : '1.19.2',

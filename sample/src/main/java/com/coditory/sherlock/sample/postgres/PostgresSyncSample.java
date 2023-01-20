@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock;
+import static com.coditory.sherlock.ReactorSqlSherlockBuilder.sqlSherlock;
 
 public class PostgresSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

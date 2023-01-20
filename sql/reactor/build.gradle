@@ -4,7 +4,11 @@ dependencies {
     api project(':api:api-reactor')
     implementation project(':common')
     implementation project(':sql:sql-common')
+    api "io.r2dbc:r2dbc-spi:$versions.r2dbc"
     integrationImplementation project(':tests')
+    // integrationImplementation "dev.miku:r2dbc-mysql:$versions.r2dbcMysql"
+    integrationImplementation "io.r2dbc:r2dbc-pool:$versions.r2dbc"
+    integrationImplementation "org.postgresql:r2dbc-postgresql:$versions.r2dbc"
     integrationImplementation "org.testcontainers:mysql:$versions.testContainers"
     integrationImplementation "org.testcontainers:postgresql:$versions.testContainers"
     integrationImplementation "org.postgresql:postgresql:$versions.postgresql"

@@ -1,43 +1,63 @@
 package com.coditory.sherlock
 
-import com.zaxxer.hikari.HikariConfig
-import com.zaxxer.hikari.HikariDataSource
 import groovy.transform.CompileStatic
+import io.r2dbc.pool.ConnectionPoolConfiguration
+import io.r2dbc.spi.ConnectionFactories
+import io.r2dbc.spi.ConnectionFactory
+import io.r2dbc.spi.ConnectionFactoryOptions
+import io.r2dbc.spi.ValidationDepth
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.testcontainers.containers.PostgreSQLContainer
 
-import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.DriverManager
+import java.time.Duration
 
 @CompileStatic
-class PostgresHolder {
-    private static final Logger LOGGER = LoggerFactory.getLogger(PostgresHolder)
+class ReactorPostgresHolder {
+    private static final Logger LOGGER = LoggerFactory.getLogger(ReactorPostgresHolder)
     private static ResumablePostgreSQLContainer db
     private static started = false
-    private static DataSource connectionPool = null
+    private static ConnectionFactory connectionFactory = null
 
-    synchronized static Connection getConnection() {
+    synchronized static ConnectionFactory getConnectionFactory() {
+        startDb()
+        if (connectionFactory == null) {
+            connectionFactory = pooledConnectionFactory()
+        }
+        return connectionFactory
+    }
+
+    private static ConnectionFactory pooledConnectionFactory() {
+        ConnectionFactoryOptions options = ConnectionFactoryOptions
+                .parse(db.getJdbcUrl().replace("jdbc:", "r2dbc:"))
+                .mutate()
+                .option(ConnectionFactoryOptions.USER, db.getUsername())
+                .option(ConnectionFactoryOptions.PASSWORD, db.getPassword())
+                .option(ConnectionFactoryOptions.DATABASE, db.getDatabaseName())
+                .build()
+        ConnectionFactory connectionFactory = ConnectionFactories.get(options)
+        ConnectionPoolConfiguration configuration = ConnectionPoolConfiguration.builder(connectionFactory)
+                .maxIdleTime(Duration.ofSeconds(1))
+                .maxAcquireTime(Duration.ofSeconds(10))
+                .initialSize(10)
+                .minIdle(3)
+                .maxSize(10)
+                .acquireRetry(5)
+                .maxValidationTime(Duration.ofSeconds(1))
+                .validationQuery("SELECT 1")
+                .validationDepth(ValidationDepth.REMOTE)
+                .build()
+        return new io.r2dbc.pool.ConnectionPool(configuration)
+    }
+
+    synchronized static Connection getBlockingConnection() {
         startDb()
         Properties properties = new Properties()
         properties.put("user", db.getUsername())
         properties.put("password", db.getPassword())
         return DriverManager.getConnection(db.getJdbcUrl(), properties)
-    }
-
-    synchronized static DataSource getConnectionPool() {
-        if (connectionPool != null) {
-            return connectionPool
-        }
-        startDb()
-        HikariConfig config = new HikariConfig()
-        config.setJdbcUrl(db.getJdbcUrl())
-        config.setUsername(db.getUsername())
-        config.setPassword(db.getPassword())
-        config.setConnectionTimeout(10000)
-        connectionPool = new HikariDataSource(config)
-        return connectionPool
     }
 
     synchronized static void startDb() {

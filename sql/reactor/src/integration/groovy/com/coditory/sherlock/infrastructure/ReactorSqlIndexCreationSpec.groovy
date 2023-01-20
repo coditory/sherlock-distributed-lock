@@ -1,39 +1,48 @@
 package com.coditory.sherlock.infrastructure
 
+import com.coditory.sherlock.BindingParameterMapper
 import com.coditory.sherlock.MySqlConnectionProvider
 import com.coditory.sherlock.PostgresConnectionProvider
 import com.coditory.sherlock.Sherlock
+import io.r2dbc.spi.ConnectionFactory
+import spock.lang.Ignore
 import spock.lang.Specification
 
-import javax.sql.DataSource
 import java.sql.Connection
 import java.sql.Statement
 
-import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock
-import static com.coditory.sherlock.infrastructure.SqlTableIndexes.listTableIndexes
+import static com.coditory.sherlock.BlockingReactorSherlockWrapper.blockingReactorSherlock
+import static com.coditory.sherlock.ReactorSqlSherlockBuilder.reactorSqlSherlock
+import static com.coditory.sherlock.SqlTableIndexes.listTableIndexes
 
-class PostgresIndexCreationSpec extends SqlIndexCreationSpec implements PostgresConnectionProvider {
+class ReactorPostgresIndexCreationSpec extends ReactorSqlIndexCreationSpec implements PostgresConnectionProvider {
     List<String> expectedIndexNames = [tableName + "_pkey", tableName + "_idx"].sort()
 }
 
-class MySqlIndexCreationSpec extends SqlIndexCreationSpec implements MySqlConnectionProvider {
+@Ignore
+class ReactorMySqlIndexCreationSpec extends ReactorSqlIndexCreationSpec implements MySqlConnectionProvider {
     List<String> expectedIndexNames = ["PRIMARY", tableName + "_IDX"].sort()
 }
 
-abstract class SqlIndexCreationSpec extends Specification {
+abstract class ReactorSqlIndexCreationSpec extends Specification {
     String tableName = "other_locks"
-    Sherlock locks = sqlSherlock()
-            .withConnectionPool(connectionPool)
+    Sherlock locks = blockingReactorSherlock(reactorSqlSherlock()
+            .withConnectionFactory(connectionFactory)
             .withLocksTable(tableName)
-            .build()
+            .withBindingParameterMapper(bindingParameterMapper)
+            .build())
 
     abstract List<String> getExpectedIndexNames()
 
-    abstract DataSource getConnectionPool();
+    abstract ConnectionFactory getConnectionFactory();
+
+    abstract Connection getBlockingConnection();
+
+    abstract BindingParameterMapper getBindingParameterMapper();
 
     void cleanup() {
         try (
-                Connection connection = connectionPool.getConnection()
+                Connection connection = getBlockingConnection()
                 Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate("DROP TABLE " + tableName)
@@ -60,14 +69,14 @@ abstract class SqlIndexCreationSpec extends Specification {
     }
 
     boolean assertNoIndexes() {
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = getBlockingConnection()) {
             assert listTableIndexes(connection, tableName).empty
         }
         return true
     }
 
     boolean assertIndexesCreated() {
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = getBlockingConnection()) {
             assert listTableIndexes(connection, tableName) == expectedIndexNames
         }
         return true

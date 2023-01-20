@@ -3,7 +3,7 @@ name: Pull Request
 on: [pull_request_target]
 
 jobs:
-  label-pr:
+  labeler:
     runs-on: ubuntu-latest
     permissions:
       contents: read

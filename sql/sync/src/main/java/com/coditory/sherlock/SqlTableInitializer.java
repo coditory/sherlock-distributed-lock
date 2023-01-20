@@ -6,10 +6,10 @@ import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 class SqlTableInitializer {
-    private final SqlQueries sqlQueries;
+    private final SqlLockQueries sqlQueries;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    SqlTableInitializer(SqlQueries sqlQueries) {
+    SqlTableInitializer(SqlLockQueries sqlQueries) {
         this.sqlQueries = sqlQueries;
     }
 
@@ -27,10 +27,11 @@ class SqlTableInitializer {
     void initialize(SqlConnection connection) {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlQueries.createLocksTable());
-            // TODO: Setup indexes
+            statement.executeUpdate(sqlQueries.createLocksIndex());
             initialized.set(true);
         } catch (SQLException e) {
-            try (PreparedStatement statement = connection.prepareStatement(sqlQueries.checkTableExits())) {
+            try (PreparedStatement statement = connection
+                    .prepareStatement(sqlQueries.checkTableExits())) {
                 statement.executeQuery();
                 // if no error then table exists
                 initialized.set(true);
