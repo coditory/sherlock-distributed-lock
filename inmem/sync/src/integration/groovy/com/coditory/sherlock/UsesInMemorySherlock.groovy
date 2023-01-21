@@ -12,10 +12,10 @@ trait UsesInMemorySherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
         return inMemorySherlockBuilder()
-            .withOwnerId(instanceId)
-            .withLockDuration(duration)
-            .withClock(clock)
-            .build()
+                .withOwnerId(instanceId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
     }
 }
 

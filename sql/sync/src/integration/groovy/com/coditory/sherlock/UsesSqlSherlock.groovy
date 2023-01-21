@@ -12,16 +12,16 @@ import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock
 trait UsesSqlSherlock implements DistributedLocksCreator {
     static final String locksTableName = "locks"
 
-    abstract DataSource getConnectionPool()
+    abstract DataSource getDataSource()
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
         return sqlSherlock()
-            .withConnectionPool(connectionPool)
-            .withLocksTable(locksTableName)
-            .withOwnerId(instanceId)
-            .withLockDuration(duration)
-            .withClock(clock)
-            .build()
+                .withDataSource(dataSource)
+                .withLocksTable(locksTableName)
+                .withOwnerId(instanceId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
     }
 }

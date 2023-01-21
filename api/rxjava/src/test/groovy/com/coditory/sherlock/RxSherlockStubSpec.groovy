@@ -33,7 +33,7 @@ class RxSherlockStubSpec extends Specification {
         given:
             String lockId = "some-lock"
             RxSherlock sherlock = RxSherlockStub.withAcquiredLocks()
-                .withLock(lockStub(lockId, true))
+                    .withLock(lockStub(lockId, true))
 
         expect:
             assertAlwaysClosedLock(sherlock.createLock("other-lock"))

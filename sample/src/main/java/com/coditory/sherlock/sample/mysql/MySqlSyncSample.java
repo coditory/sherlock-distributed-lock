@@ -21,12 +21,12 @@ public class MySqlSyncSample {
             .withClock(Clock.systemDefaultZone())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
-            .withConnectionPool(connectionPool())
+            .withDataSource(dataSource())
             .withLocksTable("LOCKS")
             .build();
 
 
-    private static DataSource connectionPool() {
+    private static DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:mysql://localhost:3306/test");
         config.setUsername("mysql");

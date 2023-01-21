@@ -1,10 +1,19 @@
 package com.coditory.sherlock.infrastructure
 
-import com.coditory.sherlock.*
+
+import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.LocksBaseSpec
+import com.coditory.sherlock.MySqlConnectionProvider
+import com.coditory.sherlock.PostgresConnectionProvider
+import com.coditory.sherlock.UsesSqlSherlock
 import com.coditory.sherlock.base.LockTypes
 import spock.lang.Unroll
 
-import java.sql.*
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.ResultSetMetaData
+import java.sql.Statement
+import java.sql.Timestamp
 import java.time.Duration
 import java.time.Instant
 
@@ -21,10 +30,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
             lock.acquire()
         then:
             getLockRow() == [
-                "id"         : sampleLockId,
-                "acquired_by": sampleOwnerId,
-                "acquired_at": timestamp(),
-                "expires_at" : timestamp(defaultLockDuration)
+                    "id"         : sampleLockId,
+                    "acquired_by": sampleOwnerId,
+                    "acquired_at": timestamp(),
+                    "expires_at" : timestamp(defaultLockDuration)
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -39,10 +48,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
             lock.acquire(duration)
         then:
             getLockRow() == [
-                "id"         : sampleLockId,
-                "acquired_by": sampleOwnerId,
-                "acquired_at": timestamp(),
-                "expires_at" : timestamp(duration)
+                    "id"         : sampleLockId,
+                    "acquired_by": sampleOwnerId,
+                    "acquired_at": timestamp(),
+                    "expires_at" : timestamp(duration)
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -56,10 +65,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
             lock.acquireForever()
         then:
             getLockRow() == [
-                "id"         : sampleLockId,
-                "acquired_by": sampleOwnerId,
-                "acquired_at": timestamp(),
-                "expires_at" : null
+                    "id"         : sampleLockId,
+                    "acquired_by": sampleOwnerId,
+                    "acquired_at": timestamp(),
+                    "expires_at" : null
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -81,9 +90,9 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
     private Map<String, Object> getLockRow(String lockId = sampleLockId) {
         Map<String, Object> result
         try (
-            Connection connection = connectionPool.getConnection()
-            Statement statement = connection.createStatement()
-            ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
+                Connection connection = dataSource.getConnection()
+                Statement statement = connection.createStatement()
+                ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
         ) {
             result = resultSetToList(resultSet)[0]
         }
@@ -91,17 +100,17 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesSqlSherlo
     }
 
     private List<Map<String, Object>> resultSetToList(ResultSet rs) {
-        ResultSetMetaData md = rs.getMetaData();
-        int columns = md.getColumnCount();
-        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>();
+        ResultSetMetaData md = rs.getMetaData()
+        int columns = md.getColumnCount()
+        List<Map<String, Object>> rows = new ArrayList<Map<String, Object>>()
         while (rs.next()) {
-            Map<String, Object> row = new HashMap<String, Object>(columns);
+            Map<String, Object> row = new HashMap<String, Object>(columns)
             for (int i = 1; i <= columns; ++i) {
-                row.put(md.getColumnName(i).toLowerCase(), rs.getObject(i));
+                row.put(md.getColumnName(i).toLowerCase(), rs.getObject(i))
             }
             rows.add(row);
         }
-        return rows;
+        return rows
     }
 
     private Timestamp timestamp(Duration duration = Duration.ZERO) {

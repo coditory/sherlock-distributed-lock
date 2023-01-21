@@ -6,7 +6,10 @@ import reactor.core.publisher.Mono;
 import java.time.Instant;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
-import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.*;
+import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.EXPIRES_AT;
+import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.LOCK_ID;
+import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.NOW;
+import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.OWNER_ID;
 
 final class StatementBinder {
     private final Statement statement;

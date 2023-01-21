@@ -3,7 +3,12 @@ package com.coditory.sherlock
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.coditory.sherlock.RxDistributedLockMock.*
+import static com.coditory.sherlock.RxDistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.RxDistributedLockMock.acquiredReentrantInMemoryLock
+import static com.coditory.sherlock.RxDistributedLockMock.lockStub
+import static com.coditory.sherlock.RxDistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.RxDistributedLockMock.releasedReentrantInMemoryLock
+import static com.coditory.sherlock.RxDistributedLockMock.sequencedLock
 
 class RxDistributedLockMockSpec extends Specification {
     private static final String lockId = "sample-lock"
@@ -42,10 +47,10 @@ class RxDistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                releasedInMemoryLock(),
-                releasedReentrantInMemoryLock(),
-                releasedInMemoryLock(lockId),
-                releasedReentrantInMemoryLock(lockId)
+                    releasedInMemoryLock(),
+                    releasedReentrantInMemoryLock(),
+                    releasedInMemoryLock(lockId),
+                    releasedReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -57,8 +62,8 @@ class RxDistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                acquiredReentrantInMemoryLock(),
-                acquiredReentrantInMemoryLock(lockId)
+                    acquiredReentrantInMemoryLock(),
+                    acquiredReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -70,8 +75,8 @@ class RxDistributedLockMockSpec extends Specification {
             acquire(lock) == false
         where:
             lock << [
-                acquiredInMemoryLock(),
-                acquiredInMemoryLock(lockId)
+                    acquiredInMemoryLock(),
+                    acquiredInMemoryLock(lockId)
             ]
     }
 

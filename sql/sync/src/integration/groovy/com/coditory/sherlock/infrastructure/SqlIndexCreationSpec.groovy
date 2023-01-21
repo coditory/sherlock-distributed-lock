@@ -23,17 +23,17 @@ class MySqlIndexCreationSpec extends SqlIndexCreationSpec implements MySqlConnec
 abstract class SqlIndexCreationSpec extends Specification {
     String tableName = "other_locks"
     Sherlock locks = sqlSherlock()
-            .withConnectionPool(connectionPool)
+            .withDataSource(dataSource)
             .withLocksTable(tableName)
             .build()
 
     abstract List<String> getExpectedIndexNames()
 
-    abstract DataSource getConnectionPool();
+    abstract DataSource getDataSource();
 
     void cleanup() {
         try (
-                Connection connection = connectionPool.getConnection()
+                Connection connection = dataSource.getConnection()
                 Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate("DROP TABLE " + tableName)
@@ -60,14 +60,14 @@ abstract class SqlIndexCreationSpec extends Specification {
     }
 
     boolean assertNoIndexes() {
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             assert listTableIndexes(connection, tableName).empty
         }
         return true
     }
 
     boolean assertIndexesCreated() {
-        try (Connection connection = connectionPool.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             assert listTableIndexes(connection, tableName) == expectedIndexNames
         }
         return true

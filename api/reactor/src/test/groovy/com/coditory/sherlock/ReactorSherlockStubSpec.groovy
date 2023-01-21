@@ -33,7 +33,7 @@ class ReactorSherlockStubSpec extends Specification {
         given:
             String lockId = "some-lock"
             ReactorSherlock sherlock = ReactorSherlockStub.withAcquiredLocks()
-                .withLock(lockStub(lockId, true))
+                    .withLock(lockStub(lockId, true))
 
         expect:
             assertAlwaysClosedLock(sherlock.createLock("other-lock"))

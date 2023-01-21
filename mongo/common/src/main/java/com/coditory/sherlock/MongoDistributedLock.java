@@ -13,7 +13,10 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
-import static com.coditory.sherlock.MongoDistributedLock.Fields.*;
+import static com.coditory.sherlock.MongoDistributedLock.Fields.ACQUIRED_AT_FIELD;
+import static com.coditory.sherlock.MongoDistributedLock.Fields.ACQUIRED_BY_FIELD;
+import static com.coditory.sherlock.MongoDistributedLock.Fields.EXPIRES_AT_FIELD;
+import static com.coditory.sherlock.MongoDistributedLock.Fields.LOCK_ID_FIELD;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class MongoDistributedLock {

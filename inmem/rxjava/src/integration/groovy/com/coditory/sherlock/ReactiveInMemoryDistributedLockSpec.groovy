@@ -1,13 +1,13 @@
 package com.coditory.sherlock
 
 class ReactiveInMemoryReleaseLockSpec extends ReleaseLockSpec
-    implements UsesReactiveInMemorySherlock {}
+        implements UsesReactiveInMemorySherlock {}
 
 class ReactiveInMemoryAcquireLockSpec extends AcquireLockSpec
-    implements UsesReactiveInMemorySherlock {}
+        implements UsesReactiveInMemorySherlock {}
 
 class ReactiveInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-    implements UsesReactiveInMemorySherlock {}
+        implements UsesReactiveInMemorySherlock {}
 
 class ReactiveInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-    implements UsesReactiveInMemorySherlock {}
+        implements UsesReactiveInMemorySherlock {}

@@ -7,7 +7,10 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Instant;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
-import static com.mongodb.client.model.Filters.*;
+import static com.mongodb.client.model.Filters.and;
+import static com.mongodb.client.model.Filters.eq;
+import static com.mongodb.client.model.Filters.lte;
+import static com.mongodb.client.model.Filters.or;
 
 final class MongoDistributedLockQueries {
     private MongoDistributedLockQueries() {

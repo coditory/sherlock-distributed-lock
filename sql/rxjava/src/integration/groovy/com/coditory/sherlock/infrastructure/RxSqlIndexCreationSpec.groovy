@@ -13,7 +13,7 @@ import java.sql.Statement
 
 import static com.coditory.sherlock.BlockingRxSherlockWrapper.blockingRxSherlock
 import static com.coditory.sherlock.RxSqlSherlockBuilder.rxSqlSherlock
-import static com.coditory.sherlock.SqlTableIndexes.listTableIndexes
+import static com.coditory.sherlock.infrastructure.SqlTableIndexes.listTableIndexes
 
 class RxPostgresIndexCreationSpec extends RxSqlIndexCreationSpec implements PostgresConnectionProvider {
     List<String> expectedIndexNames = [tableName + "_pkey", tableName + "_idx"].sort()

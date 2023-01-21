@@ -4,7 +4,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.OwnerIdPolicy.*;
+import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;

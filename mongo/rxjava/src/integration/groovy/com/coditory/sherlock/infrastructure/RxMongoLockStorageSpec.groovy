@@ -3,7 +3,6 @@ package com.coditory.sherlock.infrastructure
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
 import com.coditory.sherlock.RxMongoHolder
-import com.coditory.sherlock.RxMongoHolder
 import com.coditory.sherlock.UsesRxMongoSherlock
 import com.coditory.sherlock.base.LockTypes
 import org.bson.BsonDocument

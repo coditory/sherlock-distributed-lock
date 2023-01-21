@@ -5,7 +5,10 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.base.LockTypes.*
+import static com.coditory.sherlock.base.LockTypes.OVERRIDING
+import static com.coditory.sherlock.base.LockTypes.REENTRANT
+import static com.coditory.sherlock.base.LockTypes.SINGLE_ENTRANT
+import static com.coditory.sherlock.base.LockTypes.allLockTypes
 
 abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
     String lockId = "acquire-id"

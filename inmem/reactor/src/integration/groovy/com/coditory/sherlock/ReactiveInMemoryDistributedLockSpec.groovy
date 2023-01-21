@@ -1,13 +1,13 @@
 package com.coditory.sherlock
 
 class ReactorInMemoryReleaseLockSpec extends ReleaseLockSpec
-    implements UsesReactorInMemorySherlock {}
+        implements UsesReactorInMemorySherlock {}
 
 class ReactorInMemoryAcquireLockSpec extends AcquireLockSpec
-    implements UsesReactorInMemorySherlock {}
+        implements UsesReactorInMemorySherlock {}
 
 class ReactorInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-    implements UsesReactorInMemorySherlock {}
+        implements UsesReactorInMemorySherlock {}
 
 class ReactorInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-    implements UsesReactorInMemorySherlock {}
+        implements UsesReactorInMemorySherlock {}

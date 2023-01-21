@@ -18,18 +18,18 @@ trait UsesRxMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
         RxSherlock reactiveLocks = rxMongoSherlock()
-            .withLocksCollection(getLocksCollection())
-            .withOwnerId(ownerId)
-            .withLockDuration(duration)
-            .withClock(clock)
-            .build()
+                .withLocksCollection(getLocksCollection())
+                .withOwnerId(ownerId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
         return blockingRxSherlock(reactiveLocks)
     }
 
     MongoCollection<Document> getLocksCollection() {
         return RxMongoHolder.getClient()
-            .getDatabase(databaseName)
-            .getCollection(locksCollectionName)
+                .getDatabase(databaseName)
+                .getCollection(locksCollectionName)
     }
 
     @Override

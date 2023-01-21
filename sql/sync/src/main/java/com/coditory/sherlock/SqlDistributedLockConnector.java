@@ -2,6 +2,8 @@ package com.coditory.sherlock;
 
 import org.jetbrains.annotations.NotNull;
 
+import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -13,28 +15,28 @@ import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class SqlDistributedLockConnector implements DistributedLockConnector {
-    private final ConnectionPool connectionPool;
+    private final DataSource dataSource;
     private final SqlTableInitializer sqlTableInitializer;
     private final SqlLockQueries sqlQueries;
     private final Clock clock;
 
     SqlDistributedLockConnector(
-            ConnectionPool connectionPool,
+            DataSource dataSource,
             String tableName,
             Clock clock
     ) {
-        expectNonNull(connectionPool, "connectionPool");
+        expectNonNull(dataSource, "dataSource");
         expectNonEmpty(tableName, "tableName");
         expectNonNull(clock, "clock");
         this.clock = clock;
         this.sqlQueries = new SqlLockQueries(tableName);
-        this.connectionPool = connectionPool;
+        this.dataSource = dataSource;
         this.sqlTableInitializer = new SqlTableInitializer(sqlQueries);
     }
 
     @Override
     public void initialize() {
-        try (SqlConnection connection = connectionPool.getConnection()) {
+        try (Connection connection = dataSource.getConnection()) {
             sqlTableInitializer.initialize(connection);
         } catch (Throwable e) {
             throw new SherlockException("Could not initialize SQL table", e);
@@ -45,7 +47,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public boolean acquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
-        try (SqlConnection connection = connectionPool.getConnection()) {
+        try (Connection connection = getInitializedConnection()) {
             return updateReleasedLock(connection, lockRequest, now)
                     || insertLock(connection, lockRequest, now);
         } catch (Throwable e) {
@@ -57,7 +59,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public boolean acquireOrProlong(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
-        try (SqlConnection connection = connectionPool.getConnection()) {
+        try (Connection connection = getInitializedConnection()) {
             return updateAcquiredOrReleasedLock(connection, lockRequest, now)
                     || insertLock(connection, lockRequest, now);
         } catch (Throwable e) {
@@ -69,7 +71,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public boolean forceAcquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
-        try (SqlConnection connection = connectionPool.getConnection()) {
+        try (Connection connection = getInitializedConnection()) {
             return updateLockById(connection, lockRequest, now)
                     || insertLock(connection, lockRequest, now);
         } catch (Throwable e) {
@@ -77,10 +79,10 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         }
     }
 
-    private boolean updateReleasedLock(SqlConnection connection, LockRequest lockRequest, Instant now) throws SQLException {
+    private boolean updateReleasedLock(Connection connection, LockRequest lockRequest, Instant now) throws SQLException {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
-        try (PreparedStatement statement = getStatement(connection, sqlQueries.updateReleasedLock())) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQueries.updateReleasedLock())) {
             statement.setString(1, lockRequest.getOwnerId().getValue());
             statement.setTimestamp(2, timestamp(now));
             setupOptionalTimestamp(statement, 3, expiresAt);
@@ -90,10 +92,10 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         }
     }
 
-    private boolean updateAcquiredOrReleasedLock(SqlConnection connection, LockRequest lockRequest, Instant now) throws SQLException {
+    private boolean updateAcquiredOrReleasedLock(Connection connection, LockRequest lockRequest, Instant now) throws SQLException {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
-        try (PreparedStatement statement = getStatement(connection, sqlQueries.updateAcquiredOrReleasedLock())) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQueries.updateAcquiredOrReleasedLock())) {
             statement.setString(1, lockRequest.getOwnerId().getValue());
             statement.setTimestamp(2, timestamp(now));
             setupOptionalTimestamp(statement, 3, expiresAt);
@@ -104,10 +106,10 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         }
     }
 
-    private boolean updateLockById(SqlConnection connection, LockRequest lockRequest, Instant now) throws SQLException {
+    private boolean updateLockById(Connection connection, LockRequest lockRequest, Instant now) throws SQLException {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
-        try (PreparedStatement statement = getStatement(connection, sqlQueries.updateLockById())) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQueries.updateLockById())) {
             statement.setString(1, lockRequest.getOwnerId().getValue());
             statement.setTimestamp(2, timestamp(now));
             setupOptionalTimestamp(statement, 3, expiresAt);
@@ -116,10 +118,10 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         }
     }
 
-    private boolean insertLock(SqlConnection connection, LockRequest lockRequest, Instant now) throws SQLException {
+    private boolean insertLock(Connection connection, LockRequest lockRequest, Instant now) throws SQLException {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
-        try (PreparedStatement statement = getStatement(connection, sqlQueries.insertLock())) {
+        try (PreparedStatement statement = connection.prepareStatement(sqlQueries.insertLock())) {
             statement.setString(1, lockId);
             statement.setString(2, lockRequest.getOwnerId().getValue());
             statement.setTimestamp(3, timestamp(now));
@@ -138,8 +140,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         try (
-                SqlConnection connection = connectionPool.getConnection();
-                PreparedStatement statement = getStatement(connection, sqlQueries.deleteAcquiredByIdAndOwnerId())
+                Connection connection = getInitializedConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlQueries.deleteAcquiredByIdAndOwnerId())
         ) {
             statement.setString(1, lockId.getValue());
             statement.setString(2, ownerId.getValue());
@@ -154,8 +156,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public boolean forceRelease(@NotNull LockId lockId) {
         expectNonNull(lockId, "lockId");
         try (
-                SqlConnection connection = connectionPool.getConnection();
-                PreparedStatement statement = getStatement(connection, sqlQueries.deleteAcquiredById())
+                Connection connection = getInitializedConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlQueries.deleteAcquiredById())
         ) {
             statement.setString(1, lockId.getValue());
             statement.setTimestamp(2, timestamp(now()));
@@ -168,8 +170,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     @Override
     public boolean forceReleaseAll() {
         try (
-                SqlConnection connection = connectionPool.getConnection();
-                PreparedStatement statement = getStatement(connection, sqlQueries.deleteAll())
+                Connection connection = getInitializedConnection();
+                PreparedStatement statement = connection.prepareStatement(sqlQueries.deleteAll())
         ) {
             return statement.executeUpdate() > 0;
         } catch (Throwable e) {
@@ -201,7 +203,9 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         return new Timestamp(instant.toEpochMilli());
     }
 
-    private PreparedStatement getStatement(SqlConnection connection, String sql) {
-        return sqlTableInitializer.getInitializedStatement(connection, sql);
+    private Connection getInitializedConnection() throws SQLException {
+        Connection connection = dataSource.getConnection();
+        sqlTableInitializer.initialize(connection);
+        return connection;
     }
 }

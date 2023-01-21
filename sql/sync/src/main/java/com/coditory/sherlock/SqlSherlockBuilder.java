@@ -3,7 +3,6 @@ package com.coditory.sherlock;
 import org.jetbrains.annotations.NotNull;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
 import java.time.Clock;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
@@ -17,7 +16,7 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
     public static final String DEFAULT_LOCKS_TABLE_NAME = "locks";
     private String tableName = DEFAULT_LOCKS_TABLE_NAME;
     private Clock clock = DEFAULT_CLOCK;
-    private ConnectionPool connectionPool;
+    private DataSource dataSource;
 
     /**
      * @return new instance of the builder
@@ -28,29 +27,14 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
     }
 
     /**
-     * @param connection the connection to the database
-     * @return sql sherlock with default configuration
-     * @see <a href="https://github.com/coditory/sherlock-distributed-lock/issues/79">Recovery after DB outage is failing</a>
-     * @deprecated Use {@link #withConnectionPool(DataSource)} instead.
-     */
-    @Deprecated(since = "0.4.17")
-    @NotNull
-    public static Sherlock sqlSherlock(@NotNull Connection connection) {
-        expectNonNull(connection, "connection");
-        return sqlSherlock()
-                .withConnection(connection)
-                .build();
-    }
-
-    /**
-     * @param connectionPool the connection to the database
+     * @param dataSource the connection pool to the database
      * @return sql sherlock with default configuration
      */
     @NotNull
-    public static Sherlock sqlSherlock(@NotNull DataSource connectionPool) {
-        expectNonNull(connectionPool, "connectionPool");
+    public static Sherlock sqlSherlock(@NotNull DataSource dataSource) {
+        expectNonNull(dataSource, "dataSource");
         return sqlSherlock()
-                .withConnectionPool(connectionPool)
+                .withDataSource(dataSource)
                 .build();
     }
 
@@ -59,27 +43,13 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
     }
 
     /**
-     * @param connection the connection to the database
-     * @return the instance
-     * @see <a href="https://github.com/coditory/sherlock-distributed-lock/issues/79">Recovery after DB outage is failing</a>
-     * @deprecated Use {@link #withConnectionPool(DataSource)} instead.
-     */
-    @Deprecated(since = "0.4.17")
-    @NotNull
-    public SqlSherlockBuilder withConnection(@NotNull Connection connection) {
-        expectNonNull(connection, "connection");
-        this.connectionPool = ConnectionPool.of(connection);
-        return this;
-    }
-
-    /**
-     * @param connectionPool the connection pool to the database
+     * @param dataSource the connection pool to the database
      * @return the instance
      */
     @NotNull
-    public SqlSherlockBuilder withConnectionPool(@NotNull DataSource connectionPool) {
-        expectNonNull(connectionPool, "connectionPool");
-        this.connectionPool = ConnectionPool.of(connectionPool);
+    public SqlSherlockBuilder withDataSource(@NotNull DataSource dataSource) {
+        expectNonNull(dataSource, "dataSource");
+        this.dataSource = dataSource;
         return this;
     }
 
@@ -110,9 +80,8 @@ public final class SqlSherlockBuilder extends SherlockWithConnectorBuilder<SqlSh
      */
     @NotNull
     public Sherlock build() {
-        expectNonNull(connectionPool, "connectionPool");
-        SqlDistributedLockConnector connector = new SqlDistributedLockConnector(
-                connectionPool, tableName, clock);
+        expectNonNull(dataSource, "dataSource");
+        SqlDistributedLockConnector connector = new SqlDistributedLockConnector(dataSource, tableName, clock);
         return super.build(connector);
     }
 }

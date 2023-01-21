@@ -16,7 +16,7 @@ class PostgresHolder {
     private static final Logger LOGGER = LoggerFactory.getLogger(PostgresHolder)
     private static ResumablePostgreSQLContainer db
     private static started = false
-    private static DataSource connectionPool = null
+    private static DataSource dataSource = null
 
     synchronized static Connection getConnection() {
         startDb()
@@ -26,9 +26,9 @@ class PostgresHolder {
         return DriverManager.getConnection(db.getJdbcUrl(), properties)
     }
 
-    synchronized static DataSource getConnectionPool() {
-        if (connectionPool != null) {
-            return connectionPool
+    synchronized static DataSource getDataSource() {
+        if (dataSource != null) {
+            return dataSource
         }
         startDb()
         HikariConfig config = new HikariConfig()
@@ -36,8 +36,8 @@ class PostgresHolder {
         config.setUsername(db.getUsername())
         config.setPassword(db.getPassword())
         config.setConnectionTimeout(10000)
-        connectionPool = new HikariDataSource(config)
-        return connectionPool
+        dataSource = new HikariDataSource(config)
+        return dataSource
     }
 
     synchronized static void startDb() {

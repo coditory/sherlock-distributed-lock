@@ -21,10 +21,10 @@ class RxMongoHolder {
         }
         startDb()
         String url = String.format(
-            "mongodb://%s:%d/%s",
-            db.getHost(),
-            db.getPort(),
-            databaseName
+                "mongodb://%s:%d/%s",
+                db.getHost(),
+                db.getPort(),
+                databaseName
         )
         mongoClient = MongoClients.create(url)
         return mongoClient

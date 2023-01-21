@@ -5,7 +5,9 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.base.LockTypes.*
+import static com.coditory.sherlock.base.LockTypes.OVERRIDING
+import static com.coditory.sherlock.base.LockTypes.REENTRANT
+import static com.coditory.sherlock.base.LockTypes.allLockTypes
 
 abstract class AcquireLockMultipleTimesSpec extends LocksBaseSpec {
     static List<LockTypes> mayAcquireMultipleTimes = [REENTRANT, OVERRIDING]

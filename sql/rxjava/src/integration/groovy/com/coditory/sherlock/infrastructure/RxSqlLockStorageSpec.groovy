@@ -1,11 +1,20 @@
 package com.coditory.sherlock.infrastructure
 
-import com.coditory.sherlock.*
+
+import com.coditory.sherlock.DistributedLock
+import com.coditory.sherlock.LocksBaseSpec
+import com.coditory.sherlock.MySqlConnectionProvider
+import com.coditory.sherlock.PostgresConnectionProvider
+import com.coditory.sherlock.UsesRxSqlSherlock
 import com.coditory.sherlock.base.LockTypes
 import spock.lang.Ignore
 import spock.lang.Unroll
 
-import java.sql.*
+import java.sql.Connection
+import java.sql.ResultSet
+import java.sql.ResultSetMetaData
+import java.sql.Statement
+import java.sql.Timestamp
 import java.time.Duration
 import java.time.Instant
 

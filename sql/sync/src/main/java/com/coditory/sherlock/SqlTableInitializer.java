@@ -1,5 +1,6 @@
 package com.coditory.sherlock;
 
+import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Statement;
@@ -16,18 +17,7 @@ class SqlTableInitializer {
         this.sqlQueries = sqlQueries;
     }
 
-    PreparedStatement getInitializedStatement(SqlConnection connection, String sql) {
-        if (initialized.compareAndSet(false, true)) {
-            initialize(connection);
-        }
-        try {
-            return connection.prepareStatement(sql);
-        } catch (SQLException e) {
-            throw new IllegalStateException("Could not create SQL statement", e);
-        }
-    }
-
-    void initialize(SqlConnection connection) {
+    void initialize(Connection connection) {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlQueries.createLocksTable());
             statement.executeUpdate(sqlQueries.createLocksIndex());
@@ -36,7 +26,7 @@ class SqlTableInitializer {
             try (PreparedStatement statement = connection
                     .prepareStatement(sqlQueries.checkTableExits())) {
                 statement.executeQuery();
-                // if no error then table exists
+                // no error means that the table exists
                 initialized.set(true);
             } catch (SQLException checkException) {
                 throw new IllegalStateException("Could not initialize locks table", e);

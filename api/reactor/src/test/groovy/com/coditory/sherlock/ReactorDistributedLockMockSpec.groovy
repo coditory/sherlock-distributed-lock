@@ -3,7 +3,11 @@ package com.coditory.sherlock
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.coditory.sherlock.ReactorDistributedLockMock.*
+import static com.coditory.sherlock.ReactorDistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.ReactorDistributedLockMock.acquiredReentrantInMemoryLock
+import static com.coditory.sherlock.ReactorDistributedLockMock.lockStub
+import static com.coditory.sherlock.ReactorDistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.ReactorDistributedLockMock.sequencedLock
 
 class ReactorDistributedLockMockSpec extends Specification {
     private static final String lockId = "sample-lock"
@@ -42,7 +46,7 @@ class ReactorDistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                releasedInMemoryLock()
+                    releasedInMemoryLock()
 //        releasedReentrantInMemoryLock(),
 //        releasedInMemoryLock(lockId),
 //        releasedReentrantInMemoryLock(lockId)
@@ -57,8 +61,8 @@ class ReactorDistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                acquiredReentrantInMemoryLock(),
-                acquiredReentrantInMemoryLock(lockId)
+                    acquiredReentrantInMemoryLock(),
+                    acquiredReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -70,8 +74,8 @@ class ReactorDistributedLockMockSpec extends Specification {
             acquire(lock) == false
         where:
             lock << [
-                acquiredInMemoryLock(),
-                acquiredInMemoryLock(lockId)
+                    acquiredInMemoryLock(),
+                    acquiredInMemoryLock(lockId)
             ]
     }
 

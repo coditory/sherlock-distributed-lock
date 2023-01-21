@@ -16,7 +16,10 @@ import reactor.core.publisher.Mono;
 import java.time.Clock;
 import java.time.Instant;
 
-import static com.coditory.sherlock.MongoDistributedLockQueries.*;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryById;
+import static com.coditory.sherlock.MongoDistributedLockQueries.queryReleased;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class ReactorMongoDistributedLockConnector implements ReactorDistributedLockConnector {

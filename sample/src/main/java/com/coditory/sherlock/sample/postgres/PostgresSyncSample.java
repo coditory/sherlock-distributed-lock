@@ -21,11 +21,11 @@ public class PostgresSyncSample {
             .withClock(Clock.systemDefaultZone())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
-            .withConnectionPool(connectionPool())
+            .withDataSource(dataSource())
             .withLocksTable("LOCKS")
             .build();
 
-    private static DataSource connectionPool() {
+    private static DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
         config.setUsername("postgres");

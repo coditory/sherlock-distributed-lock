@@ -1,16 +1,16 @@
 package com.coditory.sherlock
 
 class RxMongoReleaseLockSpec extends ReleaseLockSpec
-    implements UsesRxMongoSherlock {}
+        implements UsesRxMongoSherlock {}
 
 class RxMongoAcquireLockSpec extends AcquireLockSpec
-    implements UsesRxMongoSherlock {}
+        implements UsesRxMongoSherlock {}
 
 class RxMongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-    implements UsesRxMongoSherlock {}
+        implements UsesRxMongoSherlock {}
 
 class RxMongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-    implements UsesRxMongoSherlock {}
+        implements UsesRxMongoSherlock {}
 
 class RxMongoHandleDbFailureSpec extends HandleDbFailureSpec
-    implements UsesRxMongoSherlock {}
+        implements UsesRxMongoSherlock {}

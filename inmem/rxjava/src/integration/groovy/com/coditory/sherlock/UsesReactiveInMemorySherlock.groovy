@@ -13,10 +13,10 @@ trait UsesReactiveInMemorySherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
         RxSherlock reactiveLocks = rxInMemorySherlockBuilder()
-            .withOwnerId(instanceId)
-            .withLockDuration(duration)
-            .withClock(clock)
-            .build()
+                .withOwnerId(instanceId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
         return blockingRxSherlock(reactiveLocks)
     }
 }
