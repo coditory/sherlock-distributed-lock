@@ -1,15 +1,18 @@
-description = 'Sherlock Distributed Lock implementation using SQL synchronous connector'
+description = 'Sherlock Distributed Lock implementation for RxJava using SQL asynchronous connector R2DBC'
 
 dependencies {
-    api project(':api:api-sync')
+    api project(':api:api-rxjava')
     implementation project(':common')
     implementation project(':sql:sql-common')
+    api "io.r2dbc:r2dbc-spi:$versions.r2dbc"
     integrationImplementation project(':tests')
-    integrationImplementation "com.zaxxer:HikariCP:$versions.hikaricp"
+    integrationImplementation "io.r2dbc:r2dbc-pool:$versions.r2dbc"
     // postgres
     integrationImplementation "org.postgresql:postgresql:$versions.postgresql"
+    integrationImplementation "org.postgresql:r2dbc-postgresql:$versions.r2dbc"
     integrationImplementation "org.testcontainers:postgresql:$versions.testContainers"
     // mysql
     integrationImplementation "mysql:mysql-connector-java:$versions.mysql"
+    // integrationImplementation "dev.miku:r2dbc-mysql:$versions.r2dbcMysql"
     integrationImplementation "org.testcontainers:mysql:$versions.testContainers"
 }

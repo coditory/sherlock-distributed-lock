@@ -18,6 +18,7 @@ include("sql")
 include("sql:sql-common")
 include("sql:sql-sync")
 include("sql:sql-reactor")
+include("sql:sql-rxjava")
 include("tests")
 
 // Alias node names so all are unique
@@ -35,6 +36,7 @@ project(":inmem:inmem-rxjava").projectDir = file("./inmem/rxjava")
 project(":inmem:inmem-common").projectDir = file("./inmem/common")
 project(":sql:sql-sync").projectDir = file("./sql/sync")
 project(":sql:sql-reactor").projectDir = file("./sql/reactor")
+project(":sql:sql-rxjava").projectDir = file("./sql/rxjava")
 project(":sql:sql-common").projectDir = file("./sql/common")
 
 plugins {

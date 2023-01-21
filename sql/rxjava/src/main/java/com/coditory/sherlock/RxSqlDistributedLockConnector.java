@@ -6,8 +6,9 @@ import com.coditory.sherlock.connector.ReleaseResult;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Statement;
+import io.reactivex.Flowable;
+import io.reactivex.Single;
 import org.jetbrains.annotations.NotNull;
-import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -16,13 +17,13 @@ import java.util.function.Function;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
-class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnector {
-    private final ReactorSqlTableInitializer sqlTableInitializer;
+class RxSqlDistributedLockConnector implements RxDistributedLockConnector {
+    private final RxSqlTableInitializer sqlTableInitializer;
     private final SqlLockQueries sqlQueries;
     private final Clock clock;
     private final BindingMapper bindingMapper;
 
-    ReactorSqlDistributedLockConnector(
+    RxSqlDistributedLockConnector(
             @NotNull ConnectionFactory connectionFactory,
             @NotNull String tableName,
             @NotNull Clock clock,
@@ -34,61 +35,61 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
         expectNonNull(bindingMapper, "bindingMapper");
         this.clock = clock;
         this.sqlQueries = new SqlLockQueries(tableName, bindingMapper);
-        this.sqlTableInitializer = new ReactorSqlTableInitializer(connectionFactory, sqlQueries);
+        this.sqlTableInitializer = new RxSqlTableInitializer(connectionFactory, sqlQueries);
         this.bindingMapper = bindingMapper;
     }
 
     @Override
     @NotNull
-    public Mono<InitializationResult> initialize() {
+    public Single<InitializationResult> initialize() {
         return sqlTableInitializer.getInitializedConnection()
-                .flatMap(c -> Mono.from(c.close()).thenReturn(InitializationResult.of(true)))
-                .onErrorMap(e -> new SherlockException("Could not initialize SQL table", e));
+                .flatMap(c -> closeConnection(c).map(__ -> InitializationResult.of(true)))
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not initialize SQL table", e)));
     }
 
     @Override
     @NotNull
-    public Mono<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
+    public Single<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateReleasedLock(connection, lockRequest, now)
                         .flatMap(updated -> updated
-                                ? Mono.just(true)
+                                ? Single.just(true)
                                 : insertLock(connection, lockRequest, now))
         )
-                .onErrorMap(e -> new SherlockException("Could not acquire lock: " + lockRequest, e))
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire lock: " + lockRequest, e)))
                 .map(AcquireResult::of);
     }
 
     @Override
     @NotNull
-    public Mono<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
+    public Single<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateAcquiredOrReleasedLock(connection, lockRequest, now)
                         .flatMap(updated -> updated
-                                ? Mono.just(true)
+                                ? Single.just(true)
                                 : insertLock(connection, lockRequest, now))
         )
-                .onErrorMap(e -> new SherlockException("Could not acquire or prolong lock: " + lockRequest, e))
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)))
                 .map(AcquireResult::of);
     }
 
     @Override
     @NotNull
-    public Mono<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
+    public Single<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateLockById(connection, lockRequest, now)
                         .flatMap(updated -> updated
-                                ? Mono.just(true)
+                                ? Single.just(true)
                                 : insertLock(connection, lockRequest, now))
         )
-                .onErrorMap(e -> new SherlockException("Could not force acquire lock: " + lockRequest, e))
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force acquire lock: " + lockRequest, e)))
                 .map(AcquireResult::of);
     }
 
-    private Mono<Boolean> updateReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
+    private Single<Boolean> updateReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
         return statementBinder(connection, sqlQueries.updateReleasedLock())
@@ -101,7 +102,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                 .map(updatedRows -> updatedRows > 0);
     }
 
-    private Mono<Boolean> updateAcquiredOrReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
+    private Single<Boolean> updateAcquiredOrReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
         return statementBinder(connection, sqlQueries.updateAcquiredOrReleasedLock())
@@ -115,7 +116,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                 .map(updatedRows -> updatedRows > 0);
     }
 
-    private Mono<Boolean> updateLockById(Connection connection, LockRequest lockRequest, Instant now) {
+    private Single<Boolean> updateLockById(Connection connection, LockRequest lockRequest, Instant now) {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
         return statementBinder(connection, sqlQueries.updateLockById())
@@ -127,7 +128,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                 .map(updatedRows -> updatedRows > 0);
     }
 
-    private Mono<Boolean> insertLock(Connection connection, LockRequest lockRequest, Instant now) {
+    private Single<Boolean> insertLock(Connection connection, LockRequest lockRequest, Instant now) {
         String lockId = lockRequest.getLockId().getValue();
         Instant expiresAt = expiresAt(now, lockRequest.getDuration());
         return statementBinder(connection, sqlQueries.insertLock())
@@ -137,12 +138,12 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                 .bindExpiresAt(expiresAt)
                 .executeAndGetUpdated()
                 .map(updatedRows -> updatedRows > 0)
-                .onErrorResume(e -> Mono.just(false));
+                .onErrorResumeNext(e -> Single.just(false));
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
         return statementBinder(sqlQueries.deleteAcquiredByIdAndOwnerId(), binder ->
                 binder
                         .bindLockId(lockId.getValue())
@@ -150,31 +151,31 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                         .bindNow(now())
                         .executeAndGetUpdated()
                         .map(updated -> ReleaseResult.of(updated > 0))
-        ).onErrorMap(e -> new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e));
+        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e)));
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Single<ReleaseResult> forceRelease(@NotNull LockId lockId) {
         return statementBinder(sqlQueries.deleteAcquiredById(), binder ->
                 binder
                         .bindOwnerId(lockId.getValue())
                         .bindNow(now())
                         .executeAndGetUpdated()
                         .map(updated -> ReleaseResult.of(updated > 0))
-        ).onErrorMap(e -> new SherlockException("Could not force release lock: " + lockId.getValue(), e));
+        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release lock: " + lockId.getValue(), e)));
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> forceReleaseAll() {
+    public Single<ReleaseResult> forceReleaseAll() {
         return connectionFlatMap(connection -> {
             Statement statement = connection.createStatement(sqlQueries.deleteAll());
-            return Mono.from(statement.execute())
-                    .flatMap(result -> Mono.from(result.getRowsUpdated()))
+            return Single.fromPublisher(statement.execute())
+                    .flatMap(result -> Single.fromPublisher(result.getRowsUpdated()))
                     .map(updated -> ReleaseResult.of(updated > 0));
         })
-                .onErrorMap(e -> new SherlockException("Could not force release all locks", e));
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release all locks", e)));
     }
 
     private Instant now() {
@@ -188,7 +189,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
         return now.plus(duration.getValue());
     }
 
-    private <T> Mono<T> statementBinder(String sql, Function<StatementBinder, Mono<T>> action) {
+    private <T> Single<T> statementBinder(String sql, Function<StatementBinder, Single<T>> action) {
         return connectionFlatMap(connection -> {
             StatementBinder binder = statementBinder(connection, sql);
             return action.apply(binder);
@@ -200,13 +201,20 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
         return new StatementBinder(statement, bindingMapper);
     }
 
-    private <T> Mono<T> connectionFlatMap(Function<Connection, Mono<T>> action) {
+    private <T> Single<T> connectionFlatMap(Function<Connection, Single<T>> action) {
         return sqlTableInitializer.getInitializedConnection()
                 .flatMap(connection ->
                         action.apply(connection)
-                                .flatMap(v -> Mono.from(connection.close()).thenReturn(v))
-                                .onErrorResume(e -> Mono.from(connection.close()).then(Mono.error(e)))
-                                .switchIfEmpty(Mono.fromCallable(connection::close).flatMap(Mono::from).then(Mono.empty()))
+                                .flatMap(v -> closeConnection(connection).map(__ -> v))
+                                .onErrorResumeNext(e -> closeConnection(connection).flatMap(wer -> Single.error(e)))
                 );
+    }
+
+    private Single<Boolean> closeConnection(Connection connection) {
+        return Flowable.fromPublisher(connection.close())
+                .firstElement()
+                .map(__ -> true)
+                .toSingle(true)
+                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not close connection", e)));
     }
 }
