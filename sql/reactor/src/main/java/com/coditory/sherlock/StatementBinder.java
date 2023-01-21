@@ -5,14 +5,17 @@ import reactor.core.publisher.Mono;
 
 import java.time.Instant;
 
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.*;
 
 final class StatementBinder {
     private final Statement statement;
-    private final BindingParameterMapper bindingMapper;
+    private final BindingMapper bindingMapper;
     private int index = 0;
 
-    StatementBinder(Statement statement, BindingParameterMapper bindingMapper) {
+    StatementBinder(Statement statement, BindingMapper bindingMapper) {
+        expectNonNull(statement, "statement");
+        expectNonNull(bindingMapper, "bindingMapper");
         this.statement = statement;
         this.bindingMapper = bindingMapper;
     }

@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
@@ -21,54 +22,62 @@ class RxDelegatingDistributedLock implements RxDistributedLock {
             ReleaseAction releaseAction,
             LockId lockId,
             OwnerId ownerId,
-            LockDuration duration) {
-        this.lockId = expectNonNull(lockId);
-        this.ownerId = expectNonNull(ownerId);
-        this.duration = expectNonNull(duration);
-        this.acquireAction = acquireAction;
-        this.releaseAction = releaseAction;
+            LockDuration duration
+    ) {
+        this.lockId = expectNonNull(lockId, "lockId");
+        this.ownerId = expectNonNull(ownerId, "ownerId");
+        this.duration = expectNonNull(duration, "duration");
+        this.acquireAction = expectNonNull(acquireAction, "acquireAction");
+        this.releaseAction = expectNonNull(releaseAction, "releaseAction");
         this.lockResultLogger = new LockResultLogger(lockId.getValue(), getClass());
     }
 
     @Override
+    @NotNull
     public String getId() {
         return lockId.getValue();
     }
 
     @Override
+    @NotNull
     public Single<AcquireResult> acquire() {
         return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
-    public Single<AcquireResult> acquire(Duration duration) {
+    @NotNull
+    public Single<AcquireResult> acquire(@NotNull Duration duration) {
         LockDuration lockDuration = LockDuration.of(duration);
         return acquire(new LockRequest(lockId, ownerId, lockDuration));
     }
 
     @Override
+    @NotNull
     public Single<AcquireResult> acquireForever() {
         return acquire(new LockRequest(lockId, ownerId, null));
     }
 
     @Override
+    @NotNull
     public Single<ReleaseResult> release() {
         return releaseAction.release(lockId, ownerId)
-            .doAfterSuccess(lockResultLogger::logResult);
+                .doAfterSuccess(lockResultLogger::logResult);
     }
 
     private Single<AcquireResult> acquire(LockRequest lockRequest) {
         return acquireAction.acquire(lockRequest)
-            .doAfterSuccess(lockResultLogger::logResult);
+                .doAfterSuccess(lockResultLogger::logResult);
     }
 
     @FunctionalInterface
     public interface ReleaseAction {
-        Single<ReleaseResult> release(LockId lockId, OwnerId ownerId);
+        @NotNull
+        Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
     }
 
     @FunctionalInterface
     public interface AcquireAction {
-        Single<AcquireResult> acquire(LockRequest lockRequest);
+        @NotNull
+        Single<AcquireResult> acquire(@NotNull LockRequest lockRequest);
     }
 }

@@ -2,10 +2,13 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Use to stub {@link ReactorSherlock} in tests.
@@ -19,9 +22,10 @@ public final class ReactorSherlockStub implements ReactorSherlock {
      *
      * @return the instance
      */
+    @NotNull
     static public ReactorSherlockStub withReleasedLocks() {
         return new ReactorSherlockStub()
-            .withDefaultAcquireResult(true);
+                .withDefaultAcquireResult(true);
     }
 
     /**
@@ -29,9 +33,10 @@ public final class ReactorSherlockStub implements ReactorSherlock {
      *
      * @return the instance
      */
+    @NotNull
     static public ReactorSherlockStub withAcquiredLocks() {
         return new ReactorSherlockStub()
-            .withDefaultAcquireResult(false);
+                .withDefaultAcquireResult(false);
     }
 
     /**
@@ -40,7 +45,9 @@ public final class ReactorSherlockStub implements ReactorSherlock {
      * @param lock returned when creating a lock with the same id
      * @return the instance
      */
-    public ReactorSherlockStub withLock(ReactorDistributedLock lock) {
+    @NotNull
+    public ReactorSherlockStub withLock(@NotNull ReactorDistributedLock lock) {
+        expectNonNull(lock, "lock");
         this.locksById.put(lock.getId(), lock);
         return this;
     }
@@ -51,26 +58,31 @@ public final class ReactorSherlockStub implements ReactorSherlock {
     }
 
     @Override
+    @NotNull
     public Mono<InitializationResult> initialize() {
         return Mono.just(InitializationResult.of(true));
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<ReactorDistributedLock> createLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<ReactorDistributedLock> createReentrantLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<ReactorDistributedLock> createOverridingLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public Mono<ReleaseResult> forceReleaseAllLocks() {
         return Mono.just(ReleaseResult.FAILURE);
     }
@@ -80,9 +92,9 @@ public final class ReactorSherlockStub implements ReactorSherlock {
     }
 
     private ReactorDistributedLock getLockOrDefault(
-        LockId id, LockDuration duration, OwnerId ownerId) {
+            LockId id, LockDuration duration, OwnerId ownerId) {
         ReactorDistributedLockMock defaultLock = ReactorDistributedLockMock
-            .lockStub(id.getValue(), defaultLockResult);
+                .lockStub(id.getValue(), defaultLockResult);
         return locksById.getOrDefault(id.getValue(), defaultLock);
     }
 }

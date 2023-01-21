@@ -7,12 +7,14 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import static com.coditory.sherlock.MongoDistributedLock.INDEX;
 import static com.coditory.sherlock.MongoDistributedLock.INDEX_OPTIONS;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class MongoCollectionInitializer {
     private final MongoCollection<Document> collection;
     private final AtomicBoolean indexesCreated = new AtomicBoolean(false);
 
     MongoCollectionInitializer(MongoCollection<Document> collection) {
+        expectNonNull(collection, "collection");
         this.collection = collection;
     }
 

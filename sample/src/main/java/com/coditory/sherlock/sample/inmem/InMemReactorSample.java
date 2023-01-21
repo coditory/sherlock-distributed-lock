@@ -8,17 +8,17 @@ import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
+import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactorInMemorySherlockBuilder;
 
 public class InMemReactorSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     void sampleInMemLockUsage() {
-        ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
+        ReactorSherlock sherlock = reactorInMemorySherlockBuilder()
                 .withClock(Clock.systemDefaultZone())
                 .withUniqueOwnerId()
                 .withSharedStorage()
-                .buildWithApi(ReactorSherlock::reactorSherlock);
+                .build();
         // ...or simply
         // ReactorSherlock sherlockWithDefaults = reactorSherlock(reactiveInMemorySherlock());
         ReactorDistributedLock lock = sherlock.createLock("sample-lock");

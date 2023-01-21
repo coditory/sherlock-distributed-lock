@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.DelegatingDistributedLock.AcquireAction;
 import com.coditory.sherlock.DelegatingDistributedLock.ReleaseAction;
 import com.coditory.sherlock.DistributedLockBuilder.LockCreator;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -17,12 +18,11 @@ final class SherlockWithConnector implements Sherlock {
     SherlockWithConnector(
             DistributedLockConnector connector,
             OwnerIdPolicy defaultOwnerIdPolicy,
-            LockDuration defaultDuration) {
-        this.connector = expectNonNull(connector, "Expected non null connector");
-        this.defaultOwnerIdPolicy =
-                expectNonNull(defaultOwnerIdPolicy, "Expected non null defaultOwnerIdPolicy");
-        this.defaultDuration =
-                expectNonNull(defaultDuration, "Expected non null defaultDuration");
+            LockDuration defaultDuration
+    ) {
+        this.connector = expectNonNull(connector, "connector");
+        this.defaultOwnerIdPolicy = expectNonNull(defaultOwnerIdPolicy, "defaultOwnerIdPolicy");
+        this.defaultDuration = expectNonNull(defaultDuration, "defaultDuration");
     }
 
     @Override
@@ -32,16 +32,19 @@ final class SherlockWithConnector implements Sherlock {
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createLock() {
         return createLockBuilder(connector::acquire, connector::release);
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createReentrantLock() {
         return createLockBuilder(connector::acquireOrProlong, connector::release);
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createOverridingLock() {
         return createLockBuilder(connector::forceAcquire, (id, __) -> connector.forceRelease(id));
     }

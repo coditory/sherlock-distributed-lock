@@ -1,5 +1,8 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
@@ -10,30 +13,33 @@ final class LockRequest {
     private final LockDuration duration;
 
     public LockRequest(
-            LockId lockId,
-            OwnerId ownerId,
-            LockDuration duration) {
-        this.lockId = expectNonNull(lockId);
-        this.ownerId = expectNonNull(ownerId);
+            @NotNull LockId lockId,
+            @NotNull OwnerId ownerId,
+            @Nullable LockDuration duration
+    ) {
+        this.lockId = expectNonNull(lockId, "lockId");
+        this.ownerId = expectNonNull(ownerId, "ownerId");
         this.duration = duration;
     }
 
     public LockRequest(
-            LockId lockId,
-            OwnerId ownerId) {
-        this.lockId = expectNonNull(lockId);
-        this.ownerId = expectNonNull(ownerId);
-        this.duration = null;
+            @NotNull LockId lockId,
+            @NotNull OwnerId ownerId
+    ) {
+        this(lockId, ownerId, null);
     }
 
+    @NotNull
     public LockId getLockId() {
         return lockId;
     }
 
+    @NotNull
     public OwnerId getOwnerId() {
         return ownerId;
     }
 
+    @Nullable
     public LockDuration getDuration() {
         return duration;
     }

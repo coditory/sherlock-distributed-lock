@@ -1,9 +1,11 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 interface DistributedLockConnector {
     /**
-     * Initializes underlying infrastructure for locks. Most frequently triggers database index
-     * creation.
+     * Initializes underlying infrastructure for locks.
+     * Most frequently triggers database table creation and index creation.
      * <p>
      * If it is not executed explicitly, connector may execute it during first acquire acquisition or
      * release.
@@ -11,43 +13,42 @@ interface DistributedLockConnector {
     void initialize();
 
     /**
-     * Acquires a lock when there is no acquired lock with the same lockId.
+     * Acquire a lock.
      *
      * @return boolean - true if acquire was acquired by this call
      */
-    boolean acquire(LockRequest lockRequest);
+    boolean acquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the
-     * acquire if it was already acquired by the same instance.
+     * Acquire a lock or prolong it if it was acquired by the same instance.
      *
      * @return boolean - true if acquire was acquired by this call
      */
-    boolean acquireOrProlong(LockRequest lockRequest);
+    boolean acquireOrProlong(@NotNull LockRequest lockRequest);
 
     /**
-     * Acquires a acquire even if it was already acquired.
+     * Acquire a lock even if it was already acquired by someone else
      *
      * @return boolean - true if acquire was acquired by this call
      */
-    boolean forceAcquire(LockRequest lockRequest);
+    boolean forceAcquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Unlock previously acquired acquire by the same instance.
+     * Unlock a lock if wat acquired by the same instance.
      *
      * @return boolean - true if acquire was released by this call
      */
-    boolean release(LockId lockId, OwnerId ownerId);
+    boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
 
     /**
-     * Unlocks a acquire without checking its owner or release date.
+     * Release a lock without checking its owner or release date.
      *
      * @return boolean - true if acquire was released by this call
      */
-    boolean forceRelease(LockId lockId);
+    boolean forceRelease(@NotNull LockId lockId);
 
     /**
-     * Unlocks all locks without checking its owner or release date.
+     * Release all locks without checking their owners or release dates.
      *
      * @return boolean - true if at least one lock was released
      */

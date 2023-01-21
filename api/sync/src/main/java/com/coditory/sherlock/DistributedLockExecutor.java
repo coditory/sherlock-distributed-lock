@@ -5,7 +5,7 @@ import com.coditory.sherlock.DistributedLock.ReleaseAndExecuteResult;
 
 final class DistributedLockExecutor {
     private DistributedLockExecutor() {
-        throw new IllegalStateException("Do not instantiate utility class");
+        throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 
     static AcquireAndExecuteResult executeOnAcquired(boolean acquired, Runnable action, Runnable release) {

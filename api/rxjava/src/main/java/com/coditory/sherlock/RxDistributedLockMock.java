@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 import java.util.List;
@@ -15,19 +16,25 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.UuidGenerator.uuid;
 
 public final class RxDistributedLockMock implements RxDistributedLock {
+    @NotNull
     public static RxDistributedLockMock releasedInMemoryLock() {
         return releasedInMemoryLock(uuid());
     }
 
+    @NotNull
     public static RxDistributedLockMock acquiredInMemoryLock() {
         return acquiredInMemoryLock(uuid());
     }
 
-    public static RxDistributedLockMock releasedInMemoryLock(String lockId) {
+    @NotNull
+    public static RxDistributedLockMock releasedInMemoryLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return inMemoryLock(lockId, false);
     }
 
-    public static RxDistributedLockMock acquiredInMemoryLock(String lockId) {
+    @NotNull
+    public static RxDistributedLockMock acquiredInMemoryLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return inMemoryLock(lockId, true);
     }
 
@@ -35,19 +42,25 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         return of(InMemoryDistributedLockStub.inMemoryLock(LockId.of(lockId), state));
     }
 
+    @NotNull
     public static RxDistributedLockMock releasedReentrantInMemoryLock() {
         return releasedReentrantInMemoryLock(uuid());
     }
 
+    @NotNull
     public static RxDistributedLockMock acquiredReentrantInMemoryLock() {
         return acquiredReentrantInMemoryLock(uuid());
     }
 
-    public static RxDistributedLockMock releasedReentrantInMemoryLock(String lockId) {
+    @NotNull
+    public static RxDistributedLockMock releasedReentrantInMemoryLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return reentrantInMemoryLock(lockId, false);
     }
 
-    public static RxDistributedLockMock acquiredReentrantInMemoryLock(String lockId) {
+    @NotNull
+    public static RxDistributedLockMock acquiredReentrantInMemoryLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return reentrantInMemoryLock(lockId, true);
     }
 
@@ -55,32 +68,53 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         return of(InMemoryDistributedLockStub.reentrantInMemoryLock(LockId.of(lockId), state));
     }
 
+    @NotNull
     public static RxDistributedLockMock lockStub(boolean result) {
         return lockStub(uuid(), result, result);
     }
 
+    @NotNull
     public static RxDistributedLockMock lockStub(boolean acquireResult, boolean releaseResult) {
         return lockStub(uuid(), acquireResult, releaseResult);
     }
 
+    @NotNull
     public static RxDistributedLockMock lockStub(String lockId, boolean result) {
+        expectNonEmpty(lockId, "lockId");
         return of(lockStub(lockId, result, result));
     }
 
+    @NotNull
     public static RxDistributedLockMock lockStub(
-        String lockId, boolean acquireResult, boolean releaseResult) {
+            @NotNull String lockId,
+            boolean acquireResult,
+            boolean releaseResult
+    ) {
+        expectNonEmpty(lockId, "lockId");
         SequencedDistributedLockStub lock = new SequencedDistributedLockStub(
-            lockId, List.of(acquireResult), List.of(releaseResult));
+                lockId, List.of(acquireResult), List.of(releaseResult));
         return of(lock);
     }
 
+    @NotNull
     public static RxDistributedLockMock sequencedLock(
-        List<Boolean> acquireResults, List<Boolean> releaseResults) {
+            @NotNull List<Boolean> acquireResults,
+            @NotNull List<Boolean> releaseResults
+    ) {
+        expectNonNull(acquireResults, "acquireResults");
+        expectNonNull(releaseResults, "releaseResults");
         return sequencedLock(uuid(), acquireResults, releaseResults);
     }
 
+    @NotNull
     public static RxDistributedLockMock sequencedLock(
-        String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
+            @NotNull String lockId,
+            @NotNull List<Boolean> acquireResults,
+            @NotNull List<Boolean> releaseResults
+    ) {
+        expectNonEmpty(lockId, "lockId");
+        expectNonNull(acquireResults, "acquireResults");
+        expectNonNull(releaseResults, "releaseResults");
         return of(new SequencedDistributedLockStub(lockId, acquireResults, releaseResults));
     }
 
@@ -99,22 +133,27 @@ public final class RxDistributedLockMock implements RxDistributedLock {
     }
 
     @Override
+    @NotNull
     public String getId() {
         return lock.getId();
     }
 
     @Override
+    @NotNull
     public Single<AcquireResult> acquire() {
         return lock.acquire()
-            .map(this::incrementAcquireCounters);
+                .map(this::incrementAcquireCounters);
     }
 
     @Override
-    public Single<AcquireResult> acquire(Duration duration) {
+    @NotNull
+    public Single<AcquireResult> acquire(@NotNull Duration duration) {
+        expectNonNull(duration, "duration");
         return acquire();
     }
 
     @Override
+    @NotNull
     public Single<AcquireResult> acquireForever() {
         return acquire();
     }
@@ -128,9 +167,10 @@ public final class RxDistributedLockMock implements RxDistributedLock {
     }
 
     @Override
+    @NotNull
     public Single<ReleaseResult> release() {
         return lock.release()
-            .map(this::incrementReleaseCounters);
+                .map(this::incrementReleaseCounters);
     }
 
     private ReleaseResult incrementReleaseCounters(ReleaseResult result) {
@@ -246,20 +286,22 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         }
 
         private InMemoryDistributedLockStub(LockId lockId, boolean reentrant, boolean acquired) {
-            this.lockId = expectNonNull(lockId, "Expected non null lockId");
+            this.lockId = expectNonNull(lockId, "lockId");
             this.reentrant = reentrant;
             this.acquired = new AtomicBoolean(acquired);
         }
 
         @Override
+        @NotNull
         public String getId() {
             return lockId.getValue();
         }
 
         @Override
+        @NotNull
         public Single<AcquireResult> acquire() {
             return Single.fromCallable(this::acquireSync)
-                .map(AcquireResult::of);
+                    .map(AcquireResult::of);
         }
 
         private boolean acquireSync() {
@@ -272,19 +314,23 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         }
 
         @Override
-        public Single<AcquireResult> acquire(Duration duration) {
+        @NotNull
+        public Single<AcquireResult> acquire(@NotNull Duration duration) {
+            expectNonNull(duration, "duration");
             return acquire();
         }
 
         @Override
+        @NotNull
         public Single<AcquireResult> acquireForever() {
             return acquire();
         }
 
         @Override
+        @NotNull
         public Single<ReleaseResult> release() {
             return Single.fromCallable(this::releaseSync)
-                .map(ReleaseResult::of);
+                    .map(ReleaseResult::of);
         }
 
         private boolean releaseSync() {
@@ -300,15 +346,19 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         private final boolean defaultReleaseResult;
 
         private SequencedDistributedLockStub(
-            String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
+                String lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
             this(LockId.of(lockId), acquireResults, releaseResults);
         }
 
         private SequencedDistributedLockStub(
-            LockId lockId, List<Boolean> acquireResults, List<Boolean> releaseResults) {
-            expectNonEmpty(acquireResults, "Expected non empty acquire results");
-            expectNonEmpty(releaseResults, "Expected non empty release results");
-            this.lockId = expectNonNull(lockId, "Expected non null lockId");
+                LockId lockId,
+                List<Boolean> acquireResults,
+                List<Boolean> releaseResults
+        ) {
+            expectNonNull(lockId, "lockId");
+            expectNonEmpty(acquireResults, "acquire results");
+            expectNonEmpty(releaseResults, "release results");
+            this.lockId = expectNonNull(lockId, "lockId");
             this.acquireResults = new ConcurrentLinkedQueue<>(acquireResults);
             this.releaseResults = new ConcurrentLinkedQueue<>(releaseResults);
             this.defaultAcquireResult = acquireResults.get(acquireResults.size() - 1);
@@ -316,34 +366,40 @@ public final class RxDistributedLockMock implements RxDistributedLock {
         }
 
         @Override
+        @NotNull
         public String getId() {
             return lockId.getValue();
         }
 
         @Override
+        @NotNull
         public Single<AcquireResult> acquire() {
             return pollOrDefault(acquireResults, defaultAcquireResult)
-                .map(AcquireResult::of);
+                    .map(AcquireResult::of);
         }
 
         @Override
-        public Single<AcquireResult> acquire(Duration duration) {
+        @NotNull
+        public Single<AcquireResult> acquire(@NotNull Duration duration) {
+            expectNonNull(duration, "duration");
             return acquire();
         }
 
         @Override
+        @NotNull
         public Single<AcquireResult> acquireForever() {
             return acquire();
         }
 
         @Override
+        @NotNull
         public Single<ReleaseResult> release() {
             return pollOrDefault(releaseResults, defaultReleaseResult)
-                .map(ReleaseResult::of);
+                    .map(ReleaseResult::of);
         }
 
         private Single<Boolean> pollOrDefault(
-            ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
+                ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
             return Single.fromCallable(() -> {
                 Boolean value = queue.poll();
                 return value != null ? value : defaultValue;

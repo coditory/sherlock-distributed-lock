@@ -4,45 +4,52 @@ import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
+import org.jetbrains.annotations.NotNull;
 
 interface RxDistributedLockConnector {
     /**
-     * Initializes underlying infrastructure for locks. Most frequently triggers database index
-     * creation.
+     * Initializes underlying infrastructure for locks.
+     * Most frequently triggers database table creation and index creation.
      * <p>
      * If it is not executed explicitly, connector may execute it during first acquire acquisition or
      * release.
      */
+    @NotNull
     Single<InitializationResult> initialize();
 
     /**
-     * Acquires a acquire when there is no acquire acquired with the same lockId.
+     * Acquire a lock.
      */
-    Single<AcquireResult> acquire(LockRequest lockRequest);
+    @NotNull
+    Single<AcquireResult> acquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Acquires a acquire when there is no acquire acquired with the same lockId. Prolongs the acquire
-     * if it was already acquired by the same instance.
+     * Acquire a lock or prolong it if it was acquired by the same instance.
      */
+    @NotNull
     Single<AcquireResult> acquireOrProlong(LockRequest lockRequest);
 
     /**
-     * Acquires a acquire even if it was already acquired.
+     * Acquire a lock even if it was already acquired by someone else
      */
-    Single<AcquireResult> forceAcquire(LockRequest lockRequest);
+    @NotNull
+    Single<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Unlock previously acquired lock by the same instance.
+     * Unlock a lock if wat acquired by the same instance.
      */
-    Single<ReleaseResult> release(LockId lockId, OwnerId ownerId);
+    @NotNull
+    Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
 
     /**
-     * Releases a lock without checking its owner or release date.
+     * Release a lock without checking its owner or release date.
      */
-    Single<ReleaseResult> forceRelease(LockId lockId);
+    @NotNull
+    Single<ReleaseResult> forceRelease(@NotNull LockId lockId);
 
     /**
-     * Releases all locks without checking their owners or release dates.
+     * Release all locks without checking their owners or release dates.
      */
+    @NotNull
     Single<ReleaseResult> forceReleaseAll();
 }

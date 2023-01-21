@@ -1,5 +1,6 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,36 +21,43 @@ class DelegatingDistributedLock implements DistributedLock {
             ReleaseAction releaseAction,
             LockId lockId,
             OwnerId ownerId,
-            LockDuration duration) {
-        this.lockId = expectNonNull(lockId);
-        this.ownerId = expectNonNull(ownerId);
-        this.duration = expectNonNull(duration);
-        this.acquireAction = acquireAction;
-        this.releaseAction = releaseAction;
+            LockDuration duration
+    ) {
+        this.lockId = expectNonNull(lockId, "lockId");
+        this.ownerId = expectNonNull(ownerId, "ownerId");
+        this.duration = expectNonNull(duration, "duration");
+        this.acquireAction = expectNonNull(acquireAction, "acquireAction");
+        this.releaseAction = expectNonNull(releaseAction, "releaseAction");
     }
 
     @Override
+    @NotNull
     public String getId() {
         return lockId.getValue();
     }
 
     @Override
+    @NotNull
     public boolean acquire() {
         return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
-    public boolean acquire(Duration duration) {
+    @NotNull
+    public boolean acquire(@NotNull Duration duration) {
+        expectNonNull(duration, "duration");
         LockDuration lockDuration = LockDuration.of(duration);
         return acquire(new LockRequest(lockId, ownerId, lockDuration));
     }
 
     @Override
+    @NotNull
     public boolean acquireForever() {
         return acquire(new LockRequest(lockId, ownerId, null));
     }
 
     @Override
+    @NotNull
     public boolean release() {
         boolean released = releaseAction.release(lockId, ownerId);
         if (released) {
@@ -60,7 +68,7 @@ class DelegatingDistributedLock implements DistributedLock {
         return released;
     }
 
-    private boolean acquire(LockRequest lockRequest) {
+    private boolean acquire(@NotNull LockRequest lockRequest) {
         boolean acquired = acquireAction.acquire(lockRequest);
         if (acquired) {
             logger.debug("Lock acquired: {}, {}", lockId, lockRequest);
@@ -72,11 +80,11 @@ class DelegatingDistributedLock implements DistributedLock {
 
     @FunctionalInterface
     public interface ReleaseAction {
-        boolean release(LockId lockId, OwnerId ownerId);
+        boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
     }
 
     @FunctionalInterface
     public interface AcquireAction {
-        boolean acquire(LockRequest lockRequest);
+        boolean acquire(@NotNull LockRequest lockRequest);
     }
 }

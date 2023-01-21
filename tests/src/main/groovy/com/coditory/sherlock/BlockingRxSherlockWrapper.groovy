@@ -1,6 +1,7 @@
 package com.coditory.sherlock
 
 import groovy.transform.CompileStatic
+import org.jetbrains.annotations.NotNull
 
 import java.time.Duration
 
@@ -20,34 +21,38 @@ class BlockingRxSherlockWrapper implements Sherlock {
     @Override
     void initialize() {
         locks.initialize()
-            .blockingGet()
+                .blockingGet()
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createLock() {
         return blockingLockBuilder(locks.createLock())
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createReentrantLock() {
         return blockingLockBuilder(locks.createReentrantLock())
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createOverridingLock() {
         return blockingLockBuilder(locks.createOverridingLock())
     }
 
     @Override
+    @NotNull
     boolean forceReleaseAllLocks() {
         return locks.forceReleaseAllLocks()
-            .blockingGet().released
+                .blockingGet().released
     }
 
     @Override
-    boolean forceReleaseLock(String lockId) {
+    boolean forceReleaseLock(@NotNull String lockId) {
         return createOverridingLock(lockId)
-            .release()
+                .release()
     }
 
     private DistributedLockBuilder blockingLockBuilder(DistributedLockBuilder<RxDistributedLock> reactiveBuilder) {
@@ -65,6 +70,7 @@ class BlockingRxDistributedLock implements DistributedLock {
     }
 
     @Override
+    @NotNull
     String getId() {
         return lock.id
     }
@@ -72,24 +78,24 @@ class BlockingRxDistributedLock implements DistributedLock {
     @Override
     boolean acquire() {
         return lock.acquire()
-            .blockingGet().acquired
+                .blockingGet().acquired
     }
 
     @Override
-    boolean acquire(Duration duration) {
+    boolean acquire(@NotNull Duration duration) {
         return lock.acquire(duration)
-            .blockingGet().acquired
+                .blockingGet().acquired
     }
 
     @Override
     boolean acquireForever() {
         return lock.acquireForever()
-            .blockingGet().acquired
+                .blockingGet().acquired
     }
 
     @Override
     boolean release() {
         return lock.release()
-            .blockingGet().released
+                .blockingGet().released
     }
 }

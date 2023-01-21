@@ -1,12 +1,15 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
-final class PrecomputedBindingParameterMapper implements BindingParameterMapper {
-    static PrecomputedBindingParameterMapper from(BindingParameterMapper mapper) {
+final class PrecomputedBindingParameterMapper implements BindingMapper {
+    @NotNull
+    static PrecomputedBindingParameterMapper from(@NotNull BindingMapper mapper) {
         expectNonNull(mapper, "mapper");
         Map<BindingParameter, BindingParameterMapping> result = new HashMap<>();
         for (String param : SqlLockNamedQueriesTemplate.ParameterNames.ALL_PARAMS) {
@@ -26,7 +29,8 @@ final class PrecomputedBindingParameterMapper implements BindingParameterMapper 
     }
 
     @Override
-    public BindingParameterMapping mapBinding(BindingParameter bindingParameter) {
+    @NotNull
+    public BindingParameterMapping mapBinding(@NotNull BindingParameter bindingParameter) {
         BindingParameterMapping result = mapping.get(bindingParameter);
         if (result == null) {
             throw new IllegalArgumentException("Could not find precomputed binding parameter for: " + bindingParameter);

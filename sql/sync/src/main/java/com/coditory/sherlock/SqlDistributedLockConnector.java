@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
 import java.sql.Timestamp;
@@ -7,6 +9,7 @@ import java.sql.Types;
 import java.time.Clock;
 import java.time.Instant;
 
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class SqlDistributedLockConnector implements DistributedLockConnector {
@@ -16,8 +19,14 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     private final Clock clock;
 
     SqlDistributedLockConnector(
-            ConnectionPool connectionPool, String tableName, Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+            ConnectionPool connectionPool,
+            String tableName,
+            Clock clock
+    ) {
+        expectNonNull(connectionPool, "connectionPool");
+        expectNonEmpty(tableName, "tableName");
+        expectNonNull(clock, "clock");
+        this.clock = clock;
         this.sqlQueries = new SqlLockQueries(tableName);
         this.connectionPool = connectionPool;
         this.sqlTableInitializer = new SqlTableInitializer(sqlQueries);
@@ -33,7 +42,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean acquire(LockRequest lockRequest) {
+    public boolean acquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         try (SqlConnection connection = connectionPool.getConnection()) {
             return updateReleasedLock(connection, lockRequest, now)
@@ -44,7 +54,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean acquireOrProlong(LockRequest lockRequest) {
+    public boolean acquireOrProlong(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         try (SqlConnection connection = connectionPool.getConnection()) {
             return updateAcquiredOrReleasedLock(connection, lockRequest, now)
@@ -55,7 +66,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean forceAcquire(LockRequest lockRequest) {
+    public boolean forceAcquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         try (SqlConnection connection = connectionPool.getConnection()) {
             return updateLockById(connection, lockRequest, now)
@@ -122,7 +134,9 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean release(LockId lockId, OwnerId ownerId) {
+    public boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(ownerId, "ownerId");
         try (
                 SqlConnection connection = connectionPool.getConnection();
                 PreparedStatement statement = getStatement(connection, sqlQueries.deleteAcquiredByIdAndOwnerId())
@@ -137,7 +151,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean forceRelease(LockId lockId) {
+    public boolean forceRelease(@NotNull LockId lockId) {
+        expectNonNull(lockId, "lockId");
         try (
                 SqlConnection connection = connectionPool.getConnection();
                 PreparedStatement statement = getStatement(connection, sqlQueries.deleteAcquiredById())

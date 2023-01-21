@@ -3,6 +3,9 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
+import org.jetbrains.annotations.NotNull;
+
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 /**
  * Manages distributed locks using RxJava API.
@@ -17,6 +20,7 @@ public interface RxSherlock {
      * @return {@link InitializationResult#SUCCESS} if initialization was successful, otherwise {@link
      * InitializationResult#FAILURE} is returned
      */
+    @NotNull
     Single<InitializationResult> initialize();
 
     /**
@@ -29,6 +33,7 @@ public interface RxSherlock {
      *
      * @return the lock builder
      */
+    @NotNull
     DistributedLockBuilder<RxDistributedLock> createLock();
 
     /**
@@ -38,7 +43,9 @@ public interface RxSherlock {
      * @return the lock
      * @see RxSherlock#createLock()
      */
-    default RxDistributedLock createLock(String lockId) {
+    @NotNull
+    default RxDistributedLock createLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createLock().withLockId(lockId).build();
     }
 
@@ -53,6 +60,7 @@ public interface RxSherlock {
      *
      * @return the reentrant lock builder
      */
+    @NotNull
     DistributedLockBuilder<RxDistributedLock> createReentrantLock();
 
     /**
@@ -62,7 +70,9 @@ public interface RxSherlock {
      * @return the reentrant lock
      * @see RxSherlock#createReentrantLock()
      */
-    default RxDistributedLock createReentrantLock(String lockId) {
+    @NotNull
+    default RxDistributedLock createReentrantLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createReentrantLock().withLockId(lockId).build();
     }
 
@@ -79,6 +89,7 @@ public interface RxSherlock {
      *
      * @return the overriding lock builder
      */
+    @NotNull
     DistributedLockBuilder<RxDistributedLock> createOverridingLock();
 
     /**
@@ -88,7 +99,9 @@ public interface RxSherlock {
      * @return the overriding lock
      * @see RxSherlock#createOverridingLock()
      */
-    default RxDistributedLock createOverridingLock(String lockId) {
+    @NotNull
+    default RxDistributedLock createOverridingLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock().withLockId(lockId).build();
     }
 
@@ -100,6 +113,7 @@ public interface RxSherlock {
      * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
      * ReleaseResult#FAILURE} is returned
      */
+    @NotNull
     Single<ReleaseResult> forceReleaseAllLocks();
 
     /**
@@ -111,7 +125,9 @@ public interface RxSherlock {
      * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
      * ReleaseResult#FAILURE} is returned
      */
-    default Single<ReleaseResult> forceReleaseLock(String lockId) {
+    @NotNull
+    default Single<ReleaseResult> forceReleaseLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock(lockId).release();
     }
 }

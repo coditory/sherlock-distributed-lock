@@ -1,24 +1,29 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 final class OwnerId {
+    @NotNull
     static OwnerId uniqueOwnerId() {
         return new OwnerId(UuidGenerator.uuid());
     }
 
-    static OwnerId of(String value) {
+    @NotNull
+    static OwnerId of(@NotNull String value) {
         return new OwnerId(value);
     }
 
     private final String id;
 
-    private OwnerId(String id) {
-        this.id = expectNonEmpty(id, "Expected non empty instance id");
+    private OwnerId(@NotNull String ownerId) {
+        this.id = expectNonEmpty(ownerId, "ownerId");
     }
 
+    @NotNull
     String getValue() {
         return id;
     }

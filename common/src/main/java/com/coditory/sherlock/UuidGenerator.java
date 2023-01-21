@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.UUID;
 
 /**
@@ -7,12 +9,13 @@ import java.util.UUID;
  */
 final class UuidGenerator {
     private UuidGenerator() {
-        throw new IllegalStateException("Do not instantiate utility class");
+        throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 
     /**
      * @return random unique id
      */
+    @NotNull
     public static String uuid() {
         return UUID.randomUUID()
                 .toString()

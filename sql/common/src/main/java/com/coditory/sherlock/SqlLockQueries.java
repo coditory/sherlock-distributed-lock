@@ -1,5 +1,10 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
 final class SqlLockQueries {
     private final String createLocksTableSql;
     private final String createLocksIndexSql;
@@ -12,12 +17,14 @@ final class SqlLockQueries {
     private final String updateReleasedLockSql;
     private final String insertLockSql;
 
-    SqlLockQueries(String tableName) {
-        this(tableName, BindingParameterMapper.JDBC_MAPPER);
+    SqlLockQueries(@NotNull String tableName) {
+        this(tableName, BindingMapper.JDBC_MAPPER);
     }
 
-    SqlLockQueries(String tableName, BindingParameterMapper parameterMapper) {
-        SqlLockNamedQueriesTemplate queriesTemplate = new SqlLockNamedQueriesTemplate(tableName, parameterMapper);
+    SqlLockQueries(@NotNull String tableName, @NotNull BindingMapper bindingMapper) {
+        expectNonEmpty(tableName, "tableName");
+        expectNonNull(bindingMapper, "bindingMapper");
+        SqlLockNamedQueriesTemplate queriesTemplate = new SqlLockNamedQueriesTemplate(tableName, bindingMapper);
         createLocksTableSql = queriesTemplate.createLocksTable();
         createLocksIndexSql = queriesTemplate.createLocksIndex();
         checkTableExitsSql = queriesTemplate.checkTableExits();
@@ -30,42 +37,52 @@ final class SqlLockQueries {
         insertLockSql = queriesTemplate.insertLock();
     }
 
+    @NotNull
     String createLocksTable() {
         return createLocksTableSql;
     }
 
+    @NotNull
     String createLocksIndex() {
         return createLocksIndexSql;
     }
 
+    @NotNull
     String checkTableExits() {
         return checkTableExitsSql;
     }
 
+    @NotNull
     String deleteAll() {
         return deleteAllSql;
     }
 
+    @NotNull
     String deleteAcquiredByIdAndOwnerId() {
         return deleteAcquiredByIdAndOwnerIdSql;
     }
 
+    @NotNull
     String deleteAcquiredById() {
         return deleteAcquiredByIdSql;
     }
 
+    @NotNull
     String updateLockById() {
         return updateLockByIdSql;
     }
 
+    @NotNull
     String updateAcquiredOrReleasedLock() {
         return updateAcquiredOrReleasedLockSql;
     }
 
+    @NotNull
     String updateReleasedLock() {
         return updateReleasedLockSql;
     }
 
+    @NotNull
     String insertLock() {
         return insertLockSql;
     }

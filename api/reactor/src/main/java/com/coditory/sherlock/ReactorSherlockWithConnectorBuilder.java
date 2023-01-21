@@ -1,8 +1,12 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 
 import static com.coditory.sherlock.OwnerIdPolicy.*;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
@@ -15,7 +19,9 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
      *                 becomes released. Default: {@link SherlockDefaults#DEFAULT_LOCK_DURATION}
      * @return the instance
      */
-    public T withLockDuration(Duration duration) {
+    @NotNull
+    public T withLockDuration(@NotNull Duration duration) {
+        expectNonNull(duration, "duration");
         this.duration = LockDuration.of(duration);
         return instance();
     }
@@ -24,7 +30,9 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
      * @param ownerId owner id used to specify who can release an acquired lock
      * @return the instance
      */
-    public T withOwnerId(String ownerId) {
+    @NotNull
+    public T withOwnerId(@NotNull String ownerId) {
+        expectNonEmpty(ownerId, "ownerId");
         this.ownerIdPolicy = staticOwnerIdPolicy(ownerId);
         return instance();
     }
@@ -35,6 +43,7 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
      * @return the instance
      * @see this#withOwnerId(String)
      */
+    @NotNull
     public T withUniqueOwnerId() {
         this.ownerIdPolicy = uniqueOwnerIdPolicy();
         return instance();
@@ -47,6 +56,7 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
      * @return the instance
      * @see this#withOwnerId(String)
      */
+    @NotNull
     public T withStaticUniqueOwnerId() {
         this.ownerIdPolicy = staticUniqueOwnerIdPolicy();
         return instance();
@@ -56,9 +66,11 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
      * @return sherlock instance
      * @throws IllegalArgumentException when some required values are missing
      */
+    @NotNull
     public abstract ReactorSherlock build();
 
-    protected ReactorSherlock build(ReactorDistributedLockConnector connector) {
+    @NotNull
+    protected ReactorSherlock build(@NotNull ReactorDistributedLockConnector connector) {
         return new ReactorSherlockWithConnector(connector, ownerIdPolicy, duration);
     }
 

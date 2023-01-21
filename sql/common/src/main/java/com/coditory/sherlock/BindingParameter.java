@@ -1,12 +1,19 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
-public class BindingParameter {
+import static com.coditory.sherlock.Preconditions.expect;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
+public final class BindingParameter {
     private final int index;
     private final String name;
 
-    public BindingParameter(int index, String name) {
+    public BindingParameter(int index, @NotNull String name) {
+        expect(index >= 0, "Expected index >= 0. Got: %d", index);
+        expectNonNull(name, "name");
         this.index = index;
         this.name = name;
     }
@@ -15,6 +22,7 @@ public class BindingParameter {
         return index;
     }
 
+    @NotNull
     public String getName() {
         return name;
     }

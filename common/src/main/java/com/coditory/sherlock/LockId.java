@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
@@ -11,8 +13,8 @@ final class LockId {
 
     private final String id;
 
-    private LockId(String id) {
-        this.id = expectNonEmpty(id, "Expected non empty id");
+    private LockId(@NotNull String lockId) {
+        this.id = expectNonEmpty(lockId, "lockId");
     }
 
     public String getValue() {

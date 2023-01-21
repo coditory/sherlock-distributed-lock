@@ -1,7 +1,11 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Clock;
 import java.time.Instant;
+
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class InMemoryDistributedLockConnector implements DistributedLockConnector {
     private final InMemoryDistributedLockStorage storage;
@@ -18,27 +22,33 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    synchronized public boolean acquire(LockRequest lockRequest) {
+    synchronized public boolean acquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         return storage.acquire(lockRequest, now());
     }
 
     @Override
-    synchronized public boolean acquireOrProlong(LockRequest lockRequest) {
+    synchronized public boolean acquireOrProlong(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         return storage.acquireOrProlong(lockRequest, now());
     }
 
     @Override
-    synchronized public boolean forceAcquire(LockRequest lockRequest) {
+    synchronized public boolean forceAcquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         return storage.forceAcquire(lockRequest, now());
     }
 
     @Override
-    synchronized public boolean release(LockId lockId, OwnerId ownerId) {
+    synchronized public boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(ownerId, "ownerId");
         return storage.release(lockId, now(), ownerId);
     }
 
     @Override
-    synchronized public boolean forceRelease(LockId lockId) {
+    synchronized public boolean forceRelease(@NotNull LockId lockId) {
+        expectNonNull(lockId, "lockId");
         return storage.forceRelease(lockId, now());
     }
 

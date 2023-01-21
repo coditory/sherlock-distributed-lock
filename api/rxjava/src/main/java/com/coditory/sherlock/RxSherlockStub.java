@@ -3,9 +3,12 @@ package com.coditory.sherlock;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import io.reactivex.Single;
+import org.jetbrains.annotations.NotNull;
 
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Use to stub {@link RxSherlock} in tests.
@@ -19,9 +22,10 @@ public final class RxSherlockStub implements RxSherlock {
      *
      * @return the instance
      */
+    @NotNull
     static public RxSherlockStub withReleasedLocks() {
         return new RxSherlockStub()
-            .withDefaultAcquireResult(true);
+                .withDefaultAcquireResult(true);
     }
 
     /**
@@ -29,9 +33,10 @@ public final class RxSherlockStub implements RxSherlock {
      *
      * @return the instance
      */
+    @NotNull
     static public RxSherlockStub withAcquiredLocks() {
         return new RxSherlockStub()
-            .withDefaultAcquireResult(false);
+                .withDefaultAcquireResult(false);
     }
 
     /**
@@ -40,7 +45,9 @@ public final class RxSherlockStub implements RxSherlock {
      * @param lock returned when creating a lock with the same id
      * @return the instance
      */
-    public RxSherlockStub withLock(RxDistributedLock lock) {
+    @NotNull
+    public RxSherlockStub withLock(@NotNull RxDistributedLock lock) {
+        expectNonNull(lock, "lock");
         this.locksById.put(lock.getId(), lock);
         return this;
     }
@@ -51,26 +58,31 @@ public final class RxSherlockStub implements RxSherlock {
     }
 
     @Override
+    @NotNull
     public Single<InitializationResult> initialize() {
         return Single.just(InitializationResult.of(true));
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<RxDistributedLock> createLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<RxDistributedLock> createReentrantLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<RxDistributedLock> createOverridingLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public Single<ReleaseResult> forceReleaseAllLocks() {
         return Single.just(ReleaseResult.of(false));
     }
@@ -80,9 +92,9 @@ public final class RxSherlockStub implements RxSherlock {
     }
 
     private RxDistributedLock getLockOrDefault(
-        LockId id, LockDuration duration, OwnerId ownerId) {
+            LockId id, LockDuration duration, OwnerId ownerId) {
         RxDistributedLockMock defaultLock = RxDistributedLockMock
-            .lockStub(id.getValue(), defaultLockResult);
+                .lockStub(id.getValue(), defaultLockResult);
         return locksById.getOrDefault(id.getValue(), defaultLock);
     }
 }

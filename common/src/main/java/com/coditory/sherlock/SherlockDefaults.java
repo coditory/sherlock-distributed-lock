@@ -11,6 +11,6 @@ final class SherlockDefaults {
     public static final Clock DEFAULT_CLOCK = systemDefaultZone();
 
     private SherlockDefaults() {
-        throw new IllegalStateException("Do not instantiate utility class");
+        throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 }

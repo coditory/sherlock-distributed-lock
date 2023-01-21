@@ -1,5 +1,9 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+
 /**
  * Manages distributed locks.
  */
@@ -23,6 +27,7 @@ public interface Sherlock {
      *
      * @return the lock builder
      */
+    @NotNull
     DistributedLockBuilder<DistributedLock> createLock();
 
     /**
@@ -32,7 +37,8 @@ public interface Sherlock {
      * @return the lock
      * @see Sherlock#createLock()
      */
-    default DistributedLock createLock(String lockId) {
+    @NotNull
+    default DistributedLock createLock(@NotNull String lockId) {
         return createLock().withLockId(lockId).build();
     }
 
@@ -47,6 +53,7 @@ public interface Sherlock {
      *
      * @return the reentrant lock builder
      */
+    @NotNull
     DistributedLockBuilder<DistributedLock> createReentrantLock();
 
     /**
@@ -56,7 +63,9 @@ public interface Sherlock {
      * @return the reentrant lock
      * @see Sherlock#createReentrantLock()
      */
-    default DistributedLock createReentrantLock(String lockId) {
+    @NotNull
+    default DistributedLock createReentrantLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createReentrantLock().withLockId(lockId).build();
     }
 
@@ -73,6 +82,7 @@ public interface Sherlock {
      *
      * @return the overriding lock builder
      */
+    @NotNull
     DistributedLockBuilder<DistributedLock> createOverridingLock();
 
     /**
@@ -82,7 +92,9 @@ public interface Sherlock {
      * @return the overriding lock
      * @see Sherlock#createOverridingLock()
      */
-    default DistributedLock createOverridingLock(String lockId) {
+    @NotNull
+    default DistributedLock createOverridingLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock().withLockId(lockId).build();
     }
 
@@ -103,7 +115,8 @@ public interface Sherlock {
      * @param lockId lock identifier
      * @return true if lock was released
      */
-    default boolean forceReleaseLock(String lockId) {
+    default boolean forceReleaseLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock(lockId).release();
     }
 }

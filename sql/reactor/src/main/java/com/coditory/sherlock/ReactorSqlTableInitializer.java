@@ -10,6 +10,8 @@ import reactor.core.publisher.Mono;
 
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
 final class ReactorSqlTableInitializer {
     private final Logger logger = LoggerFactory.getLogger(getClass());
     private final ConnectionFactory connectionFactory;
@@ -17,6 +19,8 @@ final class ReactorSqlTableInitializer {
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     ReactorSqlTableInitializer(ConnectionFactory connectionFactory, SqlLockQueries sqlQueries) {
+        expectNonNull(connectionFactory, "connectionFactory");
+        expectNonNull(sqlQueries, "sqlQueries");
         this.connectionFactory = connectionFactory;
         this.sqlQueries = sqlQueries;
     }

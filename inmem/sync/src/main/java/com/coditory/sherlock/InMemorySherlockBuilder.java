@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Clock;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
@@ -18,6 +20,7 @@ public final class InMemorySherlockBuilder extends
     /**
      * @return new instance of the builder
      */
+    @NotNull
     public static InMemorySherlockBuilder inMemorySherlockBuilder() {
         return new InMemorySherlockBuilder();
     }
@@ -25,6 +28,7 @@ public final class InMemorySherlockBuilder extends
     /**
      * @return new instance iof in memory sherlock with default configuration
      */
+    @NotNull
     public static Sherlock inMemorySherlock() {
         return InMemorySherlockBuilder.inMemorySherlockBuilder().build();
     }
@@ -38,8 +42,9 @@ public final class InMemorySherlockBuilder extends
      *              SherlockDefaults#DEFAULT_CLOCK}
      * @return the instance
      */
-    public InMemorySherlockBuilder withClock(Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+    @NotNull
+    public InMemorySherlockBuilder withClock(@NotNull Clock clock) {
+        this.clock = expectNonNull(clock, "clock");
         return this;
     }
 
@@ -48,6 +53,7 @@ public final class InMemorySherlockBuilder extends
      *
      * @return the instance
      */
+    @NotNull
     public InMemorySherlockBuilder withSharedStorage() {
         this.storage = InMemoryDistributedLockStorage.singleton();
         return this;
@@ -58,6 +64,7 @@ public final class InMemorySherlockBuilder extends
      * @throws IllegalArgumentException when some required values are missing
      */
     @Override
+    @NotNull
     public Sherlock build() {
         InMemoryDistributedLockConnector connector = new InMemoryDistributedLockConnector(
                 clock, storage);

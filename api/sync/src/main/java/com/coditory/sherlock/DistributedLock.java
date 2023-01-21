@@ -1,6 +1,10 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
+
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * A distributed lock.
@@ -13,10 +17,11 @@ public interface DistributedLock {
      *
      * @return the lock id
      */
+    @NotNull
     String getId();
 
     /**
-     * Try to acquire the lock. Lock is acquired for a pre configured duration.
+     * Try to acquire the lock. Lock is acquired for a pre-configured duration.
      *
      * @return true if lock is acquired
      */
@@ -28,20 +33,20 @@ public interface DistributedLock {
      * @param duration how much time must pass for the acquired lock to expire
      * @return true if lock is acquired
      */
-    boolean acquire(Duration duration);
+    boolean acquire(@NotNull Duration duration);
 
     /**
-     * Try to acquire the lock without expiring date.
+     * Try to acquire the lock without expiration date.
      * <p>
      * It is potentially dangerous. Lookout for a situation when the lock owning instance goes down
-     * with out releasing the lock.
+     * without releasing the lock.
      *
      * @return true if lock is acquired
      */
     boolean acquireForever();
 
     /**
-     * Try to release the lock.
+     * Release the lock.
      *
      * @return true if lock was released by this method invocation. If lock has expired or was
      * released earlier  then false is returned.
@@ -58,7 +63,9 @@ public interface DistributedLock {
      * @return {@link AcquireAndExecuteResult}
      * @see DistributedLock#acquire()
      */
-    default AcquireAndExecuteResult acquireAndExecute(Runnable action) {
+    @NotNull
+    default AcquireAndExecuteResult acquireAndExecute(@NotNull Runnable action) {
+        expectNonNull(action, "action");
         return AcquireAndExecuteResult
                 .executeOnAcquired(acquire(), action, this::release);
     }
@@ -74,7 +81,10 @@ public interface DistributedLock {
      * @return {@link AcquireAndExecuteResult}
      * @see DistributedLock#acquire(Duration)
      */
-    default AcquireAndExecuteResult acquireAndExecute(Duration duration, Runnable action) {
+    @NotNull
+    default AcquireAndExecuteResult acquireAndExecute(@NotNull Duration duration, @NotNull Runnable action) {
+        expectNonNull(duration, "duration");
+        expectNonNull(action, "action");
         return AcquireAndExecuteResult
                 .executeOnAcquired(acquire(duration), action, this::release);
     }
@@ -89,7 +99,9 @@ public interface DistributedLock {
      * @return {@link AcquireAndExecuteResult}
      * @see DistributedLock#acquireForever()
      */
-    default AcquireAndExecuteResult acquireForeverAndExecute(Runnable action) {
+    @NotNull
+    default AcquireAndExecuteResult acquireForeverAndExecute(@NotNull Runnable action) {
+        expectNonNull(action, "action");
         return AcquireAndExecuteResult
                 .executeOnAcquired(acquireForever(), action, this::release);
     }
@@ -101,14 +113,20 @@ public interface DistributedLock {
      * @return {@link ReleaseAndExecuteResult}
      * @see DistributedLock#release()
      */
-    default ReleaseAndExecuteResult releaseAndExecute(Runnable action) {
+    @NotNull
+    default ReleaseAndExecuteResult releaseAndExecute(@NotNull Runnable action) {
+        expectNonNull(action, "action");
         return ReleaseAndExecuteResult
                 .executeOnReleased(release(), action);
     }
 
     class AcquireAndExecuteResult {
+        @NotNull
         private static AcquireAndExecuteResult executeOnAcquired(
-                boolean acquired, Runnable action, Runnable release) {
+                boolean acquired,
+                @NotNull Runnable action,
+                @NotNull Runnable release
+        ) {
             if (acquired) {
                 try {
                     action.run();
@@ -129,7 +147,9 @@ public interface DistributedLock {
             return acquired;
         }
 
-        AcquireAndExecuteResult onNotAcquired(Runnable action) {
+        @NotNull
+        AcquireAndExecuteResult onNotAcquired(@NotNull Runnable action) {
+            expectNonNull(action, "action");
             if (!acquired) {
                 action.run();
             }
@@ -155,7 +175,9 @@ public interface DistributedLock {
             return released;
         }
 
-        ReleaseAndExecuteResult onNotReleased(Runnable action) {
+        @NotNull
+        ReleaseAndExecuteResult onNotReleased(@NotNull Runnable action) {
+            expectNonNull(action, "action");
             if (!released) {
                 action.run();
             }

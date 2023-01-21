@@ -1,6 +1,7 @@
 package com.coditory.sherlock
 
 import groovy.transform.CompileStatic
+import org.jetbrains.annotations.NotNull
 
 import java.time.Duration
 
@@ -20,20 +21,23 @@ class BlockingReactorSherlockWrapper implements Sherlock {
     @Override
     void initialize() {
         locks.initialize()
-            .single().block()
+                .single().block()
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createLock() {
         return blockingLockBuilder(locks.createLock())
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createReentrantLock() {
         return blockingLockBuilder(locks.createReentrantLock())
     }
 
     @Override
+    @NotNull
     DistributedLockBuilder createOverridingLock() {
         return blockingLockBuilder(locks.createOverridingLock())
     }
@@ -41,17 +45,17 @@ class BlockingReactorSherlockWrapper implements Sherlock {
     @Override
     boolean forceReleaseAllLocks() {
         return locks.forceReleaseAllLocks()
-            .single().block().released
+                .single().block().released
     }
 
     @Override
-    boolean forceReleaseLock(String lockId) {
+    boolean forceReleaseLock(@NotNull String lockId) {
         return createOverridingLock(lockId)
-            .release()
+                .release()
     }
 
     private DistributedLockBuilder blockingLockBuilder(
-        DistributedLockBuilder<ReactorDistributedLock> reactiveBuilder) {
+            DistributedLockBuilder<ReactorDistributedLock> reactiveBuilder) {
         return reactiveBuilder.withMappedLock({ lock -> new BlockingReactorDistributedLock(lock) })
     }
 }
@@ -61,11 +65,12 @@ class BlockingReactorSherlockWrapper implements Sherlock {
 class BlockingReactorDistributedLock implements DistributedLock {
     private final ReactorDistributedLock lock
 
-    BlockingReactorDistributedLock(ReactorDistributedLock lock) {
+    BlockingReactorDistributedLock(@NotNull ReactorDistributedLock lock) {
         this.lock = lock
     }
 
     @Override
+    @NotNull
     String getId() {
         return lock.id
     }
@@ -73,24 +78,24 @@ class BlockingReactorDistributedLock implements DistributedLock {
     @Override
     boolean acquire() {
         return lock.acquire()
-            .single().block().acquired
+                .single().block().acquired
     }
 
     @Override
-    boolean acquire(Duration duration) {
+    boolean acquire(@NotNull Duration duration) {
         return lock.acquire(duration)
-            .single().block().acquired
+                .single().block().acquired
     }
 
     @Override
     boolean acquireForever() {
         return lock.acquireForever()
-            .single().block().acquired
+                .single().block().acquired
     }
 
     @Override
     boolean release() {
         return lock.release()
-            .single().block().released
+                .single().block().released
     }
 }

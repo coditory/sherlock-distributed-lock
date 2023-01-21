@@ -4,6 +4,8 @@ import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -27,7 +29,9 @@ final class MongoDistributedLock {
 
     static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
 
-    static MongoDistributedLock fromDocument(Document document) {
+    @NotNull
+    static MongoDistributedLock fromDocument(@NotNull Document document) {
+        expectNonNull(document, "document");
         try {
             return new MongoDistributedLock(
                     LockId.of(document.getString(LOCK_ID_FIELD)),
@@ -50,9 +54,13 @@ final class MongoDistributedLock {
         return instant.truncatedTo(ChronoUnit.MILLIS);
     }
 
-    static MongoDistributedLock fromLockRequest(LockRequest lockRequest, Instant acquiredAt) {
-        expectNonNull(lockRequest);
-        expectNonNull(acquiredAt);
+    @NotNull
+    static MongoDistributedLock fromLockRequest(
+            @NotNull LockRequest lockRequest,
+            @NotNull Instant acquiredAt
+    ) {
+        expectNonNull(lockRequest, "lockRequest");
+        expectNonNull(acquiredAt, "acquiredAt");
         Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
                 .map(LockDuration::getValue)
                 .map(acquiredAt::plus)
@@ -72,16 +80,17 @@ final class MongoDistributedLock {
     private final Instant expiresAt;
 
     private MongoDistributedLock(
-            LockId id,
-            OwnerId ownerId,
-            Instant createdAt,
-            Instant expiresAt) {
-        this.id = expectNonNull(id);
-        this.ownerId = expectNonNull(ownerId);
-        this.acquiredAt = expectNonNull(createdAt);
+            @NotNull LockId id,
+            @NotNull OwnerId ownerId,
+            @NotNull Instant createdAt,
+            @Nullable Instant expiresAt) {
+        this.id = expectNonNull(id, "id");
+        this.ownerId = expectNonNull(ownerId, "ownerId");
+        this.acquiredAt = expectNonNull(createdAt, "createdAt");
         this.expiresAt = expiresAt;
     }
 
+    @NotNull
     Document toDocument() {
         Document result = new Document()
                 .append(LOCK_ID_FIELD, id.getValue())
@@ -93,7 +102,7 @@ final class MongoDistributedLock {
         return result;
     }
 
-    boolean hasSameOwner(Document document) {
+    boolean hasSameOwner(@Nullable Document document) {
         if (document == null) {
             return false;
         }
@@ -101,7 +110,7 @@ final class MongoDistributedLock {
         return this.ownerId.equals(other.ownerId);
     }
 
-    boolean isActive(Instant now) {
+    boolean isActive(@NotNull Instant now) {
         return expiresAt == null
                 || expiresAt.isAfter(now);
     }

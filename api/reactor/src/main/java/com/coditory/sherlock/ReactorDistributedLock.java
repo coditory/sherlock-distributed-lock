@@ -2,14 +2,17 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
 
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
 /**
  * A reactive distributed lock with Reactor API.
  *
- * @see ReactiveSherlock
+ * @see ReactorSherlock
  */
 public interface ReactorDistributedLock {
     /**
@@ -17,13 +20,15 @@ public interface ReactorDistributedLock {
      *
      * @return the lock id
      */
+    @NotNull
     String getId();
 
     /**
-     * Try to acquire the lock. Lock is acquired for a pre configured duration.
+     * Try to acquire a lock. Lock is acquired for a pre-configured duration.
      *
      * @return {@link AcquireResult#SUCCESS} if lock is acquired
      */
+    @NotNull
     Mono<AcquireResult> acquire();
 
     /**
@@ -32,24 +37,27 @@ public interface ReactorDistributedLock {
      * @param duration how much time must pass for the acquired lock to expire
      * @return {@link AcquireResult#SUCCESS} if lock is acquired
      */
-    Mono<AcquireResult> acquire(Duration duration);
+    @NotNull
+    Mono<AcquireResult> acquire(@NotNull Duration duration);
 
     /**
-     * Try to acquire the lock without expiring date.
+     * Try to acquire the lock without expiration date.
      * <p>
      * It is potentially dangerous. Lookout for a situation when the lock owning instance goes down
-     * with out releasing the lock.
+     * without releasing the lock.
      *
      * @return {@link AcquireResult#SUCCESS} if lock is acquired
      */
+    @NotNull
     Mono<AcquireResult> acquireForever();
 
     /**
-     * Try to release the lock.
+     * Release the lock.
      *
      * @return {@link ReleaseResult#SUCCESS} if lock was released by this method invocation. If lock
      * has expired or was released earlier  then {@link ReleaseResult#FAILURE} is returned.
      */
+    @NotNull
     Mono<ReleaseResult> release();
 
     /**
@@ -60,7 +68,9 @@ public interface ReactorDistributedLock {
      * @return true if lock is acquired.
      * @see ReactorDistributedLock#acquire()
      */
-    default <T> Mono<T> acquireAndExecute(Mono<T> mono) {
+    @NotNull
+    default <T> Mono<T> acquireAndExecute(@NotNull Mono<T> mono) {
+        expectNonNull(mono, "mono");
         return ReactorDistributedLockExecutor.executeOnAcquired(acquire(), mono, this::release);
     }
 
@@ -73,9 +83,12 @@ public interface ReactorDistributedLock {
      * @return true, if lock is acquired
      * @see ReactorDistributedLock#acquire(Duration)
      */
-    default <T> Mono<T> acquireAndExecute(Duration duration, Mono<T> mono) {
+    @NotNull
+    default <T> Mono<T> acquireAndExecute(@NotNull Duration duration, @NotNull Mono<T> mono) {
+        expectNonNull(duration, "duration");
+        expectNonNull(mono, "mono");
         return ReactorDistributedLockExecutor
-            .executeOnAcquired(acquire(duration), mono, this::release);
+                .executeOnAcquired(acquire(duration), mono, this::release);
     }
 
     /**
@@ -86,9 +99,11 @@ public interface ReactorDistributedLock {
      * @return true, if lock is acquired
      * @see ReactorDistributedLock#acquireForever()
      */
-    default <T> Mono<T> acquireForeverAndExecute(Mono<T> mono) {
+    @NotNull
+    default <T> Mono<T> acquireForeverAndExecute(@NotNull Mono<T> mono) {
+        expectNonNull(mono, "mono");
         return ReactorDistributedLockExecutor
-            .executeOnAcquired(acquireForever(), mono, this::release);
+                .executeOnAcquired(acquireForever(), mono, this::release);
     }
 
     /**
@@ -99,7 +114,9 @@ public interface ReactorDistributedLock {
      * @return true, if lock was release
      * @see ReactorDistributedLock#release()
      */
-    default <T> Mono<T> releaseAndExecute(Mono<T> mono) {
+    @NotNull
+    default <T> Mono<T> releaseAndExecute(@NotNull Mono<T> mono) {
+        expectNonNull(mono, "mono");
         return ReactorDistributedLockExecutor.executeOnReleased(release(), mono);
     }
 }

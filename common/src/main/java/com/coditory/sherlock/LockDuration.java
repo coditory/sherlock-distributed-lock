@@ -1,15 +1,20 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
 import java.time.Duration;
 import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectTruncatedToMillis;
 
 final class LockDuration {
-    static LockDuration of(Duration duration) {
+    @NotNull
+    static LockDuration of(@Nullable Duration duration) {
         return new LockDuration(duration);
     }
 
+    @NotNull
     static LockDuration permanent() {
         return new LockDuration(null);
     }
@@ -18,12 +23,12 @@ final class LockDuration {
 
     private LockDuration(Duration duration) {
         if (duration != null) {
-            expectTruncatedToMillis(
-                    duration, "Expected lock duration truncated to millis. Got: " + duration);
+            expectTruncatedToMillis(duration, "duration");
         }
         this.duration = duration;
     }
 
+    @Nullable
     Duration getValue() {
         return duration;
     }

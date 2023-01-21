@@ -1,6 +1,7 @@
 package com.coditory.sherlock;
 
 import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -10,6 +11,7 @@ import java.util.List;
 import java.util.Set;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Migration mechanism based on {@link Sherlock} distributed locks.
@@ -36,7 +38,7 @@ public final class SherlockMigrator {
     /**
      * @param sherlock sherlock used to manage migration locks
      */
-    public SherlockMigrator(Sherlock sherlock) {
+    public SherlockMigrator(@NotNull Sherlock sherlock) {
         this(DEFAULT_MIGRATOR_LOCK_ID, sherlock);
     }
 
@@ -44,7 +46,9 @@ public final class SherlockMigrator {
      * @param migrationId id used as lock id for the whole migration process
      * @param sherlock    sherlock used to manage migration locks
      */
-    public SherlockMigrator(String migrationId, Sherlock sherlock) {
+    public SherlockMigrator(@NotNull String migrationId, @NotNull Sherlock sherlock) {
+        expectNonEmpty(migrationId, "migrationId");
+        expectNonNull(sherlock, "sherlock");
         this.migrationId = migrationId;
         this.sherlock = sherlock;
         this.migrationLock = sherlock.createLock()
@@ -63,8 +67,10 @@ public final class SherlockMigrator {
      * @param changeSet   change set action that should be run if change set was not already applied
      * @return the migrator
      */
-    public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
-        expectNonEmpty(changeSetId, "Expected non empty changeSetId");
+    @NotNull
+    public SherlockMigrator addChangeSet(@NotNull String changeSetId, @NotNull Runnable changeSet) {
+        expectNonEmpty(changeSetId, "changeSetId");
+        expectNonNull(changeSet, "changeSet");
         ensureUniqueChangeSetId(changeSetId);
         migrationLockIds.add(changeSetId);
         DistributedLock changeSetLock = createChangeSetLock(changeSetId);
@@ -85,6 +91,7 @@ public final class SherlockMigrator {
      *
      * @return migration result
      */
+    @NotNull
     public MigrationResult migrate() {
         AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
         return new MigrationResult(acquireResult.isAcquired());
@@ -154,7 +161,9 @@ public final class SherlockMigrator {
          * @param action the action to be executed after migration
          * @return migration result for chaining
          */
-        public MigrationResult onFinish(Runnable action) {
+        @NotNull
+        public MigrationResult onFinish(@NotNull Runnable action) {
+            expectNonNull(action, "action");
             if (migrated) {
                 action.run();
             }
@@ -167,7 +176,9 @@ public final class SherlockMigrator {
          * @param action the action to be executed when migration lock was not acquired
          * @return migration result for chaining
          */
-        public MigrationResult onRejected(Runnable action) {
+        @NotNull
+        public MigrationResult onRejected(@NotNull Runnable action) {
+            expectNonNull(action, "action");
             if (!migrated) {
                 action.run();
             }

@@ -2,6 +2,7 @@ package com.coditory.sherlock;
 
 import com.mongodb.client.MongoCollection;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
@@ -18,6 +19,7 @@ public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<Mon
     /**
      * @return new instance of the builder
      */
+    @NotNull
     public static MongoSherlockBuilder mongoSherlock() {
         return new MongoSherlockBuilder();
     }
@@ -26,7 +28,9 @@ public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<Mon
      * @param collection mongo collection to be used for locking
      * @return new instance of mongo sherlock with default configuration
      */
-    public static Sherlock mongoSherlock(MongoCollection<Document> collection) {
+    @NotNull
+    public static Sherlock mongoSherlock(@NotNull MongoCollection<Document> collection) {
+        expectNonNull(collection, "collection");
         return mongoSherlock()
                 .withLocksCollection(collection)
                 .build();
@@ -40,8 +44,9 @@ public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<Mon
      * @param collection mongo collection to be used for locking
      * @return the instance
      */
-    public MongoSherlockBuilder withLocksCollection(MongoCollection<Document> collection) {
-        this.collection = expectNonNull(collection, "Expected non null collection");
+    @NotNull
+    public MongoSherlockBuilder withLocksCollection(@NotNull MongoCollection<Document> collection) {
+        this.collection = expectNonNull(collection, "collection");
         return this;
     }
 
@@ -50,8 +55,9 @@ public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<Mon
      *              SherlockDefaults#DEFAULT_CLOCK}
      * @return the instance
      */
-    public MongoSherlockBuilder withClock(Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+    @NotNull
+    public MongoSherlockBuilder withClock(@NotNull Clock clock) {
+        this.clock = expectNonNull(clock, "clock");
         return this;
     }
 
@@ -59,8 +65,9 @@ public final class MongoSherlockBuilder extends SherlockWithConnectorBuilder<Mon
      * @return sherlock instance
      * @throws IllegalArgumentException when some required values are missing
      */
+    @NotNull
     public Sherlock build() {
-        expectNonNull(collection, "Expected non null collection");
+        expectNonNull(collection, "collection");
         MongoDistributedLockConnector connector = new MongoDistributedLockConnector(collection, clock);
         return super.build(connector);
     }

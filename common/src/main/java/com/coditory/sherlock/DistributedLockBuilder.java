@@ -1,11 +1,13 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Duration;
 import java.util.function.Function;
 
-import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.*;
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
@@ -37,7 +39,9 @@ public final class DistributedLockBuilder<T> {
      * @param lockId the lock identifier
      * @return the builder
      */
-    public DistributedLockBuilder<T> withLockId(String lockId) {
+    @NotNull
+    public DistributedLockBuilder<T> withLockId(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         this.lockId = LockId.of(lockId);
         return this;
     }
@@ -54,7 +58,9 @@ public final class DistributedLockBuilder<T> {
      * @param duration lock duration.
      * @return the builder
      */
-    public DistributedLockBuilder<T> withLockDuration(Duration duration) {
+    @NotNull
+    public DistributedLockBuilder<T> withLockDuration(@NotNull Duration duration) {
+        expectNonNull(duration, "duration");
         return withLockDuration(LockDuration.of(duration));
     }
 
@@ -63,6 +69,7 @@ public final class DistributedLockBuilder<T> {
      *
      * @return the builder
      */
+    @NotNull
     public DistributedLockBuilder<T> withPermanentLockDuration() {
         this.duration = LockDuration.permanent();
         return this;
@@ -74,7 +81,9 @@ public final class DistributedLockBuilder<T> {
      * @param ownerId owner identifier
      * @return the builder
      */
-    public DistributedLockBuilder<T> withOwnerId(String ownerId) {
+    @NotNull
+    public DistributedLockBuilder<T> withOwnerId(@NotNull String ownerId) {
+        expectNonEmpty(ownerId, "ownerId");
         return withOwnerIdPolicy(staticOwnerIdPolicy(ownerId));
     }
 
@@ -83,6 +92,7 @@ public final class DistributedLockBuilder<T> {
      *
      * @return the builder
      */
+    @NotNull
     public DistributedLockBuilder<T> withUniqueOwnerId() {
         return withOwnerIdPolicy(uniqueOwnerIdPolicy());
     }
@@ -93,6 +103,7 @@ public final class DistributedLockBuilder<T> {
      *
      * @return the builder
      */
+    @NotNull
     public DistributedLockBuilder<T> withStaticUniqueOwnerId() {
         return withOwnerIdPolicy(staticUniqueOwnerIdPolicy());
     }
@@ -107,12 +118,13 @@ public final class DistributedLockBuilder<T> {
      *
      * @return the lock
      */
+    @NotNull
     public T build() {
         return lockCreator.createLock(lockId, duration, ownerIdPolicy.getOwnerId());
     }
 
     @FunctionalInterface
     interface LockCreator<T> {
-        T createLock(LockId lockId, LockDuration duration, OwnerId ownerId);
+        @NotNull T createLock(@NotNull LockId lockId, @NotNull LockDuration duration, @NotNull OwnerId ownerId);
     }
 }

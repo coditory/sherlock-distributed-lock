@@ -8,6 +8,10 @@ dependencies {
     implementation project(':inmem:inmem-reactor')
     implementation project(':mongo:mongo-reactor')
     implementation project(':sql:sql-reactor')
+    // RxJava
+    implementation project(':api:api-rxjava')
+    implementation project(':inmem:inmem-rxjava')
+    implementation project(':mongo:mongo-rxjava')
     // drivers
     implementation "org.postgresql:postgresql:$versions.postgresql"
     implementation "mysql:mysql-connector-java:$versions.mysql"

@@ -3,7 +3,7 @@ package com.coditory.sherlock;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
-import java.util.function.BiFunction;
+import java.util.Objects;
 
 /**
  * Preconditions for sherlock distributed lock. Throws {@link IllegalArgumentException} if
@@ -11,60 +11,62 @@ import java.util.function.BiFunction;
  */
 final class Preconditions {
     private Preconditions() {
-        throw new IllegalStateException("Do not instantiate utility class");
+        throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 
-    @SafeVarargs
-    static <T> T expectAll(T value, String message, BiFunction<T, String, T>... expects) {
-        for (BiFunction<T, String, T> expect : expects) {
-            expect.apply(value, message);
+    static void expect(boolean check, String message, Object... args) {
+        if (!check) {
+            throw new IllegalArgumentException(String.format(message, args));
         }
-        return value;
     }
 
-    static <T> T expectNonNull(T value) {
-        return expectNonNull(value, "Expected non null value");
-    }
-
-    static <T> T expectNonNull(T value, String message) {
+    static <T> T expectNonNull(T value, String name) {
         if (value == null) {
+            String message = message("Expected non-null value", name);
             throw new IllegalArgumentException(message);
         }
         return value;
     }
 
-    static String expectNonEmpty(String value) {
-        return expectNonEmpty(value, "Expected non empty string. Got: " + value);
+    static <T> List<T> expectNonEmpty(List<T> values, String name) {
+        if (values == null || values.isEmpty()) {
+            String message = message("Expected non-null and non-empty list", name, values);
+            throw new IllegalArgumentException(message);
+        }
+        return values;
     }
 
-    static String expectNonEmpty(String value, String message) {
-        if (value == null || value.trim().isEmpty()) {
+    static String expectNonEmpty(String value, String name) {
+        if (value == null || value.isEmpty()) {
+            String message = message("Expected non-null and non-empty value", name, value);
             throw new IllegalArgumentException(message);
         }
         return value;
     }
 
-    static <E> List<E> expectNonEmpty(List<E> list) {
-        return expectNonEmpty(list, "Expected non empty list. Got: " + list);
-    }
-
-    static <E> List<E> expectNonEmpty(List<E> list, String message) {
-        if (list == null || list.isEmpty()) {
+    static Duration expectTruncatedToMillis(Duration value, String name) {
+        Duration truncated = value.truncatedTo(ChronoUnit.MILLIS);
+        if (value != truncated) {
+            String message = message(
+                    "Expected duration truncated to millis",
+                    !Objects.equals(name, "duration") ? name : null,
+                    value
+            );
             throw new IllegalArgumentException(message);
         }
-        return list;
+        return value;
     }
 
-    static Duration expectTruncatedToMillis(Duration duration) {
-        return expectTruncatedToMillis(
-                duration, "Expected duration truncated to millis. Got: " + duration);
+    private static String message(String expectation, String fieldName, Object value) {
+        String field = fieldName != null ? (": " + fieldName) : "";
+        String stringValue = value instanceof String
+                ? ("\"" + value + "\"")
+                : Objects.toString(value);
+        return expectation + field + ". Got: " + stringValue;
     }
 
-    static Duration expectTruncatedToMillis(Duration duration, String message) {
-        Duration truncated = duration.truncatedTo(ChronoUnit.MILLIS);
-        if (duration != truncated) {
-            throw new IllegalArgumentException(message);
-        }
-        return duration;
+    private static String message(String expectation, String fieldName) {
+        String field = fieldName != null ? (": " + fieldName) : "";
+        return expectation + field;
     }
 }

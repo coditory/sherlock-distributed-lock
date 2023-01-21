@@ -1,6 +1,5 @@
 package com.coditory.sherlock.sample.mongo;
 
-import com.coditory.sherlock.ReactorMongoSherlockBuilder;
 import com.coditory.sherlock.RxDistributedLock;
 import com.coditory.sherlock.RxSherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
@@ -14,7 +13,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.ReactorMongoSherlockBuilder.reactorMongoSherlock;
+import static com.coditory.sherlock.RxMongoSherlockBuilder.rxMongoSherlock;
 
 public class MongoRxJavaSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -28,12 +27,12 @@ public class MongoRxJavaSample {
     }
 
     void sampleMongoLockUsage() {
-        RxSherlock sherlock = ReactorMongoSherlockBuilder.reactorMongoSherlock()
+        RxSherlock sherlock = rxMongoSherlock()
                 .withClock(Clock.systemDefaultZone())
                 .withLockDuration(Duration.ofMinutes(5))
                 .withUniqueOwnerId()
                 .withLocksCollection(locksCollection())
-                .buildWithApi(RxSherlock::rxSherlock);
+                .build();
         // ...or simply
         // RxSherlock sherlockWithDefaults = rxSherlock(reactiveMongoSherlock(locksCollection()));
         RxDistributedLock lock = sherlock.createLock("sample-lock");

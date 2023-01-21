@@ -2,6 +2,7 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
 import java.time.Duration;
@@ -17,58 +18,68 @@ class ReactorDelegatingDistributedLock implements ReactorDistributedLock {
     private final ReleaseAction releaseAction;
 
     ReactorDelegatingDistributedLock(
-        AcquireAction acquireAction,
-        ReleaseAction releaseAction,
-        LockId lockId,
-        OwnerId ownerId,
-        LockDuration duration) {
-        this.lockId = expectNonNull(lockId);
-        this.ownerId = expectNonNull(ownerId);
-        this.duration = expectNonNull(duration);
-        this.acquireAction = acquireAction;
-        this.releaseAction = releaseAction;
+            AcquireAction acquireAction,
+            ReleaseAction releaseAction,
+            LockId lockId,
+            OwnerId ownerId,
+            LockDuration duration
+    ) {
+        this.lockId = expectNonNull(lockId, "lockId");
+        this.ownerId = expectNonNull(ownerId, "ownerId");
+        this.duration = expectNonNull(duration, "duration");
+        this.acquireAction = expectNonNull(acquireAction, "acquireAction");
+        this.releaseAction = expectNonNull(releaseAction, "releaseAction");
         this.lockResultLogger = new LockResultLogger(lockId.getValue(), getClass());
     }
 
     @Override
+    @NotNull
     public String getId() {
         return lockId.getValue();
     }
 
     @Override
+    @NotNull
     public Mono<AcquireResult> acquire() {
         return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
-    public Mono<AcquireResult> acquire(Duration duration) {
+    @NotNull
+    public Mono<AcquireResult> acquire(@NotNull Duration duration) {
+        expectNonNull(duration, "duration");
         LockDuration lockDuration = LockDuration.of(duration);
         return acquire(new LockRequest(lockId, ownerId, lockDuration));
     }
 
     @Override
+    @NotNull
     public Mono<AcquireResult> acquireForever() {
         return acquire(new LockRequest(lockId, ownerId, null));
     }
 
     @Override
+    @NotNull
     public Mono<ReleaseResult> release() {
         return releaseAction.release(lockId, ownerId)
-            .doOnNext(lockResultLogger::logResult);
+                .doOnNext(lockResultLogger::logResult);
     }
 
     private Mono<AcquireResult> acquire(LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         return acquireAction.acquire(lockRequest)
-            .doOnNext(lockResultLogger::logResult);
+                .doOnNext(lockResultLogger::logResult);
     }
 
     @FunctionalInterface
     public interface ReleaseAction {
-        Mono<ReleaseResult> release(LockId lockId, OwnerId ownerId);
+        @NotNull
+        Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
     }
 
     @FunctionalInterface
     public interface AcquireAction {
-        Mono<AcquireResult> acquire(LockRequest lockRequest);
+        @NotNull
+        Mono<AcquireResult> acquire(@NotNull LockRequest lockRequest);
     }
 }

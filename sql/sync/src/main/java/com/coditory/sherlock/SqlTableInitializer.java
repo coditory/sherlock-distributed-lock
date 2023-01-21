@@ -5,11 +5,14 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
 class SqlTableInitializer {
     private final SqlLockQueries sqlQueries;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
     SqlTableInitializer(SqlLockQueries sqlQueries) {
+        expectNonNull(sqlQueries, "sqlQueries");
         this.sqlQueries = sqlQueries;
     }
 

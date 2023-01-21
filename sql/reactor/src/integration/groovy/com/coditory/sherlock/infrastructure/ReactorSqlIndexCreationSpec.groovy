@@ -1,6 +1,6 @@
 package com.coditory.sherlock.infrastructure
 
-import com.coditory.sherlock.BindingParameterMapper
+import com.coditory.sherlock.BindingMapper
 import com.coditory.sherlock.MySqlConnectionProvider
 import com.coditory.sherlock.PostgresConnectionProvider
 import com.coditory.sherlock.Sherlock
@@ -38,7 +38,7 @@ abstract class ReactorSqlIndexCreationSpec extends Specification {
 
     abstract Connection getBlockingConnection();
 
-    abstract BindingParameterMapper getBindingParameterMapper();
+    abstract BindingMapper getBindingParameterMapper();
 
     void cleanup() {
         try (

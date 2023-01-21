@@ -2,41 +2,55 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.MongoDistributedLock.Fields;
 import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Instant;
 
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.mongodb.client.model.Filters.*;
 
 final class MongoDistributedLockQueries {
     private MongoDistributedLockQueries() {
-        throw new IllegalStateException("Do not instantiate utility class");
+        throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 
-    static Bson queryReleased(LockId lockId, Instant now) {
+    @NotNull
+    static Bson queryReleased(@NotNull LockId lockId, @NotNull Instant now) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(now, "now");
         return and(
-            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-            lte(Fields.EXPIRES_AT_FIELD, now)
-        );
-    }
-
-    static Bson queryAcquired(LockId lockId, OwnerId ownerId) {
-        return and(
-            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-            eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
-        );
-    }
-
-    static Bson queryAcquiredOrReleased(LockId lockId, OwnerId ownerId, Instant now) {
-        return and(
-            eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
-            or(
-                eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
+                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
                 lte(Fields.EXPIRES_AT_FIELD, now)
-            )
         );
     }
 
-    static Bson queryById(LockId lockId) {
+    @NotNull
+    static Bson queryAcquired(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(ownerId, "ownerId");
+        return and(
+                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+                eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue())
+        );
+    }
+
+    @NotNull
+    static Bson queryAcquiredOrReleased(@NotNull LockId lockId, @NotNull OwnerId ownerId, @NotNull Instant now) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(ownerId, "ownerId");
+        expectNonNull(now, "now");
+        return and(
+                eq(Fields.LOCK_ID_FIELD, lockId.getValue()),
+                or(
+                        eq(Fields.ACQUIRED_BY_FIELD, ownerId.getValue()),
+                        lte(Fields.EXPIRES_AT_FIELD, now)
+                )
+        );
+    }
+
+    @NotNull
+    static Bson queryById(@NotNull LockId lockId) {
+        expectNonNull(lockId, "lockId");
         return eq(Fields.LOCK_ID_FIELD, lockId.getValue());
     }
 }

@@ -1,20 +1,24 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.List;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class SqlLockNamedQueriesTemplate {
     private final String tableName;
-    private final BindingParameterMapper parameterMapper;
+    private final BindingMapper parameterMapper;
 
-    SqlLockNamedQueriesTemplate(String tableName, BindingParameterMapper parameterMapper) {
+    SqlLockNamedQueriesTemplate(@NotNull String tableName, @NotNull BindingMapper bindingMapper) {
+        expectNonEmpty(tableName, "tableName");
+        expectNonNull(bindingMapper, "bindingMapper");
         this.tableName = expectValidTableName(tableName);
-        this.parameterMapper = parameterMapper;
+        this.parameterMapper = bindingMapper;
     }
 
     private String expectValidTableName(String tableName) {
-        expectNonEmpty(tableName);
         if (!tableName.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException(
                     "Expected table name consisting of a-z, A-Z, 0-9, _. Got: " + tableName);

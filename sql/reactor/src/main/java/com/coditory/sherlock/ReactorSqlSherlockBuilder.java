@@ -1,6 +1,7 @@
 package com.coditory.sherlock;
 
 import io.r2dbc.spi.ConnectionFactory;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
@@ -16,11 +17,12 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
     private String tableName = DEFAULT_LOCKS_TABLE_NAME;
     private Clock clock = DEFAULT_CLOCK;
     private ConnectionFactory connectionFactory;
-    private BindingParameterMapper bindingParameterMapper;
+    private BindingMapper bindingMapper;
 
     /**
      * @return new instance of the builder
      */
+    @NotNull
     public static ReactorSqlSherlockBuilder reactorSqlSherlock() {
         return new ReactorSqlSherlockBuilder();
     }
@@ -29,7 +31,9 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * @param connectionFactory the connection factory to the database
      * @return sql sherlock with default configuration
      */
-    public static ReactorSqlSherlockBuilder reactorSqlSherlock(ConnectionFactory connectionFactory) {
+    @NotNull
+    public static ReactorSqlSherlockBuilder reactorSqlSherlock(@NotNull ConnectionFactory connectionFactory) {
+        expectNonNull(connectionFactory, "connectionFactory");
         return reactorSqlSherlock()
                 .withConnectionFactory(connectionFactory);
     }
@@ -42,8 +46,9 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * @param connectionFactory the connection pool to the database
      * @return the instance
      */
-    public ReactorSqlSherlockBuilder withConnectionFactory(ConnectionFactory connectionFactory) {
-        expectNonNull(connectionFactory, "Expected non null connectionFactory");
+    @NotNull
+    public ReactorSqlSherlockBuilder withConnectionFactory(@NotNull ConnectionFactory connectionFactory) {
+        expectNonNull(connectionFactory, "connectionFactory");
         this.connectionFactory = connectionFactory;
         return this;
     }
@@ -52,13 +57,14 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * Parameterized statements are vendor specific.
      * That's why you must specify the binding notation with a bindingParameterMapper.
      *
-     * @param bindingParameterMapper the connection pool to the database
+     * @param bindingMapper the connection pool to the database
      * @return the instance
      * @link https://r2dbc.io/spec/1.0.0.RELEASE/spec/html/#statements.parameterized
      */
-    public ReactorSqlSherlockBuilder withBindingParameterMapper(BindingParameterMapper bindingParameterMapper) {
-        expectNonNull(bindingParameterMapper, "Expected non null bindingParameterMapper");
-        this.bindingParameterMapper = bindingParameterMapper;
+    @NotNull
+    public ReactorSqlSherlockBuilder withBindingParameterMapper(@NotNull BindingMapper bindingMapper) {
+        expectNonNull(bindingMapper, "bindingMapper");
+        this.bindingMapper = bindingMapper;
         return this;
     }
 
@@ -66,8 +72,10 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * @param tableName the name of the table that stores locks
      * @return the instance
      */
-    public ReactorSqlSherlockBuilder withLocksTable(String tableName) {
-        this.tableName = expectNonEmpty(tableName, "Expected non empty tableName");
+    @NotNull
+    public ReactorSqlSherlockBuilder withLocksTable(@NotNull String tableName) {
+        expectNonEmpty(tableName, "tableName");
+        this.tableName = tableName;
         return this;
     }
 
@@ -76,8 +84,9 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      *              SherlockDefaults#DEFAULT_CLOCK}
      * @return the instance
      */
-    public ReactorSqlSherlockBuilder withClock(Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+    @NotNull
+    public ReactorSqlSherlockBuilder withClock(@NotNull Clock clock) {
+        this.clock = expectNonNull(clock, "clock");
         return this;
     }
 
@@ -85,10 +94,11 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * @return sherlock instance
      * @throws IllegalArgumentException when some required values are missing
      */
+    @NotNull
     public ReactorSherlock build() {
         expectNonNull(connectionFactory, "connectionFactory");
-        expectNonNull(bindingParameterMapper, "bindingParameterMapper");
-        BindingParameterMapper bindingMapper = PrecomputedBindingParameterMapper.from(bindingParameterMapper);
+        expectNonNull(bindingMapper, "bindingParameterMapper");
+        BindingMapper bindingMapper = PrecomputedBindingParameterMapper.from(this.bindingMapper);
         ReactorSqlDistributedLockConnector connector = new ReactorSqlDistributedLockConnector(
                 connectionFactory, tableName, clock, bindingMapper);
         return super.build(connector);

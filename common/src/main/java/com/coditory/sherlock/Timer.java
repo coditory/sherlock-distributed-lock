@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 class Timer {
     static Timer start() {
         return new Timer();
@@ -11,6 +13,7 @@ class Timer {
         return System.currentTimeMillis() - started;
     }
 
+    @NotNull
     String elapsed() {
         return elapsedMs() + "ms";
     }

@@ -2,7 +2,10 @@ package com.coditory.sherlock;
 
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
+
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 /**
  * Manages distributed locks using Reactor API.
@@ -17,6 +20,7 @@ public interface ReactorSherlock {
      * @return {@link InitializationResult#SUCCESS} if initialization was successful, otherwise {@link
      * InitializationResult#FAILURE} is returned
      */
+    @NotNull
     Mono<InitializationResult> initialize();
 
     /**
@@ -29,6 +33,7 @@ public interface ReactorSherlock {
      *
      * @return the lock builder
      */
+    @NotNull
     DistributedLockBuilder<ReactorDistributedLock> createLock();
 
     /**
@@ -38,7 +43,9 @@ public interface ReactorSherlock {
      * @return the lock
      * @see ReactorSherlock#createLock()
      */
-    default ReactorDistributedLock createLock(String lockId) {
+    @NotNull
+    default ReactorDistributedLock createLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createLock().withLockId(lockId).build();
     }
 
@@ -53,6 +60,7 @@ public interface ReactorSherlock {
      *
      * @return the reentrant lock builder
      */
+    @NotNull
     DistributedLockBuilder<ReactorDistributedLock> createReentrantLock();
 
     /**
@@ -62,7 +70,9 @@ public interface ReactorSherlock {
      * @return the reentrant lock
      * @see ReactorSherlock#createReentrantLock()
      */
-    default ReactorDistributedLock createReentrantLock(String lockId) {
+    @NotNull
+    default ReactorDistributedLock createReentrantLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createReentrantLock().withLockId(lockId).build();
     }
 
@@ -79,6 +89,7 @@ public interface ReactorSherlock {
      *
      * @return the overriding lock builder
      */
+    @NotNull
     DistributedLockBuilder<ReactorDistributedLock> createOverridingLock();
 
     /**
@@ -88,7 +99,9 @@ public interface ReactorSherlock {
      * @return the overriding lock
      * @see ReactorSherlock#createOverridingLock()
      */
-    default ReactorDistributedLock createOverridingLock(String lockId) {
+    @NotNull
+    default ReactorDistributedLock createOverridingLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock().withLockId(lockId).build();
     }
 
@@ -100,6 +113,7 @@ public interface ReactorSherlock {
      * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
      * ReleaseResult#FAILURE} is returned
      */
+    @NotNull
     Mono<ReleaseResult> forceReleaseAllLocks();
 
     /**
@@ -111,7 +125,9 @@ public interface ReactorSherlock {
      * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
      * ReleaseResult#FAILURE} is returned
      */
-    default Mono<ReleaseResult> forceReleaseLock(String lockId) {
+    @NotNull
+    default Mono<ReleaseResult> forceReleaseLock(@NotNull String lockId) {
+        expectNonEmpty(lockId, "lockId");
         return createOverridingLock(lockId).release();
     }
 }

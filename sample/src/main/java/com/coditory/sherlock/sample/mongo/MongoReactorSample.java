@@ -1,7 +1,6 @@
 package com.coditory.sherlock.sample.mongo;
 
 import com.coditory.sherlock.ReactorDistributedLock;
-import com.coditory.sherlock.ReactorMongoSherlockBuilder;
 import com.coditory.sherlock.ReactorSherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
@@ -28,12 +27,12 @@ public class MongoReactorSample {
     }
 
     void sampleMongoLockUsage() {
-        ReactorSherlock sherlock = ReactorMongoSherlockBuilder.reactorMongoSherlock()
+        ReactorSherlock sherlock = reactorMongoSherlock()
                 .withClock(Clock.systemDefaultZone())
                 .withLockDuration(Duration.ofMinutes(5))
                 .withUniqueOwnerId()
                 .withLocksCollection(locksCollection())
-                .buildWithApi(ReactorSherlock::reactorSherlock);
+                .build();
         // ...or simply
         // ReactorSherlock sherlockWithDefaults = reactiveMongoSherlock(reactiveMongoSherlock(locksCollection()));
         ReactorDistributedLock lock = sherlock.createLock("sample-lock");

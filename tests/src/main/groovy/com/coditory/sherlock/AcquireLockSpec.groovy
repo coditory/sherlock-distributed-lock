@@ -78,7 +78,7 @@ abstract class AcquireLockSpec extends LocksBaseSpec implements LockAssertions {
         given:
             DistributedLock lock = createLock(type, lockId, instanceId)
         and:
-            String truncationExceptionPrefix = "Expected lock duration truncated to millis"
+            String truncationExceptionPrefix = "Expected duration truncated to millis"
 
         when:
             lock.acquire(Duration.ofNanos(1))

@@ -1,20 +1,29 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.Objects;
 
-public class BindingParameterMapping {
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectNonNull;
+
+public final class BindingParameterMapping {
     private final String queryMarker;
     private final Object bindingKey;
 
-    public BindingParameterMapping(String queryMarker, Object bindingKey) {
+    public BindingParameterMapping(@NotNull String queryMarker, @NotNull Object bindingKey) {
+        expectNonEmpty(queryMarker, "queryMarker");
+        expectNonNull(bindingKey, "bindingKey");
         this.queryMarker = queryMarker;
         this.bindingKey = bindingKey;
     }
 
+    @NotNull
     public String getQueryMarker() {
         return queryMarker;
     }
 
+    @NotNull
     public Object getBindingKey() {
         return bindingKey;
     }

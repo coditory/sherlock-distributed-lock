@@ -1,5 +1,7 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.time.Clock;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
@@ -17,6 +19,7 @@ public final class RxInMemorySherlockBuilder extends RxSherlockWithConnectorBuil
     /**
      * @return new instance of the builder
      */
+    @NotNull
     public static RxInMemorySherlockBuilder rxInMemorySherlockBuilder() {
         return new RxInMemorySherlockBuilder();
     }
@@ -24,6 +27,7 @@ public final class RxInMemorySherlockBuilder extends RxSherlockWithConnectorBuil
     /**
      * @return new instance of in-memory sherlock with default configuration
      */
+    @NotNull
     public static RxSherlock rxInMemorySherlock() {
         return rxInMemorySherlockBuilder().build();
     }
@@ -33,8 +37,9 @@ public final class RxInMemorySherlockBuilder extends RxSherlockWithConnectorBuil
      *              SherlockDefaults#DEFAULT_CLOCK}
      * @return the instance
      */
-    public RxInMemorySherlockBuilder withClock(Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+    @NotNull
+    public RxInMemorySherlockBuilder withClock(@NotNull Clock clock) {
+        this.clock = expectNonNull(clock, "clock");
         return this;
     }
 
@@ -43,15 +48,17 @@ public final class RxInMemorySherlockBuilder extends RxSherlockWithConnectorBuil
      *
      * @return the instance
      */
+    @NotNull
     public RxInMemorySherlockBuilder withSharedStorage() {
         this.storage = InMemoryDistributedLockStorage.singleton();
         return this;
     }
 
     @Override
+    @NotNull
     public RxSherlock build() {
         RxInMemoryDistributedLockConnector connector = new RxInMemoryDistributedLockConnector(
-            clock, storage);
+                clock, storage);
         return super.build(connector);
     }
 }

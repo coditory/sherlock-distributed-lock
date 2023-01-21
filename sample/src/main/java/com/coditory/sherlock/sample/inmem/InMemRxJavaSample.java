@@ -8,17 +8,17 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactiveInMemorySherlockBuilder;
+import static com.coditory.sherlock.RxInMemorySherlockBuilder.rxInMemorySherlockBuilder;
 
 public class InMemRxJavaSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     void sampleInMemLockUsage() {
-        RxSherlock sherlock = reactiveInMemorySherlockBuilder()
+        RxSherlock sherlock = rxInMemorySherlockBuilder()
                 .withClock(Clock.systemDefaultZone())
                 .withUniqueOwnerId()
                 .withSharedStorage()
-                .buildWithApi(RxSherlock::rxSherlock);
+                .build();
         // ...or simply
         // RxSherlock sherlockWithDefaults = rxSherlock(reactiveInMemorySherlock());
         RxDistributedLock lock = sherlock.createLock("sample-lock");

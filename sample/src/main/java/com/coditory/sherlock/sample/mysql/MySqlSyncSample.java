@@ -12,7 +12,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.ReactorSqlSherlockBuilder.sqlSherlock;
+import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock;
 
 public class MySqlSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());

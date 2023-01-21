@@ -1,5 +1,6 @@
 package com.coditory.sherlock.base
 
+import com.coditory.sherlock.ReactorSherlock
 import com.coditory.sherlock.Sherlock
 
 import java.time.Clock
@@ -11,11 +12,11 @@ import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactorInMemo
 trait UsesReactorSherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
-        Sherlock reactorSherlock = reactorInMemorySherlockBuilder()
-            .withOwnerId(ownerId)
-            .withLockDuration(duration)
-            .withClock(clock)
-            .build()
+        ReactorSherlock reactorSherlock = reactorInMemorySherlockBuilder()
+                .withOwnerId(ownerId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
         return blockingReactorSherlock(reactorSherlock)
     }
 }

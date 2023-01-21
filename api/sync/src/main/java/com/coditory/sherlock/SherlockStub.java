@@ -1,7 +1,11 @@
 package com.coditory.sherlock;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.util.HashMap;
 import java.util.Map;
+
+import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * Used to stub {@link Sherlock} in tests.
@@ -15,6 +19,7 @@ public final class SherlockStub implements Sherlock {
      *
      * @return the stub instance
      */
+    @NotNull
     public static SherlockStub withReleasedLocks() {
         return new SherlockStub()
                 .withDefaultAcquireResult(true);
@@ -25,6 +30,7 @@ public final class SherlockStub implements Sherlock {
      *
      * @return the stub instance
      */
+    @NotNull
     public static SherlockStub withAcquiredLocks() {
         return new SherlockStub()
                 .withDefaultAcquireResult(false);
@@ -36,7 +42,9 @@ public final class SherlockStub implements Sherlock {
      * @param lock returned when creating a lock with the same id
      * @return the stub instance
      */
-    public SherlockStub withLock(DistributedLock lock) {
+    @NotNull
+    public SherlockStub withLock(@NotNull DistributedLock lock) {
+        expectNonNull(lock, "lock");
         this.locksById.put(lock.getId(), lock);
         return this;
     }
@@ -52,16 +60,19 @@ public final class SherlockStub implements Sherlock {
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createReentrantLock() {
         return getLockOrDefault();
     }
 
     @Override
+    @NotNull
     public DistributedLockBuilder<DistributedLock> createOverridingLock() {
         return getLockOrDefault();
     }

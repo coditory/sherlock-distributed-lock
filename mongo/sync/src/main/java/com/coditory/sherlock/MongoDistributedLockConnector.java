@@ -8,6 +8,7 @@ import com.mongodb.client.result.DeleteResult;
 import org.bson.BsonDocument;
 import org.bson.Document;
 import org.bson.conversions.Bson;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 import java.time.Instant;
@@ -25,10 +26,13 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     private final Clock clock;
 
     MongoDistributedLockConnector(
-            MongoCollection<Document> collection, Clock clock) {
-        expectNonNull(collection, "Expected non null collection");
+            MongoCollection<Document> collection,
+            Clock clock
+    ) {
+        expectNonNull(collection, "collection");
+        expectNonNull(clock, "clock");
         this.collectionInitializer = new MongoCollectionInitializer(collection);
-        this.clock = expectNonNull(clock, "Expected non null clock");
+        this.clock = clock;
     }
 
     @Override
@@ -41,7 +45,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean acquire(LockRequest lockRequest) {
+    public boolean acquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         try {
             return upsert(
@@ -54,7 +59,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean acquireOrProlong(LockRequest lockRequest) {
+    public boolean acquireOrProlong(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         try {
             return upsert(
@@ -67,7 +73,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean forceAcquire(LockRequest lockRequest) {
+    public boolean forceAcquire(@NotNull LockRequest lockRequest) {
+        expectNonNull(lockRequest, "lockRequest");
         try {
             return upsert(
                     queryById(lockRequest.getLockId()),
@@ -79,7 +86,9 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean release(LockId lockId, OwnerId ownerId) {
+    public boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+        expectNonNull(lockId, "lockId");
+        expectNonNull(ownerId, "ownerId");
         try {
             return delete(queryAcquired(lockId, ownerId));
         } catch (Throwable e) {
@@ -88,7 +97,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean forceRelease(LockId lockId) {
+    public boolean forceRelease(@NotNull LockId lockId) {
+        expectNonNull(lockId, "lockId");
         try {
             return delete(queryById(lockId));
         } catch (Throwable e) {

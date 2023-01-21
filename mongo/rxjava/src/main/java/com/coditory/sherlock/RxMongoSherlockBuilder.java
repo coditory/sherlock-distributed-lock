@@ -2,6 +2,7 @@ package com.coditory.sherlock;
 
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.Document;
+import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
 
@@ -18,6 +19,7 @@ public final class RxMongoSherlockBuilder extends RxSherlockWithConnectorBuilder
     /**
      * @return new instance of the builder
      */
+    @NotNull
     public static RxMongoSherlockBuilder rxMongoSherlock() {
         return new RxMongoSherlockBuilder();
     }
@@ -26,10 +28,12 @@ public final class RxMongoSherlockBuilder extends RxSherlockWithConnectorBuilder
      * @param collection mongo collection to be used for locking
      * @return new instance of mongo sherlock with default configuration
      */
-    public static RxSherlock rxMongoSherlock(MongoCollection<Document> collection) {
+    @NotNull
+    public static RxSherlock rxMongoSherlock(@NotNull MongoCollection<Document> collection) {
+        expectNonNull(collection, "collection");
         return rxMongoSherlock()
-            .withLocksCollection(collection)
-            .build();
+                .withLocksCollection(collection)
+                .build();
     }
 
     private RxMongoSherlockBuilder() {
@@ -40,8 +44,9 @@ public final class RxMongoSherlockBuilder extends RxSherlockWithConnectorBuilder
      * @param collection mongo collection to be used for locking
      * @return the instance
      */
-    public RxMongoSherlockBuilder withLocksCollection(MongoCollection<Document> collection) {
-        this.collection = expectNonNull(collection, "Expected non null collection");
+    @NotNull
+    public RxMongoSherlockBuilder withLocksCollection(@NotNull MongoCollection<Document> collection) {
+        this.collection = expectNonNull(collection, "collection");
         return this;
     }
 
@@ -50,16 +55,17 @@ public final class RxMongoSherlockBuilder extends RxSherlockWithConnectorBuilder
      *              SherlockDefaults#DEFAULT_CLOCK}
      * @return the instance
      */
+    @NotNull
     public RxMongoSherlockBuilder withClock(Clock clock) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
+        this.clock = expectNonNull(clock, "clock");
         return this;
     }
 
     @Override
+    @NotNull
     public RxSherlock build() {
-        expectNonNull(collection, "Expected non null collection");
-        RxMongoDistributedLockConnector connector = new RxMongoDistributedLockConnector(
-            collection, clock);
+        expectNonNull(collection, "collection");
+        RxMongoDistributedLockConnector connector = new RxMongoDistributedLockConnector(collection, clock);
         return build(connector);
     }
 }

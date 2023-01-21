@@ -17,7 +17,7 @@ trait UsesReactorSqlSherlock implements DistributedLocksCreator {
 
     abstract Connection getBlockingConnection()
 
-    abstract BindingParameterMapper getBindingParameterMapper()
+    abstract BindingMapper getBindingParameterMapper()
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {

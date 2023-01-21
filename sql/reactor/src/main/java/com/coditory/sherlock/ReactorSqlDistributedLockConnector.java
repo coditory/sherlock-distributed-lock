@@ -6,30 +6,40 @@ import com.coditory.sherlock.connector.ReleaseResult;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Statement;
+import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
-import java.sql.SQLException;
 import java.time.Clock;
 import java.time.Instant;
 import java.util.function.Function;
 
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnector {
     private final ReactorSqlTableInitializer sqlTableInitializer;
     private final SqlLockQueries sqlQueries;
     private final Clock clock;
-    private final BindingParameterMapper bindingParameterMapper;
+    private final BindingMapper bindingMapper;
 
     ReactorSqlDistributedLockConnector(
-            ConnectionFactory connectionFactory, String tableName, Clock clock, BindingParameterMapper bindingParameterMapper) {
-        this.clock = expectNonNull(clock, "Expected non null clock");
-        this.sqlQueries = new SqlLockQueries(tableName, bindingParameterMapper);
+            @NotNull ConnectionFactory connectionFactory,
+            @NotNull String tableName,
+            @NotNull Clock clock,
+            @NotNull BindingMapper bindingMapper
+    ) {
+        expectNonNull(connectionFactory, "connectionFactory");
+        expectNonEmpty(tableName, "tableName");
+        expectNonNull(clock, "clock");
+        expectNonNull(bindingMapper, "bindingMapper");
+        this.clock = clock;
+        this.sqlQueries = new SqlLockQueries(tableName, bindingMapper);
         this.sqlTableInitializer = new ReactorSqlTableInitializer(connectionFactory, sqlQueries);
-        this.bindingParameterMapper = bindingParameterMapper;
+        this.bindingMapper = bindingMapper;
     }
 
     @Override
+    @NotNull
     public Mono<InitializationResult> initialize() {
         return sqlTableInitializer.getInitializedConnection()
                 .flatMap(c -> Mono.from(c.close()).thenReturn(InitializationResult.of(true)))
@@ -37,7 +47,8 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
     }
 
     @Override
-    public Mono<AcquireResult> acquire(LockRequest lockRequest) {
+    @NotNull
+    public Mono<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateReleasedLock(connection, lockRequest, now)
@@ -50,7 +61,8 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
     }
 
     @Override
-    public Mono<AcquireResult> acquireOrProlong(LockRequest lockRequest) {
+    @NotNull
+    public Mono<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateAcquiredOrReleasedLock(connection, lockRequest, now)
@@ -63,7 +75,8 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
     }
 
     @Override
-    public Mono<AcquireResult> forceAcquire(LockRequest lockRequest) {
+    @NotNull
+    public Mono<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
                 updateLockById(connection, lockRequest, now)
@@ -124,17 +137,12 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
                 .bindExpiresAt(expiresAt)
                 .executeAndGetUpdated()
                 .map(updatedRows -> updatedRows > 0)
-                .onErrorResume(e -> {
-                    // TODO: check does it work!?!?
-                    if (e instanceof SQLException && !e.getMessage().toLowerCase().contains("duplicate")) {
-                        Mono.error(e);
-                    }
-                    return Mono.just(false);
-                });
+                .onErrorResume(e -> Mono.just(false));
     }
 
     @Override
-    public Mono<ReleaseResult> release(LockId lockId, OwnerId ownerId) {
+    @NotNull
+    public Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
         return statementBinder(sqlQueries.deleteAcquiredByIdAndOwnerId(), binder ->
                 binder
                         .bindLockId(lockId.getValue())
@@ -146,7 +154,8 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
     }
 
     @Override
-    public Mono<ReleaseResult> forceRelease(LockId lockId) {
+    @NotNull
+    public Mono<ReleaseResult> forceRelease(@NotNull LockId lockId) {
         return statementBinder(sqlQueries.deleteAcquiredById(), binder ->
                 binder
                         .bindOwnerId(lockId.getValue())
@@ -157,6 +166,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
     }
 
     @Override
+    @NotNull
     public Mono<ReleaseResult> forceReleaseAll() {
         return connectionFlatMap(connection -> {
             Statement statement = connection.createStatement(sqlQueries.deleteAll());
@@ -187,7 +197,7 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
 
     private StatementBinder statementBinder(Connection connection, String sql) {
         Statement statement = connection.createStatement(sql);
-        return new StatementBinder(statement, bindingParameterMapper);
+        return new StatementBinder(statement, bindingMapper);
     }
 
     private <T> Mono<T> connectionFlatMap(Function<Connection, Mono<T>> action) {
