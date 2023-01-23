@@ -7,22 +7,26 @@ plugins {
 
 dependencies {
     val versions = rootProject.ext["versions"] as Map<*, *>
+
+    // api
     api(project(":api:api-coroutine"))
     api("org.mongodb:mongodb-driver-reactivestreams:${versions["mongodbReactive"]}")
+
+    // implementation
     implementation(project(":api:api-coroutine-connector"))
     implementation(project(":mongo:mongo-common"))
-    // kotlin coroutines
-    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4"))
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:${versions["coroutines"]}"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
 
+    // test
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${versions["junit"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions["junit"]}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+
+    // integration
     integrationImplementation(project(":tests"))
     integrationImplementation("org.testcontainers:mongodb:${versions["testContainers"]}")
-
-    val junitVersion = "5.9.0"
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
 }
 
 tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {

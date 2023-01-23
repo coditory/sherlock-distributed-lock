@@ -1,9 +1,0 @@
-description = 'Sherlock Distributed Lock implementation for RxJava using mongo reactive driver'
-
-dependencies {
-    api project(':api:api-rxjava')
-    api("org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive")
-    implementation(project(':mongo:mongo-common'))
-    integrationImplementation project(':tests')
-    integrationImplementation "org.testcontainers:mongodb:$versions.testContainers"
-}

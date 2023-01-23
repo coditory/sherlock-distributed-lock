@@ -6,21 +6,23 @@ plugins {
 }
 
 dependencies {
+    val versions = rootProject.ext["versions"] as Map<*, *>
+
+    // api
     api(project(":api:api-coroutine"))
     api(project(":inmem:inmem-common"))
-    implementation(project(":api:api-coroutine-connector"))
-    integrationImplementation(project(":tests"))
 
-    // kotlin coroutines
-    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:1.6.4"))
+    // implementation
+    implementation(project(":api:api-coroutine-connector"))
+    implementation(platform("org.jetbrains.kotlinx:kotlinx-coroutines-bom:${versions["coroutines"]}"))
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-reactive")
-    // integrationImplementation project(':inmem:inmem-reactor')
-    // integrationImplementation project(':inmem:inmem-common')
-    integrationImplementation(project(":tests"))
 
-    val junitVersion = "5.9.0"
-    testImplementation("org.junit.jupiter:junit-jupiter-api:$junitVersion")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:$junitVersion")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.4")
+    // tests
+    testImplementation("org.junit.jupiter:junit-jupiter-api:${versions["junit"]}")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:${versions["junit"]}")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test")
+
+    // integration
+    integrationImplementation(project(":tests"))
 }

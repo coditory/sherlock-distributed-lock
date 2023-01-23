@@ -11,6 +11,7 @@ buildscript {
                 mysql          : '8.0.33',
                 r2dbc          : '1.0.0.RELEASE',
                 jetbrainsAnnotations: '24.0.0',
+                coroutines          : '1.6.4',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
                 testContainers : '1.19.2',
