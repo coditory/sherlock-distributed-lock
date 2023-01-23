@@ -1,6 +1,5 @@
 package com.coditory.sherlock
 
-
 import com.coditory.sherlock.base.LockAssertions
 import spock.lang.Unroll
 

@@ -8,8 +8,6 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 /**
  * A distributed lock.
- *
- * @see Sherlock
  */
 public interface DistributedLock {
     /**

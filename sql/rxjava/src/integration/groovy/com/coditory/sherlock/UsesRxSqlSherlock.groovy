@@ -17,14 +17,14 @@ trait UsesRxSqlSherlock implements DistributedLocksCreator {
 
     abstract Connection getBlockingConnection()
 
-    abstract BindingMapper getBindingParameterMapper()
+    abstract BindingMapper getBindingMapper()
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
         RxSherlock reactorLocks = rxSqlSherlock()
                 .withConnectionFactory(connectionFactory)
                 .withLocksTable(locksTableName)
-                .withBindingParameterMapper(bindingParameterMapper)
+                .withBindingMapper(bindingMapper)
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)

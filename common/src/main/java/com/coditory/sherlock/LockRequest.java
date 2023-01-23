@@ -7,7 +7,7 @@ import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
-final class LockRequest {
+public final class LockRequest {
     private final LockId lockId;
     private final OwnerId ownerId;
     private final LockDuration duration;

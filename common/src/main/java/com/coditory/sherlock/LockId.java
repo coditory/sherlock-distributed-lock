@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
-final class LockId {
+public final class LockId {
     public static LockId of(String value) {
         return new LockId(value);
     }

@@ -9,7 +9,7 @@ import java.util.Objects;
  * Preconditions for sherlock distributed lock. Throws {@link IllegalArgumentException} if
  * precondition is not met.
  */
-final class Preconditions {
+public final class Preconditions {
     private Preconditions() {
         throw new UnsupportedOperationException("Do not instantiate utility class");
     }

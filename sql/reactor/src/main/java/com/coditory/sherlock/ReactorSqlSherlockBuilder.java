@@ -62,7 +62,7 @@ public final class ReactorSqlSherlockBuilder extends ReactorSherlockWithConnecto
      * @link https://r2dbc.io/spec/1.0.0.RELEASE/spec/html/#statements.parameterized
      */
     @NotNull
-    public ReactorSqlSherlockBuilder withBindingParameterMapper(@NotNull BindingMapper bindingMapper) {
+    public ReactorSqlSherlockBuilder withBindingMapper(@NotNull BindingMapper bindingMapper) {
         expectNonNull(bindingMapper, "bindingMapper");
         this.bindingMapper = bindingMapper;
         return this;

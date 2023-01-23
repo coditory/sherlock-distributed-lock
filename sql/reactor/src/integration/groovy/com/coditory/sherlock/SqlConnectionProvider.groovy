@@ -15,7 +15,7 @@ interface SqlConnectionFactoryProvider {
 
 @CompileStatic
 trait PostgresConnectionProvider implements SqlConnectionFactoryProvider, DatabaseManager {
-    BindingMapper bindingParameterMapper = BindingMapper.POSTGRES_MAPPER
+    BindingMapper bindingMapper = BindingMapper.POSTGRES_MAPPER
 
     @Override
     ConnectionFactory getConnectionFactory() {
@@ -40,7 +40,7 @@ trait PostgresConnectionProvider implements SqlConnectionFactoryProvider, Databa
 
 @CompileStatic
 trait MySqlConnectionProvider implements SqlConnectionFactoryProvider, DatabaseManager {
-    BindingMapper bindingParameterMapper = BindingMapper.MYSQL_MAPPER
+    BindingMapper bindingMapper = BindingMapper.MYSQL_MAPPER
 
     @Override
     ConnectionFactory getConnectionFactory() {

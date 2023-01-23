@@ -8,7 +8,7 @@ import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectTruncatedToMillis;
 
-final class LockDuration {
+public final class LockDuration {
     @NotNull
     static LockDuration of(@Nullable Duration duration) {
         return new LockDuration(duration);

@@ -1,5 +1,6 @@
 package com.coditory.sherlock;
 
+import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -10,14 +11,24 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class SqlTableInitializer {
     private final SqlLockQueries sqlQueries;
+    private final DataSource dataSource;
     private final AtomicBoolean initialized = new AtomicBoolean(false);
 
-    SqlTableInitializer(SqlLockQueries sqlQueries) {
+    SqlTableInitializer(SqlLockQueries sqlQueries, DataSource dataSource) {
         expectNonNull(sqlQueries, "sqlQueries");
+        expectNonNull(dataSource, "dataSource");
         this.sqlQueries = sqlQueries;
+        this.dataSource = dataSource;
     }
 
-    void initialize(Connection connection) {
+    Connection getInitializedConnection() throws SQLException {
+        return initialized.compareAndSet(false, true)
+                ? initialize()
+                : getConnection();
+    }
+
+    private Connection initialize() throws SQLException {
+        Connection connection = getConnection();
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlQueries.createLocksTable());
             statement.executeUpdate(sqlQueries.createLocksIndex());
@@ -32,5 +43,10 @@ class SqlTableInitializer {
                 throw new IllegalStateException("Could not initialize locks table", e);
             }
         }
+        return connection;
+    }
+
+    private Connection getConnection() throws SQLException {
+        return dataSource.getConnection();
     }
 }

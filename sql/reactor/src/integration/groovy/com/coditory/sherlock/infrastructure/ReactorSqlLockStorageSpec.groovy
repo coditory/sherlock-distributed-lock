@@ -1,6 +1,5 @@
 package com.coditory.sherlock.infrastructure
 
-
 import com.coditory.sherlock.DistributedLock
 import com.coditory.sherlock.LocksBaseSpec
 import com.coditory.sherlock.MySqlConnectionProvider

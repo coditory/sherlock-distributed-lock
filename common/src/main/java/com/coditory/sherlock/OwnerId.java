@@ -6,7 +6,7 @@ import java.util.Objects;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
-final class OwnerId {
+public final class OwnerId {
     @NotNull
     static OwnerId uniqueOwnerId() {
         return new OwnerId(UuidGenerator.uuid());

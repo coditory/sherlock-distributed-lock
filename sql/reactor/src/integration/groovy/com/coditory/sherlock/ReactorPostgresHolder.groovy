@@ -1,6 +1,7 @@
 package com.coditory.sherlock
 
 import groovy.transform.CompileStatic
+import io.r2dbc.pool.ConnectionPool
 import io.r2dbc.pool.ConnectionPoolConfiguration
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
@@ -49,7 +50,7 @@ class ReactorPostgresHolder {
                 .validationQuery("SELECT 1")
                 .validationDepth(ValidationDepth.REMOTE)
                 .build()
-        return new io.r2dbc.pool.ConnectionPool(configuration)
+        return new ConnectionPool(configuration)
     }
 
     synchronized static Connection getBlockingConnection() {

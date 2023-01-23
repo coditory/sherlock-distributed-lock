@@ -15,7 +15,8 @@ buildscript {
                 jsonAssert     : '1.5.1',
                 testContainers : '1.19.2',
                 hikaricp       : '5.0.1',
-                spock          : '2.3-groovy-4.0'
+                spock          : '2.3-groovy-4.0',
+                awaitility          : '4.2.0',
         ]
         notPublishableModules = [
                 ':api',

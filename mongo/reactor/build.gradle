@@ -2,9 +2,9 @@ description = 'Sherlock Distributed Lock implementation for Reactor using mongo 
 
 dependencies {
     api project(':api:api-reactor')
-    api "org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive"
-    api "io.projectreactor:reactor-core:$versions.reactor"
+    api("io.projectreactor:reactor-core:$versions.reactor")
     implementation project(':mongo:mongo-common')
+    implementation("org.mongodb:mongodb-driver-reactivestreams:$versions.mongodbReactive")
     integrationImplementation project(':tests')
     integrationImplementation "org.testcontainers:mongodb:$versions.testContainers"
 }

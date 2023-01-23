@@ -29,7 +29,7 @@ abstract class RxSqlIndexCreationSpec extends Specification {
     Sherlock locks = blockingRxSherlock(rxSqlSherlock()
             .withConnectionFactory(connectionFactory)
             .withLocksTable(tableName)
-            .withBindingParameterMapper(bindingParameterMapper)
+            .withBindingMapper(bindingMapper)
             .build())
 
     abstract List<String> getExpectedIndexNames()
@@ -38,7 +38,7 @@ abstract class RxSqlIndexCreationSpec extends Specification {
 
     abstract Connection getBlockingConnection();
 
-    abstract BindingMapper getBindingParameterMapper();
+    abstract BindingMapper getBindingMapper();
 
     void cleanup() {
         try (

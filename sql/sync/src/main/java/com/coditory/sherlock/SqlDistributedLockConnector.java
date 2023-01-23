@@ -15,7 +15,6 @@ import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class SqlDistributedLockConnector implements DistributedLockConnector {
-    private final DataSource dataSource;
     private final SqlTableInitializer sqlTableInitializer;
     private final SqlLockQueries sqlQueries;
     private final Clock clock;
@@ -30,14 +29,14 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(clock, "clock");
         this.clock = clock;
         this.sqlQueries = new SqlLockQueries(tableName);
-        this.dataSource = dataSource;
-        this.sqlTableInitializer = new SqlTableInitializer(sqlQueries);
+        this.sqlTableInitializer = new SqlTableInitializer(sqlQueries, dataSource);
     }
 
     @Override
     public void initialize() {
-        try (Connection connection = dataSource.getConnection()) {
-            sqlTableInitializer.initialize(connection);
+        try {
+            Connection connection = getInitializedConnection();
+            connection.close();
         } catch (Throwable e) {
             throw new SherlockException("Could not initialize SQL table", e);
         }
@@ -204,8 +203,6 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     }
 
     private Connection getInitializedConnection() throws SQLException {
-        Connection connection = dataSource.getConnection();
-        sqlTableInitializer.initialize(connection);
-        return connection;
+        return sqlTableInitializer.getInitializedConnection();
     }
 }

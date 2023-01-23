@@ -2,7 +2,7 @@ package com.coditory.sherlock;
 
 import org.jetbrains.annotations.NotNull;
 
-class Timer {
+public class Timer {
     static Timer start() {
         return new Timer();
     }

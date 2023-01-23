@@ -2,8 +2,9 @@ description = 'Sherlock Distributed Lock with Reactor based API'
 
 dependencies {
     api "io.reactivex.rxjava2:rxjava:$versions.rxjava"
-    api project(':common')
-    integrationImplementation project(':inmem:inmem-rxjava')
-    integrationImplementation project(':inmem:inmem-common')
-    integrationImplementation project(':tests')
+    api project(":api:api-common")
+    implementation project(":common")
+    integrationImplementation project(":inmem:inmem-rxjava")
+    integrationImplementation project(":inmem:inmem-common")
+    integrationImplementation project(":tests")
 }

@@ -7,7 +7,7 @@ import java.util.UUID;
 /**
  * Random unique id generator
  */
-final class UuidGenerator {
+public final class UuidGenerator {
     private UuidGenerator() {
         throw new UnsupportedOperationException("Do not instantiate utility class");
     }

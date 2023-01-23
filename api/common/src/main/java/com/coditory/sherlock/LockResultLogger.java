@@ -13,14 +13,14 @@ final class LockResultLogger {
     private final Logger logger;
 
     LockResultLogger(@NotNull String lockId, @NotNull Class<?> lockType) {
-        expectNonNull(lockId, "lockId");
-        expectNonNull(lockType, "lockType");
+        Preconditions.expectNonNull(lockId, "lockId");
+        Preconditions.expectNonNull(lockType, "lockType");
         this.lockId = lockId;
         this.logger = LoggerFactory.getLogger(lockType);
     }
 
     void logResult(@NotNull AcquireResult result) {
-        expectNonNull(result, "result");
+        Preconditions.expectNonNull(result, "result");
         if (result.isAcquired()) {
             logger.debug("Lock acquired: {}", lockId);
         } else {
@@ -29,7 +29,7 @@ final class LockResultLogger {
     }
 
     void logResult(@NotNull ReleaseResult result) {
-        expectNonNull(result, "result");
+        Preconditions.expectNonNull(result, "result");
         if (result.isReleased()) {
             logger.debug("Lock released: {}", lockId);
         } else {

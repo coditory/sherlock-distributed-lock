@@ -6,7 +6,7 @@ import static com.coditory.sherlock.OwnerId.uniqueOwnerId;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
-interface OwnerIdPolicy {
+public interface OwnerIdPolicy {
     @NotNull
     static OwnerIdPolicy staticOwnerIdPolicy(@NotNull String ownerId) {
         expectNonEmpty(ownerId, "ownerId");

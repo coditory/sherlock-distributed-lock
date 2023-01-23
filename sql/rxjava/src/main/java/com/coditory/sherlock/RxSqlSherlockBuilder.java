@@ -62,7 +62,7 @@ public final class RxSqlSherlockBuilder extends RxSherlockWithConnectorBuilder<R
      * @link https://r2dbc.io/spec/1.0.0.RELEASE/spec/html/#statements.parameterized
      */
     @NotNull
-    public RxSqlSherlockBuilder withBindingParameterMapper(@NotNull BindingMapper bindingMapper) {
+    public RxSqlSherlockBuilder withBindingMapper(@NotNull BindingMapper bindingMapper) {
         expectNonNull(bindingMapper, "bindingMapper");
         this.bindingMapper = bindingMapper;
         return this;

@@ -60,7 +60,6 @@ class BlockingReactorSherlockWrapper implements Sherlock {
     }
 }
 
-
 @CompileStatic
 class BlockingReactorDistributedLock implements DistributedLock {
     private final ReactorDistributedLock lock
