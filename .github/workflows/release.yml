@@ -66,7 +66,7 @@ jobs:
           echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
           echo -e "VERSION: $VERSION\nNEXT_VERSION: $NEXT_VERSION"
 
-      - name: Import GPG key
+      - name: Import gpg key (release only)
         id: gpg
         uses: crazy-max/ghaction-import-gpg@v5
         if: |
@@ -81,7 +81,7 @@ jobs:
           git_committer_name: Coditory Bot
           git_committer_email: bot@coditory.com
 
-      - name: Update version in README (master only)
+      - name: Update version in readme (release only)
         if: steps.gpg.conclusion == 'success'
         env:
           PREV_VERSION: ${{ steps.versions.outputs.version }}
@@ -90,6 +90,7 @@ jobs:
           declare -r ESC_PREV_VERSION="${PREV_VERSION//./\\.}"
           echo "Changing: $PREV_VERSION -> $NEXT_VERSION"
           sed -i "s|${ESC_PREV_VERSION}|${NEXT_VERSION}|" README.md
+          sed -i "s|${ESC_PREV_VERSION}|${NEXT_VERSION}|" gradle.properties
           sed -i "s|${ESC_PREV_VERSION}|${NEXT_VERSION}|" mkdocs.yml
           if [ -n "$(git status --porcelain)" ]; then
             git add -A
@@ -99,7 +100,7 @@ jobs:
             echo "Nothing changed. Skipping commit."
           fi
 
-      - name: Setup JDK
+      - name: Setup jdk
         if: inputs.publish != 'SKIP'
         uses: actions/setup-java@v3
         with:
@@ -122,7 +123,7 @@ jobs:
           ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Pversion=$NEXT_VERSION -Ppublish --info
           echo "Published release: $NEXT_VERSION"
 
-      - name: Generate release notes
+      - name: Generate release notes (release only)
         id: notes
         if: |
           github.event_name != 'release'
@@ -144,7 +145,7 @@ jobs:
           declare -r ESCAPED="${NOTES//$'\n'/'%0A'}"
           echo "notes=$ESCAPED" >> $GITHUB_OUTPUT
 
-      - name: Create github release (master only)
+      - name: Create github release (release only)
         if: steps.notes.conclusion == 'success'
         uses: ncipollo/release-action@v1
         with:
@@ -154,7 +155,7 @@ jobs:
           tag: v${{ steps.versions.outputs.next_version }}
           token: ${{ secrets.GITHUB_TOKEN }}
 
-      - name: Publish snapshot
+      - name: Publish snapshot (snapshot only)
         if: |
           github.event_name == 'workflow_dispatch'
           && (

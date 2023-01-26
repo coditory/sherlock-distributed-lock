@@ -1,0 +1,50 @@
+[versions]
+# build tools
+java = "11"
+kotlin = "1.8.0"
+ktlint = "0.45.2"
+jacoco = "0.8.8"
+# dependencies
+mongodb = "4.7.2"
+logback = "1.4.5"
+r2dbc = "1.0.0.RELEASE"
+coroutines = "1.6.4"
+# test dependencies
+junit = "5.9.2"
+spock = "2.3-groovy-4.0"
+testcontainers = "1.17.6"
+
+[libraries]
+# build tools
+gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradle-ktlint = { module = "org.jlleitschuh.gradle:ktlint-gradle", version = "11.0.0" }
+gradle-nexus-publish = { module = "io.github.gradle-nexus:publish-plugin", version = "1.1.0" }
+# dependencies
+reactor-core = { module = "io.projectreactor:reactor-core", version = "3.5.0" }
+rxjava = { module = "io.reactivex.rxjava2:rxjava", version = "2.2.21" }
+mongodb-core = { module = "org.mongodb:mongodb-driver-core", version.ref = "mongodb" }
+mongodb-reactivestreams = { module = "org.mongodb:mongodb-driver-reactivestreams", version.ref = "mongodb" }
+mongodb-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mongodb" }
+slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.5" }
+logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
+logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.5.0" }
+mysql = { module = "mysql:mysql-connector-java", version = "8.0.31" }
+r2dbc-spi = { module = "io.r2dbc:r2dbc-spi", version.ref = "r2dbc" }
+r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc" }
+r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version.ref = "r2dbc" }
+r2dbc-mysql = { module = "dev.miku:r2dbc-mysql", version.ref = "r2dbc" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+kotlinx-coroutines-reactive = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-reactive", version.ref = "coroutines" }
+jetbrains-annotations = { module = "org.jetbrains:annotations", version = "24.0.0" }
+# test dependencies
+junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
+junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
+spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
+hikaricp = { module = "com.zaxxer:HikariCP", version = "5.0.1" }
+testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
+testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
+testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
+kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
+jsonassert = { module = "org.skyscreamer:jsonassert", version = "1.5.1" }
+awaitility = { module = "org.awaitility:awaitility", version = "4.2.0" }

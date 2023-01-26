@@ -1,16 +1,17 @@
-description = "Sherlock Distributed Lock synchronous API"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    val versions = rootProject.ext["versions"] as Map<*, *>
-
     // api
-    api(project(":api:api-common"))
-    api("org.slf4j:slf4j-api:${versions["slf4j"]}")
-    api("org.jetbrains:annotations:${versions["jetbrainsAnnotations"]}")
+    api(projects.api.apiCommon)
 
     // implementation
-    implementation(project(":common"))
+    implementation(projects.common)
 
     // test
-    testImplementation(project(":inmem:inmem-sync"))
+    testImplementation(projects.tests)
+    testImplementation(projects.inmem.inmemSync)
 }

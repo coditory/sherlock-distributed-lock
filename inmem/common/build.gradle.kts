@@ -1,6 +1,10 @@
-description = "Sherlock Distributed Lock common packages for in-memory implementations"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    api(project(":common"))
-    integrationImplementation(project(":tests"))
+    api(projects.common)
+    integrationTestImplementation(projects.tests)
 }

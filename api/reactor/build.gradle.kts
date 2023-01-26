@@ -1,17 +1,20 @@
-description = "Sherlock Distributed Lock with Reactor based API"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    val versions = rootProject.ext["versions"] as Map<*, *>
-
     // api
-    api("io.projectreactor:reactor-core:${versions["reactor"]}")
-    api(project(":api:api-common"))
+    api(projects.api.apiCommon)
+    api(libs.reactor.core)
 
     // implementation
-    implementation(project(":common"))
+    implementation(projects.common)
+
+    // test
+    testImplementation(projects.tests)
 
     // integration
-    integrationImplementation(project(":inmem:inmem-reactor"))
-    integrationImplementation(project(":inmem:inmem-common"))
-    integrationImplementation(project(":tests"))
+    integrationTestImplementation(projects.inmem.inmemReactor)
 }

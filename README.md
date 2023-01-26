@@ -1,8 +1,7 @@
 # Sherlock Distributed Lock
-[![Build Status](https://travis-ci.com/coditory/sherlock-distributed-lock.svg?branch=master)](https://travis-ci.com/coditory/sherlock-distributed-lock)
-[![Coverage Status](https://coveralls.io/repos/github/coditory/sherlock-distributed-lock/badge.svg)](https://coveralls.io/github/coditory/sherlock-distributed-lock)
+[![Build](https://github.com/coditory/sherlock-distributed-lock/actions/workflows/build.yml/badge.svg)](https://github.com/coditory/sherlock-distributed-lock/actions/workflows/build.yml)
+[![Coverage](https://codecov.io/gh/coditory/sherlock-distributed-lock/branch/master/graph/badge.svg)](https://codecov.io/gh/coditory/sherlock-distributed-lock)
 [![Maven Central](https://maven-badges.herokuapp.com/maven-central/com.coditory.sherlock/sherlock-api-sync/badge.svg)](https://search.maven.org/search?q=com.coditory.sherlock)
-[![JavaDoc](http://www.javadoc.io/badge/com.coditory.sherlock/sherlock-api-sync.svg)](http://www.javadoc.io/doc/com.coditory.sherlock/sherlock-api-sync)
 
 > Java Distributed lock library with database migration capabilities
 

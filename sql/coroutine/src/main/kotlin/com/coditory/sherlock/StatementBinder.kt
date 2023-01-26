@@ -33,7 +33,7 @@ internal class StatementBinder(
 
     private fun bind(name: String, value: Any?, type: KClass<*>): StatementBinder {
         val key = bindingMapper.mapBinding(index, name).bindingKey
-        index++;
+        index++
         if (key is Int) {
             if (value != null) {
                 statement.bind(key, value)
@@ -48,7 +48,7 @@ internal class StatementBinder(
                 statement.bindNull(stringKey, type.java)
             }
         }
-        return this;
+        return this
     }
 
     suspend fun executeAndGetUpdated(): Long {

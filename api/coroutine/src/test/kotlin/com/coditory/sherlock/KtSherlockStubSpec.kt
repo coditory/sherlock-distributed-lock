@@ -31,7 +31,6 @@ class KtSherlockStubSpec {
         assertAlwaysClosedLock(sherlock.createOverridingLock(lockId), lockId)
     }
 
-
     @Test
     fun `should create sherlock returning closed locks by default and opened lock for specific id`() = runTest {
         // given

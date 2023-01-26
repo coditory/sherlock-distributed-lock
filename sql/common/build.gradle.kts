@@ -1,5 +1,9 @@
-description = "Sherlock Distributed Lock common packages for mongo implementations"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    api(project(":common"))
+    api(projects.common)
 }

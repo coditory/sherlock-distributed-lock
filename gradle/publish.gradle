@@ -1,3 +1,10 @@
+Set<Project> notPublishableModules = [
+        ':api',
+        ':sample',
+        ':mongo',
+        ':tests'
+]
+
 apply plugin: 'io.github.gradle-nexus.publish-plugin'
 
 nexusPublishing {

@@ -1,0 +1,59 @@
+name: Build report
+
+on:
+  workflow_run:
+    workflows: [build]
+    types:
+      - completed
+
+jobs:
+  report:
+    runs-on: ubuntu-latest
+    if: github.event.workflow_run.conclusion == 'success' || github.event.workflow_run.conclusion == 'failure'
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+
+      - name: Download build reports
+        uses: actions/github-script@v6
+        with:
+          script: |
+            let allArtifacts = await github.rest.actions.listWorkflowRunArtifacts({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               run_id: context.payload.workflow_run.id,
+            });
+            let matchArtifact = allArtifacts.data.artifacts.filter((artifact) => {
+              return artifact.name == "build-reports"
+            })[0];
+            let download = await github.rest.actions.downloadArtifact({
+               owner: context.repo.owner,
+               repo: context.repo.repo,
+               artifact_id: matchArtifact.id,
+               archive_format: 'zip',
+            });
+            let fs = require('fs');
+            fs.writeFileSync(`${process.env.GITHUB_WORKSPACE}/build-reports.zip`, Buffer.from(download.data));
+
+      - name: Unzip build reports
+        run: unzip build-reports.zip
+
+      - name: Publish test report
+        uses: mikepenz/action-junit-report@v3
+        continue-on-error: true
+        with:
+          commit: ${{ github.event.workflow_run.head_sha }}
+          annotations_limit: 10
+          report_paths: '**/build/test-results/**/TEST*.xml'
+
+      - name: Publish coverage Report
+        uses: codecov/codecov-action@v3
+        continue-on-error: true
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
+          override_commit: ${{ github.event.workflow_run.head_sha }}
+          override_branch: ${{ github.event.workflow_run.head_branch }}
+          override_build: ${{ github.event.workflow_run.id }}
+          files: 'build/reports/jacoco/coverage/coverage.xml'

@@ -1,7 +1,14 @@
-description = "Sherlock Distributed Lock in-memory reactive implementation"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    api(project(":inmem:inmem-sync"))
-    api(project(":api:api-reactor"))
-    integrationImplementation(project(":tests"))
+    // api
+    api(projects.api.apiReactor)
+    api(projects.inmem.inmemSync)
+
+    // integration
+    integrationTestImplementation(projects.tests)
 }

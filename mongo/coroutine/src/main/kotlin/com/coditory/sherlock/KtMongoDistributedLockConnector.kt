@@ -2,7 +2,10 @@ package com.coditory.sherlock
 
 import com.coditory.sherlock.MongoDistributedLock.fromDocument
 import com.coditory.sherlock.MongoDistributedLock.fromLockRequest
-import com.coditory.sherlock.MongoDistributedLockQueries.*
+import com.coditory.sherlock.MongoDistributedLockQueries.queryAcquired
+import com.coditory.sherlock.MongoDistributedLockQueries.queryAcquiredOrReleased
+import com.coditory.sherlock.MongoDistributedLockQueries.queryById
+import com.coditory.sherlock.MongoDistributedLockQueries.queryReleased
 import com.mongodb.MongoCommandException
 import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.ReturnDocument
@@ -95,8 +98,7 @@ internal class KtMongoDistributedLockConnector(
 
     private suspend fun delete(query: Bson): Boolean {
         val deleted = getCollection().findOneAndDelete(query).awaitFirstOrNull()
-        return (deleted != null
-                && fromDocument(deleted).isActive(now()))
+        return deleted != null && fromDocument(deleted).isActive(now())
     }
 
     private suspend fun upsert(query: Bson, lock: MongoDistributedLock): Boolean {

@@ -1,16 +1,18 @@
-description = "Sherlock Distributed Lock implementation using mongo synchronous connector"
+plugins {
+    id("build.java")
+    id("build.publish")
+    id("build.coverage")
+}
 
 dependencies {
-    val versions = rootProject.ext["versions"] as Map<*, *>
-
     // api
-    api(project(":api:api-sync"))
-    api("org.mongodb:mongodb-driver-sync:${versions["mongodb"]}")
+    api(projects.api.apiSync)
+    api(libs.mongodb.sync)
 
     // implementation
-    implementation(project(":mongo:mongo-common"))
+    implementation(projects.mongo.mongoCommon)
 
     // integration
-    integrationImplementation(project(":tests"))
-    integrationImplementation("org.testcontainers:mongodb:${versions["testContainers"]}")
+    integrationTestImplementation(projects.tests)
+    integrationTestImplementation(libs.testcontainers.mongodb)
 }

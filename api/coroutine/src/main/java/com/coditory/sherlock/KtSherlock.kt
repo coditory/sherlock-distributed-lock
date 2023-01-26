@@ -20,7 +20,7 @@ interface KtSherlock {
      *
      * <pre>`assert lock.acquire() == true
      * assert lock.acquire() == false
-    `</pre> *
+     * `</pre>
      *
      * @return the lock builder
      */
@@ -44,7 +44,7 @@ interface KtSherlock {
      *
      * <pre>`assert reentrantLock.acquire() == true
      * assert reentrantLock.acquire() == true
-    `</pre> *
+     * `</pre>
      *
      * @return the reentrant lock builder
      */
@@ -68,7 +68,7 @@ interface KtSherlock {
      *
      * <pre>`assert someLock.acquire() == true
      * assert overridingLock.acquire() == true
-    `</pre> *
+     * `</pre>
      *
      *
      * It could be used for administrative actions.

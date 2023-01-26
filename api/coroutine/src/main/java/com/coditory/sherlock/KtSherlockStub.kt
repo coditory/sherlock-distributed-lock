@@ -24,7 +24,7 @@ class KtSherlockStub : KtSherlock {
     }
 
     override suspend fun initialize() {
-
+        // deliberately empty
     }
 
     override fun createLock(): DistributedLockBuilder<KtDistributedLock> {
@@ -58,7 +58,7 @@ class KtSherlockStub : KtSherlock {
          */
         fun withReleasedLocks(): KtSherlockStub {
             return KtSherlockStub()
-                    .withDefaultAcquireResult(true)
+                .withDefaultAcquireResult(true)
         }
 
         /**
@@ -68,7 +68,7 @@ class KtSherlockStub : KtSherlock {
          */
         fun withAcquiredLocks(): KtSherlockStub {
             return KtSherlockStub()
-                    .withDefaultAcquireResult(false)
+                .withDefaultAcquireResult(false)
         }
     }
 }

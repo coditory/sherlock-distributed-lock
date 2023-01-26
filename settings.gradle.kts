@@ -1,4 +1,9 @@
 rootProject.name = "sherlock"
+
+enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
+
+includeBuild("build-logic")
+
 include("common")
 include("api")
 include("api:api-common")
@@ -51,18 +56,22 @@ project(":sql:sql-rxjava").projectDir = file("./sql/rxjava")
 project(":sql:sql-coroutine").projectDir = file("./sql/coroutine")
 project(":sql:sql-common").projectDir = file("./sql/common")
 
+dependencyResolutionManagement {
+    repositories {
+        mavenCentral()
+    }
+}
+
 plugins {
     id("com.gradle.enterprise").version("3.12.2")
 }
 
 gradleEnterprise {
-    buildScan {
-        termsOfServiceUrl = "https://gradle.com/terms-of-service"
-        termsOfServiceAgree = "yes"
-
-        if (!System.getenv("CI").isNullOrEmpty()) {
+    if (!System.getenv("CI").isNullOrEmpty()) {
+        buildScan {
             publishAlways()
-            tag("CI")
+            termsOfServiceUrl = "https://gradle.com/terms-of-service"
+            termsOfServiceAgree = "yes"
         }
     }
 }

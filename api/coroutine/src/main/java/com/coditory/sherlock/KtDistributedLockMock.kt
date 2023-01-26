@@ -40,7 +40,7 @@ class KtDistributedLockMock private constructor(
     override suspend fun release(): Boolean {
         val released = lock.release()
         incrementReleaseCounters(released)
-        return released;
+        return released
     }
 
     private fun incrementReleaseCounters(released: Boolean): Boolean {

@@ -11,7 +11,9 @@ import com.coditory.sherlock.base.TestTuple3
 import com.coditory.sherlock.base.runDynamicTest
 import com.coditory.sherlock.base.testTuple
 import kotlinx.coroutines.test.runTest
-import org.junit.jupiter.api.Assertions.*
+import org.junit.jupiter.api.Assertions.assertEquals
+import org.junit.jupiter.api.Assertions.assertFalse
+import org.junit.jupiter.api.Assertions.assertTrue
 import org.junit.jupiter.api.Test
 import org.junit.jupiter.api.TestFactory
 

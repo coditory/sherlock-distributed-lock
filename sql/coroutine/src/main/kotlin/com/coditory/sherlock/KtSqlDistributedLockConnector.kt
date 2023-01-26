@@ -28,8 +28,8 @@ internal class KtSqlDistributedLockConnector(
         val now = now()
         return try {
             getInitializedConnection().use { connection ->
-                updateReleasedLock(connection, lockRequest, now)
-                        || insertLock(connection, lockRequest, now)
+                updateReleasedLock(connection, lockRequest, now) ||
+                    insertLock(connection, lockRequest, now)
             }
         } catch (e: Throwable) {
             throw SherlockException("Could not acquire lock: $lockRequest", e)
@@ -40,8 +40,8 @@ internal class KtSqlDistributedLockConnector(
         val now = now()
         return try {
             getInitializedConnection().use { connection ->
-                updateAcquiredOrReleasedLock(connection, lockRequest, now)
-                        || insertLock(connection, lockRequest, now)
+                updateAcquiredOrReleasedLock(connection, lockRequest, now) ||
+                    insertLock(connection, lockRequest, now)
             }
         } catch (e: Throwable) {
             throw SherlockException("Could not acquire or prolong lock: $lockRequest", e)
@@ -52,8 +52,8 @@ internal class KtSqlDistributedLockConnector(
         val now = now()
         return try {
             getInitializedConnection().use { connection ->
-                updateLockById(connection, lockRequest, now)
-                        || insertLock(connection, lockRequest, now)
+                updateLockById(connection, lockRequest, now) ||
+                    insertLock(connection, lockRequest, now)
             }
         } catch (e: Throwable) {
             throw SherlockException("Could not force acquire lock: $lockRequest", e)
