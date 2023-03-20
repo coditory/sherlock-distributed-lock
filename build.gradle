@@ -6,7 +6,7 @@ buildscript {
                 mongodb        : '4.7.2',
                 mongodbReactive: '4.7.2',
                 slf4j          : '2.0.6',
-                logback        : '1.4.5',
+                logback        : '1.4.6',
                 postgresql     : '42.5.4',
                 mysql          : '8.0.32',
                 // test dependencies:
