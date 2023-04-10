@@ -11,7 +11,7 @@ buildscript {
                 mysql          : '8.0.32',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
-                testContainers : '1.17.6',
+                testContainers : '1.18.0',
                 hikaricp       : '5.0.1',
                 spock          : '2.3-groovy-4.0'
         ]
