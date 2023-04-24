@@ -8,7 +8,7 @@ buildscript {
                 slf4j          : '2.0.7',
                 logback        : '1.4.6',
                 postgresql     : '42.6.0',
-                mysql          : '8.0.32',
+                mysql          : '8.0.33',
                 // test dependencies:
                 jsonAssert     : '1.5.1',
                 testContainers : '1.18.0',
