@@ -9,7 +9,7 @@ jobs:
       should_skip: ${{ steps.skip.outputs.should_skip }}
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Skip duplicates and docs
         id: skip
@@ -25,7 +25,7 @@ jobs:
     timeout-minutes: 15
     steps:
       - name: Checkout
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Validate gradle wrapper
         uses: gradle/wrapper-validation-action@v1
