@@ -3,7 +3,7 @@ buildscript {
         versions = [
                 reactor        : '3.5.11',
                 rxjava         : '2.2.21',
-                mongodb        : '4.7.2',
+                mongodb        : '4.11.1',
                 mongodbReactive: '4.7.2',
                 slf4j          : '2.0.9',
                 logback        : '1.4.11',
