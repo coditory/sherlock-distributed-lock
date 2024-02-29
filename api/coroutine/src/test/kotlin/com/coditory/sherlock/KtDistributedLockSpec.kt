@@ -3,7 +3,11 @@ package com.coditory.sherlock
 import com.coditory.sherlock.KtDistributedLock.AcquireAndExecuteResult
 import com.coditory.sherlock.KtDistributedLockMock.Companion.acquiredInMemoryLock
 import com.coditory.sherlock.KtDistributedLockMock.Companion.releasedInMemoryLock
-import com.coditory.sherlock.base.*
+import com.coditory.sherlock.base.SpecSimulatedException
+import com.coditory.sherlock.base.TestTuple1
+import com.coditory.sherlock.base.assertThrows
+import com.coditory.sherlock.base.runDynamicTest
+import com.coditory.sherlock.base.testTuple
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals

@@ -1,13 +1,10 @@
-build
-bin
-
 # Gradle
 .log
 .gradle
 !gradle-wrapper.jar
+build
 
 # IntelliJ
 *.iml
 .idea
 !.idea/codeStyles
-.attach_pid*
