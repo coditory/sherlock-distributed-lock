@@ -29,7 +29,10 @@ interface KtDistributedLockConnector {
     /**
      * Unlock a lock if wat acquired by the same instance.
      */
-    suspend fun release(lockId: LockId, ownerId: OwnerId): Boolean
+    suspend fun release(
+        lockId: LockId,
+        ownerId: OwnerId,
+    ): Boolean
 
     /**
      * Release a lock without checking its owner or release date.

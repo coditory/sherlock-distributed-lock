@@ -65,7 +65,7 @@ public interface ReactorDistributedLock {
      *
      * @param <T>  type od value emitted by the action
      * @param mono to be executed subscribed to when lock is acquired
-     * @return true if lock is acquired.
+     * @return Mono<T> if lock is acquired, Mono.empty() otherwise.
      * @see ReactorDistributedLock#acquire()
      */
     @NotNull

@@ -8,7 +8,7 @@ class KtDelegatingDistributedLock(
     private val releaseAction: ReleaseAction,
     private val lockId: LockId,
     private val ownerId: OwnerId,
-    private val duration: LockDuration
+    private val duration: LockDuration,
 ) : KtDistributedLock {
     private val logger = LoggerFactory.getLogger(javaClass)
     override val id: String = lockId.value
@@ -48,7 +48,10 @@ class KtDelegatingDistributedLock(
     }
 
     fun interface ReleaseAction {
-        suspend fun release(lockId: LockId, ownerId: OwnerId): Boolean
+        suspend fun release(
+            lockId: LockId,
+            ownerId: OwnerId,
+        ): Boolean
     }
 
     fun interface AcquireAction {

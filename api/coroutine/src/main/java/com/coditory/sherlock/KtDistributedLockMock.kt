@@ -6,7 +6,7 @@ import java.util.concurrent.atomic.AtomicBoolean
 import java.util.concurrent.atomic.AtomicInteger
 
 class KtDistributedLockMock private constructor(
-    private val lock: KtDistributedLock
+    private val lock: KtDistributedLock,
 ) : KtDistributedLock {
     private val releases: AtomicInteger = AtomicInteger(0)
     private val acquisitions: AtomicInteger = AtomicInteger(0)
@@ -145,7 +145,7 @@ class KtDistributedLockMock private constructor(
     private class InMemoryDistributedLockStub private constructor(
         lockId: LockId,
         private val reentrant: Boolean,
-        acquired: Boolean
+        acquired: Boolean,
     ) : KtDistributedLock {
         private val acquired = AtomicBoolean(acquired)
 
@@ -181,11 +181,17 @@ class KtDistributedLockMock private constructor(
         }
 
         companion object {
-            fun reentrantInMemoryLock(lockId: LockId, acquired: Boolean): InMemoryDistributedLockStub {
+            fun reentrantInMemoryLock(
+                lockId: LockId,
+                acquired: Boolean,
+            ): InMemoryDistributedLockStub {
                 return InMemoryDistributedLockStub(lockId, true, acquired)
             }
 
-            fun inMemoryLock(lockId: LockId, acquired: Boolean): InMemoryDistributedLockStub {
+            fun inMemoryLock(
+                lockId: LockId,
+                acquired: Boolean,
+            ): InMemoryDistributedLockStub {
                 return InMemoryDistributedLockStub(lockId, false, acquired)
             }
         }
@@ -194,7 +200,7 @@ class KtDistributedLockMock private constructor(
     internal class SequencedDistributedLockStub private constructor(
         lockId: LockId,
         acquireResults: List<Boolean>,
-        releaseResults: List<Boolean>
+        releaseResults: List<Boolean>,
     ) : KtDistributedLock {
         private val acquireResults = ConcurrentLinkedQueue(acquireResults)
         private val releaseResults = ConcurrentLinkedQueue(releaseResults)
@@ -204,7 +210,7 @@ class KtDistributedLockMock private constructor(
         constructor(
             lockId: String,
             acquireResults: List<Boolean>,
-            releaseResults: List<Boolean>
+            releaseResults: List<Boolean>,
         ) : this(LockId.of(lockId), acquireResults, releaseResults)
 
         override val id: String = lockId.value
@@ -239,7 +245,10 @@ class KtDistributedLockMock private constructor(
             return inMemoryLock(lockId, true)
         }
 
-        private fun inMemoryLock(lockId: String, state: Boolean): KtDistributedLockMock {
+        private fun inMemoryLock(
+            lockId: String,
+            state: Boolean,
+        ): KtDistributedLockMock {
             Preconditions.expectNonEmpty(lockId, "lockId")
             return of(InMemoryDistributedLockStub.inMemoryLock(LockId.of(lockId), state))
         }
@@ -256,7 +265,10 @@ class KtDistributedLockMock private constructor(
             return reentrantInMemoryLock(lockId, true)
         }
 
-        private fun reentrantInMemoryLock(lockId: String, state: Boolean): KtDistributedLockMock {
+        private fun reentrantInMemoryLock(
+            lockId: String,
+            state: Boolean,
+        ): KtDistributedLockMock {
             Preconditions.expectNonEmpty(lockId, "lockId")
             return of(InMemoryDistributedLockStub.reentrantInMemoryLock(LockId.of(lockId), state))
         }
@@ -265,12 +277,18 @@ class KtDistributedLockMock private constructor(
             return lockStub(UuidGenerator.uuid(), result)
         }
 
-        fun lockStub(acquireResult: Boolean, releaseResult: Boolean): KtDistributedLockMock {
+        fun lockStub(
+            acquireResult: Boolean,
+            releaseResult: Boolean,
+        ): KtDistributedLockMock {
             return lockStub(UuidGenerator.uuid(), acquireResult, releaseResult)
         }
 
         @JvmStatic
-        fun lockStub(lockId: String, result: Boolean): KtDistributedLockMock {
+        fun lockStub(
+            lockId: String,
+            result: Boolean,
+        ): KtDistributedLockMock {
             Preconditions.expectNonEmpty(lockId, "lockId")
             return of(lockStub(lockId, result, result))
         }
@@ -278,7 +296,7 @@ class KtDistributedLockMock private constructor(
         fun lockStub(
             lockId: String,
             acquireResult: Boolean,
-            releaseResult: Boolean
+            releaseResult: Boolean,
         ): KtDistributedLockMock {
             Preconditions.expectNonEmpty(lockId, "lockId")
             val lock = SequencedDistributedLockStub(lockId, listOf(acquireResult), listOf(releaseResult))
@@ -287,7 +305,7 @@ class KtDistributedLockMock private constructor(
 
         fun sequencedLock(
             acquireResults: List<Boolean>,
-            releaseResults: List<Boolean>
+            releaseResults: List<Boolean>,
         ): KtDistributedLockMock {
             Preconditions.expectNonNull(acquireResults, "acquireResults")
             Preconditions.expectNonNull(releaseResults, "releaseResults")
@@ -297,7 +315,7 @@ class KtDistributedLockMock private constructor(
         fun sequencedLock(
             lockId: String,
             acquireResults: List<Boolean>,
-            releaseResults: List<Boolean>
+            releaseResults: List<Boolean>,
         ): KtDistributedLockMock {
             Preconditions.expectNonEmpty(lockId, "lockId")
             Preconditions.expectNonNull(acquireResults, "acquireResults")

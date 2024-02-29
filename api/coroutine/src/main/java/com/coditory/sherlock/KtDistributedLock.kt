@@ -54,7 +54,10 @@ interface KtDistributedLock {
             .executeOnAcquired(acquire(), { action() }) { release() }
     }
 
-    suspend fun <T> acquireAndExecute(duration: Duration, action: suspend () -> T): AcquireAndExecuteResult<T> {
+    suspend fun <T> acquireAndExecute(
+        duration: Duration,
+        action: suspend () -> T,
+    ): AcquireAndExecuteResult<T> {
         return AcquireAndExecuteResult
             .executeOnAcquired(acquire(duration), { action() }) { release() }
     }
@@ -71,9 +74,8 @@ interface KtDistributedLock {
 
     class AcquireAndExecuteResult<T> internal constructor(
         val acquired: Boolean,
-        val result: T?
+        val result: T?,
     ) {
-
         suspend fun doOnNotAcquired(action: suspend () -> Unit): AcquireAndExecuteResult<T> {
             if (!acquired) {
                 action()
@@ -92,7 +94,7 @@ interface KtDistributedLock {
             suspend fun <T> executeOnAcquired(
                 acquired: Boolean,
                 action: suspend () -> T,
-                release: suspend () -> Unit
+                release: suspend () -> Unit,
             ): AcquireAndExecuteResult<T> {
                 return if (acquired) {
                     try {
@@ -110,7 +112,7 @@ interface KtDistributedLock {
 
     class ReleaseAndExecuteResult<T> internal constructor(
         val released: Boolean,
-        val result: T?
+        val result: T?,
     ) {
         suspend fun doOnReleased(action: suspend () -> Unit): ReleaseAndExecuteResult<T> {
             if (released) {
@@ -129,7 +131,7 @@ interface KtDistributedLock {
         companion object {
             suspend fun <T> executeOnReleased(
                 released: Boolean,
-                action: suspend () -> T
+                action: suspend () -> T,
             ): ReleaseAndExecuteResult<T> {
                 return if (released) {
                     val result = action()

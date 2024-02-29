@@ -4,7 +4,10 @@ import kotlinx.coroutines.test.TestScope
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.DynamicTest
 
-fun runDynamicTest(name: String, testBody: suspend TestScope.() -> Unit): DynamicTest {
+fun runDynamicTest(
+    name: String,
+    testBody: suspend TestScope.() -> Unit,
+): DynamicTest {
     return DynamicTest.dynamicTest(name) {
         runTest(testBody = testBody)
     }

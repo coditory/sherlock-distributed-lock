@@ -3,11 +3,7 @@ package com.coditory.sherlock
 import com.coditory.sherlock.KtDistributedLock.AcquireAndExecuteResult
 import com.coditory.sherlock.KtDistributedLockMock.Companion.acquiredInMemoryLock
 import com.coditory.sherlock.KtDistributedLockMock.Companion.releasedInMemoryLock
-import com.coditory.sherlock.base.SpecSimulatedException
-import com.coditory.sherlock.base.TestTuple1
-import com.coditory.sherlock.base.assertThrows
-import com.coditory.sherlock.base.runDynamicTest
-import com.coditory.sherlock.base.testTuple
+import com.coditory.sherlock.base.*
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
@@ -28,7 +24,7 @@ class KtDistributedLockSpec {
         listOf<TestTuple1<suspend (KtDistributedLock) -> AcquireAndExecuteResult<Int>>>(
             testTuple("acquireAndExecute") { it.acquireAndExecute { counter.incrementAndGet() } },
             testTuple("acquireAndExecute(duration)") { it.acquireAndExecute(Duration.ofHours(1)) { counter.incrementAndGet() } },
-            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { counter.incrementAndGet() } }
+            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { counter.incrementAndGet() } },
         ).runDynamicTest {
             // prepare
             val action = it.first
@@ -38,10 +34,11 @@ class KtDistributedLockSpec {
             var doOnAcquiredExecuteCount = 0
             var doOnNotAcquiredExecuteCount = 0
             // when
-            val result = action(lock)
-                .doOnAcquired { doOnAcquiredExecuteCount++ }
-                .doOnNotAcquired { doOnNotAcquiredExecuteCount++ }
-                .acquired
+            val result =
+                action(lock)
+                    .doOnAcquired { doOnAcquiredExecuteCount++ }
+                    .doOnNotAcquired { doOnNotAcquiredExecuteCount++ }
+                    .acquired
             // then
             assertEquals(1, lock.acquisitions())
             assertEquals(1, lock.releases())
@@ -56,7 +53,7 @@ class KtDistributedLockSpec {
         listOf<TestTuple1<suspend (KtDistributedLock) -> AcquireAndExecuteResult<Int>>>(
             testTuple("acquireAndExecute") { it.acquireAndExecute { counter.incrementAndGet() } },
             testTuple("acquireAndExecute(duration)") { it.acquireAndExecute(Duration.ofHours(1)) { counter.incrementAndGet() } },
-            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { counter.incrementAndGet() } }
+            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { counter.incrementAndGet() } },
         ).runDynamicTest {
             // prepare
             val action = it.first
@@ -66,10 +63,11 @@ class KtDistributedLockSpec {
             var doOnAcquiredExecuteCount = 0
             var doOnNotAcquiredExecuteCount = 0
             // when
-            val result = action(lock)
-                .doOnAcquired { doOnAcquiredExecuteCount++ }
-                .doOnNotAcquired { doOnNotAcquiredExecuteCount++ }
-                .acquired
+            val result =
+                action(lock)
+                    .doOnAcquired { doOnAcquiredExecuteCount++ }
+                    .doOnNotAcquired { doOnNotAcquiredExecuteCount++ }
+                    .acquired
             // then
             assertEquals(1, lock.acquisitions())
             assertEquals(0, lock.releases())
@@ -83,8 +81,10 @@ class KtDistributedLockSpec {
     fun `should release the lock after action error`() =
         listOf<TestTuple1<suspend (KtDistributedLock) -> AcquireAndExecuteResult<Int>>>(
             testTuple("acquireAndExecute") { it.acquireAndExecute { throw SpecSimulatedException() } },
-            testTuple("acquireAndExecute(duration)") { it.acquireAndExecute(Duration.ofHours(1)) { throw SpecSimulatedException() } },
-            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { throw SpecSimulatedException() } }
+            testTuple(
+                "acquireAndExecute(duration)",
+            ) { it.acquireAndExecute(Duration.ofHours(1)) { throw SpecSimulatedException() } },
+            testTuple("acquireForeverAndExecute") { it.acquireForeverAndExecute { throw SpecSimulatedException() } },
         ).runDynamicTest {
             // prepare
             val action = it.first
@@ -99,30 +99,32 @@ class KtDistributedLockSpec {
         }
 
     @Test
-    fun `should execute action on lock release`() = runTest {
-        // given
-        val lock = acquiredInMemoryLock("sample-lock")
-        // when
-        val result = lock.releaseAndExecute { counter.incrementAndGet() }
-        // then
-        assertEquals(0, lock.acquisitions())
-        assertEquals(1, lock.releases())
-        assertEquals(1, counter.getValue())
-        assertEquals(1, result.result)
-    }
+    fun `should execute action on lock release`() =
+        runTest {
+            // given
+            val lock = acquiredInMemoryLock("sample-lock")
+            // when
+            val result = lock.releaseAndExecute { counter.incrementAndGet() }
+            // then
+            assertEquals(0, lock.acquisitions())
+            assertEquals(1, lock.releases())
+            assertEquals(1, counter.getValue())
+            assertEquals(1, result.result)
+        }
 
     @Test
-    fun `should not execute action when lock was not released`() = runTest {
-        // given
-        val lock = releasedInMemoryLock("sample-lock")
-        // when
-        val result = lock.releaseAndExecute { counter.incrementAndGet() }
-        // then
-        assertEquals(0, lock.acquisitions())
-        assertEquals(1, lock.releases())
-        assertEquals(0, counter.getValue())
-        assertEquals(null, result.result)
-    }
+    fun `should not execute action when lock was not released`() =
+        runTest {
+            // given
+            val lock = releasedInMemoryLock("sample-lock")
+            // when
+            val result = lock.releaseAndExecute { counter.incrementAndGet() }
+            // then
+            assertEquals(0, lock.acquisitions())
+            assertEquals(1, lock.releases())
+            assertEquals(0, counter.getValue())
+            assertEquals(null, result.result)
+        }
 
     class Counter {
         private var value: Int = 0

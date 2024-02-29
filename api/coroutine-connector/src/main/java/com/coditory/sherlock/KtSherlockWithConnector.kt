@@ -8,7 +8,7 @@ import org.slf4j.LoggerFactory
 class KtSherlockWithConnector(
     connector: KtDistributedLockConnector,
     defaultOwnerIdPolicy: OwnerIdPolicy,
-    defaultDuration: LockDuration
+    defaultDuration: LockDuration,
 ) : KtSherlock {
     private val logger = LoggerFactory.getLogger(KtSherlockWithConnector::class.java)
     private val connector: KtDistributedLockConnector
@@ -53,7 +53,7 @@ class KtSherlockWithConnector(
 
     private fun createLockBuilder(
         acquireAction: AcquireAction,
-        releaseAction: ReleaseAction
+        releaseAction: ReleaseAction,
     ): DistributedLockBuilder<KtDistributedLock> {
         return DistributedLockBuilder(createLock(acquireAction, releaseAction))
             .withLockDuration(defaultDuration)
@@ -62,7 +62,7 @@ class KtSherlockWithConnector(
 
     private fun createLock(
         acquireAction: AcquireAction,
-        releaseAction: ReleaseAction
+        releaseAction: ReleaseAction,
     ): LockCreator<KtDistributedLock> {
         return LockCreator<KtDistributedLock> { lockId: LockId, duration: LockDuration, ownerId: OwnerId ->
             createLockAndLog(acquireAction, releaseAction, lockId, ownerId, duration)
@@ -74,7 +74,7 @@ class KtSherlockWithConnector(
         releaseAction: ReleaseAction,
         lockId: LockId,
         ownerId: OwnerId,
-        duration: LockDuration
+        duration: LockDuration,
     ): KtDistributedLock {
         val lock: KtDistributedLock =
             KtDelegatingDistributedLock(acquireAction, releaseAction, lockId, ownerId, duration)

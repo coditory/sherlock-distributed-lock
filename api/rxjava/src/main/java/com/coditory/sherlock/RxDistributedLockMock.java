@@ -275,7 +275,7 @@ public final class RxDistributedLockMock implements RxDistributedLock {
     private static class InMemoryDistributedLockStub implements RxDistributedLock {
         private final LockId lockId;
         private final boolean reentrant;
-        private AtomicBoolean acquired;
+        private final AtomicBoolean acquired;
 
         static InMemoryDistributedLockStub reentrantInMemoryLock(LockId lockId, boolean acquired) {
             return new InMemoryDistributedLockStub(lockId, true, acquired);

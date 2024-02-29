@@ -1,14 +1,35 @@
 package com.coditory.sherlock.base
 
-fun testTuple(name: String, params: Map<String, Any>) = TestTupleMap(name, params)
+fun testTuple(
+    name: String,
+    params: Map<String, Any>,
+) = TestTupleMap(name, params)
 
-fun <T1> testTuple(name: String, p1: T1) = TestTuple1(name, p1)
+fun <T1> testTuple(
+    name: String,
+    p1: T1,
+) = TestTuple1(name, p1)
 
-fun <T1, T2> testTuple(name: String, p1: T1, p2: T2) = TestTuple2(name, p1, p2)
+fun <T1, T2> testTuple(
+    name: String,
+    p1: T1,
+    p2: T2,
+) = TestTuple2(name, p1, p2)
 
-fun <T1, T2, T3> testTuple(name: String, p1: T1, p2: T2, p3: T3) = TestTuple3(name, p1, p2, p3)
+fun <T1, T2, T3> testTuple(
+    name: String,
+    p1: T1,
+    p2: T2,
+    p3: T3,
+) = TestTuple3(name, p1, p2, p3)
 
-fun <T1, T2, T3, T4> testTuple(name: String, p1: T1, p2: T2, p3: T3, p4: T4) = TestTuple4(name, p1, p2, p3, p4)
+fun <T1, T2, T3, T4> testTuple(
+    name: String,
+    p1: T1,
+    p2: T2,
+    p3: T3,
+    p4: T4,
+) = TestTuple4(name, p1, p2, p3, p4)
 
 fun <T1, T2, T3, T4, T5> testTuple(
     name: String,
@@ -16,7 +37,7 @@ fun <T1, T2, T3, T4, T5> testTuple(
     p2: T2,
     p3: T3,
     p4: T4,
-    p5: T5
+    p5: T5,
 ) = TestTuple5(name, p1, p2, p3, p4, p5)
 
 fun <T1, T2, T3, T4, T5, T6> testTuple(
@@ -26,7 +47,7 @@ fun <T1, T2, T3, T4, T5, T6> testTuple(
     p3: T3,
     p4: T4,
     p5: T5,
-    p6: T6
+    p6: T6,
 ) = TestTuple6(name, p1, p2, p3, p4, p5, p6)
 
 interface TestTuple {
@@ -35,7 +56,7 @@ interface TestTuple {
 
 data class TestTupleMap(
     override val name: String,
-    val params: Map<String, Any>
+    val params: Map<String, Any>,
 ) : TestTuple
 
 data class TestTuple1<T1>(override val name: String, val p1: T1) : TestTuple {
@@ -70,7 +91,7 @@ data class TestTuple5<T1, T2, T3, T4, T5>(
     val p2: T2,
     val p3: T3,
     val p4: T4,
-    val p5: T5
+    val p5: T5,
 ) : TestTuple {
     val first: T1 = p1
     val second: T2 = p2
@@ -85,7 +106,7 @@ data class TestTuple6<T1, T2, T3, T4, T5, T6>(
     val p3: T3,
     val p4: T4,
     val p5: T5,
-    val p6: T6
+    val p6: T6,
 ) : TestTuple {
     val first: T1 = p1
     val second: T2 = p2

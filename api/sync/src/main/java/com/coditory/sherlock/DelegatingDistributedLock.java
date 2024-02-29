@@ -37,13 +37,11 @@ class DelegatingDistributedLock implements DistributedLock {
     }
 
     @Override
-    @NotNull
     public boolean acquire() {
         return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
-    @NotNull
     public boolean acquire(@NotNull Duration duration) {
         expectNonNull(duration, "duration");
         LockDuration lockDuration = LockDuration.of(duration);
@@ -51,13 +49,11 @@ class DelegatingDistributedLock implements DistributedLock {
     }
 
     @Override
-    @NotNull
     public boolean acquireForever() {
         return acquire(new LockRequest(lockId, ownerId, null));
     }
 
     @Override
-    @NotNull
     public boolean release() {
         boolean released = releaseAction.release(lockId, ownerId);
         if (released) {

@@ -56,7 +56,7 @@ public final class ReactorInMemorySherlockBuilder extends
     }
 
     @Override
-    public ReactorSherlock build() {
+    public @NotNull ReactorSherlock build() {
         ReactorInMemoryDistributedLockConnector connector =
                 new ReactorInMemoryDistributedLockConnector(clock, storage);
         return super.build(connector);

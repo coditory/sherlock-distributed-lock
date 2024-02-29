@@ -3,11 +3,12 @@ package com.coditory.sherlock
 import kotlinx.coroutines.runBlocking
 
 class BlockingKtSherlockWrapper(
-    private val locks: KtSherlock
+    private val locks: KtSherlock,
 ) : Sherlock {
-    override fun initialize() = runBlocking {
-        locks.initialize()
-    }
+    override fun initialize() =
+        runBlocking {
+            locks.initialize()
+        }
 
     override fun createLock(): DistributedLockBuilder<DistributedLock> {
         return blockingLockBuilder(locks.createLock())
@@ -21,18 +22,17 @@ class BlockingKtSherlockWrapper(
         return blockingLockBuilder(locks.createOverridingLock())
     }
 
-    override fun forceReleaseAllLocks(): Boolean = runBlocking {
-        locks.forceReleaseAllLocks()
-    }
+    override fun forceReleaseAllLocks(): Boolean =
+        runBlocking {
+            locks.forceReleaseAllLocks()
+        }
 
     override fun forceReleaseLock(lockId: String): Boolean {
         return createOverridingLock(lockId)
             .release()
     }
 
-    private fun blockingLockBuilder(
-        builder: DistributedLockBuilder<KtDistributedLock>
-    ): DistributedLockBuilder<DistributedLock> {
+    private fun blockingLockBuilder(builder: DistributedLockBuilder<KtDistributedLock>): DistributedLockBuilder<DistributedLock> {
         return builder.withMappedLock { lock -> BlockingKtDistributedLock(lock) }
     }
 

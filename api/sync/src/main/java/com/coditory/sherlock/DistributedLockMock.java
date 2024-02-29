@@ -266,7 +266,7 @@ public final class DistributedLockMock implements DistributedLock {
     private static class InMemoryDistributedLockStub implements DistributedLock {
         private final LockId lockId;
         private final boolean reentrant;
-        private AtomicBoolean acquired;
+        private final AtomicBoolean acquired;
 
         static InMemoryDistributedLockStub reentrantInMemoryLock(LockId lockId, boolean acquired) {
             return new InMemoryDistributedLockStub(lockId, true, acquired);

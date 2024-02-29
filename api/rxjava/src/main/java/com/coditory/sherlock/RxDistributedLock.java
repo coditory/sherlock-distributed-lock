@@ -66,7 +66,7 @@ public interface RxDistributedLock {
      *
      * @param <T>    type od value emitted by the action
      * @param single to be executed subscribed to when lock is acquired
-     * @return true if lock is acquired.
+     * @return Maybe<T> if lock is acquired, empty otherwise.
      * @see RxDistributedLock#acquire()
      */
     @NotNull

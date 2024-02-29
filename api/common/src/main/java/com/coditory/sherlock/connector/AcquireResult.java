@@ -10,7 +10,7 @@ public final class AcquireResult {
         return value ? SUCCESS : FAILURE;
     }
 
-    private boolean acquired;
+    private final boolean acquired;
 
     private AcquireResult(boolean acquired) {
         this.acquired = acquired;
