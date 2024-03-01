@@ -20,7 +20,7 @@ import java.time.Instant
 
 internal class KtMongoDistributedLockConnector(
     collection: MongoCollection<Document>,
-    private val clock: Clock
+    private val clock: Clock,
 ) : KtDistributedLockConnector {
     private val collectionInitializer = KtMongoCollectionInitializer(collection)
 
@@ -37,7 +37,7 @@ internal class KtMongoDistributedLockConnector(
         return try {
             upsert(
                 queryReleased(lockRequest.lockId, now),
-                fromLockRequest(lockRequest, now)
+                fromLockRequest(lockRequest, now),
             )
         } catch (e: Throwable) {
             throw SherlockException("Could not acquire lock: $lockRequest", e)
@@ -49,7 +49,7 @@ internal class KtMongoDistributedLockConnector(
         return try {
             upsert(
                 queryAcquiredOrReleased(lockRequest.lockId, lockRequest.ownerId, now),
-                fromLockRequest(lockRequest, now)
+                fromLockRequest(lockRequest, now),
             )
         } catch (e: Throwable) {
             throw SherlockException("Could not acquire or prolong lock: $lockRequest", e)
@@ -60,14 +60,17 @@ internal class KtMongoDistributedLockConnector(
         return try {
             upsert(
                 queryById(lockRequest.lockId),
-                fromLockRequest(lockRequest, now())
+                fromLockRequest(lockRequest, now()),
             )
         } catch (e: Throwable) {
             throw SherlockException("Could not acquire or prolong lock: $lockRequest", e)
         }
     }
 
-    override suspend fun release(lockId: LockId, ownerId: OwnerId): Boolean {
+    override suspend fun release(
+        lockId: LockId,
+        ownerId: OwnerId,
+    ): Boolean {
         return try {
             delete(queryAcquired(lockId, ownerId))
         } catch (e: Throwable) {
@@ -101,12 +104,16 @@ internal class KtMongoDistributedLockConnector(
         return deleted != null && fromDocument(deleted).isActive(now())
     }
 
-    private suspend fun upsert(query: Bson, lock: MongoDistributedLock): Boolean {
+    private suspend fun upsert(
+        query: Bson,
+        lock: MongoDistributedLock,
+    ): Boolean {
         val documentToUpsert = lock.toDocument()
         return try {
-            val current = getCollection()
-                .findOneAndReplace(query, documentToUpsert, upsertOptions)
-                .awaitFirst()
+            val current =
+                getCollection()
+                    .findOneAndReplace(query, documentToUpsert, upsertOptions)
+                    .awaitFirst()
             lock.hasSameOwner(current)
         } catch (exception: MongoCommandException) {
             if (exception.errorCode != DUPLICATE_KEY_ERROR_CODE) {
@@ -126,8 +133,9 @@ internal class KtMongoDistributedLockConnector(
 
     companion object {
         private const val DUPLICATE_KEY_ERROR_CODE = 11000
-        private val upsertOptions = FindOneAndReplaceOptions()
-            .upsert(true)
-            .returnDocument(ReturnDocument.AFTER)
+        private val upsertOptions =
+            FindOneAndReplaceOptions()
+                .upsert(true)
+                .returnDocument(ReturnDocument.AFTER)
     }
 }

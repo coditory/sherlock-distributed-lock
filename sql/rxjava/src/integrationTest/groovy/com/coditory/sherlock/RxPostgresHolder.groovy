@@ -33,24 +33,24 @@ class RxPostgresHolder {
 
     private static ConnectionFactory pooledConnectionFactory() {
         ConnectionFactoryOptions options = ConnectionFactoryOptions
-            .parse(db.getJdbcUrl().replace("jdbc:", "r2dbc:"))
-            .mutate()
-            .option(ConnectionFactoryOptions.USER, db.getUsername())
-            .option(ConnectionFactoryOptions.PASSWORD, db.getPassword())
-            .option(ConnectionFactoryOptions.DATABASE, db.getDatabaseName())
-            .build()
+                .parse(db.getJdbcUrl().replace("jdbc:", "r2dbc:"))
+                .mutate()
+                .option(ConnectionFactoryOptions.USER, db.getUsername())
+                .option(ConnectionFactoryOptions.PASSWORD, db.getPassword())
+                .option(ConnectionFactoryOptions.DATABASE, db.getDatabaseName())
+                .build()
         ConnectionFactory connectionFactory = ConnectionFactories.get(options)
         ConnectionPoolConfiguration configuration = ConnectionPoolConfiguration.builder(connectionFactory)
-            .maxIdleTime(Duration.ofSeconds(1))
-            .maxAcquireTime(Duration.ofSeconds(10))
-            .initialSize(10)
-            .minIdle(3)
-            .maxSize(10)
-            .acquireRetry(5)
-            .maxValidationTime(Duration.ofSeconds(1))
-            .validationQuery("SELECT 1")
-            .validationDepth(ValidationDepth.REMOTE)
-            .build()
+                .maxIdleTime(Duration.ofSeconds(1))
+                .maxAcquireTime(Duration.ofSeconds(10))
+                .initialSize(10)
+                .minIdle(3)
+                .maxSize(10)
+                .acquireRetry(5)
+                .maxValidationTime(Duration.ofSeconds(1))
+                .validationQuery("SELECT 1")
+                .validationDepth(ValidationDepth.REMOTE)
+                .build()
         return new ConnectionPool(configuration)
     }
 
@@ -63,43 +63,46 @@ class RxPostgresHolder {
     }
 
     synchronized static void startDb() {
+        if (db != null && started) return
         if (db == null) {
-            db = new ResumablePostgreSQLContainer("postgres:11", Ports.nextAvailablePort())
+            db = new ResumablePostgreSQLContainer("postgres:12", Ports.nextAvailablePort())
             db.start()
-            started = true
-        } else if (!started) {
+        } else {
             db.resume()
-            started = true
         }
-        waitForPostgresToStart()
+        started = true
+        waitToConnect()
         LOGGER.info(">>> STARTED: Postgres " + db.getJdbcUrl())
     }
 
-    private static void waitForPostgresToStart() {
+    private static void waitToConnect() {
         int retries = 50
         boolean connected = false
+        Throwable lastError = null
         while (retries > 0 && !connected) {
             Thread.sleep(1000)
             try (
-                Connection connection = getBlockingConnection()
-                Statement statement = connection.createStatement()
+                    Connection connection = getBlockingConnection()
+                    Statement statement = connection.createStatement()
             ) {
                 String result = statement.execute("SELECT 1").toString()
-                connected = result == "1"
+                connected = result == "true"
+            } catch (Throwable e) {
+                lastError = e
+                LOGGER.info("Connection failure, retrying. Left attempts: " + retries)
             }
+            retries--
         }
         if (retries == 0) {
-            throw new IllegalStateException("Could not connect to Postgres")
+            throw new IllegalStateException("Could not connect to Postgres", lastError)
         }
     }
 
     synchronized static void stopDb() {
-        if (db != null && started) {
-            String connectionString = db.getJdbcUrl()
-            db.pause()
-            started = false
-            LOGGER.info("<<< STOPPED: Postgres " + connectionString)
-        }
+        if (!started) return
+        db.pause()
+        started = false
+        LOGGER.info("<<< STOPPED: Postgres " + db.getJdbcUrl())
     }
 
     static class ResumablePostgreSQLContainer extends PostgreSQLContainer {

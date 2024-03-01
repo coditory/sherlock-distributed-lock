@@ -11,7 +11,7 @@ import kotlin.reflect.KClass
 
 internal class StatementBinder(
     private val statement: Statement,
-    private val bindingMapper: BindingMapper
+    private val bindingMapper: BindingMapper,
 ) {
     private var index: Int = 0
 
@@ -31,7 +31,11 @@ internal class StatementBinder(
         return bind(EXPIRES_AT, value, Instant::class)
     }
 
-    private fun bind(name: String, value: Any?, type: KClass<*>): StatementBinder {
+    private fun bind(
+        name: String,
+        value: Any?,
+        type: KClass<*>,
+    ): StatementBinder {
         val key = bindingMapper.mapBinding(index, name).bindingKey
         index++
         if (key is Int) {

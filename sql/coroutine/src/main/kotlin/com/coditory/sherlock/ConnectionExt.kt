@@ -13,11 +13,13 @@ suspend inline fun <R> Connection.use(block: (Connection) -> R): R {
     } finally {
         when (exception) {
             null -> close().awaitFirstOrNull()
-            else -> try {
-                close().awaitFirstOrNull()
-            } catch (closeException: Throwable) {
-                // cause.addSuppressed(closeException) // ignored here
-            }
+
+            else ->
+                try {
+                    close().awaitFirstOrNull()
+                } catch (closeException: Throwable) {
+                    // cause.addSuppressed(closeException) // ignored here
+                }
         }
     }
 }

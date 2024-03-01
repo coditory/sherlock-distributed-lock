@@ -22,6 +22,6 @@ dependencies {
     integrationTestImplementation(libs.testcontainers.postgresql)
     // integration: mysql
     integrationTestImplementation(libs.mysql)
-    // integrationImplementation(libs.r2dbc.mysql) // not released yet
+    integrationTestImplementation(libs.r2dbc.mysql)
     integrationTestImplementation(libs.testcontainers.mysql)
 }

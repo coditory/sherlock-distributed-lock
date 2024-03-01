@@ -1,6 +1,5 @@
 package com.coditory.sherlock
 
-
 import groovy.transform.CompileStatic
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
@@ -11,6 +10,7 @@ import org.testcontainers.containers.MySQLContainer
 
 import java.sql.Connection
 import java.sql.DriverManager
+import java.sql.Statement
 
 @CompileStatic
 class KtMySqlHolder {
@@ -44,26 +44,46 @@ class KtMySqlHolder {
     }
 
     synchronized static void startDb() {
-        if (db != null && started) {
-            return
-        }
-        started = true
+        if (db != null && started) return
         if (db == null) {
             db = new ResumableMySQLContainer("mysql:8", Ports.nextAvailablePort())
             db.start()
         } else {
             db.resume()
         }
+        started = true
+        waitToConnect()
         LOGGER.info(">>> STARTED: MySql " + db.getJdbcUrl())
     }
 
-    synchronized static void stopDb() {
-        if (db != null && started) {
-            String jdbcUrl = db.getJdbcUrl()
-            db.pause()
-            started = false
-            LOGGER.info("<<< STOPPED: MySql " + jdbcUrl)
+    private static void waitToConnect() {
+        int retries = 50
+        boolean connected = false
+        Throwable lastError = null
+        while (retries > 0 && !connected) {
+            Thread.sleep(1000)
+            try (
+                    Connection connection = getBlockingConnection()
+                    Statement statement = connection.createStatement()
+            ) {
+                String result = statement.execute("SELECT 1").toString()
+                connected = result == "true"
+            } catch (Throwable e) {
+                lastError = e
+                LOGGER.info("Connection failure, retrying. Left attempts: " + retries)
+            }
+            retries--
         }
+        if (retries == 0) {
+            throw new IllegalStateException("Could not connect to MySql", lastError)
+        }
+    }
+
+    synchronized static void stopDb() {
+        if (!started) return
+        db.pause()
+        started = false
+        LOGGER.info("<<< STOPPED: MySql " + db.getJdbcUrl())
     }
 
     static class ResumableMySQLContainer extends MySQLContainer {
@@ -72,6 +92,7 @@ class KtMySqlHolder {
         ResumableMySQLContainer(String dockerImageName, int port) {
             super(dockerImageName)
             this.port = port
+            this.withUrlParam("serverTimezone", "UTC")
         }
 
         void pause() {

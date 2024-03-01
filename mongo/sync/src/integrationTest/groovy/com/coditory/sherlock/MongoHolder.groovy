@@ -21,10 +21,10 @@ class MongoHolder {
         }
         startDb()
         String url = String.format(
-            "mongodb://%s:%d/%s",
-            db.getHost(),
-            db.getPort(),
-            databaseName
+                "mongodb://%s:%d/%s",
+                db.getHost(),
+                db.getPort(),
+                databaseName
         )
         mongoClient = MongoClients.create(url)
         return mongoClient
@@ -36,7 +36,7 @@ class MongoHolder {
         }
         started = true
         if (db == null) {
-            db = new ResumableMongoDBContainer("mongo:3.4", Ports.nextAvailablePort())
+            db = new ResumableMongoDBContainer("mongo:3.6", Ports.nextAvailablePort())
             db.start()
         } else {
             db.resume()

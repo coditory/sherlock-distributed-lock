@@ -6,7 +6,6 @@ import com.coditory.sherlock.MySqlConnectionProvider
 import com.coditory.sherlock.PostgresConnectionProvider
 import com.coditory.sherlock.UsesReactorSqlSherlock
 import com.coditory.sherlock.base.LockTypes
-import spock.lang.Ignore
 import spock.lang.Unroll
 
 import java.sql.Connection
@@ -19,7 +18,6 @@ import java.time.Instant
 
 class PostgresLockStorageSpec extends SqlLockStorageSpec implements PostgresConnectionProvider {}
 
-@Ignore
 class MySqlLockStorageSpec extends SqlLockStorageSpec implements MySqlConnectionProvider {}
 
 abstract class SqlLockStorageSpec extends LocksBaseSpec implements UsesReactorSqlSherlock {

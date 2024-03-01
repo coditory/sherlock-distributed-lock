@@ -5,7 +5,7 @@ import java.time.Instant
 
 internal class KtInMemoryDistributedLockConnector(
     private val clock: Clock,
-    private val storage: InMemoryDistributedLockStorage
+    private val storage: InMemoryDistributedLockStorage,
 ) : KtDistributedLockConnector {
     override suspend fun initialize() {
         // deliberately empty
@@ -23,7 +23,10 @@ internal class KtInMemoryDistributedLockConnector(
         return storage.forceAcquire(lockRequest, now())
     }
 
-    override suspend fun release(lockId: LockId, ownerId: OwnerId): Boolean {
+    override suspend fun release(
+        lockId: LockId,
+        ownerId: OwnerId,
+    ): Boolean {
         return storage.release(lockId, now(), ownerId)
     }
 

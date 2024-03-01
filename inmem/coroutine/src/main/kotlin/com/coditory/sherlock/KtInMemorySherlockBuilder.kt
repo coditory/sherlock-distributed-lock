@@ -35,9 +35,11 @@ class KtInMemorySherlockBuilder private constructor() : KtSherlockWithConnectorB
      * @throws IllegalArgumentException when some required values are missing
      */
     override fun build(): KtSherlock {
-        val connector = KtInMemoryDistributedLockConnector(
-            clock, storage
-        )
+        val connector =
+            KtInMemoryDistributedLockConnector(
+                clock,
+                storage,
+            )
         return super.build(connector)
     }
 

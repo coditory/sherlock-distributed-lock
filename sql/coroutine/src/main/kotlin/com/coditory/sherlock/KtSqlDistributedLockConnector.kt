@@ -63,7 +63,7 @@ internal class KtSqlDistributedLockConnector(
     private suspend fun updateReleasedLock(
         connection: Connection,
         lockRequest: LockRequest,
-        now: Instant
+        now: Instant,
     ): Boolean {
         val lockId = lockRequest.lockId.value
         val expiresAt = expiresAt(now, lockRequest.duration)
@@ -80,7 +80,7 @@ internal class KtSqlDistributedLockConnector(
     private suspend fun updateAcquiredOrReleasedLock(
         connection: Connection,
         lockRequest: LockRequest,
-        now: Instant
+        now: Instant,
     ): Boolean {
         val lockId = lockRequest.lockId.value
         val expiresAt = expiresAt(now, lockRequest.duration)
@@ -98,7 +98,7 @@ internal class KtSqlDistributedLockConnector(
     private suspend fun updateLockById(
         connection: Connection,
         lockRequest: LockRequest,
-        now: Instant
+        now: Instant,
     ): Boolean {
         val lockId = lockRequest.lockId.value
         val expiresAt = expiresAt(now, lockRequest.duration)
@@ -114,7 +114,7 @@ internal class KtSqlDistributedLockConnector(
     private suspend fun insertLock(
         connection: Connection,
         lockRequest: LockRequest,
-        now: Instant
+        now: Instant,
     ): Boolean {
         val lockId = lockRequest.lockId.value
         val expiresAt = expiresAt(now, lockRequest.duration)
@@ -131,7 +131,10 @@ internal class KtSqlDistributedLockConnector(
         }
     }
 
-    override suspend fun release(lockId: LockId, ownerId: OwnerId): Boolean {
+    override suspend fun release(
+        lockId: LockId,
+        ownerId: OwnerId,
+    ): Boolean {
         return try {
             statementBinder(sqlQueries.deleteAcquiredByIdAndOwnerId()) { binder ->
                 binder
@@ -173,7 +176,10 @@ internal class KtSqlDistributedLockConnector(
         }
     }
 
-    private suspend fun <R> statementBinder(sql: String, block: suspend (StatementBinder) -> R): R {
+    private suspend fun <R> statementBinder(
+        sql: String,
+        block: suspend (StatementBinder) -> R,
+    ): R {
         return getInitializedConnection().use { connection ->
             val statement = connection.createStatement(sql)
             val statementBinder = StatementBinder(statement, bindingMapper)
@@ -181,15 +187,23 @@ internal class KtSqlDistributedLockConnector(
         }
     }
 
-    private fun statementBinder(connection: Connection, sql: String): StatementBinder {
+    private fun statementBinder(
+        connection: Connection,
+        sql: String,
+    ): StatementBinder {
         val statement = connection.createStatement(sql)
         return StatementBinder(statement, bindingMapper)
     }
 
-    private fun expiresAt(now: Instant, duration: LockDuration?): Instant? {
+    private fun expiresAt(
+        now: Instant,
+        duration: LockDuration?,
+    ): Instant? {
         return if (duration == null || duration.value == null) {
             null
-        } else now.plus(duration.value)
+        } else {
+            now.plus(duration.value)
+        }
     }
 
     private fun now(): Instant {

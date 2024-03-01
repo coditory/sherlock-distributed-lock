@@ -8,7 +8,7 @@ import org.bson.Document
 import java.util.concurrent.atomic.AtomicBoolean
 
 internal class KtMongoCollectionInitializer(
-    private val collection: MongoCollection<Document>
+    private val collection: MongoCollection<Document>,
 ) {
     private val indexesCreated = AtomicBoolean(false)
 

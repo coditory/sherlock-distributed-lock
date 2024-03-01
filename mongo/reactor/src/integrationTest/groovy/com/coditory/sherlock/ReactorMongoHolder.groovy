@@ -36,7 +36,7 @@ class ReactorMongoHolder {
         }
         started = true
         if (db == null) {
-            db = new ResumableMongoDBContainer("mongo:3.4", Ports.nextAvailablePort())
+            db = new ResumableMongoDBContainer("mongo:3.6", Ports.nextAvailablePort())
             db.start()
         } else {
             db.resume()

@@ -5,7 +5,6 @@ import com.coditory.sherlock.MySqlConnectionProvider
 import com.coditory.sherlock.PostgresConnectionProvider
 import com.coditory.sherlock.Sherlock
 import io.r2dbc.spi.ConnectionFactory
-import spock.lang.Ignore
 import spock.lang.Specification
 
 import java.sql.Connection
@@ -19,7 +18,6 @@ class RxPostgresIndexCreationSpec extends RxSqlIndexCreationSpec implements Post
     List<String> expectedIndexNames = [tableName + "_pkey", tableName + "_idx"].sort()
 }
 
-@Ignore
 class RxMySqlIndexCreationSpec extends RxSqlIndexCreationSpec implements MySqlConnectionProvider {
     List<String> expectedIndexNames = ["PRIMARY", tableName + "_IDX"].sort()
 }

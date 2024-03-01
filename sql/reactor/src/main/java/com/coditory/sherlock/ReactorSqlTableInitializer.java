@@ -68,7 +68,7 @@ final class ReactorSqlTableInitializer {
         // it seems that retrying connection once solves the issue
         return Mono.<Connection>from(connectionFactory.create())
                 .onErrorResume(e -> {
-                    logger.debug("Could ne create connection. Retrying one more time", e);
+                    logger.debug("Could not create connection. Retrying one more time", e);
                     return Mono.from(connectionFactory.create());
                 });
     }

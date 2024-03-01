@@ -9,16 +9,17 @@ import java.util.concurrent.atomic.AtomicBoolean
 
 internal class KtSqlTableInitializer(
     private val connectionFactory: ConnectionFactory,
-    private val sqlQueries: SqlLockQueries
+    private val sqlQueries: SqlLockQueries,
 ) {
     private val logger = LoggerFactory.getLogger(javaClass)
     private val initialized = AtomicBoolean(false)
 
     suspend fun getInitializedConnection(): Connection {
-        return if (initialized.compareAndSet(false, true))
+        return if (initialized.compareAndSet(false, true)) {
             initialize()
-        else
+        } else {
             createConnectionWithRetry()
+        }
     }
 
     private suspend fun initialize(): Connection {
