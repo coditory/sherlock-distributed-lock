@@ -9,11 +9,8 @@ java {
     toolchain {
         languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
     }
-}
-
-dependencies {
-    api(libs.slf4j.api)
-    api(libs.jetbrains.annotations)
+    withJavadocJar()
+    withSourcesJar()
 }
 
 tasks.withType<JavaCompile>().configureEach {
@@ -34,5 +31,6 @@ tasks.withType<Javadoc>().configureEach {
         memberLevel = JavadocMemberLevel.PUBLIC
         outputLevel = JavadocOutputLevel.QUIET
         encoding = "UTF-8"
+        addBooleanOption("html5", true)
     }
 }

@@ -11,7 +11,7 @@ include("api:api-sync")
 include("api:api-reactor")
 include("api:api-rxjava")
 include("api:api-coroutine")
-include(":api:api-coroutine-connector")
+include("api:api-coroutine-connector")
 include("sample")
 include("mongo")
 include("mongo:mongo-sync")
@@ -57,6 +57,7 @@ project(":sql:sql-coroutine").projectDir = file("./sql/coroutine")
 project(":sql:sql-common").projectDir = file("./sql/common")
 
 dependencyResolutionManagement {
+    @Suppress("UnstableApiUsage")
     repositories {
         mavenCentral()
     }
@@ -75,4 +76,3 @@ gradleEnterprise {
         }
     }
 }
-

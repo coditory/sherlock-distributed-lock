@@ -3,14 +3,14 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [master]
+    branches: [main]
     paths:
       - "docs/**"
       - "mkdocs.yml"
       - "mkdocs-requirements.txt"
   workflow_run:
     workflows: [Release]
-    branches: [master]
+    branches: [main]
     types: [completed]
 
 jobs:

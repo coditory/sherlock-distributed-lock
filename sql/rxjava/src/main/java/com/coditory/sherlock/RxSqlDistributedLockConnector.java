@@ -189,16 +189,16 @@ class RxSqlDistributedLockConnector implements RxDistributedLockConnector {
         return now.plus(duration.getValue());
     }
 
-    private <T> Single<T> statementBinder(String sql, Function<StatementBinder, Single<T>> action) {
+    private <T> Single<T> statementBinder(String sql, Function<RxSqlStatementBinder, Single<T>> action) {
         return connectionFlatMap(connection -> {
-            StatementBinder binder = statementBinder(connection, sql);
+            RxSqlStatementBinder binder = statementBinder(connection, sql);
             return action.apply(binder);
         });
     }
 
-    private StatementBinder statementBinder(Connection connection, String sql) {
+    private RxSqlStatementBinder statementBinder(Connection connection, String sql) {
         Statement statement = connection.createStatement(sql);
-        return new StatementBinder(statement, bindingMapper);
+        return new RxSqlStatementBinder(statement, bindingMapper);
     }
 
     private <T> Single<T> connectionFlatMap(Function<Connection, Single<T>> action) {

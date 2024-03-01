@@ -12,21 +12,18 @@ ktlint {
     version.set(libs.versions.ktlint.get())
 }
 
-dependencies {
-    // implementation
-    implementation(libs.kotlinx.coroutines.core)
-    implementation(libs.kotlinx.coroutines.reactive)
-
-    // test
-    testImplementation(libs.kotlinx.coroutines.test)
+kotlin {
+    target.compilations {
+        getByName("integrationTest")
+            .associateWith(getByName("test"))
+    }
+    jvmToolchain {
+        languageVersion.set(JavaLanguageVersion.of(libs.versions.java.get()))
+    }
 }
 
 tasks.withType<KotlinCompile>().configureEach {
     compilerOptions {
         allWarningsAsErrors.set(true)
     }
-}
-
-tasks.withType<org.jetbrains.kotlin.gradle.tasks.KotlinCompilationTask<*>>().configureEach {
-    compilerOptions.freeCompilerArgs.add("-opt-in=kotlinx.coroutines.ExperimentalCoroutinesApi")
 }

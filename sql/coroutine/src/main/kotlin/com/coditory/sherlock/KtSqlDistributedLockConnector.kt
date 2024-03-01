@@ -178,11 +178,11 @@ internal class KtSqlDistributedLockConnector(
 
     private suspend fun <R> statementBinder(
         sql: String,
-        block: suspend (StatementBinder) -> R,
+        block: suspend (KtSqlStatementBinder) -> R,
     ): R {
         return getInitializedConnection().use { connection ->
             val statement = connection.createStatement(sql)
-            val statementBinder = StatementBinder(statement, bindingMapper)
+            val statementBinder = KtSqlStatementBinder(statement, bindingMapper)
             block.invoke(statementBinder)
         }
     }
@@ -190,9 +190,9 @@ internal class KtSqlDistributedLockConnector(
     private fun statementBinder(
         connection: Connection,
         sql: String,
-    ): StatementBinder {
+    ): KtSqlStatementBinder {
         val statement = connection.createStatement(sql)
-        return StatementBinder(statement, bindingMapper)
+        return KtSqlStatementBinder(statement, bindingMapper)
     }
 
     private fun expiresAt(

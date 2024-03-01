@@ -12,6 +12,8 @@ dependencies {
     // implementation
     implementation(projects.api.apiCoroutineConnector)
     implementation(projects.mongo.mongoCommon)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactive)
 
     // integration
     integrationTestImplementation(projects.tests)

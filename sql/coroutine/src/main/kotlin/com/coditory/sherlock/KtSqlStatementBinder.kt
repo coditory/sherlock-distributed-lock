@@ -9,25 +9,25 @@ import kotlinx.coroutines.reactive.awaitFirst
 import java.time.Instant
 import kotlin.reflect.KClass
 
-internal class StatementBinder(
+internal class KtSqlStatementBinder(
     private val statement: Statement,
     private val bindingMapper: BindingMapper,
 ) {
     private var index: Int = 0
 
-    fun bindLockId(value: String?): StatementBinder {
+    fun bindLockId(value: String?): KtSqlStatementBinder {
         return bind(LOCK_ID, value, String::class)
     }
 
-    fun bindOwnerId(value: String?): StatementBinder {
+    fun bindOwnerId(value: String?): KtSqlStatementBinder {
         return bind(OWNER_ID, value, String::class)
     }
 
-    fun bindNow(value: Instant?): StatementBinder {
+    fun bindNow(value: Instant?): KtSqlStatementBinder {
         return bind(NOW, value, Instant::class)
     }
 
-    fun bindExpiresAt(value: Instant?): StatementBinder {
+    fun bindExpiresAt(value: Instant?): KtSqlStatementBinder {
         return bind(EXPIRES_AT, value, Instant::class)
     }
 
@@ -35,7 +35,7 @@ internal class StatementBinder(
         name: String,
         value: Any?,
         type: KClass<*>,
-    ): StatementBinder {
+    ): KtSqlStatementBinder {
         val key = bindingMapper.mapBinding(index, name).bindingKey
         index++
         if (key is Int) {

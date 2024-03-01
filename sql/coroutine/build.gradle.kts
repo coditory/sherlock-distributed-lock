@@ -13,6 +13,8 @@ dependencies {
     implementation(projects.api.apiCoroutineConnector)
     implementation(projects.common)
     implementation(projects.sql.sqlCommon)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactive)
 
     // integration
     integrationTestImplementation(projects.tests)

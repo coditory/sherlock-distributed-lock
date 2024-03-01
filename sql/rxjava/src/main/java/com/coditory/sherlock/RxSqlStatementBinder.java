@@ -1,45 +1,42 @@
 package com.coditory.sherlock;
 
 import io.r2dbc.spi.Statement;
-import reactor.core.publisher.Mono;
+import io.reactivex.Single;
 
 import java.time.Instant;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
-import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.EXPIRES_AT;
-import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.LOCK_ID;
-import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.NOW;
-import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.OWNER_ID;
+import static com.coditory.sherlock.SqlLockNamedQueriesTemplate.ParameterNames.*;
 
-final class StatementBinder {
+final class RxSqlStatementBinder {
     private final Statement statement;
     private final BindingMapper bindingMapper;
     private int index = 0;
 
-    StatementBinder(Statement statement, BindingMapper bindingMapper) {
+    RxSqlStatementBinder(Statement statement, BindingMapper bindingMapper) {
         expectNonNull(statement, "statement");
         expectNonNull(bindingMapper, "bindingMapper");
         this.statement = statement;
         this.bindingMapper = bindingMapper;
     }
 
-    StatementBinder bindLockId(String value) {
+    RxSqlStatementBinder bindLockId(String value) {
         return bind(LOCK_ID, value, String.class);
     }
 
-    StatementBinder bindOwnerId(String value) {
+    RxSqlStatementBinder bindOwnerId(String value) {
         return bind(OWNER_ID, value, String.class);
     }
 
-    StatementBinder bindNow(Instant value) {
+    RxSqlStatementBinder bindNow(Instant value) {
         return bind(NOW, value, Instant.class);
     }
 
-    StatementBinder bindExpiresAt(Instant value) {
+    RxSqlStatementBinder bindExpiresAt(Instant value) {
         return bind(EXPIRES_AT, value, Instant.class);
     }
 
-    private StatementBinder bind(String name, Object value, Class<?> type) {
+    private RxSqlStatementBinder bind(String name, Object value, Class<?> type) {
         Object key = bindingMapper.mapBinding(index, name).getBindingKey();
         index++;
         if (key instanceof Integer) {
@@ -60,8 +57,8 @@ final class StatementBinder {
         return this;
     }
 
-    Mono<Long> executeAndGetUpdated() {
-        return Mono.from(statement.execute())
-                .flatMap(r -> Mono.from(r.getRowsUpdated()));
+    Single<Long> executeAndGetUpdated() {
+        return Single.fromPublisher(statement.execute())
+                .flatMap(r -> Single.fromPublisher(r.getRowsUpdated()));
     }
 }

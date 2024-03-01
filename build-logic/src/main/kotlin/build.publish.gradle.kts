@@ -4,32 +4,24 @@ plugins {
     signing
 }
 
-// creating publishable jar introduces time overhead
-// add "publish" property to enable signing and javadoc and sources in the jar
-// ./gradlew ... -Ppublish
-// ...or with a task
-// ./gradlew ... publishToSonatype
-val publishEnabled = (project.hasProperty("publish") && project.properties["publish"] != "false") ||
-    project.gradle.startParameter.taskNames.contains("publishAllToSonatype") ||
-    project.gradle.startParameter.taskNames.contains("publishAllToMavenLocal")
-
-java {
-    if (publishEnabled) {
-        withSourcesJar()
-        withJavadocJar()
-    }
-}
-
 publishing {
+    val artifactName = "sherlock-${project.name}"
     publications {
-        create<MavenPublication>("maven") {
+        create<MavenPublication>("jvm") {
             groupId = "com.coditory.sherlock"
-            artifactId = project.name
+            artifactId = artifactName
             from(components["java"])
-
+            versionMapping {
+                usage("java-api") {
+                    fromResolutionOf("runtimeClasspath")
+                }
+                usage("java-runtime") {
+                    fromResolutionResult()
+                }
+            }
             pom {
-                name.set(project.name)
-                description.set("Distributed Lock Library for JVM")
+                name.set(artifactName)
+                description.set(project.description ?: rootProject.description ?: "Distributed Lock Library for JVM")
                 url.set("https://github.com/coditory/sherlock-distributed-lock")
                 organization {
                     name.set("Coditory")
@@ -63,14 +55,9 @@ publishing {
     }
 }
 
-if (publishEnabled && !project.gradle.startParameter.taskNames.contains("publishAllToMavenLocal")) {
-    val signingKey: String? = System.getenv("SIGNING_KEY")
-    val signingPwd: String? = System.getenv("SIGNING_PASSWORD")
-    if (signingKey.isNullOrBlank() || signingPwd.isNullOrBlank()) {
-        logger.info("Signing disabled as the GPG key was not found. Define SIGNING_KEY and SIGNING_PASSWORD to enable.")
+signing {
+    if (System.getenv("SIGNING_KEY")?.isNotBlank() == true && System.getenv("SIGNING_PASSWORD")?.isNotBlank() == true) {
+        useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
     }
-    signing {
-        useInMemoryPgpKeys(signingKey, signingPwd)
-        sign(publishing.publications["maven"])
-    }
+    sign(publishing.publications["jvm"])
 }

@@ -11,6 +11,8 @@ dependencies {
 
     // implementation
     implementation(projects.common)
+    implementation(libs.kotlinx.coroutines.core)
+    implementation(libs.kotlinx.coroutines.reactive)
 
     // test
     testImplementation(projects.inmem.inmemCoroutine)

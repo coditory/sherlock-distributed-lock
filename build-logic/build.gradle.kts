@@ -1,5 +1,6 @@
 plugins {
     `kotlin-dsl`
+    kotlin("jvm") version embeddedKotlinVersion
 }
 
 repositories {
@@ -10,6 +11,6 @@ repositories {
 dependencies {
     implementation(libs.gradle.kotlin)
     implementation(libs.gradle.ktlint)
-    implementation(libs.gradle.nexus.publish)
+    implementation(libs.gradle.nexusPublish)
     compileOnly(files(libs::class.java.protectionDomain.codeSource.location))
 }

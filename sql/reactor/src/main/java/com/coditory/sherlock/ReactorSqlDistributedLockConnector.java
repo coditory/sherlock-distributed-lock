@@ -188,16 +188,16 @@ class ReactorSqlDistributedLockConnector implements ReactorDistributedLockConnec
         return now.plus(duration.getValue());
     }
 
-    private <T> Mono<T> statementBinder(String sql, Function<StatementBinder, Mono<T>> action) {
+    private <T> Mono<T> statementBinder(String sql, Function<ReactorSqlStatementBinder, Mono<T>> action) {
         return connectionFlatMap(connection -> {
-            StatementBinder binder = statementBinder(connection, sql);
+            ReactorSqlStatementBinder binder = statementBinder(connection, sql);
             return action.apply(binder);
         });
     }
 
-    private StatementBinder statementBinder(Connection connection, String sql) {
+    private ReactorSqlStatementBinder statementBinder(Connection connection, String sql) {
         Statement statement = connection.createStatement(sql);
-        return new StatementBinder(statement, bindingMapper);
+        return new ReactorSqlStatementBinder(statement, bindingMapper);
     }
 
     private <T> Mono<T> connectionFlatMap(Function<Connection, Mono<T>> action) {
