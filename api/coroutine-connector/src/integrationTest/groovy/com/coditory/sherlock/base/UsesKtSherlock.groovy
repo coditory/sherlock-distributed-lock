@@ -12,7 +12,7 @@ import static com.coditory.sherlock.KtInMemorySherlockBuilder.coroutineInMemoryS
 
 trait UsesKtSherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         KtSherlock reactorSherlock = coroutineInMemorySherlockBuilder()
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)

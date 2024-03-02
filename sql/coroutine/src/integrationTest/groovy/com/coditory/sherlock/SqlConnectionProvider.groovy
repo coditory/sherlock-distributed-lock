@@ -4,6 +4,7 @@ import com.coditory.sherlock.base.DatabaseManager
 import groovy.transform.CompileStatic
 import io.r2dbc.spi.ConnectionFactory
 
+import javax.sql.DataSource
 import java.sql.Connection
 
 @CompileStatic
@@ -11,6 +12,8 @@ interface SqlConnectionProvider {
     ConnectionFactory getConnectionFactory();
 
     Connection getBlockingConnection();
+
+    DataSource getDataSource();
 }
 
 @CompileStatic
@@ -18,23 +21,28 @@ trait PostgresConnectionProvider implements SqlConnectionProvider, DatabaseManag
     BindingMapper bindingMapper = BindingMapper.POSTGRES_MAPPER
 
     @Override
+    DataSource getDataSource() {
+        return PostgresHolder.getDataSource()
+    }
+
+    @Override
     ConnectionFactory getConnectionFactory() {
-        return KtPostgresHolder.getConnectionFactory()
+        return KtPostgresConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
     Connection getBlockingConnection() {
-        return KtPostgresHolder.getBlockingConnection()
+        return PostgresHolder.getConnection()
     }
 
     @Override
     void stopDatabase() {
-        KtPostgresHolder.stopDb()
+        PostgresHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        KtPostgresHolder.startDb()
+        PostgresHolder.startDb()
     }
 }
 
@@ -43,22 +51,27 @@ trait MySqlConnectionProvider implements SqlConnectionProvider, DatabaseManager 
     BindingMapper bindingMapper = BindingMapper.MYSQL_MAPPER
 
     @Override
+    DataSource getDataSource() {
+        return MySqlHolder.getDataSource()
+    }
+
+    @Override
     ConnectionFactory getConnectionFactory() {
-        return KtMySqlHolder.getConnectionFactory()
+        return KtMySqlConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
     Connection getBlockingConnection() {
-        return KtMySqlHolder.getBlockingConnection()
+        return MySqlHolder.getConnection()
     }
 
     @Override
     void stopDatabase() {
-        KtMySqlHolder.stopDb()
+        MySqlHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        KtMySqlHolder.startDb()
+        MySqlHolder.startDb()
     }
 }

@@ -9,16 +9,13 @@ import java.time.Clock
 import java.time.Duration
 
 import static BlockingRxSherlockWrapper.blockingRxSherlock
-import static RxMongoHolder.databaseName
 import static com.coditory.sherlock.RxMongoSherlockBuilder.rxMongoSherlock
 
 trait UsesRxMongoSherlock implements DistributedLocksCreator, DatabaseManager {
-    static final String locksCollectionName = "locks"
-
     @Override
-    Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         RxSherlock reactiveLocks = rxMongoSherlock()
-                .withLocksCollection(getLocksCollection())
+                .withLocksCollection(getLocksCollection(collectionName))
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)
                 .withClock(clock)
@@ -26,19 +23,19 @@ trait UsesRxMongoSherlock implements DistributedLocksCreator, DatabaseManager {
         return blockingRxSherlock(reactiveLocks)
     }
 
-    MongoCollection<Document> getLocksCollection() {
-        return RxMongoHolder.getClient()
-                .getDatabase(databaseName)
-                .getCollection(locksCollectionName)
+    MongoCollection<Document> getLocksCollection(String collectionName) {
+        return RxMongoClientHolder.getClient()
+                .getDatabase(MongoHolder.databaseName)
+                .getCollection(collectionName)
     }
 
     @Override
     void stopDatabase() {
-        RxMongoHolder.stopDb()
+        MongoHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        RxMongoHolder.startDb()
+        MongoHolder.startDb()
     }
 }

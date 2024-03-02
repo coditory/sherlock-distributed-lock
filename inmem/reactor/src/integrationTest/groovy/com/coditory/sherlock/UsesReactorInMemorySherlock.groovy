@@ -10,7 +10,7 @@ import static ReactorInMemorySherlockBuilder.reactorInMemorySherlockBuilder
 
 trait UsesReactorInMemorySherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         ReactorSherlock reactiveLocks = reactorInMemorySherlockBuilder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

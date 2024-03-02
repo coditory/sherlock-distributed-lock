@@ -11,8 +11,6 @@ import static ReactorSqlSherlockBuilder.reactorSqlSherlock
 import static com.coditory.sherlock.BlockingReactorSherlockWrapper.blockingReactorSherlock
 
 trait UsesReactorSqlSherlock implements DistributedLocksCreator {
-    static final String locksTableName = "locks"
-
     abstract ConnectionFactory getConnectionFactory()
 
     abstract Connection getBlockingConnection()
@@ -20,10 +18,10 @@ trait UsesReactorSqlSherlock implements DistributedLocksCreator {
     abstract BindingMapper getBindingMapper()
 
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
         ReactorSherlock reactorLocks = reactorSqlSherlock()
                 .withConnectionFactory(connectionFactory)
-                .withLocksTable(locksTableName)
+                .withLocksTable(tableName)
                 .withBindingMapper(bindingMapper)
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

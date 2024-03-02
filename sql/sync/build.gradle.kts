@@ -13,12 +13,5 @@ dependencies {
     implementation(projects.sql.sqlCommon)
 
     // integration
-    integrationTestImplementation(projects.tests)
-    integrationTestImplementation(libs.hikaricp)
-    // integration: postgres
-    integrationTestImplementation(libs.postgresql)
-    integrationTestImplementation(libs.testcontainers.postgresql)
-    // integration: mysql
-    integrationTestImplementation(libs.mysql)
-    integrationTestImplementation(libs.testcontainers.mysql)
+    integrationTestImplementation(projects.sql.sqlCommonTests)
 }

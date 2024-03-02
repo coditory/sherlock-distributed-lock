@@ -13,6 +13,6 @@ dependencies {
     implementation(projects.mongo.mongoCommon)
 
     // integration
+    integrationTestImplementation(projects.mongo.mongoCommonTests)
     integrationTestImplementation(projects.tests)
-    integrationTestImplementation(libs.testcontainers.mongodb)
 }

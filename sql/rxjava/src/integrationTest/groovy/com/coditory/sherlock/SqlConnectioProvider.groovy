@@ -4,6 +4,7 @@ import com.coditory.sherlock.base.DatabaseManager
 import groovy.transform.CompileStatic
 import io.r2dbc.spi.ConnectionFactory
 
+import javax.sql.DataSource
 import java.sql.Connection
 
 @CompileStatic
@@ -11,6 +12,8 @@ interface SqlConnectionFactoryProvider {
     ConnectionFactory getConnectionFactory();
 
     Connection getBlockingConnection();
+
+    DataSource getDataSource();
 }
 
 @CompileStatic
@@ -18,23 +21,28 @@ trait PostgresConnectionProvider implements SqlConnectionFactoryProvider, Databa
     BindingMapper bindingMapper = BindingMapper.POSTGRES_MAPPER
 
     @Override
+    DataSource getDataSource() {
+        return PostgresHolder.getDataSource()
+    }
+
+    @Override
     ConnectionFactory getConnectionFactory() {
-        return RxPostgresHolder.getConnectionFactory()
+        return RxPostgresConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
     Connection getBlockingConnection() {
-        return RxPostgresHolder.getBlockingConnection()
+        return PostgresHolder.getConnection()
     }
 
     @Override
     void stopDatabase() {
-        RxPostgresHolder.stopDb()
+        PostgresHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        RxPostgresHolder.startDb()
+        PostgresHolder.startDb()
     }
 }
 
@@ -43,22 +51,27 @@ trait MySqlConnectionProvider implements SqlConnectionFactoryProvider, DatabaseM
     BindingMapper bindingMapper = BindingMapper.MYSQL_MAPPER
 
     @Override
+    DataSource getDataSource() {
+        return MySqlHolder.getDataSource()
+    }
+
+    @Override
     ConnectionFactory getConnectionFactory() {
-        return RxMySqlHolder.getConnectionFactory()
+        return RxMySqlConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
     Connection getBlockingConnection() {
-        return RxMySqlHolder.getBlockingConnection()
+        return MySqlHolder.getConnection()
     }
 
     @Override
     void stopDatabase() {
-        RxMySqlHolder.stopDb()
+        MySqlHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        RxMySqlHolder.startDb()
+        MySqlHolder.startDb()
     }
 }

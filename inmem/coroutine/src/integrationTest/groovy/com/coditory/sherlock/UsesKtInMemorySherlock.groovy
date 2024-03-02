@@ -10,7 +10,7 @@ import static com.coditory.sherlock.KtInMemorySherlockBuilder.coroutineInMemoryS
 
 trait UsesKtInMemorySherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         KtSherlock reactiveLocks = coroutineInMemorySherlockBuilder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

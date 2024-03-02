@@ -17,5 +17,5 @@ dependencies {
 
     // integration
     integrationTestImplementation(projects.tests)
-    integrationTestImplementation(libs.testcontainers.mongodb)
+    integrationTestImplementation(projects.mongo.mongoCommonTests)
 }

@@ -10,14 +10,13 @@ import java.time.Duration
 
 import static com.coditory.sherlock.BlockingKtSherlockWrapper.blockingKtSherlock
 import static com.coditory.sherlock.KtMongoSherlockBuilder.coroutineMongoSherlock
+import static com.coditory.sherlock.MongoHolder.databaseName
 
 trait UsesKtMongoSherlock implements DistributedLocksCreator, DatabaseManager {
-    static final String locksCollectionName = "locks"
-
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         KtSherlock coroutinesLocks = coroutineMongoSherlock()
-                .withLocksCollection(getLocksCollection())
+                .withLocksCollection(getLocksCollection(collectionName))
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)
@@ -25,20 +24,20 @@ trait UsesKtMongoSherlock implements DistributedLocksCreator, DatabaseManager {
         return blockingKtSherlock(coroutinesLocks)
     }
 
-    MongoCollection<Document> getLocksCollection() {
-        return KtMongoHolder.getClient()
-                .getDatabase(KtMongoHolder.databaseName)
-                .getCollection(locksCollectionName)
+    MongoCollection<Document> getLocksCollection(String collectionName) {
+        return KtMongoClientHolder.getClient()
+                .getDatabase(databaseName)
+                .getCollection(collectionName)
     }
 
     @Override
     void stopDatabase() {
-        KtMongoHolder.stopDb()
+        MongoHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        KtMongoHolder.startDb()
+        MongoHolder.startDb()
     }
 }
 

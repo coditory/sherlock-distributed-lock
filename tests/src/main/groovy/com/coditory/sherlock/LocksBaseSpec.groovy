@@ -16,6 +16,7 @@ abstract class LocksBaseSpec extends Specification
         implements DistributedLocksCreator {
     static final UpdatableFixedClock fixedClock = defaultUpdatableFixedClock()
     static final Duration defaultLockDuration = Duration.ofMinutes(10)
+    static final String locksCollectionName = "locks"
     static final String sampleOwnerId = "locks_test_instance"
     static final String sampleLockId = "sample_acquire_id"
     private static Logger logger = LoggerFactory.getLogger(LocksBaseSpec)
@@ -58,7 +59,7 @@ abstract class LocksBaseSpec extends Specification
     }
 
     Sherlock createSherlock(String ownerId = sampleOwnerId, Duration duration = defaultLockDuration) {
-        return createSherlock(ownerId, duration, fixedClock)
+        return createSherlock(ownerId, duration, fixedClock, locksCollectionName)
     }
 }
 

@@ -14,7 +14,6 @@ tasks.register<JacocoReport>("coverage") {
 
     coveredProjects
         .forEach { subproject ->
-            println(">>> Covered: " + subproject.name)
             executionData(fileTree(subproject.layout.buildDirectory).include("jacoco/*.exec"))
             sourceSets(subproject.sourceSets.main.get())
         }

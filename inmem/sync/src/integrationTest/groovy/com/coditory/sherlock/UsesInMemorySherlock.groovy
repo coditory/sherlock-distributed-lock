@@ -10,7 +10,7 @@ import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlockBuil
 
 trait UsesInMemorySherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         return inMemorySherlockBuilder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

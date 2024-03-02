@@ -11,7 +11,7 @@ import static RxInMemorySherlockBuilder.rxInMemorySherlockBuilder
 
 trait UsesReactiveInMemorySherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         RxSherlock reactiveLocks = rxInMemorySherlockBuilder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

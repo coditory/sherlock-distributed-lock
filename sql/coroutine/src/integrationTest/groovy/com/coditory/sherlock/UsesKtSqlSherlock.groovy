@@ -10,8 +10,6 @@ import java.time.Duration
 import static com.coditory.sherlock.KtSqlSherlockBuilder.coroutineSqlSherlock
 
 trait UsesKtSqlSherlock implements DistributedLocksCreator {
-    static final String locksTableName = "locks"
-
     abstract ConnectionFactory getConnectionFactory()
 
     abstract Connection getBlockingConnection()
@@ -19,11 +17,11 @@ trait UsesKtSqlSherlock implements DistributedLocksCreator {
     abstract BindingMapper getBindingMapper()
 
     @Override
-    Sherlock createSherlock(String instanceId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
         KtSherlock coroutineSqlSherlock = coroutineSqlSherlock()
                 .withConnectionFactory(connectionFactory)
                 .withBindingMapper(bindingMapper)
-                .withLocksTable(locksTableName)
+                .withLocksTable(tableName)
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)

@@ -3,22 +3,22 @@ package com.coditory.sherlock
 import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.DistributedLocksCreator
 import com.mongodb.reactivestreams.client.MongoCollection
+import org.bson.BsonDocument
 import org.bson.Document
+import reactor.core.publisher.Flux
 
 import java.time.Clock
 import java.time.Duration
 
 import static BlockingReactorSherlockWrapper.blockingReactorSherlock
-import static ReactorMongoHolder.databaseName
 import static ReactorMongoSherlockBuilder.reactorMongoSherlock
+import static com.coditory.sherlock.MongoHolder.databaseName
 
 trait UsesReactorMongoSherlock implements DistributedLocksCreator, DatabaseManager {
-    static final String locksCollectionName = "locks"
-
     @Override
-    Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         ReactorSherlock reactorLocks = reactorMongoSherlock()
-                .withLocksCollection(getLocksCollection())
+                .withLocksCollection(getLocksCollection(collectionName))
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)
                 .withClock(clock)
@@ -26,19 +26,19 @@ trait UsesReactorMongoSherlock implements DistributedLocksCreator, DatabaseManag
         return blockingReactorSherlock(reactorLocks)
     }
 
-    MongoCollection<Document> getLocksCollection() {
-        return ReactorMongoHolder.getClient()
+    MongoCollection<Document> getLocksCollection(String collectionName) {
+        return ReactorMongoClientHolder.getClient()
                 .getDatabase(databaseName)
-                .getCollection(locksCollectionName)
+                .getCollection(collectionName)
     }
 
     @Override
     void stopDatabase() {
-        ReactorMongoHolder.stopDb()
+        MongoHolder.stopDb()
     }
 
     @Override
     void startDatabase() {
-        ReactorMongoHolder.startDb()
+        MongoHolder.startDb()
     }
 }

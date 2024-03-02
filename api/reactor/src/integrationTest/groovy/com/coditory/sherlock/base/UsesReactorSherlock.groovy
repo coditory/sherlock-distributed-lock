@@ -11,7 +11,7 @@ import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactorInMemo
 
 trait UsesReactorSherlock implements DistributedLocksCreator {
     @Override
-    Sherlock createSherlock(String ownerId, Duration duration, Clock clock) {
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         ReactorSherlock reactorSherlock = reactorInMemorySherlockBuilder()
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)
