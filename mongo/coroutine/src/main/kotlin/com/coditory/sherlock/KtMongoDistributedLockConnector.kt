@@ -9,9 +9,7 @@ import com.coditory.sherlock.MongoDistributedLockQueries.queryReleased
 import com.mongodb.MongoCommandException
 import com.mongodb.client.model.FindOneAndReplaceOptions
 import com.mongodb.client.model.ReturnDocument
-import com.mongodb.reactivestreams.client.MongoCollection
-import kotlinx.coroutines.reactive.awaitFirst
-import kotlinx.coroutines.reactive.awaitFirstOrNull
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import org.bson.BsonDocument
 import org.bson.Document
 import org.bson.conversions.Bson
@@ -95,12 +93,12 @@ internal class KtMongoDistributedLockConnector(
     }
 
     private suspend fun deleteAll(): Boolean {
-        val result = getCollection().deleteMany(BsonDocument()).awaitFirst()
+        val result = getCollection().deleteMany(BsonDocument())
         return result.deletedCount > 0
     }
 
     private suspend fun delete(query: Bson): Boolean {
-        val deleted = getCollection().findOneAndDelete(query).awaitFirstOrNull()
+        val deleted = getCollection().findOneAndDelete(query)
         return deleted != null && fromDocument(deleted).isActive(now())
     }
 
@@ -113,7 +111,6 @@ internal class KtMongoDistributedLockConnector(
             val current =
                 getCollection()
                     .findOneAndReplace(query, documentToUpsert, upsertOptions)
-                    .awaitFirst()
             lock.hasSameOwner(current)
         } catch (exception: MongoCommandException) {
             if (exception.errorCode != DUPLICATE_KEY_ERROR_CODE) {

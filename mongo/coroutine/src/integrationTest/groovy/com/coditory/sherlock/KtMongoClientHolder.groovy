@@ -1,7 +1,6 @@
 package com.coditory.sherlock
 
-import com.mongodb.reactivestreams.client.MongoClient
-import com.mongodb.reactivestreams.client.MongoClients
+import com.mongodb.kotlin.client.coroutine.MongoClient
 import groovy.transform.CompileStatic
 
 @CompileStatic
@@ -12,7 +11,7 @@ class KtMongoClientHolder {
         if (mongoClient != null) return mongoClient
         MongoHolder.startDb()
         String url = MongoHolder.getConnectionString()
-        mongoClient = MongoClients.create(url)
+        mongoClient = MongoClient.@Factory.create(url)
         return mongoClient
     }
 }

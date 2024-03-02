@@ -2,8 +2,7 @@ package com.coditory.sherlock
 
 import com.coditory.sherlock.MongoDistributedLock.INDEX
 import com.coditory.sherlock.MongoDistributedLock.INDEX_OPTIONS
-import com.mongodb.reactivestreams.client.MongoCollection
-import kotlinx.coroutines.reactive.awaitFirstOrNull
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import org.bson.Document
 import java.util.concurrent.atomic.AtomicBoolean
 
@@ -17,7 +16,7 @@ internal class KtMongoCollectionInitializer(
         if (!shouldCreateIndexes) {
             return collection
         }
-        collection.createIndex(INDEX, INDEX_OPTIONS).awaitFirstOrNull()
+        collection.createIndex(INDEX, INDEX_OPTIONS)
         return collection
     }
 }

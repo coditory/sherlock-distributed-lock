@@ -1,7 +1,7 @@
 package com.coditory.sherlock
 
 import com.coditory.sherlock.Preconditions.expectNonNull
-import com.mongodb.reactivestreams.client.MongoCollection
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import org.bson.Document
 import java.time.Clock
 
