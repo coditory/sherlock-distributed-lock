@@ -5,10 +5,7 @@ plugins {
 }
 
 dependencies {
-    // api
     api(projects.api.apiReactor)
     api(projects.inmem.inmemSync)
-
-    // integration
     integrationTestImplementation(projects.tests)
 }

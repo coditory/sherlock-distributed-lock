@@ -6,5 +6,4 @@ plugins {
 
 dependencies {
     api(projects.common)
-    integrationTestImplementation(projects.tests)
 }

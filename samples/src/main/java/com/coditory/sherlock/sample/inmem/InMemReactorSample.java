@@ -8,7 +8,6 @@ import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactorInMemorySherlock;
 import static com.coditory.sherlock.ReactorInMemorySherlockBuilder.reactorInMemorySherlockBuilder;
 
 public class InMemReactorSample {

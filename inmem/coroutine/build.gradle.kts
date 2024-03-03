@@ -5,11 +5,8 @@ plugins {
 }
 
 dependencies {
-    // api
     api(projects.api.apiCoroutine)
-    api(projects.inmem.inmemCommon)
     api(projects.api.apiCoroutineConnector)
-
-    // integration
+    implementation(projects.inmem.inmemCommon)
     integrationTestImplementation(projects.tests)
 }

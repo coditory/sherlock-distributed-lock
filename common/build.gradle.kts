@@ -1,3 +1,5 @@
+// This module is NOT a public API - imported as implementation
+
 plugins {
     id("build.java")
     id("build.coverage")

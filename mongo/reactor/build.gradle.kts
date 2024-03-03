@@ -5,14 +5,8 @@ plugins {
 }
 
 dependencies {
-    // api
     api(projects.api.apiReactor)
     api(libs.mongodb.reactivestreams)
-
-    // implementation
     implementation(projects.mongo.mongoCommon)
-
-    // integration
-    integrationTestImplementation(projects.tests)
     integrationTestImplementation(projects.mongo.mongoCommonTests)
 }

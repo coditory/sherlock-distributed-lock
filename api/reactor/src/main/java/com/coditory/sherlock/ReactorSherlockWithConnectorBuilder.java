@@ -53,7 +53,7 @@ abstract class ReactorSherlockWithConnectorBuilder<T extends ReactorSherlockWith
 
     /**
      * Generates random owner id once per JVM (as a static field). Such a strategy ensures that all
-     * locks of the same process has the same owner id.
+     * locks of the same process have the same owner id.
      *
      * @return the instance
      * @see this#withOwnerId(String)

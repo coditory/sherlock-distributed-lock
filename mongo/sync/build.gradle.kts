@@ -5,14 +5,8 @@ plugins {
 }
 
 dependencies {
-    // api
     api(projects.api.apiSync)
     api(libs.mongodb.sync)
-
-    // implementation
     implementation(projects.mongo.mongoCommon)
-
-    // integration
     integrationTestImplementation(projects.mongo.mongoCommonTests)
-    integrationTestImplementation(projects.tests)
 }

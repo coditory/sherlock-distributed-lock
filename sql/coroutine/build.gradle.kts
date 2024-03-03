@@ -5,17 +5,12 @@ plugins {
 }
 
 dependencies {
-    // api
     api(projects.api.apiCoroutine)
     api(libs.r2dbc.spi)
     api(projects.api.apiCoroutineConnector)
-
-    // implementation
-    implementation(projects.common)
     implementation(projects.sql.sqlCommon)
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactive)
-
     // integration
     integrationTestImplementation(projects.sql.sqlCommonTests)
     integrationTestImplementation(libs.r2dbc.pool)
