@@ -1,46 +1,27 @@
 ## Sherlock Installation
 
-Different [APIs](api) and [Connectors](connectors) require different dependencies defined in `build.gradle`.
+Different [APIs](../api) and [Connectors](../connectors) require different dependencies defined in `build.gradle.kts`.
 
-Installing [synchronous Sherlock](api/synchronous.md) with [MongoDB Connector](connectors/mongo.md):
-```groovy
+```kotlin
+// Synchronous API
 dependencies {
-    implementation "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
+    implementation("com.coditory.sherlock:sherlock-$CONNECTOR:{{ version }}")
+}
+
+// Reactor API
+dependencies {
+    implementation("com.coditory.sherlock:sherlock-$CONNECTOR-reactor:{{ version }}")
+}
+
+// RxJava API
+dependencies {
+    implementation("com.coditory.sherlock:sherlock-$CONNECTOR-rxjava:{{ version }}")
+}
+
+// Kotlin Coroutine API
+dependencies {
+    implementation("com.coditory.sherlock:sherlock-$CONNECTOR-coroutine:{{ version }}")
 }
 ```
 
-Installing [reactive Sherlock with Reactor API](api/reactor.md) and [MongoDB Connector](connectors/mongo.md):
-```groovy
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-mongo-reactive:{{ version }}"
-    implementation "com.coditory.sherlock:sherlock-api-reactor:{{ version }}"
-}
-```
-
-Installing [reactive Sherlock with RxJava API](api/rxjava.md) and [MongoDB Connector](connectors/mongo.md):
-```groovy
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-mongo-reactive:{{ version }}"
-    implementation "com.coditory.sherlock:sherlock-api-rxjava:{{ version }}"
-}
-```
-
-Configuration looks similar for different connectors and can be generalized into:
-```groovy
-// synchronous
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-$CONNECTOR-sync:{{ version }}"
-}
-
-// reactor api
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-$CONNECTOR-reactive:{{ version }}"
-    implementation "com.coditory.sherlock:sherlock-api-reactor:{{ version }}"
-}
-
-// rxjava api
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-$CONNECTOR-reactive:{{ version }}"
-    implementation "com.coditory.sherlock:sherlock-api-rxjava:{{ version }}"
-}
-```
+So far there are 3 types of connectors: `mongo`, `sql`, `in-mem`.

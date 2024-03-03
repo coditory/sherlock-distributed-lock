@@ -14,7 +14,7 @@ public class InMemSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Sherlock sherlock = inMemorySherlockBuilder()
-            .withClock(Clock.systemDefaultZone())
+            .withClock(Clock.systemUTC())
             .withUniqueOwnerId()
             .withSharedStorage()
             .build();

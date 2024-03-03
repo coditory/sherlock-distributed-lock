@@ -19,7 +19,7 @@ public class MongoSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Sherlock sherlock = mongoSherlock()
-            .withClock(Clock.systemDefaultZone())
+            .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
             .withLocksCollection(locksCollection())

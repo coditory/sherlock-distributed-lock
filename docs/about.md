@@ -1,3 +1,3 @@
 - [GitHub Repository](https://github.com/coditory/sherlock-distributed-lock/)
 - [License](https://github.com/coditory/sherlock-distributed-lock/blob/master/LICENSE)
-- [Changelog](https://github.com/coditory/sherlock-distributed-lock/blob/master/CHANGELOG.md)
+- [Changelog](https://github.com/coditory/sherlock-distributed-lock/releases)

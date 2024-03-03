@@ -2,55 +2,99 @@
 
 In Memory connector was created for local development and testing purposes.
 
-## Synchronous in-memory sherlock
-Add dependency to `build.gradle`:
+## Usage
+Add dependency to `build.gradle.kts`:
 
-```build.gradle
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-inmem-sync:{{ version }}"
-}
-```
+=== "Sync"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-inmem:{{ version }}")
+    }
+    ```
+=== "Coroutines"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-inmem-coroutine:{{ version }}")
+    }
+    ```
+=== "Reactor"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-inmem-reactor:{{ version }}")
+    }
+    ```
+=== "RxJava"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-inmem-rxjava:{{ version }}")
+    }
+    ```
 
-Create in-memory sherlock:
-```java
-Sherlock sherlock = inMemorySherlockBuilder()
-  .withClock(Clock.systemDefaultZone())
-  .withUniqueOwnerId()
-  .withSharedStorage()
-  .build();
-// ...or simply
-// Sherlock sherlockWithDefaults = inMemorySherlock();
-```
+Create and acquire a lock:
+=== "Sync"
+    ```java
+    Sherlock sherlock = inMemorySherlockBuilder()
+        .withClock(Clock.systemUTC())
+        .withUniqueOwnerId()
+        .withSharedStorage()
+        .build();
+    // ...or short equivalent:
+    // Sherlock sherlockWithDefaults = inMemorySherlock();
+    DistributedLock lock = sherlock.createLock("sample-lock");
+    lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+    ```
+=== "Coroutines"
+    ```kotlin
+    val sherlock = coroutineInMemorySherlockBuilder()
+        .withClock(Clock.systemUTC())
+        .withUniqueOwnerId()
+        .withSharedStorage()
+        .build()
+    // ...or short equivalent:
+    // val sherlockWithDefaults = coroutineInMemorySherlock()
+    val lock = sherlock.createLock("sample-lock")
+    lock.acquireAndExecute { logger.info("Lock acquired!") }
+    ```
+=== "Reactor"
+    ```java
+    ReactorSherlock sherlock = reactorInMemorySherlockBuilder()
+        .withClock(Clock.systemUTC())
+        .withUniqueOwnerId()
+        .withSharedStorage()
+        .build();
+    // ...or short equivalent:
+    // ReactorSherlock sherlockWithDefaults = reactorInMemorySherlock();
+    ReactorDistributedLock lock = sherlock.createLock("sample-lock");
+    lock.acquireAndExecute(Mono.fromCallable(() -> {
+        logger.info("Lock acquired!");
+        return true;
+    })).block();
+    ```
+=== "RxJava"
+    ```java
+    RxSherlock sherlock = rxInMemorySherlockBuilder()
+        .withClock(Clock.systemUTC())
+        .withUniqueOwnerId()
+        .withSharedStorage()
+        .build();
+    // ...or short equivalent:
+    // RxSherlock sherlockWithDefaults = rxInMemorySherlock();
+    RxDistributedLock lock = sherlock.createLock("sample-lock");
+    lock.acquireAndExecute(Single.fromCallable(() -> {
+        logger.info("Lock acquired!");
+        return true;
+    })).blockingGet();
+    ```
 
 !!! info "Learn more"
-    See the full synchronous example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/inmem/InMemSyncSample.java),
-    read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/InMemorySherlockBuilder.html).
+    See the full [examples]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/samples),
+    or read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/InMemorySherlockBuilder.html).
 
-## Reactive in-memory sherlock
-Add dependencies to `build.gradle`:
+## Parameters
 
-```build.gradle
-dependencies {
-    implementation "com.coditory.sherlock:sherlock-inmem-reactive:{{ version }}"
-    implementation "com.coditory.sherlock:sherlock-api-reactor:{{ version }}"
-    // ...or use rxjava api
-    // implementation "com.coditory.sherlock:sherlock-api-rxjava:0.4.12"
-}
-```
+In-memory sherlock parameters exposed in the builder:
 
-Create reactive in-memory sherlock:
-```java
-ReactorSherlock sherlock = reactiveInMemorySherlockBuilder()
-  .withClock(Clock.systemDefaultZone())
-  .withUniqueOwnerId()
-  .withSharedStorage()
-  .buildWithApi(ReactorSherlock::reactorSherlock);
-// ...or simply
-// ReactorSherlock sherlockWithDefaults = reactorSherlock(reactiveInMemorySherlock());
-```
-
-!!! info "Learn more"
-    See the full reactive example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/InMemReactorSample.java),
-    read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/ReactiveInMemorySherlockBuilder.html).
-
-RxJava version can be created in a similar way, see the sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/InMemRxJavaSample.java).
+- `clock` - clock used to generate lock creation and expiration time.
+- `ownerId` - defines lock owner unique identifier. This is the value that is used to distinguish lock owners. 
+If two processes use the same owner id they are acquire the same [reentrant lock](../locks/#reentrantdistributedlock).
+- `sharedStorage` - use shared storage for all in-mem locks.

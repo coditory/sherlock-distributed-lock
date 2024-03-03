@@ -18,7 +18,7 @@ public class PostgresSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Sherlock sherlock = sqlSherlock()
-            .withClock(Clock.systemDefaultZone())
+            .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
             .withDataSource(dataSource())

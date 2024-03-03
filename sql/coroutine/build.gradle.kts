@@ -8,9 +8,9 @@ dependencies {
     // api
     api(projects.api.apiCoroutine)
     api(libs.r2dbc.spi)
+    api(projects.api.apiCoroutineConnector)
 
     // implementation
-    implementation(projects.api.apiCoroutineConnector)
     implementation(projects.common)
     implementation(projects.sql.sqlCommon)
     implementation(libs.kotlinx.coroutines.core)

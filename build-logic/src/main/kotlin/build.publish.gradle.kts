@@ -5,7 +5,7 @@ plugins {
 }
 
 publishing {
-    val artifactName = "sherlock-${project.name}"
+    val artifactName = "sherlock-${project.name.removeSuffix("-sync")}"
     publications {
         create<MavenPublication>("jvm") {
             groupId = "com.coditory.sherlock"

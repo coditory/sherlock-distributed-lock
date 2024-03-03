@@ -11,11 +11,17 @@ It was [tested on MongoDB v3.6]({{ vcs_baseurl }}/mongo/sync/src/integration/gro
     [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/).
 
 ## Synchronous MongoDB Sherlock
-Add dependency to `build.gradle`:
+Add dependency to `build.gradle.kts`:
 
-```build.gradle
+```kotlin
 dependencies {
-    implementation "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
+    implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
+    // ...or with Reactor API
+    // implementation("com.coditory.sherlock:sherlock-mongo-reactor:{{ version }}")
+    // ...or with RxJava API
+    // implementation("com.coditory.sherlock:sherlock-mongo-rxjava:{{ version }}")
+    // ...or with Kotlin Coroutine API
+    // implementation("com.coditory.sherlock:sherlock-mongo-coroutine:{{ version }}")
 }
 ```
 

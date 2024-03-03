@@ -1,14 +1,14 @@
 # Synchronous Distributed Lock
 
-Add dependency to `build.gradle`:
+Add dependencies to `build.gradle.kts`:
 
-```groovy
+```kotlin
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
+    implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
 }
 ```
 
-Create synchronous lock:
+Create a lock:
 ```java
 // Get mongo locks collection
 String database = "sherlock";

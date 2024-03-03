@@ -28,12 +28,12 @@ public class MongoRxJavaSample {
 
     void sampleMongoLockUsage() {
         RxSherlock sherlock = rxMongoSherlock()
-                .withClock(Clock.systemDefaultZone())
+                .withClock(Clock.systemUTC())
                 .withLockDuration(Duration.ofMinutes(5))
                 .withUniqueOwnerId()
                 .withLocksCollection(locksCollection())
                 .build();
-        // ...or simply
+        // ...or short equivalent:
         // RxSherlock sherlockWithDefaults = rxSherlock(reactiveMongoSherlock(locksCollection()));
         RxDistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Single.fromCallable(() -> {

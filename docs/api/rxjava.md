@@ -1,15 +1,14 @@
 # Distributed Lock with RxJava API
 
-Add dependencies to `build.gradle`:
+Add dependencies to `build.gradle.kts`:
 
-```groovy
+```kotlin
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-reactive:{{ version }}"
-  compile "com.coditory.sherlock:sherlock-api-rxjava:{{ version }}"
+    implementation("com.coditory.sherlock:sherlock-mongo-rxjava:{{ version }}")
 }
 ```
 
-Create reactive lock with RxJava API:
+Create a lock:
 ```java
 // Get mongo locks collection
 String database = "sherlock";

@@ -8,9 +8,9 @@ dependencies {
     // api
     api(projects.api.apiCoroutine)
     api(libs.mongodb.reactivestreams)
+    api(projects.api.apiCoroutineConnector)
 
     // implementation
-    implementation(projects.api.apiCoroutineConnector)
     implementation(projects.mongo.mongoCommon)
     implementation(libs.mongodb.coroutine)
 

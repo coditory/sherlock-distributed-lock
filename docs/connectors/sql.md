@@ -6,31 +6,34 @@ and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherloc
 
 ## Synchronous SQL Sherlock
 
-Add dependency to `build.gradle`:
+Add dependency to `build.gradle.kts`:
 
-```groovy
+```kotlin
 dependencies {
-    implementation "org.postgresql:postgresql:$versions.postgresql"
+    implementation("org.postgresql:postgresql:$versions.postgresql")
     // ...or MySQL
     // implementation "mysql:mysql-connector-java:8.0.27"
     // ...or any other SQL driver
-    implementation "com.zaxxer:HikariCP:$versions.hikaricp"
+    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
     // ...or any other SQL Connection Pool
-    implementation "com.coditory.sherlock:sherlock-sql:{{ version }}"
+    implementation("com.coditory.sherlock:sherlock-sql:{{ version }}")
+    // ...or with Reactor API
+    // implementation("com.coditory.sherlock:sherlock-sql-reactor:{{ version }}")
+    // ...or with RxJava API
+    // implementation("com.coditory.sherlock:sherlock-sql-rxjava:{{ version }}")
+    // ...or with Kotlin Coroutine API
+    // implementation("com.coditory.sherlock:sherlock-sql-coroutine:{{ version }}")
 }
 ```
 
-!!! warning "Synchronous API only"
-    SQL connector provides synchronous API only.
-
 ```java
-HikariConfig config=new HikariConfig();
+HikariConfig config = new HikariConfig();
 config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
 config.setUsername("postgres");
 config.setPassword("postgres");
-DataSource connectionPool=new HikariDataSource(config);
+DataSource connectionPool = new HikariDataSource(config);
 
-Sherlock sherlock=sqlSherlock()
+Sherlock sherlock = sqlSherlock()
   .withClock(Clock.systemDefaultZone())
   .withLockDuration(Duration.ofMinutes(5))
   .withUniqueOwnerId()

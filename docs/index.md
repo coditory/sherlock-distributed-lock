@@ -9,12 +9,14 @@
 <img src="assets/img/logo.png" alt="Sherlock Distributed Lock Logo">
 </div>
 
-[Sherlock](https://github.com/coditory/sherlock-distributed-lock) is a distributed lock library for JVM projects.
-It exposes both synchronous and reactive [API](api) and uses database [connectors](connectors) to store locks.
+[Sherlock](https://github.com/coditory/sherlock-distributed-lock) is a distributed locking library for JVM projects.
+It exposes both synchronous and reactive [APIs](api) (Reactor, RxJava, Kotlin Coroutines) and uses database [connectors](connectors) to store locks.
 It was created as a simple solution to manage distributed locks among multiple microservices.
 
-By default, locks are acquired for a [specific duration](locks#lock-duration).
-Thanks to this approach when lock owning instance unexpectedly goes down,
+## How it works?
+
+Locks are acquired for a [specific duration](locks#lock-duration).
+When lock owning instance unexpectedly goes down,
 lock is automatically released after expiration.
 
 !!! important "Read and write from the same DB node"
@@ -23,14 +25,15 @@ lock is automatically released after expiration.
 
 ## Quick start
 
-Add dependency to `build.gradle`:
-```groovy
+Add dependency to `build.gradle.kts`:
+
+```kotlin
 dependencies {
-  compile "com.coditory.sherlock:sherlock-mongo-sync:{{ version }}"
+  implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
 }
 ```
 
-Create synchronous lock:
+Create a lock:
 ```java
 // Get mongo locks collection
 MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/sherlock");

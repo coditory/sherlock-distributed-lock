@@ -15,12 +15,12 @@ public class InMemRxJavaSample {
 
     void sampleInMemLockUsage() {
         RxSherlock sherlock = rxInMemorySherlockBuilder()
-                .withClock(Clock.systemDefaultZone())
+                .withClock(Clock.systemUTC())
                 .withUniqueOwnerId()
                 .withSharedStorage()
                 .build();
-        // ...or simply
-        // RxSherlock sherlockWithDefaults = rxSherlock(reactiveInMemorySherlock());
+        // ...or short equivalent:
+        // RxSherlock sherlockWithDefaults = rxInMemorySherlock(reactiveInMemorySherlock());
         RxDistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Single.fromCallable(() -> {
             logger.info("Lock acquired!");

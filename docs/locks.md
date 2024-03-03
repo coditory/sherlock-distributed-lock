@@ -33,20 +33,20 @@ Acquiring lock with `SingleEntrantDistributedLock`:
 ```java
 DistributedLock lock = sherlock.createLock(lockId);
 
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == false
-assert lock.acquire() == false;|
+assert lock.acquire() == false |
 ```
 
 Releasing `SingleEntrantDistributedLock` (the same as `ReentrantDistributedLock`):
 ```java
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == false
                                | assert lock.release() == false
-assert lock.release() == true; |
-assert lock.release() == false;|
+assert lock.release() == true  |
+assert lock.release() == false |
 ```
 
 ### ReentrantDistributedLock
@@ -57,20 +57,20 @@ Acquiring `ReentrantDistributedLock`:
 ```java
 DistributedLock lock = sherlock.createReentrantLock(lockId);
 
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == false
-assert lock.acquire() == true; |
+assert lock.acquire() == true  |
 ```
 
 Releasing `ReentrantDistributedLock` (the same as `SingleEntrantDistributedLock`):
 ```java
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == false
                                | assert lock.release() == false
-assert lock.release() == true; |
-assert lock.release() == false;|
+assert lock.release() == true  |
+assert lock.release() == false |
 ```
 
 ### OverridingDistributedLock
@@ -82,19 +82,19 @@ Acquiring a `OverridingDistributedLock`
 ```java
 DistributedLock lock = sherlock.createOverridingLock(lockId);
 
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == true
-assert lock.acquire() == true; |
-assert lock.acquire() == true; |
+assert lock.acquire() == true  |
+assert lock.acquire() == true  |
 ```
 
 Releasing a `OverridingDistributedLock`
 ```java
-Instance A                     | Instance B
-assert lock.acquire() == true; |
+// Instance A                  | // Instance B
+assert lock.acquire() == true  |
                                | assert lock.lock() == true
                                | assert lock.release() == true
-assert lock.release() == false;|
-assert lock.release() == false;|
+assert lock.release() == false |
+assert lock.release() == false |
 ```

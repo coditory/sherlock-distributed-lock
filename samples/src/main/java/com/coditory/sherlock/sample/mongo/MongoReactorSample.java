@@ -28,12 +28,12 @@ public class MongoReactorSample {
 
     void sampleMongoLockUsage() {
         ReactorSherlock sherlock = reactorMongoSherlock()
-                .withClock(Clock.systemDefaultZone())
+                .withClock(Clock.systemUTC())
                 .withLockDuration(Duration.ofMinutes(5))
                 .withUniqueOwnerId()
                 .withLocksCollection(locksCollection())
                 .build();
-        // ...or simply
+        // ...or short equivalent:
         // ReactorSherlock sherlockWithDefaults = reactiveMongoSherlock(reactiveMongoSherlock(locksCollection()));
         ReactorDistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Mono.fromCallable(() -> {

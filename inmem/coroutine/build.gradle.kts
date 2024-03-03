@@ -8,9 +8,7 @@ dependencies {
     // api
     api(projects.api.apiCoroutine)
     api(projects.inmem.inmemCommon)
-
-    // implementation
-    implementation(projects.api.apiCoroutineConnector)
+    api(projects.api.apiCoroutineConnector)
 
     // integration
     integrationTestImplementation(projects.tests)

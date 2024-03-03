@@ -4,7 +4,7 @@ Add dependencies to `build.gradle.kts`:
 
 ```kotlin
 dependencies {
-    implementation("com.coditory.sherlock:sherlock-mongo-reactor:{{ version }}")
+    implementation("com.coditory.sherlock:sherlock-mongo-coroutine:{{ version }}")
 }
 ```
 

@@ -1,5 +1,6 @@
 plugins {
     id("build.java")
+    id("build.kotlin")
 }
 
 dependencies {
@@ -16,6 +17,13 @@ dependencies {
     implementation(projects.api.apiRxjava)
     implementation(projects.inmem.inmemRxjava)
     implementation(projects.mongo.mongoRxjava)
+    implementation(projects.sql.sqlRxjava)
+    // coroutine
+    implementation(projects.api.apiCoroutine)
+    implementation(projects.inmem.inmemCoroutine)
+    implementation(projects.mongo.mongoCoroutine)
+    implementation(projects.sql.sqlCoroutine)
+    implementation(libs.kotlinx.coroutines.core)
     // drivers
     implementation(libs.postgresql)
     implementation(libs.mysql)
