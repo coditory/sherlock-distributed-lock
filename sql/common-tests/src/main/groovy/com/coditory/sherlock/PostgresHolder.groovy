@@ -28,17 +28,22 @@ class PostgresHolder {
     }
 
     synchronized static DataSource getDataSource() {
-        if (dataSource != null) {
-            return dataSource
-        }
+        if (dataSource != null) return dataSource
+        startDb()
+        dataSource = getDataSource({})
+        return dataSource
+    }
+
+    synchronized static DataSource getDataSource(DataSourceConfigurer configurer) {
         startDb()
         HikariConfig config = new HikariConfig()
         config.setJdbcUrl(db.getJdbcUrl())
         config.setUsername(db.getUsername())
         config.setPassword(db.getPassword())
         config.setConnectionTimeout(10000)
-        dataSource = new HikariDataSource(config)
-        return dataSource
+        config.setMaximumPoolSize(10)
+        configurer.configure(config)
+        return new HikariDataSource(config)
     }
 
     synchronized static void startDb() {

@@ -14,3 +14,6 @@ class MySqlInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
 
 class MySqlHandleDbFailureSpec extends HandleDbFailureSpec
         implements UsesSqlSherlock, MySqlConnectionProvider {}
+
+class MySqlLockCommitSpec extends SqlLockCommitSpec
+        implements UsesSqlSherlock, MySqlConnectionProvider {}

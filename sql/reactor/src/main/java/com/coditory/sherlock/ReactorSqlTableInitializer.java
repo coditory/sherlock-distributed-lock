@@ -70,6 +70,7 @@ final class ReactorSqlTableInitializer {
                 .onErrorResume(e -> {
                     logger.debug("Could not create connection. Retrying one more time", e);
                     return Mono.from(connectionFactory.create());
-                });
+                })
+                .doOnNext(c -> c.setAutoCommit(true));
     }
 }

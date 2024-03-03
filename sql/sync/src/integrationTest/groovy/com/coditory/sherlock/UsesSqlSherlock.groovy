@@ -1,6 +1,5 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.base.DistributedLocksCreator
 
 import javax.sql.DataSource
 import java.time.Clock
@@ -8,8 +7,10 @@ import java.time.Duration
 
 import static com.coditory.sherlock.SqlSherlockBuilder.sqlSherlock
 
-trait UsesSqlSherlock implements DistributedLocksCreator {
+trait UsesSqlSherlock implements SqlDistributedLocksCreator {
     abstract DataSource getDataSource()
+
+    abstract DataSource getDataSource(DataSourceConfigurer configurer)
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
@@ -19,6 +20,13 @@ trait UsesSqlSherlock implements DistributedLocksCreator {
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)
+                .build()
+    }
+
+    @Override
+    Sherlock createSherlock(DataSourceConfigurer configurer) {
+        return sqlSherlock()
+                .withDataSource(getDataSource(configurer))
                 .build()
     }
 }

@@ -3,11 +3,7 @@ package com.coditory.sherlock;
 import org.jetbrains.annotations.NotNull;
 
 import javax.sql.DataSource;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.SQLException;
-import java.sql.Timestamp;
-import java.sql.Types;
+import java.sql.*;
 import java.time.Clock;
 import java.time.Instant;
 

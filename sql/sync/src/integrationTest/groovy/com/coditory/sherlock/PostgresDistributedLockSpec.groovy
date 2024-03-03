@@ -14,3 +14,6 @@ class PostgresInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
 
 class PostgresHandleDbFailureSpec extends HandleDbFailureSpec
         implements UsesSqlSherlock, PostgresConnectionProvider {}
+
+class PostgresSqlLockCommitSpec extends SqlLockCommitSpec
+        implements UsesSqlSherlock, PostgresConnectionProvider {}

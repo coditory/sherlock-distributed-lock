@@ -8,6 +8,8 @@ import javax.sql.DataSource
 @CompileStatic
 interface SqlConnectionProvider {
     DataSource getDataSource();
+
+    DataSource getDataSource(DataSourceConfigurer configurer);
 }
 
 @CompileStatic
@@ -15,6 +17,11 @@ trait PostgresConnectionProvider implements SqlConnectionProvider, DatabaseManag
     @Override
     DataSource getDataSource() {
         return PostgresHolder.getDataSource()
+    }
+
+    @Override
+    DataSource getDataSource(DataSourceConfigurer configurer) {
+        return PostgresHolder.getDataSource(configurer)
     }
 
     @Override
@@ -33,6 +40,11 @@ trait MySqlConnectionProvider implements SqlConnectionProvider, DatabaseManager 
     @Override
     DataSource getDataSource() {
         return MySqlHolder.getDataSource()
+    }
+
+    @Override
+    DataSource getDataSource(DataSourceConfigurer configurer) {
+        return MySqlHolder.getDataSource(configurer)
     }
 
     @Override

@@ -63,12 +63,15 @@ internal class KtSqlTableInitializer(
         // Retrying connection because of a bug in connection pool
         // https://github.com/r2dbc/r2dbc-pool/issues/164
         // it seems that retrying connection once solves the issue
-        return try {
-            connectionFactory.create().awaitFirst()
-        } catch (e: Throwable) {
-            logger.debug("Could not create connection. Retrying one more time", e)
-            connectionFactory.create().awaitFirst()
-        }
+        val connection =
+            try {
+                connectionFactory.create().awaitFirst()
+            } catch (e: Throwable) {
+                logger.debug("Could not create connection. Retrying one more time", e)
+                connectionFactory.create().awaitFirst()
+            }
+        connection.setAutoCommit(true)
+        return connection
     }
 
     private suspend fun close(connection: Connection) {

@@ -32,6 +32,7 @@ class SqlTableInitializer {
         try (Statement statement = connection.createStatement()) {
             statement.executeUpdate(sqlQueries.createLocksTable());
             statement.executeUpdate(sqlQueries.createLocksIndex());
+            connection.commit();
             initialized.set(true);
         } catch (SQLException e) {
             try (PreparedStatement statement = connection
@@ -47,6 +48,8 @@ class SqlTableInitializer {
     }
 
     private Connection getConnection() throws SQLException {
-        return dataSource.getConnection();
+        Connection connection = dataSource.getConnection();
+        connection.setAutoCommit(true);
+        return connection;
     }
 }

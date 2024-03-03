@@ -71,7 +71,8 @@ final class RxSqlTableInitializer {
                 .onErrorResumeNext(e -> {
                     logger.debug("Could ne create connection. Retrying one more time", e);
                     return Single.fromPublisher(connectionFactory.create());
-                });
+                })
+                .doOnSuccess(c -> c.setAutoCommit(true));
     }
 
     private Single<Connection> commit(Connection connection) {
