@@ -19,6 +19,8 @@ theme:
   # Default values, taken from mkdocs_theme.yml
   language: en
   features:
+    - content.code.select
+    - content.code.copy
     - instant
     - navigation.indexes
     - navigation.sections
@@ -62,7 +64,6 @@ markdown_extensions:
   - markdown.extensions.meta
   - markdown.extensions.toc:
       permalink: true
-  - pymdownx.superfences
   - pymdownx.tabbed:
       alternate_style: true
   - pymdownx.arithmatex
@@ -83,10 +84,13 @@ markdown_extensions:
   - pymdownx.tasklist:
       custom_checkbox: true
   - pymdownx.tilde
-  - pymdownx.highlight
+  - pymdownx.highlight:
+      anchor_linenums: true
+      line_spans: __span
+      pygments_lang_class: true
   - pymdownx.inlinehilite
-  - pymdownx.superfences
   - pymdownx.snippets
+  - pymdownx.superfences
 
 extra:
   version: '0.4.19'
