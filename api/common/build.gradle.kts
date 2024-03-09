@@ -5,9 +5,5 @@ plugins {
 }
 
 dependencies {
-    // implementation
     implementation(projects.common)
-
-    // test
-    testImplementation(projects.tests)
 }

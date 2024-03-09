@@ -1,6 +1,7 @@
 package com.coditory.sherlock;
 
 import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
+import com.coditory.sherlock.migrator.ChangeSetMethodExtractor;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,19 +63,29 @@ public final class SherlockMigrator {
     /**
      * Adds change set to migration process.
      *
-     * @param changeSetId unique change set id used. This is is used as a lock id in migration
+     * @param changeSetId unique change set id used. This is used as a lock id in migration
      *                    process.
      * @param changeSet   change set action that should be run if change set was not already applied
      * @return the migrator
      */
     @NotNull
-    public SherlockMigrator addChangeSet(@NotNull String changeSetId, @NotNull Runnable changeSet) {
+    public SherlockMigrator addChangeSet(String changeSetId, Runnable changeSet) {
         expectNonEmpty(changeSetId, "changeSetId");
-        expectNonNull(changeSet, "changeSet");
+        expectNonNull(changeSet, "changeSetId");
         ensureUniqueChangeSetId(changeSetId);
         migrationLockIds.add(changeSetId);
         DistributedLock changeSetLock = createChangeSetLock(changeSetId);
-        migrationChangeSets.add(new MigrationChangeSet(changeSetId, changeSetLock, changeSet));
+        MigrationChangeSet migrationChangeSet = new MigrationChangeSet(
+                changeSetId, changeSetLock, changeSet);
+        migrationChangeSets.add(migrationChangeSet);
+        return this;
+    }
+
+    @NotNull
+    public SherlockMigrator addAnnotatedChangeSets(@NotNull Object object) {
+        expectNonNull(object, "object containing change sets");
+        ChangeSetMethodExtractor.extractChangeSets(object, void.class)
+                .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
         return this;
     }
 
@@ -93,13 +104,15 @@ public final class SherlockMigrator {
      */
     @NotNull
     public MigrationResult migrate() {
-        AcquireAndExecuteResult acquireResult = migrationLock.acquireAndExecute(this::runMigrations);
+        AcquireAndExecuteResult acquireResult = migrationLock
+                .acquireAndExecute(this::runMigrations)
+                .onNotAcquired(() -> logger.debug("Migration skipped: {}. Migration lock was refused.", migrationId));
         return new MigrationResult(acquireResult.isAcquired());
     }
 
     private void runMigrations() {
         Timer timer = Timer.start();
-        logger.info("Starting migration: {}", migrationId);
+        logger.info("Migration started: {}", migrationId);
         migrationChangeSets.forEach(MigrationChangeSet::execute);
         logger.info("Migration finished successfully: {} [{}]", migrationId, timer.elapsed());
     }

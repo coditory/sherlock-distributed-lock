@@ -5,24 +5,24 @@ plugins {
 
 dependencies {
     // sync
-    implementation(projects.inmem.inmemSync)
-    implementation(projects.mongo.mongoSync)
-    implementation(projects.sql.sqlSync)
+    implementation(projects.connectors.inmem.inmemSync)
+    implementation(projects.connectors.mongo.mongoSync)
+    implementation(projects.connectors.sql.sqlSync)
     // reactor
     implementation(projects.api.apiReactor)
-    implementation(projects.inmem.inmemReactor)
-    implementation(projects.mongo.mongoReactor)
-    implementation(projects.sql.sqlReactor)
+    implementation(projects.connectors.inmem.inmemReactor)
+    implementation(projects.connectors.mongo.mongoReactor)
+    implementation(projects.connectors.sql.sqlReactor)
     // rxjava
     implementation(projects.api.apiRxjava)
-    implementation(projects.inmem.inmemRxjava)
-    implementation(projects.mongo.mongoRxjava)
-    implementation(projects.sql.sqlRxjava)
+    implementation(projects.connectors.inmem.inmemRxjava)
+    implementation(projects.connectors.mongo.mongoRxjava)
+    implementation(projects.connectors.sql.sqlRxjava)
     // coroutine
     implementation(projects.api.apiCoroutine)
-    implementation(projects.inmem.inmemCoroutine)
-    implementation(projects.mongo.mongoCoroutine)
-    implementation(projects.sql.sqlCoroutine)
+    implementation(projects.connectors.inmem.inmemCoroutine)
+    implementation(projects.connectors.mongo.mongoCoroutine)
+    implementation(projects.connectors.sql.sqlCoroutine)
     implementation(libs.kotlinx.coroutines.core)
     // drivers
     implementation(libs.postgresql)

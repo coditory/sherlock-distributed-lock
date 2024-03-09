@@ -3,6 +3,7 @@ package com.coditory.sherlock;
 import java.time.Duration;
 import java.time.temporal.ChronoUnit;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -14,13 +15,36 @@ public final class Preconditions {
         throw new UnsupportedOperationException("Do not instantiate utility class");
     }
 
-    static void expect(boolean check, String message, Object... args) {
+    public static void expect(boolean check, String message, Object... args) {
         if (!check) {
             throw new IllegalArgumentException(String.format(message, args));
         }
     }
 
-    static <T> T expectNonNull(T value, String name) {
+    public static <T> T expectEqual(T value, T expected) {
+        return expectEqual(
+                value, expected, String.format("Expected %s to be equal %s", value, expected));
+    }
+
+    public static <T> T expectEqual(T value, T expected, String message) {
+        if (value != expected) {
+            throw new IllegalArgumentException(message);
+        }
+        return value;
+    }
+
+    public static <K, E> Map<K, E> expectNonEmpty(Map<K, E> map) {
+        return expectNonEmpty(map, "Expected non-null and non-empty map. Got: " + map);
+    }
+
+    public static <K, E> Map<K, E> expectNonEmpty(Map<K, E> map, String message) {
+        if (map == null || map.isEmpty()) {
+            throw new IllegalArgumentException(message);
+        }
+        return map;
+    }
+
+    public static <T> T expectNonNull(T value, String name) {
         if (value == null) {
             String message = message("Expected non-null value", name);
             throw new IllegalArgumentException(message);
@@ -28,7 +52,7 @@ public final class Preconditions {
         return value;
     }
 
-    static <T> List<T> expectNonEmpty(List<T> values, String name) {
+    public static <T> List<T> expectNonEmpty(List<T> values, String name) {
         if (values == null || values.isEmpty()) {
             String message = message("Expected non-null and non-empty list", name, values);
             throw new IllegalArgumentException(message);
@@ -36,7 +60,7 @@ public final class Preconditions {
         return values;
     }
 
-    static String expectNonEmpty(String value, String name) {
+    public static String expectNonEmpty(String value, String name) {
         if (value == null || value.isEmpty()) {
             String message = message("Expected non-null and non-empty value", name, value);
             throw new IllegalArgumentException(message);
@@ -44,7 +68,7 @@ public final class Preconditions {
         return value;
     }
 
-    static Duration expectTruncatedToMillis(Duration value, String name) {
+    public static Duration expectTruncatedToMillis(Duration value, String name) {
         Duration truncated = value.truncatedTo(ChronoUnit.MILLIS);
         if (value != truncated) {
             String message = message(
