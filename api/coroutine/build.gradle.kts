@@ -10,5 +10,11 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactive)
     testImplementation(libs.kotlinx.coroutines.test)
-    integrationTestImplementation(projects.tests)
+    testImplementation(projects.tests)
+    testImplementation(projects.connectors.inmem.inmemCoroutine)
+}
+
+tasks.named<GroovyCompile>("compileTestGroovy") {
+    // make groovy test see kotlin test
+    classpath += files(tasks.compileTestKotlin)
 }

@@ -9,5 +9,5 @@ dependencies {
     api(libs.rxjava)
     implementation(projects.common)
     testImplementation(projects.tests)
-    integrationTestImplementation(projects.connectors.inmem.inmemRxjava)
+    testImplementation(projects.connectors.inmem.inmemRxjava)
 }

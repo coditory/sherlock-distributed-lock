@@ -12,8 +12,7 @@ import java.time.Duration
 import static com.coditory.sherlock.LockDuration.permanent
 import static com.coditory.sherlock.base.UpdatableFixedClock.defaultUpdatableFixedClock
 
-abstract class LocksBaseSpec extends Specification
-        implements DistributedLocksCreator {
+abstract class LocksBaseSpec extends Specification implements DistributedLocksCreator {
     static final UpdatableFixedClock fixedClock = defaultUpdatableFixedClock()
     static final Duration defaultLockDuration = Duration.ofMinutes(10)
     static final String locksCollectionName = "locks"

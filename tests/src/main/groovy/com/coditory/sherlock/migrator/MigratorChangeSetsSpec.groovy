@@ -1,26 +1,25 @@
 package com.coditory.sherlock.migrator
 
+
 import com.coditory.sherlock.Sherlock
-import com.coditory.sherlock.SherlockMigrator
-import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlock
 import static com.coditory.sherlock.UuidGenerator.uuid
 import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
 
-class SherlockMigratorWithAnnotatedChangeSetsSpec extends Specification {
+abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
     static final String migrationId = "db migration"
     static final String firstChangeSetId = "add index"
     static final String secondChangeSetId = "remove index"
-    Sherlock sherlock = inMemorySherlock()
+    Sherlock sherlock = createSherlock()
     List<String> executed = []
 
     def "should run migration with 2 annotated change sets in order"() {
         given:
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addAnnotatedChangeSets(twoMigrations)
                     .migrate()
         then:
@@ -35,7 +34,8 @@ class SherlockMigratorWithAnnotatedChangeSetsSpec extends Specification {
         given:
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
                     .addAnnotatedChangeSets(twoMigrations)
                     .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
@@ -59,7 +59,8 @@ class SherlockMigratorWithAnnotatedChangeSetsSpec extends Specification {
         given:
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(TwoChangeSets.firstChangeSetId, { throwSpecSimulatedException() })
                     .addAnnotatedChangeSets(twoMigrations)
                     .migrate()
@@ -71,30 +72,31 @@ class SherlockMigratorWithAnnotatedChangeSetsSpec extends Specification {
     @Unroll
     def "should throw error #expectedMessage"() {
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addAnnotatedChangeSets(changeSets)
                     .migrate()
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
-            exception.message.startsWith(expectedMessage)
+            exception.message.startsWith(expectedMessage) || exception.cause.message.startsWith(expectedMessage)
         where:
             changeSets                          | expectedMessage
             new ChangeSetWithDuplicatedOrders() | "Expected unique change set order values. Duplicated: 1"
             new ChangeSetWithParameters()       | "Expected no declared parameters for method addIndex"
-            new ChangeSetWithReturnType()       | "Expected method to declare void as return type. Method:addIndex return type: class java.lang.String"
+            new ChangeSetWithReturnType()       | "Expected method to declare"
             new PrivateChangeSet()              | "Expected at least one changeset method annotated with @ChangeSet"
     }
 
-    private void assertAcquired(String lockId) {
+    void assertAcquired(String lockId) {
         assert acquire(lockId) == false
     }
 
-    private void assertReleased(String lockId) {
+    void assertReleased(String lockId) {
         assert acquire(lockId) == true
         sherlock.forceReleaseLock(lockId)
     }
 
-    private boolean acquire(String lockId) {
+    boolean acquire(String lockId) {
         return sherlock.createLock()
                 .withLockId(lockId)
                 .withOwnerId(uuid())

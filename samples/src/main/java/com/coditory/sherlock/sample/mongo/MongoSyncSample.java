@@ -42,12 +42,14 @@ public class MongoSyncSample {
     private void sampleInMemMigration() {
         logger.info(">>> SAMPLE: Migration");
         // first commit - all migrations are executed
-        new SherlockMigrator("db-migration", sherlock)
+        SherlockMigrator.builder(sherlock)
+                .setMigrationId("db-migration")
                 .addChangeSet("change set 1", () -> logger.info(">>> Change set 1"))
                 .addChangeSet("change set 2", () -> logger.info(">>> Change set 2"))
                 .migrate();
         // second commit - only new change set is executed
-        new SherlockMigrator("db-migration", sherlock)
+        SherlockMigrator.builder(sherlock)
+                .setMigrationId("db-migration")
                 .addChangeSet("change set 1", () -> logger.info(">>> Change set 1"))
                 .addChangeSet("change set 2", () -> logger.info(">>> Change set 2"))
                 .addChangeSet("change set 3", () -> logger.info(">>> Change set 3"))

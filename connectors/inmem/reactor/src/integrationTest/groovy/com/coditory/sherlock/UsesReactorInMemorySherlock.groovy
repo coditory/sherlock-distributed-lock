@@ -11,11 +11,11 @@ import static ReactorInMemorySherlockBuilder.reactorInMemorySherlockBuilder
 trait UsesReactorInMemorySherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
-        ReactorSherlock reactiveLocks = reactorInMemorySherlockBuilder()
+        ReactorSherlock reactorLocks = reactorInMemorySherlockBuilder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)
                 .build()
-        return blockingReactorSherlock(reactiveLocks)
+        return blockingReactorSherlock(reactorLocks)
     }
 }

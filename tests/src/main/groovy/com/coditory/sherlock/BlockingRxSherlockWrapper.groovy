@@ -12,40 +12,44 @@ class BlockingRxSherlockWrapper implements Sherlock {
         return new BlockingRxSherlockWrapper(locks)
     }
 
-    private final RxSherlock locks
+    private final RxSherlock sherlock
 
-    private BlockingRxSherlockWrapper(RxSherlock locks) {
-        this.locks = locks
+    private BlockingRxSherlockWrapper(RxSherlock sherlock) {
+        this.sherlock = sherlock
+    }
+
+    RxSherlock unwrap() {
+        return sherlock
     }
 
     @Override
     void initialize() {
-        locks.initialize()
+        sherlock.initialize()
                 .blockingGet()
     }
 
     @Override
     @NotNull
     DistributedLockBuilder createLock() {
-        return blockingLockBuilder(locks.createLock())
+        return blockingLockBuilder(sherlock.createLock())
     }
 
     @Override
     @NotNull
     DistributedLockBuilder createReentrantLock() {
-        return blockingLockBuilder(locks.createReentrantLock())
+        return blockingLockBuilder(sherlock.createReentrantLock())
     }
 
     @Override
     @NotNull
     DistributedLockBuilder createOverridingLock() {
-        return blockingLockBuilder(locks.createOverridingLock())
+        return blockingLockBuilder(sherlock.createOverridingLock())
     }
 
     @Override
     @NotNull
     boolean forceReleaseAllLocks() {
-        return locks.forceReleaseAllLocks()
+        return sherlock.forceReleaseAllLocks()
                 .blockingGet().released
     }
 

@@ -1,26 +1,25 @@
 package com.coditory.sherlock.migrator
 
-import com.coditory.sherlock.Sherlock
-import com.coditory.sherlock.SherlockMigrator
-import com.coditory.sherlock.base.SpecSimulatedException
-import spock.lang.Specification
 
-import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlock
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.base.SpecSimulatedException
+import com.coditory.sherlock.migrator.base.BlockingMigratorBuilder
+
 import static com.coditory.sherlock.UuidGenerator.uuid
 import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
 
-class SherlockMigratorSpec extends Specification {
+abstract class MigratorSpec extends MigratorBaseSpec {
     String migrationId = "db migration"
     String firstChangeSetId = "add index"
     String secondChangeSetId = "remove index"
     String thirdChangeSetId = "add index for the second time"
     List<String> executed = []
-
-    Sherlock sherlock = inMemorySherlock()
+    Sherlock sherlock = createSherlock()
 
     def "should run migration with 2 change sets in order"() {
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
                     .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
                     .migrate()
@@ -34,14 +33,15 @@ class SherlockMigratorSpec extends Specification {
 
     def "should execute only the not applied change set"() {
         given:
-            SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
+            BlockingMigratorBuilder migratorBuilder = createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
                     .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
         and:
-            migrator.migrate()
+            migratorBuilder.migrate()
             executed.clear()
         when:
-            migrator
+            migratorBuilder
                     .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
                     .migrate()
         then:
@@ -57,7 +57,8 @@ class SherlockMigratorSpec extends Specification {
         given:
             acquire(migrationId)
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
                     .migrate()
         then:
@@ -66,7 +67,8 @@ class SherlockMigratorSpec extends Specification {
 
     def "should break migration on first change set error"() {
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
                     .addChangeSet(secondChangeSetId, { throwSpecSimulatedException() })
                     .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
@@ -84,12 +86,11 @@ class SherlockMigratorSpec extends Specification {
 
     def "should return migration result for successful migration"() {
         given:
-            SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
-        and:
             int migrationFinishExecutions = 0
             int migrationRejectedExecutions = 0
         when:
-            SherlockMigrator.MigrationResult result = migrator.migrate()
+            MigrationResult result = createMigratorBuilder(sherlock)
+                    .migrate()
                     .onFinish({ migrationFinishExecutions++ })
                     .onRejected({ migrationRejectedExecutions++ })
         then:
@@ -101,12 +102,13 @@ class SherlockMigratorSpec extends Specification {
     def "should return migration result for rejected migration"() {
         given:
             acquire(migrationId)
-            SherlockMigrator migrator = new SherlockMigrator(migrationId, sherlock)
         and:
             int migrationFinishExecutions = 0
             int migrationRejectedExecutions = 0
         when:
-            SherlockMigrator.MigrationResult result = migrator.migrate()
+            MigrationResult result = createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
+                    .migrate()
                     .onFinish({ migrationFinishExecutions++ })
                     .onRejected({ migrationRejectedExecutions++ })
         then:
@@ -117,7 +119,7 @@ class SherlockMigratorSpec extends Specification {
 
     def "should throw error on duplicated change set id"() {
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
                     .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
                     .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
         then:
@@ -127,23 +129,24 @@ class SherlockMigratorSpec extends Specification {
 
     def "should throw error on change set id same as migration id"() {
         when:
-            new SherlockMigrator(migrationId, sherlock)
+            createMigratorBuilder(sherlock)
+                    .setMigrationId(migrationId)
                     .addChangeSet(migrationId, { throwSpecSimulatedException() })
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
             exception.message.startsWith("Expected unique change set ids")
     }
 
-    private void assertAcquired(String lockId) {
+    void assertAcquired(String lockId) {
         assert acquire(lockId) == false
     }
 
-    private void assertReleased(String lockId) {
+    void assertReleased(String lockId) {
         assert acquire(lockId) == true
         sherlock.forceReleaseLock(lockId)
     }
 
-    private boolean acquire(String lockId) {
+    boolean acquire(String lockId) {
         return sherlock.createLock()
                 .withLockId(lockId)
                 .withOwnerId(uuid())

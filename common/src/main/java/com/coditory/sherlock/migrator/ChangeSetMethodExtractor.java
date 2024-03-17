@@ -3,16 +3,10 @@ package com.coditory.sherlock.migrator;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.function.Supplier;
 
-import static com.coditory.sherlock.Preconditions.expect;
-import static com.coditory.sherlock.Preconditions.expectEqual;
-import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.*;
 
 public class ChangeSetMethodExtractor {
     public static <R> List<MigrationChangeSet<R>> extractChangeSets(
@@ -38,6 +32,34 @@ public class ChangeSetMethodExtractor {
         return result;
     }
 
+    public static <R> List<MigrationChangeSet<R>> extractChangeSets(Object object, ChangeSetMapper<R> mapper) {
+        List<MigrationChangeSet<R>> result = new ArrayList<>();
+        Map<ChangeSet, Method> changeSetMethods = extractAnnotatedChangeSetMethods(object, null);
+        expectNonEmpty(changeSetMethods, "Expected at least one changeset method annotated with @ChangeSet");
+        List<ChangeSet> annotations = new ArrayList<>(changeSetMethods.keySet());
+        annotations.sort(Comparator.comparingInt(ChangeSet::order));
+        ChangeSet lastChangeSet = null;
+        for (ChangeSet changeSet : annotations) {
+            if (lastChangeSet != null) {
+                expect(
+                        lastChangeSet.order() < changeSet.order(),
+                        "Expected unique change set order values. Duplicated: " + changeSet.order());
+            }
+            Method method = changeSetMethods.get(changeSet);
+            Supplier<Object> action = invokeMethod(method, object, null);
+            try {
+                Supplier<R> mappedAction = mapper.map(action, method.getReturnType());
+                result.add(new MigrationChangeSet<>(changeSet.id(), mappedAction));
+                lastChangeSet = changeSet;
+            } catch (Throwable e) {
+                throw new IllegalArgumentException("Invalid migration method return type. "
+                        + "Method:" + method.getName()
+                        + " return type: " + method.getReturnType(), e);
+            }
+        }
+        return result;
+    }
+
     private static Map<ChangeSet, Method> extractAnnotatedChangeSetMethods(
             Object object, Class<?> expectedReturnType) {
         Map<ChangeSet, Method> changeSetMethods = new HashMap<>();
@@ -57,10 +79,13 @@ public class ChangeSetMethodExtractor {
         expectEqual(
                 method.getParameterCount(), 0,
                 "Expected no declared parameters for method " + method.getName());
-        expectEqual(
-                method.getReturnType(), expectedReturnType,
-                "Expected method to declare void as return type. Method:" + method.getName()
-                        + " return type: " + method.getReturnType());
+        if (expectedReturnType != null) {
+            expect(
+                    expectedReturnType.isAssignableFrom(method.getReturnType()),
+                    "Expected method to declare " + method.getReturnType() + " as return type. "
+                            + "Method:" + method.getName()
+                            + " return type: " + method.getReturnType());
+        }
         expect(
                 changeSet.order() >= 0,
                 "Expected changeset order >= 0. Method:" + method.getName());
@@ -80,5 +105,10 @@ public class ChangeSetMethodExtractor {
                         "Could not invoke changeset method: " + method.getName(), e);
             }
         };
+    }
+
+    @FunctionalInterface
+    public interface ChangeSetMapper<R> {
+        Supplier<R> map(Supplier<?> action, Class<?> returnType);
     }
 }

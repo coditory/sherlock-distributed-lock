@@ -11,5 +11,5 @@ dependencies {
     implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactive)
     testImplementation(projects.connectors.inmem.inmemCoroutine)
-    integrationTestImplementation(projects.tests)
+    testImplementation(projects.tests)
 }

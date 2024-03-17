@@ -9,5 +9,5 @@ dependencies {
     api(libs.reactor.core)
     implementation(projects.common)
     testImplementation(projects.tests)
-    integrationTestImplementation(projects.connectors.inmem.inmemReactor)
+    testImplementation(projects.connectors.inmem.inmemReactor)
 }
