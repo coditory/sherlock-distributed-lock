@@ -19,10 +19,10 @@ dependencies {
     implementation(projects.connectors.mongo.mongoRxjava)
     implementation(projects.connectors.sql.sqlRxjava)
     // coroutine
-    implementation(projects.api.apiCoroutine)
-    implementation(projects.connectors.inmem.inmemCoroutine)
-    implementation(projects.connectors.mongo.mongoCoroutine)
-    implementation(projects.connectors.sql.sqlCoroutine)
+    implementation(projects.api.apiCoroutines)
+    implementation(projects.connectors.inmem.inmemCoroutines)
+    implementation(projects.connectors.mongo.mongoCoroutines)
+    implementation(projects.connectors.sql.sqlCoroutines)
     implementation(libs.kotlinx.coroutines.core)
     // drivers
     implementation(libs.postgresql)

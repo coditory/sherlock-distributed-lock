@@ -2,7 +2,7 @@ package com.coditory.sherlock.samples.mongo;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.SherlockMigrator;
+import com.coditory.sherlock.migrator.SherlockMigrator;
 import com.coditory.sherlock.mongo.MongoSherlock;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;

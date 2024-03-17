@@ -2,7 +2,7 @@ package com.coditory.sherlock.samples.mysql;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.SherlockMigrator;
+import com.coditory.sherlock.migrator.SherlockMigrator;
 import com.coditory.sherlock.sql.SqlSherlock;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;

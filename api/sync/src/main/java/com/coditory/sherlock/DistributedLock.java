@@ -146,7 +146,7 @@ public interface DistributedLock {
         }
 
         @NotNull
-        AcquireAndExecuteResult onNotAcquired(@NotNull Runnable action) {
+        public AcquireAndExecuteResult onNotAcquired(@NotNull Runnable action) {
             expectNonNull(action, "action");
             if (!acquired) {
                 action.run();
@@ -174,7 +174,7 @@ public interface DistributedLock {
         }
 
         @NotNull
-        ReleaseAndExecuteResult onNotReleased(@NotNull Runnable action) {
+        public ReleaseAndExecuteResult onNotReleased(@NotNull Runnable action) {
             expectNonNull(action, "action");
             if (!released) {
                 action.run();

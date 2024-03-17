@@ -2,8 +2,8 @@ package com.coditory.sherlock.samples.inmem;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
-import com.coditory.sherlock.SherlockMigrator;
 import com.coditory.sherlock.inmem.InMemorySherlock;
+import com.coditory.sherlock.migrator.SherlockMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
