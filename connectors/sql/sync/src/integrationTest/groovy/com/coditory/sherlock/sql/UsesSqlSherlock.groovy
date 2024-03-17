@@ -7,8 +7,6 @@ import javax.sql.DataSource
 import java.time.Clock
 import java.time.Duration
 
-import static SqlSherlockBuilder.sqlSherlock
-
 trait UsesSqlSherlock implements SqlDistributedLocksCreator {
     abstract DataSource getDataSource()
 
@@ -16,7 +14,7 @@ trait UsesSqlSherlock implements SqlDistributedLocksCreator {
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
-        return sqlSherlock()
+        return SqlSherlock.builder()
                 .withDataSource(dataSource)
                 .withLocksTable(tableName)
                 .withOwnerId(instanceId)
@@ -27,7 +25,7 @@ trait UsesSqlSherlock implements SqlDistributedLocksCreator {
 
     @Override
     Sherlock createSherlock(DataSourceConfigurer configurer) {
-        return sqlSherlock()
+        return SqlSherlock.builder()
                 .withDataSource(getDataSource(configurer))
                 .build()
     }

@@ -1,6 +1,6 @@
 package com.coditory.sherlock.samples.inmem
 
-import com.coditory.sherlock.inmem.coroutines.KtInMemorySherlockBuilder
+import com.coditory.sherlock.inmem.coroutines.InMemorySherlock
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
@@ -11,7 +11,7 @@ object InMemKtSample {
 
     private suspend fun sampleInMemLockUsage() {
         val sherlock =
-            KtInMemorySherlockBuilder.coroutineInMemorySherlockBuilder()
+            InMemorySherlock.builder()
                 .withClock(Clock.systemUTC())
                 .withUniqueOwnerId()
                 .withSharedStorage()

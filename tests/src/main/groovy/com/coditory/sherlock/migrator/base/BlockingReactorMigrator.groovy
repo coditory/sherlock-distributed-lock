@@ -1,16 +1,16 @@
 package com.coditory.sherlock.migrator.base
 
 import com.coditory.sherlock.migrator.MigrationResult
-import com.coditory.sherlock.reactor.ReactorMigrator
-import com.coditory.sherlock.reactor.ReactorMigratorBuilder
-import com.coditory.sherlock.reactor.ReactorSherlock
+import com.coditory.sherlock.reactor.Sherlock
+import com.coditory.sherlock.reactor.SherlockMigrator
+import com.coditory.sherlock.reactor.SherlockMigratorBuilder
 
 import static java.util.Objects.requireNonNull
 
 class BlockingReactorMigrator implements BlockingMigrator {
-    private final ReactorMigrator migrator
+    private final SherlockMigrator migrator
 
-    BlockingReactorMigrator(ReactorMigrator migrator) {
+    BlockingReactorMigrator(SherlockMigrator migrator) {
         this.migrator = requireNonNull(migrator)
     }
 
@@ -21,11 +21,11 @@ class BlockingReactorMigrator implements BlockingMigrator {
 }
 
 class BlockingReactorMigratorBuilder implements BlockingMigratorBuilder {
-    private final ReactorMigratorBuilder builder
+    private final SherlockMigratorBuilder builder
 
-    BlockingReactorMigratorBuilder(ReactorSherlock sherlock) {
+    BlockingReactorMigratorBuilder(Sherlock sherlock) {
         requireNonNull(sherlock)
-        builder = new ReactorMigratorBuilder(sherlock)
+        builder = new SherlockMigratorBuilder(sherlock)
     }
 
     @Override
@@ -48,7 +48,7 @@ class BlockingReactorMigratorBuilder implements BlockingMigratorBuilder {
 
     @Override
     BlockingMigrator build() {
-        ReactorMigrator migrator = builder.build()
+        SherlockMigrator migrator = builder.build()
         return new BlockingReactorMigrator(migrator)
     }
 

@@ -5,29 +5,26 @@ import com.coditory.sherlock.Sherlock
 import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.DistributedLocksCreator
 import com.coditory.sherlock.mongo.MongoHolder
-import com.coditory.sherlock.rxjava.RxSherlock
 import com.mongodb.reactivestreams.client.MongoCollection
 import org.bson.Document
 
 import java.time.Clock
 import java.time.Duration
 
-import static RxMongoSherlockBuilder.rxMongoSherlock
-
 trait UsesRxMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
-        RxSherlock reactiveLocks = rxMongoSherlock()
+        com.coditory.sherlock.rxjava.Sherlock reactiveLocks = MongoSherlock.builder()
                 .withLocksCollection(getLocksCollection(collectionName))
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)
                 .withClock(clock)
                 .build()
-        return BlockingRxSherlockWrapper.blockingRxSherlock(reactiveLocks)
+        return new BlockingRxSherlockWrapper(reactiveLocks)
     }
 
     MongoCollection<Document> getLocksCollection(String collectionName) {
-        return RxMongoClientHolder.getClient()
+        return MongoClientHolder.getClient()
                 .getDatabase(MongoHolder.databaseName)
                 .getCollection(collectionName)
     }

@@ -1,15 +1,13 @@
 package com.coditory.sherlock
 
 import com.coditory.sherlock.base.DistributedLocksCreator
-import com.coditory.sherlock.coroutines.KtSherlock
 import com.coditory.sherlock.sql.BindingMapper
+import com.coditory.sherlock.sql.coroutines.SqlSherlock
 import io.r2dbc.spi.ConnectionFactory
 
 import java.sql.Connection
 import java.time.Clock
 import java.time.Duration
-
-import static com.coditory.sherlock.sql.coroutines.KtSqlSherlockBuilder.coroutineSqlSherlock
 
 trait UsesKtSqlSherlock implements DistributedLocksCreator {
     abstract ConnectionFactory getConnectionFactory()
@@ -20,7 +18,7 @@ trait UsesKtSqlSherlock implements DistributedLocksCreator {
 
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
-        KtSherlock coroutineSqlSherlock = coroutineSqlSherlock()
+        com.coditory.sherlock.coroutines.Sherlock coroutineSqlSherlock = SqlSherlock.builder()
                 .withConnectionFactory(connectionFactory)
                 .withBindingMapper(bindingMapper)
                 .withLocksTable(tableName)
@@ -28,6 +26,6 @@ trait UsesKtSqlSherlock implements DistributedLocksCreator {
                 .withLockDuration(duration)
                 .withClock(clock)
                 .build()
-        return BlockingKtSherlockWrapper.blockingKtSherlock(coroutineSqlSherlock)
+        return new BlockingKtSherlockWrapper(coroutineSqlSherlock)
     }
 }

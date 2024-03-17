@@ -1,23 +1,23 @@
 package com.coditory.sherlock.coroutines.base
 
-import com.coditory.sherlock.coroutines.KtMigrator
-import com.coditory.sherlock.coroutines.KtMigratorBuilder
-import com.coditory.sherlock.coroutines.KtSherlock
+import com.coditory.sherlock.coroutines.Sherlock
+import com.coditory.sherlock.coroutines.migrator.SherlockMigrator
+import com.coditory.sherlock.coroutines.migrator.SherlockMigratorBuilder
 import com.coditory.sherlock.migrator.MigrationResult
 import com.coditory.sherlock.migrator.base.BlockingMigrator
 import com.coditory.sherlock.migrator.base.BlockingMigratorBuilder
 import kotlinx.coroutines.runBlocking
 
 class BlockingKtMigrator(
-    private val migrator: KtMigrator,
+    private val migrator: SherlockMigrator,
 ) : BlockingMigrator {
     override fun migrate(): MigrationResult {
         return runBlocking { migrator.migrate() }
     }
 }
 
-class BlockingKtMigratorBuilder(sherlock: KtSherlock) : BlockingMigratorBuilder {
-    private val builder = KtMigratorBuilder(sherlock)
+class BlockingKtMigratorBuilder(sherlock: Sherlock) : BlockingMigratorBuilder {
+    private val builder = SherlockMigratorBuilder(sherlock)
 
     override fun setMigrationId(migrationId: String): BlockingMigratorBuilder {
         builder.setMigrationId(migrationId)

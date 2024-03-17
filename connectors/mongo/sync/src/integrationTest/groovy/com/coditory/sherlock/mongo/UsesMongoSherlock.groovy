@@ -10,12 +10,10 @@ import org.bson.Document
 import java.time.Clock
 import java.time.Duration
 
-import static MongoSherlockBuilder.mongoSherlock
-
 trait UsesMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
-        return mongoSherlock()
+        return MongoSherlock.builder()
                 .withLocksCollection(getLocksCollection(collectionName))
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)

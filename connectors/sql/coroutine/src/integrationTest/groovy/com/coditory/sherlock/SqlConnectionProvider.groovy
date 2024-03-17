@@ -30,7 +30,7 @@ trait PostgresConnectionProvider implements SqlConnectionProvider, DatabaseManag
 
     @Override
     ConnectionFactory getConnectionFactory() {
-        return KtPostgresConnectionPoolHolder.getConnectionFactory()
+        return PostgresConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
@@ -60,7 +60,7 @@ trait MySqlConnectionProvider implements SqlConnectionProvider, DatabaseManager 
 
     @Override
     ConnectionFactory getConnectionFactory() {
-        return KtMySqlConnectionPoolHolder.getConnectionFactory()
+        return MySqlConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override

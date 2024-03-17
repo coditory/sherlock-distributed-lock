@@ -1,26 +1,23 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.rxjava.RxDistributedLock
-import com.coditory.sherlock.rxjava.RxSherlock
 import groovy.transform.CompileStatic
 import org.jetbrains.annotations.NotNull
 
 import java.time.Duration
 
+import static java.util.Objects.requireNonNull
+
 // @CompileStatic - groovy compiler throws StackOverflow when uncommented
 // it's probably related with implementing an interface with default methods
 class BlockingRxSherlockWrapper implements Sherlock {
-    static Sherlock blockingRxSherlock(RxSherlock locks) {
-        return new BlockingRxSherlockWrapper(locks)
-    }
+    private final com.coditory.sherlock.rxjava.Sherlock sherlock
 
-    private final RxSherlock sherlock
-
-    private BlockingRxSherlockWrapper(RxSherlock sherlock) {
+    BlockingRxSherlockWrapper(com.coditory.sherlock.rxjava.Sherlock sherlock) {
+        requireNonNull(sherlock)
         this.sherlock = sherlock
     }
 
-    RxSherlock unwrap() {
+    com.coditory.sherlock.rxjava.Sherlock unwrap() {
         return sherlock
     }
 
@@ -61,7 +58,7 @@ class BlockingRxSherlockWrapper implements Sherlock {
                 .release()
     }
 
-    private DistributedLockBuilder blockingLockBuilder(DistributedLockBuilder<RxDistributedLock> reactiveBuilder) {
+    private DistributedLockBuilder blockingLockBuilder(DistributedLockBuilder<com.coditory.sherlock.rxjava.DistributedLock> reactiveBuilder) {
         return reactiveBuilder.withMappedLock({ lock -> new BlockingRxDistributedLock(lock) })
     }
 }
@@ -69,9 +66,10 @@ class BlockingRxSherlockWrapper implements Sherlock {
 
 @CompileStatic
 class BlockingRxDistributedLock implements DistributedLock {
-    private final RxDistributedLock lock
+    private final com.coditory.sherlock.rxjava.DistributedLock lock
 
-    BlockingRxDistributedLock(RxDistributedLock lock) {
+    BlockingRxDistributedLock(com.coditory.sherlock.rxjava.DistributedLock lock) {
+        requireNonNull(lock)
         this.lock = lock
     }
 

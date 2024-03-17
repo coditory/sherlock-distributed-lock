@@ -3,7 +3,7 @@ package com.coditory.sherlock.inmem.coroutines
 import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
 import com.coditory.sherlock.OwnerId
-import com.coditory.sherlock.coroutines.KtDistributedLockConnector
+import com.coditory.sherlock.coroutines.SuspendingDistributedLockConnector
 import com.coditory.sherlock.inmem.InMemoryDistributedLockStorage
 import java.time.Clock
 import java.time.Instant
@@ -11,7 +11,7 @@ import java.time.Instant
 internal class KtInMemoryDistributedLockConnector(
     private val clock: Clock,
     private val storage: InMemoryDistributedLockStorage,
-) : KtDistributedLockConnector {
+) : SuspendingDistributedLockConnector {
     override suspend fun initialize() {
         // deliberately empty
     }

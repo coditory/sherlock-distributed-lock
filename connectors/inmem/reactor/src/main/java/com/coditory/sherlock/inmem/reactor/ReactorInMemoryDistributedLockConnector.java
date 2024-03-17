@@ -7,7 +7,7 @@ import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import com.coditory.sherlock.inmem.InMemoryDistributedLockStorage;
-import com.coditory.sherlock.reactor.ReactorDistributedLockConnector;
+import com.coditory.sherlock.reactor.DistributedLockConnector;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
 
@@ -16,7 +16,7 @@ import java.time.Instant;
 
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
-class ReactorInMemoryDistributedLockConnector implements ReactorDistributedLockConnector {
+class ReactorInMemoryDistributedLockConnector implements DistributedLockConnector {
     private final InMemoryDistributedLockStorage storage;
     private final Clock clock;
 

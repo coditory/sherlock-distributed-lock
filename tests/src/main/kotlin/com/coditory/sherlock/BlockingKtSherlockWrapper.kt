@@ -1,13 +1,11 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.coroutines.KtDistributedLock
-import com.coditory.sherlock.coroutines.KtSherlock
 import kotlinx.coroutines.runBlocking
 
 class BlockingKtSherlockWrapper(
-    private val sherlock: KtSherlock,
+    private val sherlock: com.coditory.sherlock.coroutines.Sherlock,
 ) : Sherlock {
-    fun unwrap(): KtSherlock = sherlock
+    fun unwrap(): com.coditory.sherlock.coroutines.Sherlock = sherlock
 
     override fun initialize() =
         runBlocking {
@@ -36,14 +34,9 @@ class BlockingKtSherlockWrapper(
             .release()
     }
 
-    private fun blockingLockBuilder(builder: DistributedLockBuilder<KtDistributedLock>): DistributedLockBuilder<DistributedLock> {
+    private fun blockingLockBuilder(
+        builder: DistributedLockBuilder<com.coditory.sherlock.coroutines.DistributedLock>,
+    ): DistributedLockBuilder<DistributedLock> {
         return builder.withMappedLock { lock -> BlockingKtDistributedLock(lock) }
-    }
-
-    companion object {
-        @JvmStatic
-        fun blockingKtSherlock(locks: KtSherlock): Sherlock {
-            return BlockingKtSherlockWrapper(locks)
-        }
     }
 }

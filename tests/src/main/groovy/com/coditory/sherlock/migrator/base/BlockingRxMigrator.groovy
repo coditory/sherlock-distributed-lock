@@ -1,16 +1,16 @@
 package com.coditory.sherlock.migrator.base
 
 import com.coditory.sherlock.migrator.MigrationResult
-import com.coditory.sherlock.rxjava.RxMigrator
-import com.coditory.sherlock.rxjava.RxMigratorBuilder
-import com.coditory.sherlock.rxjava.RxSherlock
+import com.coditory.sherlock.rxjava.Sherlock
+import com.coditory.sherlock.rxjava.SherlockMigrator
+import com.coditory.sherlock.rxjava.SherlockMigratorBuilder
 
 import static java.util.Objects.requireNonNull
 
 class BlockingRxMigrator implements BlockingMigrator {
-    private final RxMigrator migrator
+    private final SherlockMigrator migrator
 
-    BlockingRxMigrator(RxMigrator migrator) {
+    BlockingRxMigrator(SherlockMigrator migrator) {
         this.migrator = requireNonNull(migrator)
     }
 
@@ -21,11 +21,11 @@ class BlockingRxMigrator implements BlockingMigrator {
 }
 
 class BlockingRxMigratorBuilder implements BlockingMigratorBuilder {
-    private final RxMigratorBuilder builder
+    private final SherlockMigratorBuilder builder
 
-    BlockingRxMigratorBuilder(RxSherlock sherlock) {
+    BlockingRxMigratorBuilder(Sherlock sherlock) {
         requireNonNull(sherlock)
-        builder = new RxMigratorBuilder(sherlock)
+        builder = new SherlockMigratorBuilder(sherlock)
     }
 
     @Override
@@ -48,7 +48,7 @@ class BlockingRxMigratorBuilder implements BlockingMigratorBuilder {
 
     @Override
     BlockingMigrator build() {
-        RxMigrator migrator = builder.build()
+        SherlockMigrator migrator = builder.build()
         return new BlockingRxMigrator(migrator)
     }
 

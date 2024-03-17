@@ -1,26 +1,23 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.reactor.ReactorDistributedLock
-import com.coditory.sherlock.reactor.ReactorSherlock
 import groovy.transform.CompileStatic
 import org.jetbrains.annotations.NotNull
 
 import java.time.Duration
 
+import static java.util.Objects.requireNonNull
+
 // @CompileStatic - groovy compiler throws StackOverflow when uncommented
 // it's probably related with implementing an interface with default methods
 class BlockingReactorSherlockWrapper implements Sherlock {
-    static Sherlock blockingReactorSherlock(ReactorSherlock locks) {
-        return new BlockingReactorSherlockWrapper(locks)
-    }
+    private final com.coditory.sherlock.reactor.Sherlock sherlock
 
-    private final ReactorSherlock sherlock
-
-    private BlockingReactorSherlockWrapper(ReactorSherlock sherlock) {
+    BlockingReactorSherlockWrapper(com.coditory.sherlock.reactor.Sherlock sherlock) {
+        requireNonNull(sherlock)
         this.sherlock = sherlock
     }
 
-    ReactorSherlock unwrap() {
+    com.coditory.sherlock.reactor.Sherlock unwrap() {
         return sherlock
     }
 
@@ -60,17 +57,17 @@ class BlockingReactorSherlockWrapper implements Sherlock {
                 .release()
     }
 
-    private DistributedLockBuilder blockingLockBuilder(
-            DistributedLockBuilder<ReactorDistributedLock> reactiveBuilder) {
+    private DistributedLockBuilder blockingLockBuilder(DistributedLockBuilder<com.coditory.sherlock.reactor.DistributedLock> reactiveBuilder) {
         return reactiveBuilder.withMappedLock({ lock -> new BlockingReactorDistributedLock(lock) })
     }
 }
 
 @CompileStatic
 class BlockingReactorDistributedLock implements DistributedLock {
-    private final ReactorDistributedLock lock
+    private final com.coditory.sherlock.reactor.DistributedLock lock
 
-    BlockingReactorDistributedLock(@NotNull ReactorDistributedLock lock) {
+    BlockingReactorDistributedLock(@NotNull com.coditory.sherlock.reactor.DistributedLock lock) {
+        requireNonNull(lock)
         this.lock = lock
     }
 

@@ -6,12 +6,12 @@ import com.coditory.sherlock.base.DistributedLocksCreator
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.sherlock.inmem.InMemorySherlockBuilder.inMemorySherlockBuilder
+import static InMemorySherlock.builder
 
 trait UsesInMemorySherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
-        return inMemorySherlockBuilder()
+        return builder()
                 .withOwnerId(instanceId)
                 .withLockDuration(duration)
                 .withClock(clock)

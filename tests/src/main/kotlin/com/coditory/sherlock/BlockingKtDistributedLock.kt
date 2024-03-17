@@ -1,11 +1,10 @@
 package com.coditory.sherlock
 
-import com.coditory.sherlock.coroutines.KtDistributedLock
 import kotlinx.coroutines.runBlocking
 import java.time.Duration
 
 class BlockingKtDistributedLock(
-    private val lock: KtDistributedLock,
+    private val lock: com.coditory.sherlock.coroutines.DistributedLock,
 ) : DistributedLock {
     override fun getId(): String {
         return lock.id

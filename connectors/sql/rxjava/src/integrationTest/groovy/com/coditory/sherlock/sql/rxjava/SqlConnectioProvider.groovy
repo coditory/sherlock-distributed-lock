@@ -1,9 +1,9 @@
 package com.coditory.sherlock.sql.rxjava
 
-import com.coditory.sherlock.sql.MySqlHolder
-import com.coditory.sherlock.sql.PostgresHolder
 import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.sql.BindingMapper
+import com.coditory.sherlock.sql.MySqlHolder
+import com.coditory.sherlock.sql.PostgresHolder
 import groovy.transform.CompileStatic
 import io.r2dbc.spi.ConnectionFactory
 
@@ -30,7 +30,7 @@ trait PostgresConnectionProvider implements SqlConnectionFactoryProvider, Databa
 
     @Override
     ConnectionFactory getConnectionFactory() {
-        return RxPostgresConnectionPoolHolder.getConnectionFactory()
+        return PostgresConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override
@@ -60,7 +60,7 @@ trait MySqlConnectionProvider implements SqlConnectionFactoryProvider, DatabaseM
 
     @Override
     ConnectionFactory getConnectionFactory() {
-        return RxMySqlConnectionPoolHolder.getConnectionFactory()
+        return MySqlConnectionPoolHolder.getConnectionFactory()
     }
 
     @Override

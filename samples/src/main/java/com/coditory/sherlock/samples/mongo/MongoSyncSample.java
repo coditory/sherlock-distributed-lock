@@ -3,6 +3,7 @@ package com.coditory.sherlock.samples.mongo;
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.SherlockMigrator;
+import com.coditory.sherlock.mongo.MongoSherlock;
 import com.mongodb.client.MongoClient;
 import com.mongodb.client.MongoClients;
 import com.mongodb.client.MongoCollection;
@@ -13,12 +14,10 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.mongo.MongoSherlockBuilder.mongoSherlock;
-
 public class MongoSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Sherlock sherlock = mongoSherlock()
+    private final Sherlock sherlock = MongoSherlock.builder()
             .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()

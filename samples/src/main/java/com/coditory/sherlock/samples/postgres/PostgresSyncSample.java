@@ -3,6 +3,7 @@ package com.coditory.sherlock.samples.postgres;
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.SherlockMigrator;
+import com.coditory.sherlock.sql.SqlSherlock;
 import com.zaxxer.hikari.HikariConfig;
 import com.zaxxer.hikari.HikariDataSource;
 import org.slf4j.Logger;
@@ -12,12 +13,10 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.Duration;
 
-import static com.coditory.sherlock.sql.SqlSherlockBuilder.sqlSherlock;
-
 public class PostgresSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Sherlock sherlock = sqlSherlock()
+    private final Sherlock sherlock = SqlSherlock.builder()
             .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()

@@ -1,5 +1,6 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.inmem.InMemorySherlock
 import com.coditory.sherlock.migrator.MigratorChangeSetsSpec
 import com.coditory.sherlock.migrator.MigratorSpec
 import com.coditory.sherlock.migrator.base.BlockingMigratorBuilder
@@ -9,11 +10,9 @@ import com.coditory.sherlock.migrator.base.MigratorCreator
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.sherlock.inmem.InMemorySherlockBuilder.inMemorySherlockBuilder
+class SyncMigratorSpec extends MigratorSpec implements UsesInMemorySherlock {}
 
-class SherlockMigratorSpec extends MigratorSpec implements UsesInMemorySherlock {}
-
-class SherlockMigratorChangeSetSpec extends MigratorChangeSetsSpec implements UsesInMemorySherlock {
+class SyncMigratorChangeSetSpec extends MigratorChangeSetsSpec implements UsesInMemorySherlock {
 }
 
 trait UsesInMemorySherlock implements MigratorCreator {
@@ -24,7 +23,7 @@ trait UsesInMemorySherlock implements MigratorCreator {
 
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
-        return inMemorySherlockBuilder()
+        return InMemorySherlock.builder()
                 .withOwnerId(ownerId)
                 .withLockDuration(duration)
                 .withClock(clock)

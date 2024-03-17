@@ -3,17 +3,16 @@ package com.coditory.sherlock.samples.inmem;
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.SherlockMigrator;
+import com.coditory.sherlock.inmem.InMemorySherlock;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 
-import static com.coditory.sherlock.inmem.InMemorySherlockBuilder.inMemorySherlockBuilder;
-
 public class InMemSyncSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    private final Sherlock sherlock = inMemorySherlockBuilder()
+    private final Sherlock sherlock = InMemorySherlock.builder()
             .withClock(Clock.systemUTC())
             .withUniqueOwnerId()
             .withSharedStorage()

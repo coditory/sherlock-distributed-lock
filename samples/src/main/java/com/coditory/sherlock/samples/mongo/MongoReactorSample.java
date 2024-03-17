@@ -1,19 +1,17 @@
 package com.coditory.sherlock.samples.mongo;
 
-import com.coditory.sherlock.reactor.ReactorDistributedLock;
-import com.coditory.sherlock.reactor.ReactorSherlock;
+import com.coditory.sherlock.mongo.reactor.MongoSherlock;
+import com.coditory.sherlock.reactor.DistributedLock;
+import com.coditory.sherlock.reactor.Sherlock;
 import com.mongodb.reactivestreams.client.MongoClient;
 import com.mongodb.reactivestreams.client.MongoClients;
 import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 import java.time.Duration;
-
-import static com.coditory.sherlock.mongo.reactor.ReactorMongoSherlockBuilder.reactorMongoSherlock;
 
 public class MongoReactorSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
@@ -27,7 +25,7 @@ public class MongoReactorSample {
     }
 
     void sampleMongoLockUsage() {
-        ReactorSherlock sherlock = reactorMongoSherlock()
+        Sherlock sherlock = MongoSherlock.builder()
                 .withClock(Clock.systemUTC())
                 .withLockDuration(Duration.ofMinutes(5))
                 .withUniqueOwnerId()
@@ -35,11 +33,10 @@ public class MongoReactorSample {
                 .build();
         // ...or short equivalent:
         // ReactorSherlock sherlockWithDefaults = reactiveMongoSherlock(reactiveMongoSherlock(locksCollection()));
-        ReactorDistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(Mono.fromCallable(() -> {
-            logger.info("Lock acquired!");
-            return true;
-        })).block();
+        DistributedLock lock = sherlock.createLock("sample-lock");
+        lock
+                .acquireAndExecute(() -> logger.info("Lock acquired!"))
+                .block();
     }
 
     public static void main(String[] args) {
