@@ -1,5 +1,6 @@
 plugins {
     id("build.java")
+    id("build.kotlin")
 }
 
 dependencies {
@@ -14,4 +15,5 @@ dependencies {
     api(libs.awaitility)
     api(libs.logback.core)
     api(libs.logback.classic)
+    api(libs.kotlinx.coroutines.core)
 }
