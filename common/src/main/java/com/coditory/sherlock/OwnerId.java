@@ -8,12 +8,12 @@ import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 public final class OwnerId {
     @NotNull
-    static OwnerId uniqueOwnerId() {
+    public static OwnerId uniqueOwnerId() {
         return new OwnerId(UuidGenerator.uuid());
     }
 
     @NotNull
-    static OwnerId of(@NotNull String value) {
+    public static OwnerId of(@NotNull String value) {
         return new OwnerId(value);
     }
 
@@ -24,7 +24,7 @@ public final class OwnerId {
     }
 
     @NotNull
-    String getValue() {
+    public String getValue() {
         return id;
     }
 

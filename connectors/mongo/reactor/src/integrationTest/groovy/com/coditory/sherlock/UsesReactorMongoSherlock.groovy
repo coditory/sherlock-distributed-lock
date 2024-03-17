@@ -2,6 +2,8 @@ package com.coditory.sherlock
 
 import com.coditory.sherlock.base.DatabaseManager
 import com.coditory.sherlock.base.DistributedLocksCreator
+import com.coditory.sherlock.mongo.MongoHolder
+import com.coditory.sherlock.reactor.ReactorSherlock
 import com.mongodb.reactivestreams.client.MongoCollection
 import org.bson.Document
 
@@ -9,8 +11,8 @@ import java.time.Clock
 import java.time.Duration
 
 import static BlockingReactorSherlockWrapper.blockingReactorSherlock
-import static ReactorMongoSherlockBuilder.reactorMongoSherlock
-import static com.coditory.sherlock.MongoHolder.databaseName
+import static com.coditory.sherlock.mongo.MongoHolder.databaseName
+import static com.coditory.sherlock.mongo.reactor.ReactorMongoSherlockBuilder.reactorMongoSherlock
 
 trait UsesReactorMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override

@@ -1,5 +1,7 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.coroutines.KtDistributedLock
+import com.coditory.sherlock.coroutines.KtSherlock
 import kotlinx.coroutines.runBlocking
 
 class BlockingKtSherlockWrapper(

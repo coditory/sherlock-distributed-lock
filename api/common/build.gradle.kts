@@ -5,5 +5,5 @@ plugins {
 }
 
 dependencies {
-    implementation(projects.common)
+    api(projects.common)
 }

@@ -1,5 +1,8 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.sql.SqlIndexCreationSpec
+import com.coditory.sherlock.sql.SqlLockStorageSpec
+
 class KtMySqlLockStorageSpec extends SqlLockStorageSpec
         implements UsesKtSqlSherlock, MySqlConnectionProvider {}
 

@@ -3,18 +3,18 @@ package com.coditory.sherlock;
 import org.jetbrains.annotations.NotNull;
 
 public class Timer {
-    static Timer start() {
+    public static Timer start() {
         return new Timer();
     }
 
     private final long started = System.currentTimeMillis();
 
-    long elapsedMs() {
+    public long elapsedMs() {
         return System.currentTimeMillis() - started;
     }
 
     @NotNull
-    String elapsed() {
+    public String elapsed() {
         return elapsedMs() + "ms";
     }
 }

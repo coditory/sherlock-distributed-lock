@@ -2,7 +2,7 @@ package com.coditory.sherlock;
 
 import org.jetbrains.annotations.NotNull;
 
-interface DistributedLockConnector {
+public interface DistributedLockConnector {
     /**
      * Initializes underlying infrastructure for locks.
      * Most frequently triggers database table creation and index creation.

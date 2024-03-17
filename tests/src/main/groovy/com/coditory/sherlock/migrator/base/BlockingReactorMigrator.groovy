@@ -1,9 +1,9 @@
 package com.coditory.sherlock.migrator.base
 
-import com.coditory.sherlock.ReactorMigrator
-import com.coditory.sherlock.ReactorMigratorBuilder
-import com.coditory.sherlock.ReactorSherlock
 import com.coditory.sherlock.migrator.MigrationResult
+import com.coditory.sherlock.reactor.ReactorMigrator
+import com.coditory.sherlock.reactor.ReactorMigratorBuilder
+import com.coditory.sherlock.reactor.ReactorSherlock
 
 import static java.util.Objects.requireNonNull
 

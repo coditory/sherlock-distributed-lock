@@ -1,5 +1,7 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.reactor.ReactorDistributedLock
+import com.coditory.sherlock.reactor.ReactorSherlock
 import groovy.transform.CompileStatic
 import org.jetbrains.annotations.NotNull
 

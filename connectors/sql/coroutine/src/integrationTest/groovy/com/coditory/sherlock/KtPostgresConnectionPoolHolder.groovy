@@ -1,5 +1,6 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.sql.PostgresHolder
 import groovy.transform.CompileStatic
 import io.r2dbc.pool.ConnectionPool
 import io.r2dbc.pool.ConnectionPoolConfiguration

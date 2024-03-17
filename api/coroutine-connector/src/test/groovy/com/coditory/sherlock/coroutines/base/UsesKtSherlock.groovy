@@ -1,0 +1,23 @@
+package com.coditory.sherlock.coroutines.base
+
+import com.coditory.sherlock.Sherlock
+import com.coditory.sherlock.base.DistributedLocksCreator
+import com.coditory.sherlock.coroutines.KtSherlock
+
+import java.time.Clock
+import java.time.Duration
+
+import static com.coditory.sherlock.BlockingKtSherlockWrapper.blockingKtSherlock
+import static com.coditory.sherlock.inmem.coroutines.KtInMemorySherlockBuilder.coroutineInMemorySherlockBuilder
+
+trait UsesKtSherlock implements DistributedLocksCreator {
+    @Override
+    Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
+        KtSherlock reactorSherlock = coroutineInMemorySherlockBuilder()
+                .withOwnerId(ownerId)
+                .withLockDuration(duration)
+                .withClock(clock)
+                .build()
+        return blockingKtSherlock(reactorSherlock)
+    }
+}

@@ -9,7 +9,7 @@ import com.coditory.sherlock.migrator.base.MigratorCreator
 import java.time.Clock
 import java.time.Duration
 
-import static com.coditory.sherlock.InMemorySherlockBuilder.inMemorySherlockBuilder
+import static com.coditory.sherlock.inmem.InMemorySherlockBuilder.inMemorySherlockBuilder
 
 class SherlockMigratorSpec extends MigratorSpec implements UsesInMemorySherlock {}
 

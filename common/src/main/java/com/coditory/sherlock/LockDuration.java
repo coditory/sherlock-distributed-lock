@@ -10,12 +10,12 @@ import static com.coditory.sherlock.Preconditions.expectTruncatedToMillis;
 
 public final class LockDuration {
     @NotNull
-    static LockDuration of(@Nullable Duration duration) {
+    public static LockDuration of(@Nullable Duration duration) {
         return new LockDuration(duration);
     }
 
     @NotNull
-    static LockDuration permanent() {
+    public static LockDuration permanent() {
         return new LockDuration(null);
     }
 
@@ -29,11 +29,11 @@ public final class LockDuration {
     }
 
     @Nullable
-    Duration getValue() {
+    public Duration getValue() {
         return duration;
     }
 
-    boolean isPermanent() {
+    public boolean isPermanent() {
         return duration == null;
     }
 

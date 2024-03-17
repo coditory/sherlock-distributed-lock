@@ -1,10 +1,9 @@
 package com.coditory.sherlock.migrator.base
 
-
-import com.coditory.sherlock.RxMigrator
-import com.coditory.sherlock.RxMigratorBuilder
-import com.coditory.sherlock.RxSherlock
 import com.coditory.sherlock.migrator.MigrationResult
+import com.coditory.sherlock.rxjava.RxMigrator
+import com.coditory.sherlock.rxjava.RxMigratorBuilder
+import com.coditory.sherlock.rxjava.RxSherlock
 
 import static java.util.Objects.requireNonNull
 

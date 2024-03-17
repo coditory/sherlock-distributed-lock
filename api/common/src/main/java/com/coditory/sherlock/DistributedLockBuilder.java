@@ -5,11 +5,8 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 import java.util.function.Function;
 
-import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.*;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
-import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
@@ -24,7 +21,7 @@ public final class DistributedLockBuilder<T> {
     private LockDuration duration = DEFAULT_LOCK_DURATION;
     private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
 
-    DistributedLockBuilder(LockCreator<T> lockCreator) {
+    public DistributedLockBuilder(LockCreator<T> lockCreator) {
         this.lockCreator = lockCreator;
     }
 
@@ -61,9 +58,9 @@ public final class DistributedLockBuilder<T> {
      * @return the builder
      */
     @NotNull
-    public DistributedLockBuilder<T> withLockDuration(@NotNull Duration duration) {
-        expectNonNull(duration, "duration");
-        return withLockDuration(LockDuration.of(duration));
+    public DistributedLockBuilder<T> withLockDuration(Duration duration) {
+        this.duration = LockDuration.of(duration);
+        return this;
     }
 
     /**
@@ -110,7 +107,8 @@ public final class DistributedLockBuilder<T> {
         return withOwnerIdPolicy(staticUniqueOwnerIdPolicy());
     }
 
-    DistributedLockBuilder<T> withOwnerIdPolicy(OwnerIdPolicy ownerIdPolicy) {
+    @NotNull
+    public DistributedLockBuilder<T> withOwnerIdPolicy(OwnerIdPolicy ownerIdPolicy) {
         this.ownerIdPolicy = ownerIdPolicy;
         return this;
     }
@@ -126,7 +124,7 @@ public final class DistributedLockBuilder<T> {
     }
 
     @FunctionalInterface
-    interface LockCreator<T> {
+    public interface LockCreator<T> {
         @NotNull T createLock(@NotNull LockId lockId, @NotNull LockDuration duration, @NotNull OwnerId ownerId);
     }
 }

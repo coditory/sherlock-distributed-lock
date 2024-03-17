@@ -1,5 +1,7 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.rxjava.RxDistributedLock
+import com.coditory.sherlock.rxjava.RxSherlock
 import groovy.transform.CompileStatic
 import org.jetbrains.annotations.NotNull
 

@@ -4,14 +4,12 @@ import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
 
-import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.staticUniqueOwnerIdPolicy;
-import static com.coditory.sherlock.OwnerIdPolicy.uniqueOwnerIdPolicy;
+import static com.coditory.sherlock.OwnerIdPolicy.*;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
-abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder<?>> {
+public abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder<?>> {
     private LockDuration duration = DEFAULT_LOCK_DURATION;
     private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
 

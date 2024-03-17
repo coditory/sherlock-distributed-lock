@@ -1,5 +1,6 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.coroutines.KtDistributedLock
 import kotlinx.coroutines.runBlocking
 import java.time.Duration
 
