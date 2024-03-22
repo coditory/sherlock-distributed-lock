@@ -39,7 +39,7 @@ public final class LockDuration {
 
     @Override
     public String toString() {
-        return "LockDuration(" + duration + ")";
+        return Objects.toString(duration);
     }
 
     @Override

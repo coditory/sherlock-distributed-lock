@@ -23,7 +23,7 @@ public final class LockId {
 
     @Override
     public String toString() {
-        return "LockId(" + id + ")";
+        return Objects.toString(id);
     }
 
     @Override

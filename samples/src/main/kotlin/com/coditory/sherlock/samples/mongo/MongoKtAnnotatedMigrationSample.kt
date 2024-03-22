@@ -13,8 +13,6 @@ import java.time.Clock
 import java.time.Duration
 
 object MongoKtAnnotatedMigrationSample {
-    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
-
     private val sherlock =
         MongoSherlock.builder()
             .withClock(Clock.systemUTC())

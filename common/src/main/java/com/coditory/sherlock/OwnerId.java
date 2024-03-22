@@ -30,7 +30,7 @@ public final class OwnerId {
 
     @Override
     public String toString() {
-        return "OwnerId(" + id + ")";
+        return Objects.toString(id);
     }
 
     @Override

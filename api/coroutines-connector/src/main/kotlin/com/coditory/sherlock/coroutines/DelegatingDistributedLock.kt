@@ -18,6 +18,14 @@ class DelegatingDistributedLock(
     private val logger = LoggerFactory.getLogger(javaClass)
     override val id: String = lockId.value
 
+    override fun toString(): String {
+        return "DelegatingDistributedLock{" +
+            "lockId=" + lockId +
+            ", ownerId=" + ownerId +
+            ", duration=" + duration +
+            '}'
+    }
+
     override suspend fun acquire(): Boolean {
         return acquire(LockRequest(lockId, ownerId, duration))
     }

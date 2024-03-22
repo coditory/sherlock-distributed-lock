@@ -24,7 +24,7 @@ public class PostgresRxAnnotatedMigrationSample {
             .withLocksTable("LOCKS")
             .build();
 
-    ConnectionFactory getConnectionFactory() {
+    private ConnectionFactory getConnectionFactory() {
         String database = "test";
         ConnectionFactoryOptions options = ConnectionFactoryOptions
                 .parse("r2dbc:postgresql://localhost:5432/" + database)

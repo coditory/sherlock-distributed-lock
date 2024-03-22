@@ -44,6 +44,15 @@ class DelegatingDistributedLock implements DistributedLock {
     }
 
     @Override
+    public String toString() {
+        return "DelegatingDistributedLock{" +
+                "lockId=" + lockId +
+                ", ownerId=" + ownerId +
+                ", duration=" + duration +
+                '}';
+    }
+
+    @Override
     @NotNull
     public Single<AcquireResult> acquire() {
         return acquire(new LockRequest(lockId, ownerId, duration));
