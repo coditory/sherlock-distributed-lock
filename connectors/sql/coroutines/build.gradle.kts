@@ -7,6 +7,7 @@ plugins {
 dependencies {
     api(projects.api.apiCoroutines)
     api(libs.r2dbc.spi)
+    api(projects.connectors.sql.sqlCommonApi)
     api(projects.api.apiCoroutinesConnector)
     implementation(projects.connectors.sql.sqlCommon)
     implementation(libs.kotlinx.coroutines.core)

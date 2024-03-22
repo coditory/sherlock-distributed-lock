@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.inmem;
+package com.coditory.sherlock.samples.inmem.reactor;
 
 import com.coditory.sherlock.inmem.reactor.InMemorySherlock;
 import com.coditory.sherlock.reactor.DistributedLock;
@@ -9,17 +9,16 @@ import reactor.core.publisher.Mono;
 
 import java.time.Clock;
 
-public class InMemReactorSample {
+public class InMemReactorLockSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    void sampleInMemLockUsage() {
-        Sherlock sherlock = InMemorySherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withUniqueOwnerId()
-                .withSharedStorage()
-                .build();
-        // ...or short equivalent:
-        // ReactorSherlock sherlockWithDefaults = reactorInMemorySherlock();
+    private final Sherlock sherlock = InMemorySherlock.builder()
+            .withClock(Clock.systemUTC())
+            .withUniqueOwnerId()
+            .withSharedStorage()
+            .build();
+
+    void sample() {
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Mono.fromCallable(() -> {
             logger.info("Lock acquired!");
@@ -28,6 +27,6 @@ public class InMemReactorSample {
     }
 
     public static void main(String[] args) {
-        new InMemReactorSample().sampleInMemLockUsage();
+        new InMemReactorLockSample().sample();
     }
 }

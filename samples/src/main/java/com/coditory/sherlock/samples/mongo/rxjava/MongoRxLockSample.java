@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.mongo;
+package com.coditory.sherlock.samples.mongo.rxjava;
 
 import com.coditory.sherlock.mongo.rxjava.MongoSherlock;
 import com.coditory.sherlock.rxjava.DistributedLock;
@@ -13,8 +13,15 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.Duration;
 
-public class MongoRxJavaSample {
+public class MongoRxLockSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Sherlock sherlock = MongoSherlock.builder()
+            .withClock(Clock.systemUTC())
+            .withLockDuration(Duration.ofMinutes(5))
+            .withUniqueOwnerId()
+            .withLocksCollection(locksCollection())
+            .build();
 
     private MongoCollection<Document> locksCollection() {
         String database = "sherlock";
@@ -24,23 +31,14 @@ public class MongoRxJavaSample {
                 .getCollection("locks");
     }
 
-    void sampleMongoLockUsage() {
-        Sherlock sherlock = MongoSherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withLockDuration(Duration.ofMinutes(5))
-                .withUniqueOwnerId()
-                .withLocksCollection(locksCollection())
-                .build();
-        // ...or short equivalent:
-        // RxSherlock sherlockWithDefaults = rxSherlock(reactiveMongoSherlock(locksCollection()));
+    void sample() {
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> {
-            logger.info("Lock acquired!");
-            return true;
-        }).blockingGet();
+        lock
+                .acquireAndExecute(() -> logger.info("Lock acquired!"))
+                .blockingGet();
     }
 
     public static void main(String[] args) {
-        new MongoRxJavaSample().sampleMongoLockUsage();
+        new MongoRxLockSample().sample();
     }
 }

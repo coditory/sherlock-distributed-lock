@@ -21,7 +21,7 @@ public class ChangeSetMethodExtractor {
             if (lastChangeSet != null) {
                 expect(
                         lastChangeSet.order() < changeSet.order(),
-                        "Expected unique change set order values. Duplicated: " + changeSet.order());
+                        "Expected unique change set order values. Duplicated order value: " + changeSet.order());
             }
             Supplier<R> action = invokeMethod(
                     changeSetMethods.get(changeSet), object, expectedReturnType);

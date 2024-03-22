@@ -7,6 +7,7 @@ plugins {
 dependencies {
     api(projects.api.apiReactor)
     api(libs.r2dbc.spi)
+    api(projects.connectors.sql.sqlCommonApi)
     implementation(projects.connectors.sql.sqlCommon)
     integrationTestImplementation(projects.connectors.sql.sqlTests)
     integrationTestImplementation(libs.r2dbc.pool)

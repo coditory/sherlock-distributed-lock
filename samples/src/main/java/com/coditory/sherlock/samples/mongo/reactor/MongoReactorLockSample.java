@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.mongo;
+package com.coditory.sherlock.samples.mongo.reactor;
 
 import com.coditory.sherlock.mongo.reactor.MongoSherlock;
 import com.coditory.sherlock.reactor.DistributedLock;
@@ -13,8 +13,15 @@ import org.slf4j.LoggerFactory;
 import java.time.Clock;
 import java.time.Duration;
 
-public class MongoReactorSample {
+public class MongoReactorLockSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
+
+    private final Sherlock sherlock = MongoSherlock.builder()
+            .withClock(Clock.systemUTC())
+            .withLockDuration(Duration.ofMinutes(5))
+            .withUniqueOwnerId()
+            .withLocksCollection(locksCollection())
+            .build();
 
     private MongoCollection<Document> locksCollection() {
         String database = "sherlock";
@@ -24,15 +31,7 @@ public class MongoReactorSample {
                 .getCollection("locks");
     }
 
-    void sampleMongoLockUsage() {
-        Sherlock sherlock = MongoSherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withLockDuration(Duration.ofMinutes(5))
-                .withUniqueOwnerId()
-                .withLocksCollection(locksCollection())
-                .build();
-        // ...or short equivalent:
-        // ReactorSherlock sherlockWithDefaults = reactiveMongoSherlock(reactiveMongoSherlock(locksCollection()));
+    void sample() {
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock
                 .acquireAndExecute(() -> logger.info("Lock acquired!"))
@@ -40,6 +39,6 @@ public class MongoReactorSample {
     }
 
     public static void main(String[] args) {
-        new MongoReactorSample().sampleMongoLockUsage();
+        new MongoReactorLockSample().sample();
     }
 }

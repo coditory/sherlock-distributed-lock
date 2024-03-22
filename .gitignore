@@ -8,3 +8,7 @@ build
 *.iml
 .idea
 !.idea/codeStyles
+
+# Docker
+scripts/docker/**/data
+scripts/docker/**/data+bak

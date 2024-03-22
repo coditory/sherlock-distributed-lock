@@ -8,4 +8,5 @@ plugins {
 
 dependencies {
     api(projects.common)
+    api(projects.connectors.sql.sqlCommonApi)
 }

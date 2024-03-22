@@ -2,11 +2,11 @@ package com.coditory.sherlock.coroutines.migrator
 
 import com.coditory.sherlock.Preconditions
 import com.coditory.sherlock.Preconditions.expectNonEmpty
+import com.coditory.sherlock.SherlockDefaults.DEFAULT_MIGRATOR_LOCK_ID
 import com.coditory.sherlock.coroutines.DistributedLock
 import com.coditory.sherlock.coroutines.Sherlock
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator.MigrationChangeSet
 import com.coditory.sherlock.migrator.ChangeSetMethodExtractor
-import com.coditory.sherlock.migrator.MigrationLockId.DEFAULT_MIGRATOR_LOCK_ID
 import com.coditory.sherlock.migrator.MigrationResult
 
 class SherlockMigratorBuilder internal constructor(private val sherlock: Sherlock) {

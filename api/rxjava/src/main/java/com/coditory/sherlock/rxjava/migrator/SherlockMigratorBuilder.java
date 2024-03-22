@@ -16,7 +16,7 @@ import java.util.function.Supplier;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
-import static com.coditory.sherlock.migrator.MigrationLockId.DEFAULT_MIGRATOR_LOCK_ID;
+import static com.coditory.sherlock.SherlockDefaults.DEFAULT_MIGRATOR_LOCK_ID;
 
 public final class SherlockMigratorBuilder {
     private final List<MigrationChangeSet> migrationChangeSets = new ArrayList<>();

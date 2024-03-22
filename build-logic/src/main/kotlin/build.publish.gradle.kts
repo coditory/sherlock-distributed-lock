@@ -59,5 +59,6 @@ signing {
     if (System.getenv("SIGNING_KEY")?.isNotBlank() == true && System.getenv("SIGNING_PASSWORD")?.isNotBlank() == true) {
         useInMemoryPgpKeys(System.getenv("SIGNING_KEY"), System.getenv("SIGNING_PASSWORD"))
     }
+    setRequired { gradle.taskGraph.allTasks.none { it.name == "publishToMavenLocal" } }
     sign(publishing.publications["jvm"])
 }

@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.inmem;
+package com.coditory.sherlock.samples.inmem.rxjava;
 
 import com.coditory.sherlock.inmem.rxjava.InMemorySherlock;
 import com.coditory.sherlock.rxjava.DistributedLock;
@@ -9,17 +9,16 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Clock;
 
-public class InMemRxJavaSample {
+public class InMemRxLockSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
-    void sampleInMemLockUsage() {
-        Sherlock sherlock = InMemorySherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withUniqueOwnerId()
-                .withSharedStorage()
-                .build();
-        // ...or short equivalent:
-        // RxSherlock sherlockWithDefaults = rxInMemorySherlock(reactiveInMemorySherlock());
+    private final Sherlock sherlock = InMemorySherlock.builder()
+            .withClock(Clock.systemUTC())
+            .withUniqueOwnerId()
+            .withSharedStorage()
+            .build();
+
+    void sample() {
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Single.fromCallable(() -> {
             logger.info("Lock acquired!");
@@ -28,6 +27,6 @@ public class InMemRxJavaSample {
     }
 
     public static void main(String[] args) {
-        new InMemRxJavaSample().sampleInMemLockUsage();
+        new InMemRxLockSample().sample();
     }
 }

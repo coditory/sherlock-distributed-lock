@@ -6,18 +6,17 @@ import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Clock
 
-object InMemKtSample {
+object InMemKtLockSample {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-    private suspend fun sampleInMemLockUsage() {
-        val sherlock =
-            InMemorySherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withUniqueOwnerId()
-                .withSharedStorage()
-                .build()
-        // ...or short equivalent:
-        // val sherlockWithDefaults = coroutineInMemorySherlock()
+    private val sherlock =
+        InMemorySherlock.builder()
+            .withClock(Clock.systemUTC())
+            .withUniqueOwnerId()
+            .withSharedStorage()
+            .build()
+
+    private suspend fun sample() {
         val lock = sherlock.createLock("sample-lock")
         lock.acquireAndExecute {
             logger.info("Lock acquired!")
@@ -26,8 +25,6 @@ object InMemKtSample {
 
     @JvmStatic
     fun main(args: Array<String>) {
-        runBlocking {
-            sampleInMemLockUsage()
-        }
+        runBlocking { sample() }
     }
 }

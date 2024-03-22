@@ -25,7 +25,10 @@ dependencies {
     implementation(projects.connectors.sql.sqlCoroutines)
     implementation(libs.kotlinx.coroutines.core)
     // drivers
+    implementation(libs.mongodb.coroutine)
+    implementation(libs.r2dbc.postgresql)
     implementation(libs.postgresql)
+    implementation(libs.r2dbc.mysql)
     implementation(libs.mysql)
     // other
     implementation(libs.logback.core)

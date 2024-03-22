@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.postgres;
+package com.coditory.sherlock.samples.postgres.sync;
 
 import com.coditory.sherlock.DistributedLock;
 import com.coditory.sherlock.Sherlock;
@@ -13,7 +13,7 @@ import javax.sql.DataSource;
 import java.time.Clock;
 import java.time.Duration;
 
-public class PostgresSyncSample {
+public class PostgresSyncMigrationSample {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
     private final Sherlock sherlock = SqlSherlock.builder()
@@ -32,35 +32,21 @@ public class PostgresSyncSample {
         return new HikariDataSource(config);
     }
 
-    void samplePostgresLockUsage() throws Exception {
-        logger.info(">>> SAMPLE: Lock usage");
-        DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
-    }
-
-    private void samplePostgresMigration() {
-        logger.info(">>> SAMPLE: Migration");
+    void sample() {
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .setMigrationId("db-migration")
-                .addChangeSet("change set 1", () -> logger.info(">>> Change set 1"))
-                .addChangeSet("change set 2", () -> logger.info(">>> Change set 2"))
+                .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
+                .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
                 .migrate();
-        // second commit - only new change set is executed
+        // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .setMigrationId("db-migration")
-                .addChangeSet("change set 1", () -> logger.info(">>> Change set 1"))
-                .addChangeSet("change set 2", () -> logger.info(">>> Change set 2"))
-                .addChangeSet("change set 3", () -> logger.info(">>> Change set 3"))
+                .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
+                .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
+                .addChangeSet("change-set-3", () -> logger.info("Change-set 3"))
                 .migrate();
-    }
-
-    void runSamples() throws Exception {
-        samplePostgresLockUsage();
-        samplePostgresMigration();
     }
 
     public static void main(String[] args) throws Exception {
-        new PostgresSyncSample().runSamples();
+        new PostgresSyncMigrationSample().sample();
     }
 }
