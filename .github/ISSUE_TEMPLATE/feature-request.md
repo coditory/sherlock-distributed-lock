@@ -3,7 +3,7 @@ name: Feature request
 about: Suggest new features/changes
 labels: feature
 ---
-<!-- Your feature request may already be reported. -->
+<!-- Your feature request might already been reported. -->
 <!-- Please search in the [issues](https://github.com/coditory/sherlock-distributed-lock/issues) before creating a new one. -->
 
 ## Context

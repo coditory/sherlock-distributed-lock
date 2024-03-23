@@ -3,7 +3,7 @@ name: Bug report
 about: Reporting bugs and other issues
 labels: bug
 ---
-<!-- The bug you're experiencing might have already be reported! -->
+<!-- The bug you're experiencing might have already been reported! -->
 <!-- Please search in the [issues](https://github.com/coditory/sherlock-distributed-lock/issues) before creating one. -->
 
 ## Context
