@@ -85,9 +85,13 @@ class SqlSherlock private constructor() : SherlockWithConnectorBuilder<SqlSherlo
          * @return sql sherlock with default configuration
          */
         @JvmStatic
-        fun create(connectionFactory: ConnectionFactory): Sherlock {
+        fun create(
+            connectionFactory: ConnectionFactory,
+            bindingMapper: BindingMapper,
+        ): Sherlock {
             return builder()
                 .withConnectionFactory(connectionFactory)
+                .withBindingMapper(bindingMapper)
                 .build()
         }
     }

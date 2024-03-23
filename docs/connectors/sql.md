@@ -1,69 +1,120 @@
 # SQL Distributed Lock
 
 SQL connector enables distributed locking on a relational databases.
-It was tested on [Postrgres v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
+It was tested on [PostgreSQL v11]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/PostgresInitializer.groovy)
 and [MySQL v8]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherlock/base/MySqlInitializer.groovy).
 
-## Synchronous SQL Sherlock
+!!! important "Read and write from the same DB node"
+    Make sure that DB connection passed to Sherlock reads and writes to the same DB node
+    so every lock change is visible to all of your services.
 
-Add dependency to `build.gradle.kts`:
+## Usage
 
-```kotlin
-dependencies {
-    implementation("org.postgresql:postgresql:$versions.postgresql")
-    // ...or MySQL
-    // implementation "mysql:mysql-connector-java:8.0.27"
-    // ...or any other SQL driver
-    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
-    // ...or any other SQL Connection Pool
-    implementation("com.coditory.sherlock:sherlock-sql:{{ version }}")
-    // ...or with Reactor API
-    // implementation("com.coditory.sherlock:sherlock-sql-reactor:{{ version }}")
-    // ...or with RxJava API
-    // implementation("com.coditory.sherlock:sherlock-sql-rxjava:{{ version }}")
-    // ...or with Kotlin Coroutine API
-    // implementation("com.coditory.sherlock:sherlock-sql-coroutine:{{ version }}")
-}
-```
+Add dependencies to `build.gradle.kts`:
 
-```java
-HikariConfig config = new HikariConfig();
-config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
-config.setUsername("postgres");
-config.setPassword("postgres");
-DataSource connectionPool = new HikariDataSource(config);
+=== "Sync"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql:{{ version }}")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:postgresql:$versions.postgresql")
+    }
+    ```
+=== "Coroutines"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-coroutines:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines")
+    }
+    ```
+=== "Reactor"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-reactor:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+    }
+    ```
+=== "RxJava"
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-rxjava:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+    }
+    ```
 
-Sherlock sherlock = sqlSherlock()
-  .withClock(Clock.systemDefaultZone())
-  .withLockDuration(Duration.ofMinutes(5))
-  .withUniqueOwnerId()
-  .withConnectionPool(connectionPool)
-  .withLocksTable("LOCKS")
-  .build();
-// ...or simply
-// Sherlock sherlockWithDefaults = sqlSherlock(connectionPool);
-```
+Create sherlock instance and distributed lock:
+=== "Sync"
+    ```java
+    --8<-- "examples/postgres-sync/src/main/java/com/coditory/sherlock/samples/postgres/sync/PostgresSyncLockSample.java:2"
+    ```
+=== "Coroutines"
+    ```kotlin
+    --8<-- "examples/postgres-coroutines/src/main/kotlin/com/coditory/sherlock/samples/postgres/coroutines/PostgresKtLockSample.kt:2"
+    ```
+=== "Reactor"
+    ```java
+    --8<-- "examples/postgres-reactor/src/main/java/com/coditory/sherlock/samples/postgres/reactor/PostgresReactorLockSample.java:2"
+    ```
+=== "RxJava"
+    ```java 
+    --8<-- "examples/postgres-rxjava/src/main/java/com/coditory/sherlock/samples/postgres/rxjava/PostgresRxLockSample.java:2"
+    ```
 
-This example uses [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP), but any implementation
+These examples use [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP), but any implementation
 of `java.sql.DataSource` will suffice.
 
 !!! info "Learn more"
-    See the full sample on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/sample/mysql/MySqlSyncSample.java),
-    read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/SqlSherlockBuilder.html).
+    See full source code example on [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/example/).
+
+## Configuration
+
+Configuration is available via sherlock builder:
+=== "Sync"
+    ```java
+    ```
+=== "Coroutines"
+    ```kotlin
+    ```
+=== "Reactor"
+    ```java
+    ```
+=== "RxJava"
+    ```java
+    ```
+
+Parameters:
+
+- `clock` (default: `Clock.systemUTC()`) - used to generate acquisition and expiration timestamps.
+- `lockDuration` (default: `Duration.ofMinutes(5)`) - used a default lock expiration time.
+  If lock is not released and expiration time passes, the lock automatically becomes released.
+- `ownerId` (default: `UniqueOwnerId()`) - used to identify lock owner.
+  There are different policies available for generating the ownerId.
+- `locksCollection` - MongoDb collection used to store the locks.
 
 ## Locks Table
 
-Locks table is automatically created if it did not already exist.
+Locks table is automatically created if it does not already exist.
 Table is created with a following SQL:
 
 ```sql
 CREATE TABLE LOCKS (
+  -- Lock id
   ID VARCHAR(100) NOT NULL,
+  -- Owner id
   ACQUIRED_BY VARCHAR(100) NOT NULL,
+  -- Lock acquisition moment
   ACQUIRED_AT TIMESTAMP(3) NOT NULL,
+  -- Lock expiration time
+  -- Might be null for locks that do not expire
   EXPIRES_AT TIMESTAMP(3),
   PRIMARY KEY (ID)
 )
+CREATE INDEX LOCKS_IDX ON LOCKS (ID, ACQUIRED_BY, EXPIRES_AT)
 ```
-
-Table name may be changed during sherlock creation.

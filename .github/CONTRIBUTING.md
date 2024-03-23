@@ -64,8 +64,13 @@ You can validate Kotlin code style in command line with:
 
 Before writing a commit message read [this article](https://chris.beams.io/posts/git-commit/).
 
-## Documentation
+## Documentation and examples
 
 If change adds new feature or modifies a new one
 update [documentation](https://github.com/coditory/sherlock-distributed-lock/tree/main/docs) and
 [examples](https://github.com/coditory/sherlock-distributed-lock/tree/main/examples).
+
+To run documentation server locally:
+- Install python3 locally
+- Install dependencies `pip install -r mkdocs-requirements.txt` from project directory
+- Run `mkdocs serve`

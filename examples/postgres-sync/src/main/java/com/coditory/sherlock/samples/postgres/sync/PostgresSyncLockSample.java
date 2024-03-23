@@ -9,19 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.time.Clock;
-import java.time.Duration;
 
 public class PostgresSyncLockSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final Sherlock sherlock = SqlSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withDataSource(dataSource())
-            .withLocksTable("LOCKS")
-            .build();
+    private static final Logger logger = LoggerFactory.getLogger(PostgresSyncLockSample.class);
 
     private static DataSource dataSource() {
         HikariConfig config = new HikariConfig();
@@ -31,12 +21,9 @@ public class PostgresSyncLockSample {
         return new HikariDataSource(config);
     }
 
-    void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = SqlSherlock.create(dataSource());
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
-    }
-
-    public static void main(String[] args) {
-        new PostgresSyncLockSample().sample();
     }
 }

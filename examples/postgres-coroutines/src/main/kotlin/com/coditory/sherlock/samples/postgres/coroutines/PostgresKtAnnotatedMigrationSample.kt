@@ -1,4 +1,4 @@
-package com.coditory.sherlock.samples.mysql
+package com.coditory.sherlock.samples.postgres.coroutines
 
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator
 import com.coditory.sherlock.migrator.ChangeSet
@@ -13,14 +13,16 @@ import org.slf4j.LoggerFactory
 import java.time.Clock
 import java.time.Duration
 
-object MySqlKtAnnotatedMigrationSample {
+object PostgresKtAnnotatedMigrationSample {
+    private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
+
     private val sherlock =
         SqlSherlock.builder()
             .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
             .withConnectionFactory(getConnectionFactory())
-            .withBindingMapper(BindingMapper.MYSQL_MAPPER)
+            .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
             .withLocksTable("LOCKS")
             .build()
 
@@ -28,10 +30,10 @@ object MySqlKtAnnotatedMigrationSample {
         val database = "test"
         val options =
             ConnectionFactoryOptions
-                .parse("r2dbc:mysql://localhost:3306/$database")
+                .parse("r2dbc:postgresql://localhost:5432/$database")
                 .mutate()
-                .option(ConnectionFactoryOptions.USER, "mysql")
-                .option(ConnectionFactoryOptions.PASSWORD, "mysql")
+                .option(ConnectionFactoryOptions.USER, "postgres")
+                .option(ConnectionFactoryOptions.PASSWORD, "postgres")
                 .option(ConnectionFactoryOptions.DATABASE, database)
                 .build()
         return ConnectionFactories.get(options)

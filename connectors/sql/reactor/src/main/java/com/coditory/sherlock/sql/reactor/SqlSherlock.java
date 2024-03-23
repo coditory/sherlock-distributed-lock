@@ -37,12 +37,13 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
      * @return sql sherlock with default configuration
      */
     @NotNull
-    public static SqlSherlock create(@NotNull ConnectionFactory connectionFactory, @NotNull BindingMapper bindingMapper) {
+    public static Sherlock create(@NotNull ConnectionFactory connectionFactory, @NotNull BindingMapper bindingMapper) {
         expectNonNull(connectionFactory, "connectionFactory");
         expectNonNull(bindingMapper, "bindingMapper");
         return builder()
                 .withConnectionFactory(connectionFactory)
-                .withBindingMapper(bindingMapper);
+                .withBindingMapper(bindingMapper)
+                .build();
     }
 
     private SqlSherlock() {

@@ -1,9 +1,9 @@
 # In Memory Distributed Lock
 
-In Memory connector was created for local development and testing purposes.
+The in-memory connector was created for local development and testing purposes.
 
 ## Usage
-Add dependency to `build.gradle.kts`:
+Add dependencies to `build.gradle.kts`:
 
 === "Sync"
     ```kotlin
@@ -15,6 +15,7 @@ Add dependency to `build.gradle.kts`:
     ```kotlin
     dependencies {
         implementation("com.coditory.sherlock:sherlock-inmem-coroutine:{{ version }}")
+        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines")
     }
     ```
 === "Reactor"
@@ -30,71 +31,49 @@ Add dependency to `build.gradle.kts`:
     }
     ```
 
-Create and acquire a lock:
+Create sherlock instance and distributed lock:
 === "Sync"
     ```java
-    Sherlock sherlock = inMemorySherlockBuilder()
-        .withClock(Clock.systemUTC())
-        .withUniqueOwnerId()
-        .withSharedStorage()
-        .build();
-    // ...or short equivalent:
-    // Sherlock sherlockWithDefaults = inMemorySherlock();
-    DistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+    --8<-- "examples/inmem-sync/src/main/java/com/coditory/sherlock/samples/inmem/sync/InMemSyncLockSample.java:2"
     ```
 === "Coroutines"
     ```kotlin
-    val sherlock = coroutineInMemorySherlockBuilder()
-        .withClock(Clock.systemUTC())
-        .withUniqueOwnerId()
-        .withSharedStorage()
-        .build()
-    // ...or short equivalent:
-    // val sherlockWithDefaults = coroutineInMemorySherlock()
-    val lock = sherlock.createLock("sample-lock")
-    lock.acquireAndExecute { logger.info("Lock acquired!") }
+    --8<-- "examples/inmem-coroutines/src/main/kotlin/com/coditory/sherlock/samples/inmem/coroutines/InMemKtLockSample.kt:2"
     ```
 === "Reactor"
     ```java
-    ReactorSherlock sherlock = reactorInMemorySherlockBuilder()
-        .withClock(Clock.systemUTC())
-        .withUniqueOwnerId()
-        .withSharedStorage()
-        .build();
-    // ...or short equivalent:
-    // ReactorSherlock sherlockWithDefaults = reactorInMemorySherlock();
-    ReactorDistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(Mono.fromCallable(() -> {
-        logger.info("Lock acquired!");
-        return true;
-    })).block();
+    --8<-- "examples/inmem-reactor/src/main/java/com/coditory/sherlock/samples/inmem/reactor/InMemReactorLockSample.java:2"
     ```
 === "RxJava"
     ```java
-    RxSherlock sherlock = rxInMemorySherlockBuilder()
-        .withClock(Clock.systemUTC())
-        .withUniqueOwnerId()
-        .withSharedStorage()
-        .build();
-    // ...or short equivalent:
-    // RxSherlock sherlockWithDefaults = rxInMemorySherlock();
-    RxDistributedLock lock = sherlock.createLock("sample-lock");
-    lock.acquireAndExecute(Single.fromCallable(() -> {
-        logger.info("Lock acquired!");
-        return true;
-    })).blockingGet();
+    --8<-- "examples/inmem-rxjava/src/main/java/com/coditory/sherlock/samples/inmem/rxjava/InMemRxLockSample.java:2"
     ```
 
 !!! info "Learn more"
-    See the full [examples]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/samples),
-    or read sherlock builder [javadoc](https://www.javadoc.io/page/com.coditory.sherlock/sherlock-sql/latest/com/coditory/sherlock/InMemorySherlockBuilder.html).
+    See full source code example on  [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/example/).
 
-## Parameters
+## Configuration
 
-In-memory sherlock parameters exposed in the builder:
+Configuration is available via sherlock builder:
+=== "Sync"
+```java
+```
+=== "Coroutines"
+```kotlin
+```
+=== "Reactor"
+```java
+```
+=== "RxJava"
+```java
+```
 
-- `clock` - clock used to generate lock creation and expiration time.
-- `ownerId` - defines lock owner unique identifier. This is the value that is used to distinguish lock owners. 
-If two processes use the same owner id they are acquire the same [reentrant lock](../locks/#reentrantdistributedlock).
+Parameters:
+
+- `clock` (default: `Clock.systemUTC()`) - used to generate acquisition and expiration timestamps.
+- `lockDuration` (default: `Duration.ofMinutes(5)`) - used a default lock expiration time.
+  If lock is not released and expiration time passes, the lock automatically becomes released.
+- `ownerId` (default: `UniqueOwnerId()`) - used to identify lock owner.
+  There are different policies available for generating the ownerId.
+- `locksCollection` - MongoDb collection used to store the locks.
 - `sharedStorage` - use shared storage for all in-mem locks.

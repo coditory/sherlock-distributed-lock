@@ -22,6 +22,7 @@ theme:
     - content.code.select
     - content.code.copy
     - instant
+    - navigation.instant
     - navigation.indexes
     - navigation.sections
     - navigation.expand
@@ -112,14 +113,7 @@ nav:
   - Locks: locks.md
   - Migrator: migrator.md
   - Testing: testing.md
-  - Installation: installation.md
   - About: about.md
-  - API:
-      - api/index.md
-      - Synchronous: api/synchronous.md
-      - Coroutine: api/coroutine.md
-      - Reactor: api/reactor.md
-      - RxJava: api/rxjava.md
   - Connectors:
       - connectors/index.md
       - MongoDb: connectors/mongo.md

@@ -7,26 +7,15 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import reactor.core.publisher.Mono;
 
-import java.time.Clock;
-
 public class InMemReactorLockSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(InMemReactorLockSample.class);
 
-    private final Sherlock sherlock = InMemorySherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withUniqueOwnerId()
-            .withSharedStorage()
-            .build();
-
-    void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = InMemorySherlock.create();
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Mono.fromCallable(() -> {
             logger.info("Lock acquired!");
             return true;
         })).block();
-    }
-
-    public static void main(String[] args) {
-        new InMemReactorLockSample().sample();
     }
 }

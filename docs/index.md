@@ -10,8 +10,10 @@
 </div>
 
 [Sherlock](https://github.com/coditory/sherlock-distributed-lock) is a distributed locking library for JVM projects.
-It exposes both synchronous and reactive [APIs](api) (Reactor, RxJava, Kotlin Coroutines) and uses database [connectors](connectors) to store locks.
-It was created as a simple solution to manage distributed locks among multiple microservices.
+It exposes both synchronous and reactive APIs (Reactor, RxJava, Kotlin Coroutines)
+and uses database [connectors](connectors) to store locks.
+It was created as a simple solution to manage distributed locks among microservices.
+
 
 ## How it works?
 
@@ -19,9 +21,12 @@ Locks are acquired for a [specific duration](locks#lock-duration).
 When lock owning instance unexpectedly goes down,
 lock is automatically released after expiration.
 
-!!! important "Read and write from the same DB node"
-    Make sure that DB connection passed to Sherlock reads and writes to the same DB node
-    so every lock change is visible to all of your services.
+Learn more about:
+
+- [connectors](connectors) - quick start about using Sherlock with different databases
+- [locks](locks) - learn about different types of locks
+- [migrator](migrator) - learn about a lock based DB migration process
+- [testing](migrator) - learn how to use sherlock in your unit tests
 
 ## Quick start
 
@@ -52,11 +57,8 @@ Acquire a lock:
 ```java
 // Acquire a lock
 if (lock.acquire()) {
-  try {
-    System.out.println("Lock granted!");
-  } finally {
-    lock.release();
-  }
+  System.out.println("Lock granted!");
+  lock.release();
 }
 ```
 
@@ -67,5 +69,3 @@ lock.acquireAndExecute(() -> {
 });
 ```
 
-!!! info "Learn more"
-    Learn how to use different [APIs](api) and [connectors](connectors).

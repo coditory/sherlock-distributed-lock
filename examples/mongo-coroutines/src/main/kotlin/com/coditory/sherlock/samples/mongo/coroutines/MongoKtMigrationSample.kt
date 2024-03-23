@@ -1,41 +1,33 @@
-package com.coditory.sherlock.samples.postgres
+package com.coditory.sherlock.samples.mongo.coroutines
 
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator
-import com.coditory.sherlock.sql.BindingMapper
-import com.coditory.sherlock.sql.coroutines.SqlSherlock
-import io.r2dbc.spi.ConnectionFactories
-import io.r2dbc.spi.ConnectionFactory
-import io.r2dbc.spi.ConnectionFactoryOptions
+import com.coditory.sherlock.mongo.coroutines.MongoSherlock
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.runBlocking
+import org.bson.Document
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Clock
 import java.time.Duration
 
-object PostgresKtMigrationSample {
+object MongoKtMigrationSample {
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     private val sherlock =
-        SqlSherlock.builder()
+        MongoSherlock.builder()
             .withClock(Clock.systemUTC())
             .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
-            .withConnectionFactory(getConnectionFactory())
-            .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
-            .withLocksTable("LOCKS")
+            .withLocksCollection(locksCollection())
             .build()
 
-    private fun getConnectionFactory(): ConnectionFactory {
-        val database = "test"
-        val options =
-            ConnectionFactoryOptions
-                .parse("r2dbc:postgresql://localhost:5432/$database")
-                .mutate()
-                .option(ConnectionFactoryOptions.USER, "postgres")
-                .option(ConnectionFactoryOptions.PASSWORD, "postgres")
-                .option(ConnectionFactoryOptions.DATABASE, database)
-                .build()
-        return ConnectionFactories.get(options)
+    private fun locksCollection(): MongoCollection<Document> {
+        val database = "sherlock"
+        val mongoClient = MongoClient.create("mongodb://localhost:27017/$database")
+        return mongoClient
+            .getDatabase(database)
+            .getCollection("locks")
     }
 
     private suspend fun sample() {

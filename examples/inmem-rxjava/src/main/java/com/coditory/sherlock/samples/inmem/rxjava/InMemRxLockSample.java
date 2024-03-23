@@ -7,26 +7,15 @@ import io.reactivex.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-
 public class InMemRxLockSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(InMemRxLockSample.class);
 
-    private final Sherlock sherlock = InMemorySherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withUniqueOwnerId()
-            .withSharedStorage()
-            .build();
-
-    void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = InMemorySherlock.create();
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.acquireAndExecute(Single.fromCallable(() -> {
             logger.info("Lock acquired!");
             return true;
         })).blockingGet();
-    }
-
-    public static void main(String[] args) {
-        new InMemRxLockSample().sample();
     }
 }

@@ -1,20 +1,33 @@
-package com.coditory.sherlock.samples.inmem
+package com.coditory.sherlock.samples.mongo.coroutines
 
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator
-import com.coditory.sherlock.inmem.coroutines.InMemorySherlock
 import com.coditory.sherlock.migrator.ChangeSet
+import com.coditory.sherlock.mongo.coroutines.MongoSherlock
+import com.mongodb.kotlin.client.coroutine.MongoClient
+import com.mongodb.kotlin.client.coroutine.MongoCollection
 import kotlinx.coroutines.runBlocking
+import org.bson.Document
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import java.time.Clock
+import java.time.Duration
 
-object InMemKtAnnotatedMigrationSample {
+object MongoKtAnnotatedMigrationSample {
     private val sherlock =
-        InMemorySherlock.builder()
+        MongoSherlock.builder()
             .withClock(Clock.systemUTC())
+            .withLockDuration(Duration.ofMinutes(5))
             .withUniqueOwnerId()
-            .withSharedStorage()
+            .withLocksCollection(locksCollection())
             .build()
+
+    private fun locksCollection(): MongoCollection<Document> {
+        val database = "sherlock"
+        val mongoClient = MongoClient.create("mongodb://localhost:27017/$database")
+        return mongoClient
+            .getDatabase(database)
+            .getCollection("locks")
+    }
 
     private suspend fun sample() {
         // first commit - all migrations are executed
