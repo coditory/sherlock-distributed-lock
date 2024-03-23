@@ -78,10 +78,10 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
                     .migrate()
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
-            exception.message.startsWith(expectedMessage) || exception.cause.message.startsWith(expectedMessage)
+            exception.message.startsWith(expectedMessage) || exception.cause?.message?.startsWith(expectedMessage)
         where:
             changeSets                          | expectedMessage
-            new ChangeSetWithDuplicatedOrders() | "Expected unique change set order values. Duplicated: 1"
+            new ChangeSetWithDuplicatedOrders() | "Expected unique change set order values. Duplicated order value: 1"
             new ChangeSetWithParameters()       | "Expected no declared parameters for method addIndex"
             new ChangeSetWithReturnType()       | "Expected method to declare"
             new PrivateChangeSet()              | "Expected at least one changeset method annotated with @ChangeSet"
