@@ -10,20 +10,10 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MongoRxMigrationSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
+    private static final Logger logger = LoggerFactory.getLogger(MongoRxMigrationSample.class);
 
-    private final Sherlock sherlock = MongoSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withLocksCollection(locksCollection())
-            .build();
-
-    private MongoCollection<Document> locksCollection() {
+    private static MongoCollection<Document> locksCollection() {
         String database = "sherlock";
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
         return mongoClient
@@ -31,7 +21,8 @@ public class MongoRxMigrationSample {
                 .getCollection("locks");
     }
 
-    void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = MongoSherlock.create(locksCollection());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
                 .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
@@ -45,9 +36,5 @@ public class MongoRxMigrationSample {
                 .addChangeSet("change-set-3", () -> logger.info("Change-set 3"))
                 .migrate()
                 .blockingGet();
-    }
-
-    public static void main(String[] args) {
-        new MongoRxMigrationSample().sample();
     }
 }

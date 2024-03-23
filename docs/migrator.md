@@ -1,20 +1,54 @@
 # Migrator
 
-Distributed locks may be used for multiple purposes one of them is a one way database migration process:
+Sherlock comes with a migration mechanism, implemented as a lightweight wrapper on distributed locks.
+Use this mechanism for a multi-step, one way migrations.
 
-```java
-// prepare the migration
-SherlockMigrator migrator = new SherlockMigrator("db-migration", sherlock)
-  .addChangeSet("add db index", () -> /* ... */)
-  .addChangeSet("remove stale collection", () -> /* ... */)
+Sherlock migrator enforces following migration rules:
 
-// run the migration
-migrator.migrate();
-```
+- migrations must not be run in parallel
+- migration steps are applied in order
+- if migration step succeeds it must never be run again
+- migration process stops when first step fails
 
-Migration rules:
+!!! info "Learn more"
+    See full source code examples on  [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/example/).
 
-- migrations must not be run in parallel (neither by one nor by multiple machines)
-- migration change sets are applied in order
-- migration change set must be run only once per all migrations
-- migration process stops when first change set fails
+## Annotated migration
+Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors).
+
+=== "Sync"
+    ```java
+    --8<-- "examples/mongo-sync/src/main/java/com/coditory/sherlock/samples/mongo/sync/MongoSyncAnnotatedMigrationSample.java:2"
+    ```
+=== "Coroutines"
+    ```kotlin
+    --8<-- "examples/mongo-coroutines/src/main/kotlin/com/coditory/sherlock/samples/mongo/coroutines/MongoKtAnnotatedMigrationSample.kt:2"
+    ```
+=== "Reactor"
+    ```java
+    --8<-- "examples/mongo-reactor/src/main/java/com/coditory/sherlock/samples/mongo/reactor/MongoReactorAnnotatedMigrationSample.java:2"
+    ```
+=== "RxJava"
+    ```java
+    --8<-- "examples/mongo-rxjava/src/main/java/com/coditory/sherlock/samples/mongo/rxjava/MongoRxAnnotatedMigrationSample.java:2"
+    ```
+
+## Functional migration
+
+Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors).
+=== "Sync"
+    ```java
+    --8<-- "examples/mongo-sync/src/main/java/com/coditory/sherlock/samples/mongo/sync/MongoSyncMigrationSample.java:2"
+    ```
+=== "Coroutines"
+    ```kotlin
+    --8<-- "examples/mongo-coroutines/src/main/kotlin/com/coditory/sherlock/samples/mongo/coroutines/MongoKtMigrationSample.kt:2"
+    ```
+=== "Reactor"
+    ```java
+    --8<-- "examples/mongo-reactor/src/main/java/com/coditory/sherlock/samples/mongo/reactor/MongoReactorMigrationSample.java:2"
+    ```
+=== "RxJava"
+    ```java
+    --8<-- "examples/mongo-rxjava/src/main/java/com/coditory/sherlock/samples/mongo/rxjava/MongoRxMigrationSample.java:2"
+    ```

@@ -8,7 +8,6 @@ import java.util.function.Function;
 import static com.coditory.sherlock.OwnerIdPolicy.*;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
-import static com.coditory.sherlock.SherlockDefaults.DEFAULT_OWNER_ID_POLICY;
 
 /**
  * Builds a distributed lock of type T.
@@ -19,7 +18,7 @@ public final class DistributedLockBuilder<T> {
     private LockId lockId;
     private final LockCreator<T> lockCreator;
     private LockDuration duration = DEFAULT_LOCK_DURATION;
-    private OwnerIdPolicy ownerIdPolicy = DEFAULT_OWNER_ID_POLICY;
+    private OwnerIdPolicy ownerIdPolicy = uniqueOwnerId();
 
     public DistributedLockBuilder(LockCreator<T> lockCreator) {
         this.lockCreator = lockCreator;
@@ -83,7 +82,7 @@ public final class DistributedLockBuilder<T> {
     @NotNull
     public DistributedLockBuilder<T> withOwnerId(@NotNull String ownerId) {
         expectNonEmpty(ownerId, "ownerId");
-        return withOwnerIdPolicy(staticOwnerIdPolicy(ownerId));
+        return withOwnerIdPolicy(staticOwnerId(ownerId));
     }
 
     /**
@@ -93,7 +92,7 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public DistributedLockBuilder<T> withUniqueOwnerId() {
-        return withOwnerIdPolicy(uniqueOwnerIdPolicy());
+        return withOwnerIdPolicy(uniqueOwnerId());
     }
 
     /**
@@ -104,7 +103,7 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public DistributedLockBuilder<T> withStaticUniqueOwnerId() {
-        return withOwnerIdPolicy(staticUniqueOwnerIdPolicy());
+        return withOwnerIdPolicy(staticUniqueOwnerId());
     }
 
     @NotNull
@@ -120,7 +119,8 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public T build() {
-        return lockCreator.createLock(lockId, duration, ownerIdPolicy.getOwnerId());
+        OwnerId ownerId = OwnerId.of(ownerIdPolicy.getOwnerId());
+        return lockCreator.createLock(lockId, duration, ownerId);
     }
 
     @FunctionalInterface

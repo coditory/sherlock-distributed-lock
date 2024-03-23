@@ -10,18 +10,8 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MongoSyncMigrationSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final Sherlock sherlock = MongoSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withLocksCollection(locksCollection())
-            .build();
+    private static final Logger logger = LoggerFactory.getLogger(MongoSyncMigrationSample.class);
 
     private static MongoCollection<Document> locksCollection() {
         String database = "sherlock";
@@ -31,7 +21,8 @@ public class MongoSyncMigrationSample {
                 .getCollection("locks");
     }
 
-    private void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = MongoSherlock.create(locksCollection());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
                 .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
@@ -43,9 +34,5 @@ public class MongoSyncMigrationSample {
                 .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
                 .addChangeSet("change-set-3", () -> logger.info("Change-set 3"))
                 .migrate();
-    }
-
-    public static void main(String[] args) {
-        new MongoSyncMigrationSample().sample();
     }
 }

@@ -9,7 +9,7 @@ import java.time.Duration
 
 abstract class SherlockWithConnectorBuilder<T : SherlockWithConnectorBuilder<T>> {
     private var duration = SherlockDefaults.DEFAULT_LOCK_DURATION
-    private var ownerIdPolicy = SherlockDefaults.DEFAULT_OWNER_ID_POLICY
+    private var ownerIdPolicy = OwnerIdPolicy.defaultOwnerIdPolicy()
 
     /**
      * @param duration how much time a lock should be active. When time passes lock is expired and
@@ -28,30 +28,12 @@ abstract class SherlockWithConnectorBuilder<T : SherlockWithConnectorBuilder<T>>
      */
     fun withOwnerId(ownerId: String): T {
         expectNonEmpty(ownerId, "ownerId")
-        ownerIdPolicy = OwnerIdPolicy.staticOwnerIdPolicy(ownerId)
+        ownerIdPolicy = OwnerIdPolicy.staticOwnerId(ownerId)
         return instance()
     }
 
-    /**
-     * Generates random unique owner id for every instance of lock object.
-     *
-     * @return the instance
-     * @see withOwnerId
-     */
-    fun withUniqueOwnerId(): T {
-        ownerIdPolicy = OwnerIdPolicy.uniqueOwnerIdPolicy()
-        return instance()
-    }
-
-    /**
-     * Generates random owner id once per JVM (as a static field). Such a strategy ensures that all
-     * locks of the same process has the same owner id.
-     *
-     * @return the instance
-     * @see withOwnerId
-     */
-    fun withStaticUniqueOwnerId(): T {
-        ownerIdPolicy = OwnerIdPolicy.staticUniqueOwnerIdPolicy()
+    fun withOwnerIdPolicy(ownerIdPolicy: OwnerIdPolicy): T {
+        this.ownerIdPolicy = ownerIdPolicy
         return instance()
     }
 

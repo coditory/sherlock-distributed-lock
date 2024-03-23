@@ -21,51 +21,11 @@ Locks are acquired for a [specific duration](locks#lock-duration).
 When lock owning instance unexpectedly goes down,
 lock is automatically released after expiration.
 
-Learn more about:
-
-- [connectors](connectors) - quick start about using Sherlock with different databases
-- [locks](locks) - learn about different types of locks
-- [migrator](migrator) - learn about a lock based DB migration process
-- [testing](migrator) - learn how to use sherlock in your unit tests
-
 ## Quick start
 
-Add dependency to `build.gradle.kts`:
-
-```kotlin
-dependencies {
-  implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
-}
-```
-
-Create a lock:
-```java
-// Get mongo locks collection
-MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/sherlock");
-MongoCollection<Document> collection = mongoClient
-    .getDatabase("sherlock")
-    .getCollection("locks");
-// Create sherlock
-Sherlock sherlock = MongoSherlock.builder()
-    .withLocksCollection(collection)
-    .build();
-// Create a lock
-DistributedLock lock = sherlock.createLock("sample-lock");
-```
-
-Acquire a lock:
-```java
-// Acquire a lock
-if (lock.acquire()) {
-  System.out.println("Lock granted!");
-  lock.release();
-}
-```
-
-...or acquire a lock in a more concise way:
-```java
-lock.acquireAndExecute(() -> {
-  System.out.println("Lock granted!");
-});
-```
+- [MongoDB](connectors/mongo) - using sherlock with MongoDB
+- [SQL](connectors/sql) - using sherlock with SQL databases
+- [In-Memory](connectors/inmem) - using in-memory Sherlock for local development or testing
+- [Testing](testing) - stubbing and mocking Sherlock in unit tests
+- [Migrator](migrator) - using Sherlock as for database migration
 

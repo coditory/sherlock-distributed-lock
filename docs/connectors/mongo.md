@@ -100,7 +100,7 @@ Configuration is available via sherlock builder:
     MongoSherlock.builder()
         .withClock(Clock.systemUTC())
         .withLockDuration(Duration.ofMinutes(5))
-        .withUniqueOwnerId()
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
         .withLocksCollection(getCollection())
         .build();
     ```
@@ -108,10 +108,11 @@ Configuration is available via sherlock builder:
 Parameters:
 
 - `clock` (default: `Clock.systemUTC()`) - used to generate acquisition and expiration timestamps.
-- `lockDuration` (default: `Duration.ofMinutes(5)`) - used a default lock expiration time.
-  If lock is not released and expiration time passes, the lock automatically becomes released.
-- `ownerId` (default: `UniqueOwnerId()`) - used to identify lock owner.
-  There are different policies available for generating the ownerId.
+- `lockDuration` (default: `Duration.ofMinutes(5)`) - a default lock expiration time.
+  If lock is not released and expiration time passes, the lock is treated as released.
+- `ownerIdPolicy` (default: `uniqueOwnerId()`) - used to generate lock owner id.
+  It's executed once for every lock, during lock creation.
+  There are different policies available for generating lock ownerIds.
 - `locksCollection` - MongoDb collection used to store the locks.
 
 ## Locks collection

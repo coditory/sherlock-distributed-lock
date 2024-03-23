@@ -11,17 +11,7 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MongoSyncAnnotatedMigrationSample {
-    private final Sherlock sherlock = MongoSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withLocksCollection(locksCollection())
-            .build();
-
     private static MongoCollection<Document> locksCollection() {
         String database = "sherlock";
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
@@ -30,7 +20,8 @@ public class MongoSyncAnnotatedMigrationSample {
                 .getCollection("locks");
     }
 
-    private void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = MongoSherlock.create(locksCollection());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
                 .addAnnotatedChangeSets(new AnnotatedMigration())
@@ -39,10 +30,6 @@ public class MongoSyncAnnotatedMigrationSample {
         SherlockMigrator.builder(sherlock)
                 .addAnnotatedChangeSets(new AnnotatedMigration2())
                 .migrate();
-    }
-
-    public static void main(String[] args) {
-        new MongoSyncAnnotatedMigrationSample().sample();
     }
 
     public static class AnnotatedMigration {

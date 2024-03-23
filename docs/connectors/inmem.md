@@ -56,24 +56,48 @@ Create sherlock instance and distributed lock:
 
 Configuration is available via sherlock builder:
 === "Sync"
-```java
-```
+    ```java
+    MongoSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withSharedStorage()
+        .build();
+    ```
 === "Coroutines"
-```kotlin
-```
+    ```kotlin
+    MongoSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withSharedStorage()
+        .build()
+    ```
 === "Reactor"
-```java
-```
+    ```java
+    MongoSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withSharedStorage()
+        .build();
+    ```
 === "RxJava"
-```java
-```
+    ```java
+    MongoSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withSharedStorage()
+        .build();
+    ```
 
 Parameters:
 
 - `clock` (default: `Clock.systemUTC()`) - used to generate acquisition and expiration timestamps.
-- `lockDuration` (default: `Duration.ofMinutes(5)`) - used a default lock expiration time.
-  If lock is not released and expiration time passes, the lock automatically becomes released.
-- `ownerId` (default: `UniqueOwnerId()`) - used to identify lock owner.
-  There are different policies available for generating the ownerId.
-- `locksCollection` - MongoDb collection used to store the locks.
-- `sharedStorage` - use shared storage for all in-mem locks.
+- `lockDuration` (default: `Duration.ofMinutes(5)`) - a default lock expiration time.
+  If lock is not released and expiration time passes, the lock is treated as released.
+- `ownerIdPolicy` (default: `uniqueOwnerId()`) - used to generate lock owner id. 
+  It's executed once for every lock, during lock creation.
+  There are different policies available for generating lock ownerIds.
+- `sharedStorage` (default: no shared storage) - use shared storage for all in-mem locks.

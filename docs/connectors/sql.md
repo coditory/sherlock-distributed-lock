@@ -78,25 +78,60 @@ of `java.sql.DataSource` will suffice.
 Configuration is available via sherlock builder:
 === "Sync"
     ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withDataSource(dataSource())
+        .withLocksTable("LOCKS")
+        .build();
     ```
 === "Coroutines"
     ```kotlin
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build()
     ```
 === "Reactor"
     ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build();
     ```
 === "RxJava"
     ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build();
     ```
 
 Parameters:
 
 - `clock` (default: `Clock.systemUTC()`) - used to generate acquisition and expiration timestamps.
-- `lockDuration` (default: `Duration.ofMinutes(5)`) - used a default lock expiration time.
-  If lock is not released and expiration time passes, the lock automatically becomes released.
-- `ownerId` (default: `UniqueOwnerId()`) - used to identify lock owner.
-  There are different policies available for generating the ownerId.
-- `locksCollection` - MongoDb collection used to store the locks.
+- `lockDuration` (default: `Duration.ofMinutes(5)`) - a default lock expiration time.
+  If lock is not released and expiration time passes, the lock is treated as released.
+- `ownerIdPolicy` (default: `uniqueOwnerId()`) - used to generate lock owner id.
+  It's executed once for every lock, during lock creation.
+  There are different policies available for generating lock ownerIds.
+- `locksTable` (default: `"LOCKS"`) - locks database name
+- `connectionFactory` (only in: Reactor, RxJava, Coroutines) - database connection factory
+- `bindingMapper` (only in: Reactor, RxJava, Coroutines) - specifies DB type for proper SQL query mapping
+- `dataSource` (only in synchronous) - database data source
 
 ## Locks Table
 

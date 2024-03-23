@@ -9,18 +9,8 @@ import kotlinx.coroutines.runBlocking
 import org.bson.Document
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Clock
-import java.time.Duration
 
 object MongoKtAnnotatedMigrationSample {
-    private val sherlock =
-        MongoSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withLocksCollection(locksCollection())
-            .build()
-
     private fun locksCollection(): MongoCollection<Document> {
         val database = "sherlock"
         val mongoClient = MongoClient.create("mongodb://localhost:27017/$database")
@@ -30,11 +20,11 @@ object MongoKtAnnotatedMigrationSample {
     }
 
     private suspend fun sample() {
+        val sherlock = MongoSherlock.create(locksCollection())
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration())
             .migrate()
-
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration2())
