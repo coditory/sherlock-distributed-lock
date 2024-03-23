@@ -25,7 +25,7 @@ public class MySqlReactorLockSample {
             .withLocksTable("LOCKS")
             .build();
 
-    ConnectionFactory getConnectionFactory() {
+    private ConnectionFactory getConnectionFactory() {
         String database = "test";
         ConnectionFactoryOptions options = ConnectionFactoryOptions
                 .parse("r2dbc:mysql://localhost:3306/" + database)

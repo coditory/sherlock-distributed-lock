@@ -1,6 +1,5 @@
 package com.coditory.sherlock.samples.postgres.rxjava;
 
-import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
 import com.coditory.sherlock.rxjava.migrator.SherlockMigrator;
 import com.coditory.sherlock.sql.BindingMapper;
@@ -26,7 +25,7 @@ public class PostgresRxMigrationSample {
             .withLocksTable("LOCKS")
             .build();
 
-    ConnectionFactory getConnectionFactory() {
+    private ConnectionFactory getConnectionFactory() {
         String database = "test";
         ConnectionFactoryOptions options = ConnectionFactoryOptions
                 .parse("r2dbc:postgresql://localhost:5432/" + database)
