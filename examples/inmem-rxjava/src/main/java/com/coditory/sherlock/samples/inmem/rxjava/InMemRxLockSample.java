@@ -3,7 +3,7 @@ package com.coditory.sherlock.samples.inmem.rxjava;
 import com.coditory.sherlock.inmem.rxjava.InMemorySherlock;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
