@@ -1,9 +1,9 @@
-package com.coditory.sherlock.coroutines
+package com.coditory.sherlock.coroutines.test
 
 import com.coditory.sherlock.DistributedLockBuilder
-import com.coditory.sherlock.LockDuration
-import com.coditory.sherlock.LockId
-import com.coditory.sherlock.OwnerId
+import com.coditory.sherlock.coroutines.DistributedLock
+import com.coditory.sherlock.coroutines.Sherlock
+import java.time.Duration
 
 /**
  * Use to stub [Sherlock] in tests.
@@ -49,9 +49,9 @@ class SherlockStub : Sherlock {
     }
 
     private fun getLockOrDefault(): DistributedLockBuilder<DistributedLock> {
-        return DistributedLockBuilder { id: LockId, _: LockDuration, _: OwnerId ->
-            val defaultLock = DistributedLockMock.lockStub(id.value, defaultLockResult)
-            locksById.getOrDefault(id.value, defaultLock)
+        return DistributedLockBuilder { id: String, _: Duration?, _: String ->
+            val defaultLock = DistributedLockMock.lockStub(id, defaultLockResult)
+            locksById.getOrDefault(id, defaultLock)
         }
     }
 

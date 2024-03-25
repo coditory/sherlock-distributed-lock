@@ -7,16 +7,16 @@ import com.coditory.sherlock.InfiniteAcquireLockSpec
 import com.coditory.sherlock.ReleaseLockSpec
 
 class RxPostgresReleaseLockSpec extends ReleaseLockSpec
-        implements UsesRxSqlSherlock, PostgresConnectionProvider {}
+    implements UsesRxSqlSherlock, PostgresConnectionProvider {}
 
 class RxPostgresAcquireLockSpec extends AcquireLockSpec
-        implements UsesRxSqlSherlock, PostgresConnectionProvider {}
+    implements UsesRxSqlSherlock, PostgresConnectionProvider {}
 
 class RxPostgresAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesRxSqlSherlock, PostgresConnectionProvider {}
+    implements UsesRxSqlSherlock, PostgresConnectionProvider {}
 
 class RxPostgresInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesRxSqlSherlock, PostgresConnectionProvider {}
+    implements UsesRxSqlSherlock, PostgresConnectionProvider {}
 
 class RxPostgresHandleDbFailureSpec extends HandleDbFailureSpec
-        implements UsesRxSqlSherlock, PostgresConnectionProvider {}
+    implements UsesRxSqlSherlock, PostgresConnectionProvider {}

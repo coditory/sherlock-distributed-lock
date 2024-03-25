@@ -44,8 +44,8 @@ public final class BindingParameterMapping {
     @Override
     public String toString() {
         return "BindingParameter{" +
-                "queryMarker='" + queryMarker + '\'' +
-                ", bindingKey=" + bindingKey +
-                '}';
+            "queryMarker='" + queryMarker + '\'' +
+            ", bindingKey=" + bindingKey +
+            '}';
     }
 }

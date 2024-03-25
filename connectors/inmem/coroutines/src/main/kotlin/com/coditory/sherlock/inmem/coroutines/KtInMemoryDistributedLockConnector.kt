@@ -1,8 +1,6 @@
 package com.coditory.sherlock.inmem.coroutines
 
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
-import com.coditory.sherlock.OwnerId
 import com.coditory.sherlock.coroutines.SuspendingDistributedLockConnector
 import com.coditory.sherlock.inmem.InMemoryDistributedLockStorage
 import java.time.Clock
@@ -28,14 +26,11 @@ internal class KtInMemoryDistributedLockConnector(
         return storage.forceAcquire(lockRequest, now())
     }
 
-    override suspend fun release(
-        lockId: LockId,
-        ownerId: OwnerId,
-    ): Boolean {
+    override suspend fun release(lockId: String, ownerId: String): Boolean {
         return storage.release(lockId, now(), ownerId)
     }
 
-    override suspend fun forceRelease(lockId: LockId): Boolean {
+    override suspend fun forceRelease(lockId: String): Boolean {
         return storage.forceRelease(lockId, now())
     }
 

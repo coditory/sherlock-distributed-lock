@@ -7,13 +7,14 @@ import com.coditory.sherlock.ReleaseLockSpec
 import com.coditory.sherlock.coroutines.base.UsesKtSherlock
 
 class CoroutinesInMemoryReleaseLockSpec extends ReleaseLockSpec
-        implements UsesKtSherlock {}
+    implements UsesKtSherlock {}
 
 class CoroutinesInMemoryAcquireLockSpec extends AcquireLockSpec
-        implements UsesKtSherlock {}
+    implements UsesKtSherlock {}
 
 class CoroutinesInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesKtSherlock {}
+    implements UsesKtSherlock {}
 
 class CoroutinesInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesKtSherlock {}
+    implements UsesKtSherlock {}
+

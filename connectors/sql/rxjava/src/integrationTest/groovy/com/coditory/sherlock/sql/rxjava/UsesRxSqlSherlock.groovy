@@ -20,13 +20,13 @@ trait UsesRxSqlSherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
         com.coditory.sherlock.rxjava.Sherlock reactorLocks = SqlSherlock.builder()
-                .withConnectionFactory(connectionFactory)
-                .withLocksTable(tableName)
-                .withBindingMapper(bindingMapper)
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withConnectionFactory(connectionFactory)
+            .withLocksTable(tableName)
+            .withBindingMapper(bindingMapper)
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingRxSherlockWrapper(reactorLocks)
     }
 }

@@ -20,13 +20,13 @@ trait UsesKtSqlSherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
         com.coditory.sherlock.coroutines.Sherlock coroutineSqlSherlock = SqlSherlock.builder()
-                .withConnectionFactory(connectionFactory)
-                .withBindingMapper(bindingMapper)
-                .withLocksTable(tableName)
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withConnectionFactory(connectionFactory)
+            .withBindingMapper(bindingMapper)
+            .withLocksTable(tableName)
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingKtSherlockWrapper(coroutineSqlSherlock)
     }
 }

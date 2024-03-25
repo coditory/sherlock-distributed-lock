@@ -1,8 +1,6 @@
 package com.coditory.sherlock.mongo.reactor;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.SherlockException;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
@@ -28,8 +26,8 @@ import static com.coditory.sherlock.mongo.MongoDistributedLockQueries.*;
 class MongoDistributedLockConnector implements DistributedLockConnector {
     private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
     private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
-            .upsert(true)
-            .returnDocument(ReturnDocument.AFTER);
+        .upsert(true)
+        .returnDocument(ReturnDocument.AFTER);
     private final MongoCollectionInitializer collectionInitializer;
     private final Clock clock;
 
@@ -43,8 +41,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     @NotNull
     public Mono<InitializationResult> initialize() {
         return collectionInitializer.getInitializedCollection()
-                .map(collection -> InitializationResult.of(true))
-                .onErrorMap(e -> new SherlockException("Could not initialize Mongo collection", e));
+            .map(collection -> InitializationResult.initialized())
+            .onErrorMap(e -> new SherlockException("Could not initialize Mongo collection", e));
     }
 
     @Override
@@ -53,11 +51,11 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         return upsert(
-                queryReleased(lockRequest.getLockId(), now),
-                MongoDistributedLock.fromLockRequest(lockRequest, now)
+            queryReleased(lockRequest.lockId(), now),
+            MongoDistributedLock.fromLockRequest(lockRequest, now)
         )
-                .map(AcquireResult::of)
-                .onErrorMap(e -> new SherlockException("Could not acquire lock: " + lockRequest, e));
+            .map(AcquireResult::of)
+            .onErrorMap(e -> new SherlockException("Could not acquire lock: " + lockRequest, e));
     }
 
     @Override
@@ -66,11 +64,11 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         return upsert(
-                queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
-                MongoDistributedLock.fromLockRequest(lockRequest, now)
+            queryAcquiredOrReleased(lockRequest.lockId(), lockRequest.ownerId(), now),
+            MongoDistributedLock.fromLockRequest(lockRequest, now)
         )
-                .map(AcquireResult::of)
-                .onErrorMap(e -> new SherlockException("Could not acquire or prolong lock: " + lockRequest, e));
+            .map(AcquireResult::of)
+            .onErrorMap(e -> new SherlockException("Could not acquire or prolong lock: " + lockRequest, e));
     }
 
     @Override
@@ -78,68 +76,68 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     public Mono<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return upsert(
-                queryById(lockRequest.getLockId()),
-                MongoDistributedLock.fromLockRequest(lockRequest, now())
+            queryById(lockRequest.lockId()),
+            MongoDistributedLock.fromLockRequest(lockRequest, now())
         )
-                .map(AcquireResult::of)
-                .onErrorMap(e -> new SherlockException("Could not force acquire lock: " + lockRequest, e));
+            .map(AcquireResult::of)
+            .onErrorMap(e -> new SherlockException("Could not force acquire lock: " + lockRequest, e));
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Mono<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         return delete(queryAcquired(lockId, ownerId))
-                .map(ReleaseResult::of)
-                .onErrorMap(e -> new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e));
+            .map(ReleaseResult::of)
+            .onErrorMap(e -> new SherlockException("Could not release lock: " + lockId + ", owner: " + ownerId, e));
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Mono<ReleaseResult> forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         return delete(queryById(lockId))
-                .map(ReleaseResult::of)
-                .onErrorMap(e -> new SherlockException("Could not force release lock: " + lockId.getValue(), e));
+            .map(ReleaseResult::of)
+            .onErrorMap(e -> new SherlockException("Could not force release lock: " + lockId, e));
     }
 
     @Override
     @NotNull
     public Mono<ReleaseResult> forceReleaseAll() {
         return deleteAll()
-                .map(ReleaseResult::of)
-                .onErrorMap(e -> new SherlockException("Could not force release all locks", e));
+            .map(ReleaseResult::of)
+            .onErrorMap(e -> new SherlockException("Could not force release all locks", e));
     }
 
     private Mono<Boolean> deleteAll() {
         return getLockCollection()
-                .map(collection -> collection.deleteMany(new BsonDocument()))
-                .flatMap(Mono::from)
-                .map(result -> result.getDeletedCount() > 0)
-                .defaultIfEmpty(false);
+            .map(collection -> collection.deleteMany(new BsonDocument()))
+            .flatMap(Mono::from)
+            .map(result -> result.getDeletedCount() > 0)
+            .defaultIfEmpty(false);
     }
 
     private Mono<Boolean> delete(Bson query) {
         return getLockCollection()
-                .map(collection -> collection.findOneAndDelete(query))
-                .flatMap(Mono::from)
-                .map(MongoDistributedLock::fromDocument)
-                .map(lock -> lock.isActive(now()))
-                .defaultIfEmpty(false);
+            .map(collection -> collection.findOneAndDelete(query))
+            .flatMap(Mono::from)
+            .map(MongoDistributedLock::fromDocument)
+            .map(lock -> lock.isActive(now()))
+            .defaultIfEmpty(false);
     }
 
     private Mono<Boolean> upsert(Bson query, MongoDistributedLock lock) {
         return getLockCollection()
-                .map(collection -> collection.findOneAndReplace(query, lock.toDocument(), upsertOptions))
-                .flatMap(Mono::from)
-                .map(document -> document != null
-                        && MongoDistributedLock.fromDocument(document).equals(lock))
-                .onErrorResume(MongoCommandException.class, exception ->
-                        exception.getErrorCode() == DUPLICATE_KEY_ERROR_CODE
-                                ? Mono.just(false)
-                                : Mono.error(exception)
-                );
+            .map(collection -> collection.findOneAndReplace(query, lock.toDocument(), upsertOptions))
+            .flatMap(Mono::from)
+            .map(document -> document != null
+                && MongoDistributedLock.fromDocument(document).equals(lock))
+            .onErrorResume(MongoCommandException.class, exception ->
+                exception.getErrorCode() == DUPLICATE_KEY_ERROR_CODE
+                    ? Mono.just(false)
+                    : Mono.error(exception)
+            );
     }
 
     private Instant now() {

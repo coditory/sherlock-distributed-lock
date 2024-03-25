@@ -2,23 +2,21 @@ package com.coditory.sherlock.coroutines
 
 import com.coditory.sherlock.DistributedLockBuilder
 import com.coditory.sherlock.DistributedLockBuilder.LockCreator
-import com.coditory.sherlock.LockDuration
-import com.coditory.sherlock.LockId
-import com.coditory.sherlock.OwnerId
 import com.coditory.sherlock.OwnerIdPolicy
 import com.coditory.sherlock.Preconditions.expectNonNull
 import com.coditory.sherlock.coroutines.DelegatingDistributedLock.AcquireAction
 import com.coditory.sherlock.coroutines.DelegatingDistributedLock.ReleaseAction
 import org.slf4j.LoggerFactory
+import java.time.Duration
 
 class SherlockWithConnector(
     connector: SuspendingDistributedLockConnector,
     defaultOwnerIdPolicy: OwnerIdPolicy,
-    defaultDuration: LockDuration,
+    defaultDuration: Duration,
 ) : Sherlock {
     private val logger = LoggerFactory.getLogger(SherlockWithConnector::class.java)
     private val connector: SuspendingDistributedLockConnector
-    private val defaultDuration: LockDuration
+    private val defaultDuration: Duration
     private val defaultOwnerIdPolicy: OwnerIdPolicy
 
     init {
@@ -36,19 +34,19 @@ class SherlockWithConnector(
     }
 
     override fun createLock(): DistributedLockBuilder<DistributedLock> {
-        return createLockBuilder({ connector.acquire(it) }) { lockId: LockId, ownerId: OwnerId ->
+        return createLockBuilder({ connector.acquire(it) }) { lockId: String, ownerId: String ->
             connector.release(lockId, ownerId)
         }
     }
 
     override fun createReentrantLock(): DistributedLockBuilder<DistributedLock> {
-        return createLockBuilder({ connector.acquireOrProlong(it) }) { lockId: LockId, ownerId: OwnerId ->
+        return createLockBuilder({ connector.acquireOrProlong(it) }) { lockId: String, ownerId: String ->
             connector.release(lockId, ownerId)
         }
     }
 
     override fun createOverridingLock(): DistributedLockBuilder<DistributedLock> {
-        return createLockBuilder({ connector.forceAcquire(it) }) { id: LockId, _: OwnerId ->
+        return createLockBuilder({ connector.forceAcquire(it) }) { id: String, _: String ->
             connector.forceRelease(id)
         }
     }
@@ -62,7 +60,7 @@ class SherlockWithConnector(
         releaseAction: ReleaseAction,
     ): DistributedLockBuilder<DistributedLock> {
         return DistributedLockBuilder(createLock(acquireAction, releaseAction))
-            .withLockDuration(defaultDuration.value)
+            .withLockDuration(defaultDuration)
             .withOwnerIdPolicy(defaultOwnerIdPolicy)
     }
 
@@ -70,7 +68,7 @@ class SherlockWithConnector(
         acquireAction: AcquireAction,
         releaseAction: ReleaseAction,
     ): LockCreator<DistributedLock> {
-        return LockCreator<DistributedLock> { lockId: LockId, duration: LockDuration, ownerId: OwnerId ->
+        return LockCreator<DistributedLock> { lockId: String, duration: Duration?, ownerId: String ->
             createLockAndLog(acquireAction, releaseAction, lockId, ownerId, duration)
         }
     }
@@ -78,9 +76,9 @@ class SherlockWithConnector(
     private fun createLockAndLog(
         acquireAction: AcquireAction,
         releaseAction: ReleaseAction,
-        lockId: LockId,
-        ownerId: OwnerId,
-        duration: LockDuration,
+        lockId: String,
+        ownerId: String,
+        duration: Duration?,
     ): DistributedLock {
         val lock: DistributedLock =
             DelegatingDistributedLock(acquireAction, releaseAction, lockId, ownerId, duration)

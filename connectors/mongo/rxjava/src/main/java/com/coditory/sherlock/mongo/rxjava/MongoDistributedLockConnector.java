@@ -1,8 +1,6 @@
 package com.coditory.sherlock.mongo.rxjava;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.SherlockException;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
@@ -29,8 +27,8 @@ import static com.coditory.sherlock.mongo.MongoDistributedLockQueries.*;
 class MongoDistributedLockConnector implements DistributedLockConnector {
     private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
     private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
-            .upsert(true)
-            .returnDocument(ReturnDocument.AFTER);
+        .upsert(true)
+        .returnDocument(ReturnDocument.AFTER);
     private final MongoCollectionInitializer collectionInitializer;
     private final Clock clock;
 
@@ -44,8 +42,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     @NotNull
     public Single<InitializationResult> initialize() {
         return collectionInitializer.getInitializedCollection()
-                .map(collection -> InitializationResult.of(true))
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not initialize Mongo collection", e)));
+            .map(collection -> InitializationResult.of(true))
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not initialize Mongo collection", e)));
     }
 
     @Override
@@ -54,12 +52,12 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         return upsert(
-                queryReleased(lockRequest.getLockId(), now),
-                MongoDistributedLock.fromLockRequest(lockRequest, now)
+            queryReleased(lockRequest.lockId(), now),
+            MongoDistributedLock.fromLockRequest(lockRequest, now)
         )
-                .map(AcquireResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire lock: " + lockRequest, e))
-                );
+            .map(AcquireResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire lock: " + lockRequest, e))
+            );
     }
 
     @Override
@@ -68,11 +66,11 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockRequest, "lockRequest");
         Instant now = now();
         return upsert(
-                queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
-                MongoDistributedLock.fromLockRequest(lockRequest, now)
+            queryAcquiredOrReleased(lockRequest.lockId(), lockRequest.ownerId(), now),
+            MongoDistributedLock.fromLockRequest(lockRequest, now)
         )
-                .map(AcquireResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)));
+            .map(AcquireResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)));
     }
 
     @Override
@@ -80,66 +78,66 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return upsert(
-                queryById(lockRequest.getLockId()),
-                MongoDistributedLock.fromLockRequest(lockRequest, now())
+            queryById(lockRequest.lockId()),
+            MongoDistributedLock.fromLockRequest(lockRequest, now())
         )
-                .map(AcquireResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force acquire lock: " + lockRequest, e)));
+            .map(AcquireResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force acquire lock: " + lockRequest, e)));
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Single<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         return delete(queryAcquired(lockId, ownerId))
-                .map(ReleaseResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e)));
+            .map(ReleaseResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not release lock: " + lockId + ", owner: " + ownerId, e)));
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Single<ReleaseResult> forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         return delete(queryById(lockId))
-                .map(ReleaseResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release lock: " + lockId.getValue(), e)));
+            .map(ReleaseResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release lock: " + lockId, e)));
     }
 
     @Override
     @NotNull
     public Single<ReleaseResult> forceReleaseAll() {
         return deleteAll()
-                .map(ReleaseResult::of)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release all locks", e)));
+            .map(ReleaseResult::of)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release all locks", e)));
     }
 
     private Single<Boolean> deleteAll() {
         return getLockCollection()
-                .flatMapMaybe(collection -> Flowable.fromPublisher(collection.deleteMany(new BsonDocument())).firstElement())
-                .map(result -> result.getDeletedCount() > 0)
-                .switchIfEmpty(Single.just(false));
+            .flatMapMaybe(collection -> Flowable.fromPublisher(collection.deleteMany(new BsonDocument())).firstElement())
+            .map(result -> result.getDeletedCount() > 0)
+            .switchIfEmpty(Single.just(false));
     }
 
     private Single<Boolean> delete(Bson query) {
         return getLockCollection()
-                .flatMapMaybe(collection -> Flowable.fromPublisher(collection.findOneAndDelete(query)).firstElement())
-                .map(MongoDistributedLock::fromDocument)
-                .map(lock -> lock.isActive(now()))
-                .switchIfEmpty(Single.just(false));
+            .flatMapMaybe(collection -> Flowable.fromPublisher(collection.findOneAndDelete(query)).firstElement())
+            .map(MongoDistributedLock::fromDocument)
+            .map(lock -> lock.isActive(now()))
+            .switchIfEmpty(Single.just(false));
     }
 
     private Single<Boolean> upsert(Bson query, MongoDistributedLock lock) {
         return getLockCollection()
-                .flatMapMaybe(collection -> Flowable.fromPublisher(collection.findOneAndReplace(query, lock.toDocument(), upsertOptions)).firstElement())
-                .map(document -> MongoDistributedLock.fromDocument(document).equals(lock))
-                .switchIfEmpty(Single.just(false))
-                .onErrorResumeNext(exception ->
-                        exception instanceof MongoCommandException
-                                && ((MongoCommandException) exception).getErrorCode() == DUPLICATE_KEY_ERROR_CODE
-                                ? Single.just(false)
-                                : Single.error(exception)
-                );
+            .flatMapMaybe(collection -> Flowable.fromPublisher(collection.findOneAndReplace(query, lock.toDocument(), upsertOptions)).firstElement())
+            .map(document -> MongoDistributedLock.fromDocument(document).equals(lock))
+            .switchIfEmpty(Single.just(false))
+            .onErrorResumeNext(exception ->
+                exception instanceof MongoCommandException
+                    && ((MongoCommandException) exception).getErrorCode() == DUPLICATE_KEY_ERROR_CODE
+                    ? Single.just(false)
+                    : Single.error(exception)
+            );
     }
 
     private Instant now() {

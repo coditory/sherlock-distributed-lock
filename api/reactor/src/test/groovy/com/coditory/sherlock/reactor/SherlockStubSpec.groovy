@@ -1,11 +1,11 @@
 package com.coditory.sherlock.reactor
 
-
+import com.coditory.sherlock.reactor.test.SherlockStub
 import spock.lang.Specification
 
 import java.time.Duration
 
-import static DistributedLockMock.lockStub
+import static com.coditory.sherlock.reactor.test.DistributedLockMock.lockStub
 
 class SherlockStubSpec extends Specification {
     def "should create sherlock returning always opened locks"() {
@@ -34,7 +34,7 @@ class SherlockStubSpec extends Specification {
         given:
             String lockId = "some-lock"
             Sherlock sherlock = SherlockStub.withAcquiredLocks()
-                    .withLock(lockStub(lockId, true))
+                .withLock(lockStub(lockId, true))
 
         expect:
             assertAlwaysClosedLock(sherlock.createLock("other-lock"))

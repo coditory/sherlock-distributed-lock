@@ -7,16 +7,16 @@ import com.coditory.sherlock.InfiniteAcquireLockSpec
 import com.coditory.sherlock.ReleaseLockSpec
 
 class MongoReleaseLockSpec extends ReleaseLockSpec
-        implements UsesMongoSherlock {}
+    implements UsesMongoSherlock {}
 
 class MongoAcquireLockSpec extends AcquireLockSpec
-        implements UsesMongoSherlock {}
+    implements UsesMongoSherlock {}
 
 class MongoAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesMongoSherlock {}
+    implements UsesMongoSherlock {}
 
 class MongoInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesMongoSherlock {}
+    implements UsesMongoSherlock {}
 
 class MongoHandleDbFailureSpec extends HandleDbFailureSpec
-        implements UsesMongoSherlock {}
+    implements UsesMongoSherlock {}

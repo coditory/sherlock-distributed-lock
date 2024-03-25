@@ -35,8 +35,8 @@ public final class MongoSherlock extends SherlockWithConnectorBuilder<MongoSherl
     public static Sherlock create(@NotNull MongoCollection<Document> collection) {
         expectNonNull(collection, "collection");
         return builder()
-                .withLocksCollection(collection)
-                .build();
+            .withLocksCollection(collection)
+            .build();
     }
 
     private MongoSherlock() {

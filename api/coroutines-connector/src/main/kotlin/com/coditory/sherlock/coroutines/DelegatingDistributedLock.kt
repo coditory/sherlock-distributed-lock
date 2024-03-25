@@ -1,9 +1,6 @@
 package com.coditory.sherlock.coroutines
 
-import com.coditory.sherlock.LockDuration
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
-import com.coditory.sherlock.OwnerId
 import com.coditory.sherlock.Preconditions.expectNonNull
 import org.slf4j.LoggerFactory
 import java.time.Duration
@@ -11,12 +8,12 @@ import java.time.Duration
 class DelegatingDistributedLock(
     private val acquireAction: AcquireAction,
     private val releaseAction: ReleaseAction,
-    private val lockId: LockId,
-    private val ownerId: OwnerId,
-    private val duration: LockDuration,
+    private val lockId: String,
+    private val ownerId: String,
+    private val duration: Duration?,
 ) : DistributedLock {
     private val logger = LoggerFactory.getLogger(javaClass)
-    override val id: String = lockId.value
+    override val id: String = lockId
 
     override fun toString(): String {
         return "DelegatingDistributedLock{" +
@@ -32,8 +29,7 @@ class DelegatingDistributedLock(
 
     override suspend fun acquire(duration: Duration): Boolean {
         expectNonNull(duration, "duration")
-        val lockDuration = LockDuration.of(duration)
-        return acquire(LockRequest(lockId, ownerId, lockDuration))
+        return acquire(LockRequest(lockId, ownerId, duration))
     }
 
     override suspend fun acquireForever(): Boolean {
@@ -61,10 +57,7 @@ class DelegatingDistributedLock(
     }
 
     fun interface ReleaseAction {
-        suspend fun release(
-            lockId: LockId,
-            ownerId: OwnerId,
-        ): Boolean
+        suspend fun release(lockId: String, ownerId: String): Boolean
     }
 
     fun interface AcquireAction {

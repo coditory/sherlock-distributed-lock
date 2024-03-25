@@ -23,10 +23,10 @@ abstract class MongoLockStorageSpec extends LocksBaseSpec {
         then:
             assertJsonEqual(getLockDocument(), """
               {
-                "_id": "$LocksBaseSpec.sampleLockId",
-                "acquiredBy": "$LocksBaseSpec.sampleOwnerId",
+                "_id": "$sampleLockId",
+                "acquiredBy": "$sampleOwnerId",
                 "acquiredAt": { "\$date": "${now()}" },
-                "expiresAt": { "\$date": "${now(LocksBaseSpec.defaultLockDuration)}" }
+                "expiresAt": { "\$date": "${now(defaultLockDuration)}" }
               }
             """)
         where:
@@ -43,8 +43,8 @@ abstract class MongoLockStorageSpec extends LocksBaseSpec {
         then:
             assertJsonEqual(getLockDocument(), """
               {
-                "_id": "$LocksBaseSpec.sampleLockId",
-                "acquiredBy": "$LocksBaseSpec.sampleOwnerId",
+                "_id": "$sampleLockId",
+                "acquiredBy": "$sampleOwnerId",
                 "acquiredAt": { "\$date": "${now()}" },
                 "expiresAt": { "\$date": "${now(duration)}" }
               }
@@ -62,8 +62,8 @@ abstract class MongoLockStorageSpec extends LocksBaseSpec {
         then:
             assertJsonEqual(getLockDocument(), """
               {
-                "_id": "$LocksBaseSpec.sampleLockId",
-                "acquiredBy": "$LocksBaseSpec.sampleOwnerId",
+                "_id": "$sampleLockId",
+                "acquiredBy": "$sampleOwnerId",
                 "acquiredAt": { "\$date": "${now()}" }
               }
               """)
@@ -84,19 +84,19 @@ abstract class MongoLockStorageSpec extends LocksBaseSpec {
             type << LockTypes.allLockTypes()
     }
 
-    String getLockDocument(String lockId = LocksBaseSpec.sampleLockId) {
+    String getLockDocument(String lockId = sampleLockId) {
         return MongoHolder.getClient()
-                .getDatabase(MongoHolder.databaseName)
-                .getCollection(LocksBaseSpec.locksCollectionName)
-                .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
-                .first()
-                ?.toJson()
+            .getDatabase(MongoHolder.databaseName)
+            .getCollection(locksCollectionName)
+            .find(BsonDocument.parse("""{ "_id": "$lockId" }"""))
+            .first()
+            ?.toJson()
     }
 
     String now(Duration duration = Duration.ZERO) {
-        Instant instant = LocksBaseSpec.fixedClock.instant()
-                .plus(duration)
-                .truncatedTo(MILLIS)
+        Instant instant = fixedClock.instant()
+            .plus(duration)
+            .truncatedTo(MILLIS)
         return DateTimeFormatter.ISO_INSTANT.format(instant)
     }
 }

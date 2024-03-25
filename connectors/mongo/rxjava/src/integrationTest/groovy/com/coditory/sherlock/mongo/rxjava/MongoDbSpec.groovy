@@ -4,7 +4,7 @@ import com.coditory.sherlock.mongo.MongoIndexCreationSpec
 import com.coditory.sherlock.mongo.MongoLockStorageSpec
 
 class RxMongoIndexCreationSpec extends MongoIndexCreationSpec
-        implements UsesRxMongoSherlock {}
+    implements UsesRxMongoSherlock {}
 
 class RxMongoLockStorageSpec extends MongoLockStorageSpec
-        implements UsesRxMongoSherlock {}
+    implements UsesRxMongoSherlock {}

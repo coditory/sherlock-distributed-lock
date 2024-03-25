@@ -1,9 +1,9 @@
 package com.coditory.sherlock.migrator;
 
 import com.coditory.sherlock.DistributedLock;
-import com.coditory.sherlock.DistributedLock.AcquireAndExecuteResult;
 import com.coditory.sherlock.Sherlock;
 import com.coditory.sherlock.Timer;
+import com.coditory.sherlock.connector.AcquireResult;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,9 +30,9 @@ public final class SherlockMigrator {
 
     @NotNull
     public MigrationResult migrate() {
-        AcquireAndExecuteResult acquireResult = migrationLock
-                .acquireAndExecute(this::runMigrations)
-                .onNotAcquired(() -> logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId()));
+        AcquireResult acquireResult = migrationLock
+            .runLocked(this::runMigrations)
+            .onNotAcquired(() -> logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId()));
         return new MigrationResult(acquireResult.isAcquired());
     }
 
@@ -64,8 +64,8 @@ public final class SherlockMigrator {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
                 } catch (Throwable exception) {
                     logger.warn(
-                            "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
-                            id, timer.elapsed(), exception);
+                        "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
+                        id, timer.elapsed(), exception);
                     lock.release();
                     throw exception;
                 }

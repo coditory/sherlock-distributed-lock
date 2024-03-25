@@ -1,12 +1,14 @@
 package com.coditory.sherlock;
 
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.util.function.Function;
 
 import static com.coditory.sherlock.OwnerIdPolicy.*;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
+import static com.coditory.sherlock.Preconditions.expectTruncatedToMillis;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 
 /**
@@ -15,9 +17,9 @@ import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
  * @param <T> lock type
  */
 public final class DistributedLockBuilder<T> {
-    private LockId lockId;
+    private String lockId;
     private final LockCreator<T> lockCreator;
-    private LockDuration duration = DEFAULT_LOCK_DURATION;
+    private Duration duration = DEFAULT_LOCK_DURATION;
     private OwnerIdPolicy ownerIdPolicy = uniqueOwnerId();
 
     public DistributedLockBuilder(LockCreator<T> lockCreator) {
@@ -40,12 +42,7 @@ public final class DistributedLockBuilder<T> {
     @NotNull
     public DistributedLockBuilder<T> withLockId(@NotNull String lockId) {
         expectNonEmpty(lockId, "lockId");
-        this.lockId = LockId.of(lockId);
-        return this;
-    }
-
-    DistributedLockBuilder<T> withLockDuration(LockDuration duration) {
-        this.duration = duration;
+        this.lockId = lockId;
         return this;
     }
 
@@ -58,7 +55,10 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public DistributedLockBuilder<T> withLockDuration(Duration duration) {
-        this.duration = LockDuration.of(duration);
+        if (duration != null) {
+            expectTruncatedToMillis(duration, "duration");
+        }
+        this.duration = duration;
         return this;
     }
 
@@ -69,8 +69,7 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public DistributedLockBuilder<T> withPermanentLockDuration() {
-        this.duration = LockDuration.permanent();
-        return this;
+        return withLockDuration(null);
     }
 
     /**
@@ -119,12 +118,13 @@ public final class DistributedLockBuilder<T> {
      */
     @NotNull
     public T build() {
-        OwnerId ownerId = OwnerId.of(ownerIdPolicy.getOwnerId());
+        String ownerId = ownerIdPolicy.getOwnerId();
+        expectNonEmpty(ownerId, "ownerId");
         return lockCreator.createLock(lockId, duration, ownerId);
     }
 
     @FunctionalInterface
     public interface LockCreator<T> {
-        @NotNull T createLock(@NotNull LockId lockId, @NotNull LockDuration duration, @NotNull OwnerId ownerId);
+        @NotNull T createLock(@NotNull String lockId, @Nullable Duration duration, @NotNull String ownerId);
     }
 }

@@ -1,11 +1,11 @@
 package com.coditory.sherlock.rxjava
 
-
+import com.coditory.sherlock.rxjava.test.SherlockStub
 import spock.lang.Specification
 
 import java.time.Duration
 
-import static DistributedLockMock.lockStub
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.lockStub
 
 class SherlockStubSpec extends Specification {
     def "should create sherlock returning always opened locks"() {

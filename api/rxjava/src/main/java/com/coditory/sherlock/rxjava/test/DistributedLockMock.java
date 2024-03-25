@@ -1,5 +1,9 @@
-package com.coditory.sherlock;
+package com.coditory.sherlock.rxjava.test;
 
+import com.coditory.sherlock.connector.AcquireResult;
+import com.coditory.sherlock.connector.ReleaseResult;
+import com.coditory.sherlock.rxjava.DistributedLock;
+import io.reactivex.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -7,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.function.Supplier;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
@@ -36,9 +39,8 @@ public final class DistributedLockMock implements DistributedLock {
         return inMemoryLock(lockId, true);
     }
 
-    private static DistributedLockMock inMemoryLock(@NotNull String lockId, boolean state) {
-        expectNonEmpty(lockId, "lockId");
-        return of(InMemoryDistributedLockStub.inMemoryLock(LockId.of(lockId), state));
+    private static DistributedLockMock inMemoryLock(String lockId, boolean state) {
+        return of(InMemoryDistributedLockStub.inMemoryLock(lockId, state));
     }
 
     @NotNull
@@ -63,9 +65,8 @@ public final class DistributedLockMock implements DistributedLock {
         return reentrantInMemoryLock(lockId, true);
     }
 
-    private static DistributedLockMock reentrantInMemoryLock(@NotNull String lockId, boolean state) {
-        expectNonEmpty(lockId, "lockId");
-        return of(InMemoryDistributedLockStub.reentrantInMemoryLock(LockId.of(lockId), state));
+    private static DistributedLockMock reentrantInMemoryLock(String lockId, boolean state) {
+        return of(InMemoryDistributedLockStub.reentrantInMemoryLock(lockId, state));
     }
 
     @NotNull
@@ -79,26 +80,27 @@ public final class DistributedLockMock implements DistributedLock {
     }
 
     @NotNull
-    public static DistributedLockMock lockStub(@NotNull String lockId, boolean result) {
+    public static DistributedLockMock lockStub(String lockId, boolean result) {
         expectNonEmpty(lockId, "lockId");
         return of(lockStub(lockId, result, result));
     }
 
     @NotNull
     public static DistributedLockMock lockStub(
-            @NotNull String lockId,
-            boolean acquireResult,
-            boolean releaseResult
+        @NotNull String lockId,
+        boolean acquireResult,
+        boolean releaseResult
     ) {
         expectNonEmpty(lockId, "lockId");
-        SequencedDistributedLockStub lock = new SequencedDistributedLockStub(lockId, List.of(acquireResult), List.of(releaseResult));
+        SequencedDistributedLockStub lock = new SequencedDistributedLockStub(
+            lockId, List.of(acquireResult), List.of(releaseResult));
         return of(lock);
     }
 
     @NotNull
     public static DistributedLockMock sequencedLock(
-            @NotNull List<Boolean> acquireResults,
-            @NotNull List<Boolean> releaseResults
+        @NotNull List<Boolean> acquireResults,
+        @NotNull List<Boolean> releaseResults
     ) {
         expectNonNull(acquireResults, "acquireResults");
         expectNonNull(releaseResults, "releaseResults");
@@ -107,9 +109,9 @@ public final class DistributedLockMock implements DistributedLock {
 
     @NotNull
     public static DistributedLockMock sequencedLock(
-            @NotNull String lockId,
-            @NotNull List<Boolean> acquireResults,
-            @NotNull List<Boolean> releaseResults
+        @NotNull String lockId,
+        @NotNull List<Boolean> acquireResults,
+        @NotNull List<Boolean> releaseResults
     ) {
         expectNonEmpty(lockId, "lockId");
         expectNonNull(acquireResults, "acquireResults");
@@ -138,35 +140,43 @@ public final class DistributedLockMock implements DistributedLock {
     }
 
     @Override
-    public boolean acquire() {
-        return acquire(lock::acquire);
+    @NotNull
+    public Single<AcquireResult> acquire() {
+        return lock.acquire()
+            .map(this::incrementAcquireCounters);
     }
 
     @Override
-    public boolean acquire(@NotNull Duration duration) {
+    @NotNull
+    public Single<AcquireResult> acquire(@NotNull Duration duration) {
         expectNonNull(duration, "duration");
-        return acquire(() -> lock.acquire(duration));
+        return acquire();
     }
 
     @Override
-    public boolean acquireForever() {
-        return acquire(lock::acquireForever);
+    @NotNull
+    public Single<AcquireResult> acquireForever() {
+        return acquire();
     }
 
-    private boolean acquire(Supplier<Boolean> acquireAction) {
+    private AcquireResult incrementAcquireCounters(AcquireResult result) {
         acquisitions.incrementAndGet();
-        boolean result = acquireAction.get();
-        if (result) {
+        if (result.isAcquired()) {
             successfulAcquisitions.incrementAndGet();
         }
         return result;
     }
 
     @Override
-    public boolean release() {
+    @NotNull
+    public Single<ReleaseResult> release() {
+        return lock.release()
+            .map(this::incrementReleaseCounters);
+    }
+
+    private ReleaseResult incrementReleaseCounters(ReleaseResult result) {
         releases.incrementAndGet();
-        boolean result = lock.release();
-        if (result) {
+        if (result.isReleased()) {
             successfulReleases.incrementAndGet();
         }
         return result;
@@ -264,20 +274,20 @@ public final class DistributedLockMock implements DistributedLock {
     }
 
     private static class InMemoryDistributedLockStub implements DistributedLock {
-        private final LockId lockId;
+        private final String lockId;
         private final boolean reentrant;
         private final AtomicBoolean acquired;
 
-        static InMemoryDistributedLockStub reentrantInMemoryLock(LockId lockId, boolean acquired) {
+        static InMemoryDistributedLockStub reentrantInMemoryLock(String lockId, boolean acquired) {
             return new InMemoryDistributedLockStub(lockId, true, acquired);
         }
 
-        static InMemoryDistributedLockStub inMemoryLock(LockId lockId, boolean acquired) {
+        static InMemoryDistributedLockStub inMemoryLock(String lockId, boolean acquired) {
             return new InMemoryDistributedLockStub(lockId, false, acquired);
         }
 
-        private InMemoryDistributedLockStub(LockId lockId, boolean reentrant, boolean acquired) {
-            this.lockId = expectNonNull(lockId, "lockId");
+        private InMemoryDistributedLockStub(String lockId, boolean reentrant, boolean acquired) {
+            this.lockId = expectNonEmpty(lockId, "lockId");
             this.reentrant = reentrant;
             this.acquired = new AtomicBoolean(acquired);
         }
@@ -285,11 +295,17 @@ public final class DistributedLockMock implements DistributedLock {
         @Override
         @NotNull
         public String getId() {
-            return lockId.getValue();
+            return lockId;
         }
 
         @Override
-        public boolean acquire() {
+        @NotNull
+        public Single<AcquireResult> acquire() {
+            return Single.fromCallable(this::acquireSync)
+                .map(AcquireResult::of);
+        }
+
+        private boolean acquireSync() {
             if (reentrant) {
                 acquired.set(true);
                 return true;
@@ -299,82 +315,91 @@ public final class DistributedLockMock implements DistributedLock {
         }
 
         @Override
-        public boolean acquire(@NotNull Duration duration) {
+        @NotNull
+        public Single<AcquireResult> acquire(@NotNull Duration duration) {
             expectNonNull(duration, "duration");
             return acquire();
         }
 
         @Override
-        public boolean acquireForever() {
+        @NotNull
+        public Single<AcquireResult> acquireForever() {
             return acquire();
         }
 
         @Override
-        public boolean release() {
+        @NotNull
+        public Single<ReleaseResult> release() {
+            return Single.fromCallable(this::releaseSync)
+                .map(ReleaseResult::of);
+        }
+
+        private boolean releaseSync() {
             return acquired.compareAndSet(true, false);
         }
     }
 
     static class SequencedDistributedLockStub implements DistributedLock {
-        private final LockId lockId;
+        private final String lockId;
         private final ConcurrentLinkedQueue<Boolean> acquireResults;
         private final ConcurrentLinkedQueue<Boolean> releaseResults;
         private final boolean defaultAcquireResult;
         private final boolean defaultReleaseResult;
 
         private SequencedDistributedLockStub(
-                String lockId,
-                List<Boolean> acquireResults,
-                List<Boolean> releaseResults
-        ) {
-            this(LockId.of(lockId), acquireResults, releaseResults);
-        }
-
-        private SequencedDistributedLockStub(
-                LockId lockId,
-                List<Boolean> acquireResults,
-                List<Boolean> releaseResults
+            String lockId,
+            List<Boolean> acquireResults,
+            List<Boolean> releaseResults
         ) {
             expectNonNull(lockId, "lockId");
-            expectNonEmpty(acquireResults, "acquireResults");
-            expectNonEmpty(releaseResults, "releaseResults");
+            expectNonEmpty(acquireResults, "acquire results");
+            expectNonEmpty(releaseResults, "release results");
             this.lockId = expectNonNull(lockId, "lockId");
             this.acquireResults = new ConcurrentLinkedQueue<>(acquireResults);
             this.releaseResults = new ConcurrentLinkedQueue<>(releaseResults);
-            this.defaultAcquireResult = acquireResults.get(acquireResults.size() - 1);
-            this.defaultReleaseResult = releaseResults.get(releaseResults.size() - 1);
+            this.defaultAcquireResult = acquireResults.getLast();
+            this.defaultReleaseResult = releaseResults.getLast();
         }
 
         @Override
         @NotNull
         public String getId() {
-            return lockId.getValue();
+            return lockId;
         }
 
         @Override
-        public boolean acquire() {
-            return pollOrDefault(acquireResults, defaultAcquireResult);
+        @NotNull
+        public Single<AcquireResult> acquire() {
+            return pollOrDefault(acquireResults, defaultAcquireResult)
+                .map(AcquireResult::of);
         }
 
         @Override
-        public boolean acquire(@NotNull Duration duration) {
+        @NotNull
+        public Single<AcquireResult> acquire(@NotNull Duration duration) {
             expectNonNull(duration, "duration");
             return acquire();
         }
 
         @Override
-        public boolean acquireForever() {
+        @NotNull
+        public Single<AcquireResult> acquireForever() {
             return acquire();
         }
 
         @Override
-        public boolean release() {
-            return pollOrDefault(releaseResults, defaultReleaseResult);
+        @NotNull
+        public Single<ReleaseResult> release() {
+            return pollOrDefault(releaseResults, defaultReleaseResult)
+                .map(ReleaseResult::of);
         }
 
-        private boolean pollOrDefault(ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
-            Boolean value = queue.poll();
-            return value != null ? value : defaultValue;
+        private Single<Boolean> pollOrDefault(
+            ConcurrentLinkedQueue<Boolean> queue, boolean defaultValue) {
+            return Single.fromCallable(() -> {
+                Boolean value = queue.poll();
+                return value != null ? value : defaultValue;
+            });
         }
     }
 }

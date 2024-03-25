@@ -12,6 +12,6 @@ public class InMemSyncLockSample {
     public static void main(String[] args) {
         Sherlock sherlock = InMemorySherlock.create();
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+        lock.runLocked(() -> logger.info("Lock acquired!"));
     }
 }

@@ -10,22 +10,22 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class DelegatingDistributedLock implements DistributedLock {
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
-    private final LockId lockId;
-    private final OwnerId ownerId;
-    private final LockDuration duration;
+    private final String lockId;
+    private final String ownerId;
+    private final Duration duration;
     private final AcquireAction acquireAction;
     private final ReleaseAction releaseAction;
 
     DelegatingDistributedLock(
-            AcquireAction acquireAction,
-            ReleaseAction releaseAction,
-            LockId lockId,
-            OwnerId ownerId,
-            LockDuration duration
+        AcquireAction acquireAction,
+        ReleaseAction releaseAction,
+        String lockId,
+        String ownerId,
+        Duration duration
     ) {
         this.lockId = expectNonNull(lockId, "lockId");
         this.ownerId = expectNonNull(ownerId, "ownerId");
-        this.duration = expectNonNull(duration, "duration");
+        this.duration = duration;
         this.acquireAction = expectNonNull(acquireAction, "acquireAction");
         this.releaseAction = expectNonNull(releaseAction, "releaseAction");
     }
@@ -33,7 +33,7 @@ class DelegatingDistributedLock implements DistributedLock {
     @Override
     @NotNull
     public String getId() {
-        return lockId.getValue();
+        return lockId;
     }
 
     @Override
@@ -44,8 +44,7 @@ class DelegatingDistributedLock implements DistributedLock {
     @Override
     public boolean acquire(@NotNull Duration duration) {
         expectNonNull(duration, "duration");
-        LockDuration lockDuration = LockDuration.of(duration);
-        return acquire(new LockRequest(lockId, ownerId, lockDuration));
+        return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
@@ -77,15 +76,15 @@ class DelegatingDistributedLock implements DistributedLock {
     @Override
     public String toString() {
         return "DelegatingDistributedLock{" +
-                "lockId=" + lockId +
-                ", ownerId=" + ownerId +
-                ", duration=" + duration +
-                '}';
+            "lockId=" + lockId +
+            ", ownerId=" + ownerId +
+            ", duration=" + duration +
+            '}';
     }
 
     @FunctionalInterface
     public interface ReleaseAction {
-        boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
+        boolean release(@NotNull String lockId, @NotNull String ownerId);
     }
 
     @FunctionalInterface

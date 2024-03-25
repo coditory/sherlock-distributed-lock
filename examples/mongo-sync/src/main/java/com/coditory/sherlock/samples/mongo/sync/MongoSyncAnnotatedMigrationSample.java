@@ -16,20 +16,20 @@ public class MongoSyncAnnotatedMigrationSample {
         String database = "sherlock";
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
         return mongoClient
-                .getDatabase("sherlock")
-                .getCollection("locks");
+            .getDatabase("sherlock")
+            .getCollection("locks");
     }
 
     public static void main(String[] args) {
         Sherlock sherlock = MongoSherlock.create(locksCollection());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration())
-                .migrate();
+            .addAnnotatedChangeSets(new AnnotatedMigration())
+            .migrate();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration2())
-                .migrate();
+            .addAnnotatedChangeSets(new AnnotatedMigration2())
+            .migrate();
     }
 
     public static class AnnotatedMigration {

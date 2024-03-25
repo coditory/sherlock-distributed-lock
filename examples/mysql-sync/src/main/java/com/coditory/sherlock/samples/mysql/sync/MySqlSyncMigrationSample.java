@@ -9,19 +9,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.time.Clock;
-import java.time.Duration;
 
 public class MySqlSyncMigrationSample {
-    private final Logger logger = LoggerFactory.getLogger(this.getClass());
-
-    private final Sherlock sherlock = SqlSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withDataSource(dataSource())
-            .withLocksTable("LOCKS")
-            .build();
+    private static final Logger logger = LoggerFactory.getLogger(MySqlSyncMigrationSample.class);
 
     private static DataSource dataSource() {
         HikariConfig config = new HikariConfig();
@@ -31,21 +21,18 @@ public class MySqlSyncMigrationSample {
         return new HikariDataSource(config);
     }
 
-    private void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = SqlSherlock.create(dataSource());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
-                .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
-                .migrate();
+            .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
+            .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
+            .migrate();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
-                .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
-                .addChangeSet("change-set-3", () -> logger.info("Change-set 3"))
-                .migrate();
-    }
-
-    public static void main(String[] args) {
-        new MySqlSyncMigrationSample().sample();
+            .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
+            .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
+            .addChangeSet("change-set-3", () -> logger.info("Change-set 3"))
+            .migrate();
     }
 }

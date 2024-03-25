@@ -1,6 +1,7 @@
 package com.coditory.sherlock.coroutines
 
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.lockStub
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.lockStub
+import com.coditory.sherlock.coroutines.test.SherlockStub
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Test

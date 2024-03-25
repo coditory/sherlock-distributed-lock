@@ -7,30 +7,19 @@ import com.coditory.sherlock.rxjava.migrator.SherlockMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-
 public class InMemRxAnnotatedMigrationSample {
-    private final Sherlock sherlock = InMemorySherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withUniqueOwnerId()
-            .withSharedStorage()
-            .build();
-
-    private void sample() {
+    public static void main(String[] args) {
+        Sherlock sherlock = InMemorySherlock.create();
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration())
-                .migrate()
-                .blockingGet();
+            .addAnnotatedChangeSets(new AnnotatedMigration())
+            .migrate()
+            .blockingGet();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration2())
-                .migrate()
-                .blockingGet();
-    }
-
-    public static void main(String[] args) {
-        new InMemRxAnnotatedMigrationSample().sample();
+            .addAnnotatedChangeSets(new AnnotatedMigration2())
+            .migrate()
+            .blockingGet();
     }
 
     public static class AnnotatedMigration {

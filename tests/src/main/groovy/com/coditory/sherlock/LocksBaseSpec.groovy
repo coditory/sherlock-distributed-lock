@@ -9,7 +9,6 @@ import spock.lang.Specification
 
 import java.time.Duration
 
-import static com.coditory.sherlock.LockDuration.permanent
 import static com.coditory.sherlock.base.UpdatableFixedClock.defaultUpdatableFixedClock
 
 abstract class LocksBaseSpec extends Specification implements DistributedLocksCreator {
@@ -35,26 +34,26 @@ abstract class LocksBaseSpec extends Specification implements DistributedLocksCr
     }
 
     DistributedLock createLock(
-            LockTypes type,
-            String lockId = sampleLockId,
-            String ownerId = sampleOwnerId,
-            Duration duration = defaultLockDuration) {
+        LockTypes type,
+        String lockId = sampleLockId,
+        String ownerId = sampleOwnerId,
+        Duration duration = defaultLockDuration) {
         return type.createLock(sherlock)
-                .withLockId(lockId)
-                .withOwnerId(ownerId)
-                .withLockDuration(duration)
-                .build()
+            .withLockId(lockId)
+            .withOwnerId(ownerId)
+            .withLockDuration(duration)
+            .build()
     }
 
     DistributedLock createPermanentLock(
-            LockTypes type,
-            String lockId = sampleLockId,
-            String ownerId = sampleOwnerId) {
+        LockTypes type,
+        String lockId = sampleLockId,
+        String ownerId = sampleOwnerId) {
         return type.createLock(sherlock)
-                .withLockId(lockId)
-                .withOwnerId(ownerId)
-                .withLockDuration(permanent())
-                .build()
+            .withLockId(lockId)
+            .withOwnerId(ownerId)
+            .withPermanentLockDuration()
+            .build()
     }
 
     Sherlock createSherlock(String ownerId = sampleOwnerId, Duration duration = defaultLockDuration) {

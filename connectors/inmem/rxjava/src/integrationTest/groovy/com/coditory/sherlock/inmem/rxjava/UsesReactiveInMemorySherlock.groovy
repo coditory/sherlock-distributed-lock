@@ -11,10 +11,11 @@ trait UsesReactiveInMemorySherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         com.coditory.sherlock.rxjava.Sherlock reactiveLocks = InMemorySherlock.builder()
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingRxSherlockWrapper(reactiveLocks)
     }
 }
+

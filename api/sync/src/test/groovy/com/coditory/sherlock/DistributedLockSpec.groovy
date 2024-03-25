@@ -1,15 +1,16 @@
 package com.coditory.sherlock
 
 import com.coditory.sherlock.base.SpecSimulatedException
+import com.coditory.sherlock.test.DistributedLockMock
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
 
 import java.time.Duration
 
-import static com.coditory.sherlock.DistributedLockMock.acquiredInMemoryLock
-import static com.coditory.sherlock.DistributedLockMock.releasedInMemoryLock
 import static com.coditory.sherlock.base.SpecSimulatedException.throwSpecSimulatedException
+import static com.coditory.sherlock.test.DistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.test.DistributedLockMock.releasedInMemoryLock
 
 class DistributedLockSpec extends Specification {
     @Shared
@@ -25,8 +26,8 @@ class DistributedLockSpec extends Specification {
             DistributedLockMock lock = releasedInMemoryLock()
         when:
             boolean result = action(lock)
-                    .onNotAcquired({ assertNever() })
-                    .isAcquired()
+                .onNotAcquired({ assertNever() })
+                .acquired()
         then:
             counter.value == 1
             result == true
@@ -35,9 +36,8 @@ class DistributedLockSpec extends Specification {
             lock.releases() == 1
         where:
             action << [
-                    { it.acquireAndExecute({ counter.increment() }) },
-                    { it.acquireAndExecute(Duration.ofHours(1), { counter.increment() }) },
-                    { it.acquireForeverAndExecute({ counter.increment() }) },
+                { it.runLocked({ counter.increment() }) },
+                { it.runLocked(Duration.ofHours(1), { counter.increment() }) },
             ]
     }
 
@@ -47,8 +47,8 @@ class DistributedLockSpec extends Specification {
             DistributedLockMock lock = acquiredInMemoryLock()
         when:
             boolean result = action(lock)
-                    .onNotAcquired({ counter.increment() })
-                    .isAcquired()
+                .onNotAcquired({ counter.increment() })
+                .isAcquired()
         then:
             counter.value == 1
             result == false
@@ -57,9 +57,8 @@ class DistributedLockSpec extends Specification {
             lock.releases() == 0
         where:
             action << [
-                    { it.acquireAndExecute({ assertNever() }) },
-                    { it.acquireAndExecute(Duration.ofHours(1), { assertNever() }) },
-                    { it.acquireForeverAndExecute({ assertNever() }) },
+                { it.runLocked({ assertNever() }) },
+                { it.runLocked(Duration.ofHours(1), { assertNever() }) },
             ]
     }
 
@@ -69,8 +68,8 @@ class DistributedLockSpec extends Specification {
 
         when:
             Boolean result = action(lock)
-                    .onNotAcquired({ assertNever() })
-                    .isAcquired()
+                .onNotAcquired({ assertNever() })
+                .acquired()
         then:
             thrown(SpecSimulatedException)
             result == null
@@ -79,42 +78,9 @@ class DistributedLockSpec extends Specification {
             lock.releases() == 1
         where:
             action << [
-                    { it.acquireAndExecute({ throwSpecSimulatedException() }) },
-                    { it.acquireAndExecute(Duration.ofHours(1), { throwSpecSimulatedException() }) },
-                    { it.acquireForeverAndExecute({ throwSpecSimulatedException() }) },
+                { it.runLocked({ throwSpecSimulatedException() }) },
+                { it.runLocked(Duration.ofHours(1), { throwSpecSimulatedException() }) },
             ]
-    }
-
-    def "should execute action on lock release"() {
-        given:
-            DistributedLockMock lock = acquiredInMemoryLock()
-        when:
-            boolean result = lock
-                    .releaseAndExecute({ counter.increment() })
-                    .onNotReleased({ assertNever() })
-                    .isReleased()
-        then:
-            counter.value == 1
-            result == true
-        and:
-            lock.acquisitions() == 0
-            lock.releases() == 1
-    }
-
-    def "should not execute action when lock was not released"() {
-        given:
-            DistributedLockMock lock = releasedInMemoryLock()
-        when:
-            boolean result = lock
-                    .releaseAndExecute({ assertNever() })
-                    .onNotReleased({ counter.increment() })
-                    .isReleased()
-        then:
-            counter.value == 1
-            result == false
-        and:
-            lock.acquisitions() == 0
-            lock.releases() == 1
     }
 
     private void assertNever() {

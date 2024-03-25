@@ -1,6 +1,8 @@
 package com.coditory.sherlock.mongo;
 
-import com.coditory.sherlock.*;
+import com.coditory.sherlock.DistributedLockConnector;
+import com.coditory.sherlock.LockRequest;
+import com.coditory.sherlock.SherlockException;
 import com.mongodb.MongoCommandException;
 import com.mongodb.client.MongoCollection;
 import com.mongodb.client.model.FindOneAndReplaceOptions;
@@ -21,14 +23,14 @@ import static com.coditory.sherlock.mongo.MongoDistributedLockQueries.*;
 class MongoDistributedLockConnector implements DistributedLockConnector {
     private static final int DUPLICATE_KEY_ERROR_CODE = 11000;
     private static final FindOneAndReplaceOptions upsertOptions = new FindOneAndReplaceOptions()
-            .upsert(true)
-            .returnDocument(ReturnDocument.AFTER);
+        .upsert(true)
+        .returnDocument(ReturnDocument.AFTER);
     private final MongoCollectionInitializer collectionInitializer;
     private final Clock clock;
 
     MongoDistributedLockConnector(
-            MongoCollection<Document> collection,
-            Clock clock
+        MongoCollection<Document> collection,
+        Clock clock
     ) {
         expectNonNull(collection, "collection");
         expectNonNull(clock, "clock");
@@ -51,8 +53,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         Instant now = now();
         try {
             return upsert(
-                    queryReleased(lockRequest.getLockId(), now),
-                    fromLockRequest(lockRequest, now)
+                queryReleased(lockRequest.lockId(), now),
+                fromLockRequest(lockRequest, now)
             );
         } catch (Throwable e) {
             throw new SherlockException("Could not acquire lock: " + lockRequest, e);
@@ -65,8 +67,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         Instant now = now();
         try {
             return upsert(
-                    queryAcquiredOrReleased(lockRequest.getLockId(), lockRequest.getOwnerId(), now),
-                    fromLockRequest(lockRequest, now)
+                queryAcquiredOrReleased(lockRequest.lockId(), lockRequest.ownerId(), now),
+                fromLockRequest(lockRequest, now)
             );
         } catch (Throwable e) {
             throw new SherlockException("Could not acquire or prolong lock: " + lockRequest, e);
@@ -78,8 +80,8 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
         expectNonNull(lockRequest, "lockRequest");
         try {
             return upsert(
-                    queryById(lockRequest.getLockId()),
-                    fromLockRequest(lockRequest, now())
+                queryById(lockRequest.lockId()),
+                fromLockRequest(lockRequest, now())
             );
         } catch (Throwable e) {
             throw new SherlockException("Could not acquire or prolong lock: " + lockRequest, e);
@@ -87,23 +89,23 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    public boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public boolean release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         try {
             return delete(queryAcquired(lockId, ownerId));
         } catch (Throwable e) {
-            throw new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e);
+            throw new SherlockException("Could not release lock: " + lockId + ", owner: " + ownerId, e);
         }
     }
 
     @Override
-    public boolean forceRelease(@NotNull LockId lockId) {
+    public boolean forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         try {
             return delete(queryById(lockId));
         } catch (Throwable e) {
-            throw new SherlockException("Could not force release lock: " + lockId.getValue(), e);
+            throw new SherlockException("Could not force release lock: " + lockId, e);
         }
     }
 
@@ -124,14 +126,14 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     private boolean delete(Bson query) {
         Document deleted = getLockCollection().findOneAndDelete(query);
         return deleted != null
-                && MongoDistributedLock.fromDocument(deleted).isActive(now());
+            && MongoDistributedLock.fromDocument(deleted).isActive(now());
     }
 
     private boolean upsert(Bson query, MongoDistributedLock lock) {
         Document documentToUpsert = lock.toDocument();
         try {
             Document current = getLockCollection()
-                    .findOneAndReplace(query, documentToUpsert, upsertOptions);
+                .findOneAndReplace(query, documentToUpsert, upsertOptions);
             return lock.hasSameOwner(current);
         } catch (MongoCommandException exception) {
             if (exception.getErrorCode() != DUPLICATE_KEY_ERROR_CODE) {

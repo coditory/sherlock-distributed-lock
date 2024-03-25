@@ -6,13 +6,14 @@ import com.coditory.sherlock.InfiniteAcquireLockSpec
 import com.coditory.sherlock.ReleaseLockSpec
 
 class KtInMemoryReleaseLockSpec extends ReleaseLockSpec
-        implements UsesKtInMemorySherlock {}
+    implements UsesKtInMemorySherlock {}
 
 class KtInMemoryAcquireLockSpec extends AcquireLockSpec
-        implements UsesKtInMemorySherlock {}
+    implements UsesKtInMemorySherlock {}
 
 class KtInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesKtInMemorySherlock {}
+    implements UsesKtInMemorySherlock {}
 
 class KtInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesKtInMemorySherlock {}
+    implements UsesKtInMemorySherlock {}
+

@@ -56,17 +56,17 @@ public final class SherlockMigratorBuilder {
     public SherlockMigratorBuilder addAnnotatedChangeSets(@NotNull Object object) {
         expectNonNull(object, "object containing change sets");
         ChangeSetMethodExtractor.extractChangeSets(object, void.class)
-                .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
+            .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
         return this;
     }
 
     @NotNull
     public SherlockMigrator build() {
         DistributedLock migrationLock = sherlock.createLock()
-                .withLockId(migrationId)
-                .withPermanentLockDuration()
-                .withStaticUniqueOwnerId()
-                .build();
+            .withLockId(migrationId)
+            .withPermanentLockDuration()
+            .withStaticUniqueOwnerId()
+            .build();
         return new SherlockMigrator(migrationLock, migrationChangeSets);
     }
 
@@ -77,16 +77,16 @@ public final class SherlockMigratorBuilder {
 
     private DistributedLock createChangeSetLock(String migrationId) {
         return sherlock.createLock()
-                .withLockId(migrationId)
-                .withPermanentLockDuration()
-                .withStaticUniqueOwnerId()
-                .build();
+            .withLockId(migrationId)
+            .withPermanentLockDuration()
+            .withStaticUniqueOwnerId()
+            .build();
     }
 
     private void ensureUniqueChangeSetId(String changeSetId) {
         if (migrationLockIds.contains(changeSetId)) {
             throw new IllegalArgumentException(
-                    "Expected unique change set ids. Duplicated id: " + changeSetId);
+                "Expected unique change set ids. Duplicated id: " + changeSetId);
         }
         migrationLockIds.add(changeSetId);
     }

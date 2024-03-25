@@ -29,7 +29,7 @@ object MySqlKtLockSample {
         val sherlock = SqlSherlock.create(getConnectionFactory(), MYSQL_MAPPER)
         val lock = sherlock.createLock("sample-lock")
         lock
-            .acquireAndExecute { logger.info("Lock acquired!") }
+            .runLocked { logger.info("Lock acquired!") }
     }
 
     @JvmStatic

@@ -52,20 +52,20 @@ public final class SherlockMigrator {
     @NotNull
     public Single<MigrationResult> migrate() {
         return migrationLock
-                .acquireAndExecute(runMigrations())
-                .defaultIfEmpty(AcquireResult.FAILURE)
-                .flatMapSingle(acquireResult -> {
-                    if (!acquireResult.isAcquired()) {
-                        logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
-                    }
-                    return Single.just(new MigrationResult(acquireResult.isAcquired()));
-                });
+            .runLocked(runMigrations())
+            .defaultIfEmpty(AcquireResult.notAcquired())
+            .flatMapSingle(acquireResult -> {
+                if (!acquireResult.isAcquired()) {
+                    logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
+                }
+                return Single.just(new MigrationResult(acquireResult.isAcquired()));
+            });
     }
 
     private Single<AcquireResult> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        Single<AcquireResult> result = Single.just(AcquireResult.SUCCESS);
+        Single<AcquireResult> result = Single.just(AcquireResult.acquired());
         for (MigrationChangeSet changeSet : migrationChangeSets) {
             result = result.flatMap(r -> changeSet.execute());
         }
@@ -89,28 +89,28 @@ public final class SherlockMigrator {
         Single<AcquireResult> execute() {
             Timer timer = Timer.start();
             return lock.acquire()
-                    .flatMap((result) -> {
-                        if (!result.isAcquired()) {
-                            logger.info("Migration change set skipped: {}", id);
-                            return Single.just(result);
-                        }
-                        logger.debug("Executing migration change set: {}", id);
-                        return executeChangeSet(timer);
-                    });
+                .flatMap((result) -> {
+                    if (!result.isAcquired()) {
+                        logger.info("Migration change set skipped: {}", id);
+                        return Single.just(result);
+                    }
+                    logger.debug("Executing migration change set: {}", id);
+                    return executeChangeSet(timer);
+                });
         }
 
         private Single<AcquireResult> executeChangeSet(Timer timer) {
             return action.get()
-                    .flatMap((result) -> {
-                        logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                        return Single.just(AcquireResult.SUCCESS);
-                    })
-                    .onErrorResumeNext((e) -> {
-                        logger.warn(
-                                "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
-                                id, timer.elapsed(), e);
-                        return lock.release().flatMap((result) -> Single.error(e));
-                    });
+                .flatMap((result) -> {
+                    logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
+                    return Single.just(AcquireResult.acquired());
+                })
+                .onErrorResumeNext((e) -> {
+                    logger.warn(
+                        "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
+                        id, timer.elapsed(), e);
+                    return lock.release().flatMap((result) -> Single.error(e));
+                });
         }
     }
 }

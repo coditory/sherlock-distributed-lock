@@ -1,15 +1,15 @@
 package com.coditory.sherlock.rxjava
 
-
+import com.coditory.sherlock.rxjava.test.DistributedLockMock
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static DistributedLockMock.acquiredInMemoryLock
-import static DistributedLockMock.acquiredReentrantInMemoryLock
-import static DistributedLockMock.lockStub
-import static DistributedLockMock.releasedInMemoryLock
-import static DistributedLockMock.releasedReentrantInMemoryLock
-import static DistributedLockMock.sequencedLock
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.acquiredReentrantInMemoryLock
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.lockStub
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.releasedReentrantInMemoryLock
+import static com.coditory.sherlock.rxjava.test.DistributedLockMock.sequencedLock
 
 class DistributedLockMockSpec extends Specification {
     private static final String lockId = "sample-lock"

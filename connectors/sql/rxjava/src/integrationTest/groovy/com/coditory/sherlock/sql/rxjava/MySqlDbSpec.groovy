@@ -4,9 +4,9 @@ import com.coditory.sherlock.sql.SqlIndexCreationSpec
 import com.coditory.sherlock.sql.SqlLockStorageSpec
 
 class RxMySqlLockStorageSpec extends SqlLockStorageSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}
 
 class RxMySqlIndexCreationSpec extends SqlIndexCreationSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {
-    List<String> expectedIndexNames = ["PRIMARY", SqlIndexCreationSpec.tableName + "_IDX"].sort()
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {
+    List<String> expectedIndexNames = ["PRIMARY", tableName + "_IDX"].sort()
 }

@@ -14,11 +14,9 @@ class SherlockMigrator internal constructor(
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     suspend fun migrate(): MigrationResult {
-        val acquireResult =
-            migrationLock
-                .acquireAndExecute { runMigrations() }
-                .doOnNotAcquired { logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.id) }
-        return MigrationResult(acquireResult.acquired)
+        val acquireResult = migrationLock.runLocked { runMigrations() }
+            .onNotAcquired { logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.id) }
+        return MigrationResult(acquireResult.isAcquired)
     }
 
     private suspend fun runMigrations() {

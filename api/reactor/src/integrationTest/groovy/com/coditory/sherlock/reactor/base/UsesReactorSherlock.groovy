@@ -12,10 +12,10 @@ trait UsesReactorSherlock implements DistributedLocksCreator {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         com.coditory.sherlock.reactor.Sherlock reactorSherlock = InMemorySherlock.builder()
-                .withOwnerId(ownerId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withOwnerId(ownerId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingReactorSherlockWrapper(reactorSherlock)
     }
 }

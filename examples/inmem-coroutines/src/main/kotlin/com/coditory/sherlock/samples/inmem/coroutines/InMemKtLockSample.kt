@@ -11,7 +11,7 @@ object InMemKtLockSample {
     private suspend fun sample() {
         val sherlock = InMemorySherlock.create()
         val lock = sherlock.createLock("sample-lock")
-        lock.acquireAndExecute {
+        lock.runLocked {
             logger.info("Lock acquired!")
         }
     }

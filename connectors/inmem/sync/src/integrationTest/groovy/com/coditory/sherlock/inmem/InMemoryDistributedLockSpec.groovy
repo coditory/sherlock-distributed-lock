@@ -6,13 +6,13 @@ import com.coditory.sherlock.InfiniteAcquireLockSpec
 import com.coditory.sherlock.ReleaseLockSpec
 
 class InMemoryReleaseLockSpec extends ReleaseLockSpec
-        implements UsesInMemorySherlock {}
+    implements UsesInMemorySherlock {}
 
 class InMemoryAcquireLockSpec extends AcquireLockSpec
-        implements UsesInMemorySherlock {}
+    implements UsesInMemorySherlock {}
 
 class InMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesInMemorySherlock {}
+    implements UsesInMemorySherlock {}
 
 class InMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesInMemorySherlock {}
+    implements UsesInMemorySherlock {}

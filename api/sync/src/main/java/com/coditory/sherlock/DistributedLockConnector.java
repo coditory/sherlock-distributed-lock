@@ -38,14 +38,14 @@ public interface DistributedLockConnector {
      *
      * @return boolean - true if acquire was released by this call
      */
-    boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
+    boolean release(@NotNull String lockId, @NotNull String ownerId);
 
     /**
      * Release a lock without checking its owner or release date.
      *
      * @return boolean - true if acquire was released by this call
      */
-    boolean forceRelease(@NotNull LockId lockId);
+    boolean forceRelease(@NotNull String lockId);
 
     /**
      * Release all locks without checking their owners or release dates.

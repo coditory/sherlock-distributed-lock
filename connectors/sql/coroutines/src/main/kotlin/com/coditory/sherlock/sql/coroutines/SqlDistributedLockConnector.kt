@@ -1,9 +1,6 @@
 package com.coditory.sherlock.sql.coroutines
 
-import com.coditory.sherlock.LockDuration
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
-import com.coditory.sherlock.OwnerId
 import com.coditory.sherlock.SherlockException
 import com.coditory.sherlock.coroutines.SuspendingDistributedLockConnector
 import com.coditory.sherlock.sql.BindingMapper
@@ -12,6 +9,7 @@ import io.r2dbc.spi.Connection
 import io.r2dbc.spi.ConnectionFactory
 import kotlinx.coroutines.reactive.awaitFirst
 import java.time.Clock
+import java.time.Duration
 import java.time.Instant
 
 internal class SqlDistributedLockConnector(
@@ -73,10 +71,10 @@ internal class SqlDistributedLockConnector(
         lockRequest: LockRequest,
         now: Instant,
     ): Boolean {
-        val lockId = lockRequest.lockId.value
+        val lockId = lockRequest.lockId
         val expiresAt = expiresAt(now, lockRequest.duration)
         return statementBinder(connection, sqlQueries.updateReleasedLock())
-            .bindOwnerId(lockRequest.ownerId.value)
+            .bindOwnerId(lockRequest.ownerId)
             .bindNow(now)
             .bindExpiresAt(expiresAt)
             .bindLockId(lockId)
@@ -90,14 +88,14 @@ internal class SqlDistributedLockConnector(
         lockRequest: LockRequest,
         now: Instant,
     ): Boolean {
-        val lockId = lockRequest.lockId.value
+        val lockId = lockRequest.lockId
         val expiresAt = expiresAt(now, lockRequest.duration)
         return statementBinder(connection, sqlQueries.updateAcquiredOrReleasedLock())
-            .bindOwnerId(lockRequest.ownerId.value)
+            .bindOwnerId(lockRequest.ownerId)
             .bindNow(now)
             .bindExpiresAt(expiresAt)
             .bindLockId(lockId)
-            .bindOwnerId(lockRequest.ownerId.value)
+            .bindOwnerId(lockRequest.ownerId)
             .bindNow(now)
             .executeAndGetUpdated()
             .let { it > 0 }
@@ -108,10 +106,10 @@ internal class SqlDistributedLockConnector(
         lockRequest: LockRequest,
         now: Instant,
     ): Boolean {
-        val lockId = lockRequest.lockId.value
+        val lockId = lockRequest.lockId
         val expiresAt = expiresAt(now, lockRequest.duration)
         return statementBinder(connection, sqlQueries.updateLockById())
-            .bindOwnerId(lockRequest.ownerId.value)
+            .bindOwnerId(lockRequest.ownerId)
             .bindNow(now)
             .bindExpiresAt(expiresAt)
             .bindLockId(lockId)
@@ -124,12 +122,12 @@ internal class SqlDistributedLockConnector(
         lockRequest: LockRequest,
         now: Instant,
     ): Boolean {
-        val lockId = lockRequest.lockId.value
+        val lockId = lockRequest.lockId
         val expiresAt = expiresAt(now, lockRequest.duration)
         return try {
             statementBinder(connection, sqlQueries.insertLock())
                 .bindLockId(lockId)
-                .bindOwnerId(lockRequest.ownerId.value)
+                .bindOwnerId(lockRequest.ownerId)
                 .bindNow(now)
                 .bindExpiresAt(expiresAt)
                 .executeAndGetUpdated()
@@ -139,35 +137,32 @@ internal class SqlDistributedLockConnector(
         }
     }
 
-    override suspend fun release(
-        lockId: LockId,
-        ownerId: OwnerId,
-    ): Boolean {
+    override suspend fun release(lockId: String, ownerId: String): Boolean {
         return try {
             statementBinder(sqlQueries.deleteAcquiredByIdAndOwnerId()) { binder ->
                 binder
-                    .bindLockId(lockId.value)
-                    .bindOwnerId(ownerId.value)
+                    .bindLockId(lockId)
+                    .bindOwnerId(ownerId)
                     .bindNow(now())
                     .executeAndGetUpdated()
                     .let { it > 0 }
             }
         } catch (e: Throwable) {
-            throw SherlockException("Could not release lock: " + lockId.value + ", owner: " + ownerId, e)
+            throw SherlockException("Could not release lock: $lockId, owner: $ownerId", e)
         }
     }
 
-    override suspend fun forceRelease(lockId: LockId): Boolean {
+    override suspend fun forceRelease(lockId: String): Boolean {
         return try {
             statementBinder(sqlQueries.deleteAcquiredById()) { binder ->
                 binder
-                    .bindOwnerId(lockId.value)
+                    .bindOwnerId(lockId)
                     .bindNow(now())
                     .executeAndGetUpdated()
                     .let { it > 0 }
             }
         } catch (e: Throwable) {
-            throw SherlockException("Could not force release lock: " + lockId.value, e)
+            throw SherlockException("Could not force release lock: $lockId", e)
         }
     }
 
@@ -203,14 +198,11 @@ internal class SqlDistributedLockConnector(
         return SqlStatementBinder(statement, bindingMapper)
     }
 
-    private fun expiresAt(
-        now: Instant,
-        duration: LockDuration?,
-    ): Instant? {
-        return if (duration == null || duration.value == null) {
+    private fun expiresAt(now: Instant, duration: Duration?): Instant? {
+        return if (duration == null) {
             null
         } else {
-            now.plus(duration.value)
+            now.plus(duration)
         }
     }
 

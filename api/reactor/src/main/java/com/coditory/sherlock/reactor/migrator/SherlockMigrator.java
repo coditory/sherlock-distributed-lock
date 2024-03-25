@@ -32,7 +32,7 @@ public final class SherlockMigrator {
     public static SherlockMigratorBuilder builder(@NotNull Sherlock sherlock) {
         return new SherlockMigratorBuilder(sherlock);
     }
-    
+
     private final Logger logger = LoggerFactory.getLogger(this.getClass());
     private final List<MigrationChangeSet> migrationChangeSets;
     private final DistributedLock migrationLock;
@@ -52,20 +52,20 @@ public final class SherlockMigrator {
     @NotNull
     public Mono<MigrationResult> migrate() {
         return migrationLock
-                .acquireAndExecute(runMigrations())
-                .defaultIfEmpty(AcquireResult.FAILURE)
-                .map(acquireResult -> {
-                    if (!acquireResult.isAcquired()) {
-                        logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
-                    }
-                    return new MigrationResult(acquireResult.isAcquired());
-                });
+            .runLocked(runMigrations())
+            .defaultIfEmpty(AcquireResult.notAcquired())
+            .map(acquireResult -> {
+                if (!acquireResult.isAcquired()) {
+                    logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
+                }
+                return new MigrationResult(acquireResult.isAcquired());
+            });
     }
 
     private Mono<AcquireResult> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        Mono<AcquireResult> result = Mono.just(AcquireResult.SUCCESS);
+        Mono<AcquireResult> result = Mono.just(AcquireResult.acquired());
         for (MigrationChangeSet changeSet : migrationChangeSets) {
             result = result.flatMap(r -> changeSet.execute());
         }
@@ -89,28 +89,28 @@ public final class SherlockMigrator {
         Mono<AcquireResult> execute() {
             Timer timer = Timer.start();
             return lock.acquire()
-                    .flatMap((result) -> {
-                        if (!result.isAcquired()) {
-                            logger.info("Migration change set skipped: {}", id);
-                            return Mono.just(result);
-                        }
-                        logger.debug("Executing migration change set: {}", id);
-                        return executeChangeSet(timer);
-                    });
+                .flatMap((result) -> {
+                    if (!result.isAcquired()) {
+                        logger.info("Migration change set skipped: {}", id);
+                        return Mono.just(result);
+                    }
+                    logger.debug("Executing migration change set: {}", id);
+                    return executeChangeSet(timer);
+                });
         }
 
         private Mono<AcquireResult> executeChangeSet(Timer timer) {
             return action.get()
-                    .flatMap((result) -> {
-                        logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                        return Mono.just(AcquireResult.SUCCESS);
-                    })
-                    .onErrorResume((e) -> {
-                        logger.warn(
-                                "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
-                                id, timer.elapsed(), e);
-                        return lock.release().flatMap((result) -> Mono.error(e));
-                    });
+                .flatMap((result) -> {
+                    logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
+                    return Mono.just(AcquireResult.acquired());
+                })
+                .onErrorResume((e) -> {
+                    logger.warn(
+                        "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
+                        id, timer.elapsed(), e);
+                    return lock.release().flatMap((result) -> Mono.error(e));
+                });
         }
     }
 }

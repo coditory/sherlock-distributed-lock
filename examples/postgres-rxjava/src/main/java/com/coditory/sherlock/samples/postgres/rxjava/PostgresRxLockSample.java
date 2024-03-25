@@ -42,7 +42,7 @@ public class PostgresRxLockSample {
                 .build();
         Sherlock sherlock = SqlSherlock.create(getConnectionFactory(), POSTGRES_MAPPER);
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"))
+        lock.runLocked(() -> logger.info("Lock acquired!"))
                 .blockingGet();
     }
 }

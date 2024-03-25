@@ -72,7 +72,7 @@ class PublisherSubscriber<T> implements Subscriber<T> {
 
     List<T> awaitCompletion() {
         await().atMost(3000, TimeUnit.MILLISECONDS)
-                .until(this::isCompleted)
+            .until(this::isCompleted)
         return List.copyOf(consumedElements)
     }
 }

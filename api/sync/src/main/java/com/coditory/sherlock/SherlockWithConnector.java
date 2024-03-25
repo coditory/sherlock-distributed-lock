@@ -7,18 +7,20 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 final class SherlockWithConnector implements Sherlock {
     private final Logger logger = LoggerFactory.getLogger(SherlockWithConnector.class);
     private final DistributedLockConnector connector;
-    private final LockDuration defaultDuration;
+    private final Duration defaultDuration;
     private final OwnerIdPolicy defaultOwnerIdPolicy;
 
     SherlockWithConnector(
-            DistributedLockConnector connector,
-            OwnerIdPolicy defaultOwnerIdPolicy,
-            LockDuration defaultDuration
+        DistributedLockConnector connector,
+        OwnerIdPolicy defaultOwnerIdPolicy,
+        Duration defaultDuration
     ) {
         this.connector = expectNonNull(connector, "connector");
         this.defaultOwnerIdPolicy = expectNonNull(defaultOwnerIdPolicy, "defaultOwnerIdPolicy");
@@ -55,28 +57,28 @@ final class SherlockWithConnector implements Sherlock {
     }
 
     private DistributedLockBuilder<DistributedLock> createLockBuilder(
-            AcquireAction acquireAction,
-            ReleaseAction releaseAction) {
+        AcquireAction acquireAction,
+        ReleaseAction releaseAction) {
         return new DistributedLockBuilder<>(createLock(acquireAction, releaseAction))
-                .withLockDuration(defaultDuration)
-                .withOwnerIdPolicy(defaultOwnerIdPolicy);
+            .withLockDuration(defaultDuration)
+            .withOwnerIdPolicy(defaultOwnerIdPolicy);
     }
 
     private LockCreator<DistributedLock> createLock(
-            AcquireAction acquireAction,
-            ReleaseAction releaseAction) {
+        AcquireAction acquireAction,
+        ReleaseAction releaseAction) {
         return (lockId, duration, ownerId) ->
-                createLockAndLog(acquireAction, releaseAction, lockId, ownerId, duration);
+            createLockAndLog(acquireAction, releaseAction, lockId, ownerId, duration);
     }
 
     private DistributedLock createLockAndLog(
-            AcquireAction acquireAction,
-            ReleaseAction releaseAction,
-            LockId lockId,
-            OwnerId ownerId,
-            LockDuration duration) {
+        AcquireAction acquireAction,
+        ReleaseAction releaseAction,
+        String lockId,
+        String ownerId,
+        Duration duration) {
         DistributedLock lock = new DelegatingDistributedLock(
-                acquireAction, releaseAction, lockId, ownerId, duration);
+            acquireAction, releaseAction, lockId, ownerId, duration);
         logger.debug("Created lock: {}", lock);
         return lock;
     }

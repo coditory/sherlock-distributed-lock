@@ -6,22 +6,14 @@ import com.coditory.sherlock.migrator.ChangeSet
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Clock
 
 object InMemKtAnnotatedMigrationSample {
-    private val sherlock =
-        InMemorySherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withUniqueOwnerId()
-            .withSharedStorage()
-            .build()
-
     private suspend fun sample() {
+        val sherlock = InMemorySherlock.create()
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration())
             .migrate()
-
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration2())

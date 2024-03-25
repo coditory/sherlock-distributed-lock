@@ -1,8 +1,6 @@
 package com.coditory.sherlock.coroutines
 
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
-import com.coditory.sherlock.OwnerId
 
 interface SuspendingDistributedLockConnector {
     /**
@@ -33,15 +31,12 @@ interface SuspendingDistributedLockConnector {
     /**
      * Unlock a lock if wat acquired by the same instance.
      */
-    suspend fun release(
-        lockId: LockId,
-        ownerId: OwnerId,
-    ): Boolean
+    suspend fun release(lockId: String, ownerId: String): Boolean
 
     /**
      * Release a lock without checking its owner or release date.
      */
-    suspend fun forceRelease(lockId: LockId): Boolean
+    suspend fun forceRelease(lockId: String): Boolean
 
     /**
      * Release all locks without checking their owners or release dates.

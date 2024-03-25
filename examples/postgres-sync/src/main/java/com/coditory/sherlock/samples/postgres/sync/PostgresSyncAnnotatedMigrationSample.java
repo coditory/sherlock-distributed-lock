@@ -10,18 +10,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.sql.DataSource;
-import java.time.Clock;
-import java.time.Duration;
 
 public class PostgresSyncAnnotatedMigrationSample {
-    private final Sherlock sherlock = SqlSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withDataSource(dataSource())
-            .withLocksTable("LOCKS")
-            .build();
-
     private static DataSource dataSource() {
         HikariConfig config = new HikariConfig();
         config.setJdbcUrl("jdbc:postgresql://localhost:5432/test");
@@ -31,14 +21,15 @@ public class PostgresSyncAnnotatedMigrationSample {
     }
 
     private void sample() {
+        Sherlock sherlock = SqlSherlock.create(dataSource());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration())
-                .migrate();
+            .addAnnotatedChangeSets(new AnnotatedMigration())
+            .migrate();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration2())
-                .migrate();
+            .addAnnotatedChangeSets(new AnnotatedMigration2())
+            .migrate();
     }
 
     public static void main(String[] args) {

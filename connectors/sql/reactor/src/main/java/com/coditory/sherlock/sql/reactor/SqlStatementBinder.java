@@ -60,6 +60,6 @@ final class SqlStatementBinder {
 
     Mono<Long> executeAndGetUpdated() {
         return Mono.from(statement.execute())
-                .flatMap(r -> Mono.from(r.getRowsUpdated()));
+            .flatMap(r -> Mono.from(r.getRowsUpdated()));
     }
 }

@@ -1,8 +1,6 @@
 package com.coditory.sherlock.rxjava;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -19,7 +17,7 @@ public interface DistributedLockConnector {
      */
     @NotNull
     Single<InitializationResult> initialize();
-
+ 
     /**
      * Acquire a lock.
      */
@@ -42,13 +40,13 @@ public interface DistributedLockConnector {
      * Unlock a lock if wat acquired by the same instance.
      */
     @NotNull
-    Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
+    Single<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId);
 
     /**
      * Release a lock without checking its owner or release date.
      */
     @NotNull
-    Single<ReleaseResult> forceRelease(@NotNull LockId lockId);
+    Single<ReleaseResult> forceRelease(@NotNull String lockId);
 
     /**
      * Release all locks without checking their owners or release dates.

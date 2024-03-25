@@ -60,6 +60,6 @@ final class SqlStatementBinder {
 
     Single<Long> executeAndGetUpdated() {
         return Single.fromPublisher(statement.execute())
-                .flatMap(r -> Single.fromPublisher(r.getRowsUpdated()));
+            .flatMap(r -> Single.fromPublisher(r.getRowsUpdated()));
     }
 }

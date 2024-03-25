@@ -1,9 +1,7 @@
 package com.coditory.sherlock.inmem;
 
 import com.coditory.sherlock.DistributedLockConnector;
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
@@ -44,14 +42,14 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     }
 
     @Override
-    synchronized public boolean release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    synchronized public boolean release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         return storage.release(lockId, now(), ownerId);
     }
 
     @Override
-    synchronized public boolean forceRelease(@NotNull LockId lockId) {
+    synchronized public boolean forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         return storage.forceRelease(lockId, now());
     }

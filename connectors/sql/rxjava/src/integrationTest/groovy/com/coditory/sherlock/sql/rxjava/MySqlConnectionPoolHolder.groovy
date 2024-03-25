@@ -16,12 +16,12 @@ class MySqlConnectionPoolHolder {
             return connectionFactory
         }
         ConnectionFactoryOptions options = ConnectionFactoryOptions
-                .parse(MySqlHolder.getJdbcUrl().replace("jdbc:", "r2dbc:"))
-                .mutate()
-                .option(ConnectionFactoryOptions.USER, MySqlHolder.getUsername())
-                .option(ConnectionFactoryOptions.PASSWORD, MySqlHolder.getPassword())
-                .option(ConnectionFactoryOptions.DATABASE, MySqlHolder.getDatabaseName())
-                .build()
+            .parse(MySqlHolder.getJdbcUrl().replace("jdbc:", "r2dbc:"))
+            .mutate()
+            .option(ConnectionFactoryOptions.USER, MySqlHolder.getUsername())
+            .option(ConnectionFactoryOptions.PASSWORD, MySqlHolder.getPassword())
+            .option(ConnectionFactoryOptions.DATABASE, MySqlHolder.getDatabaseName())
+            .build()
         connectionFactory = ConnectionFactories.get(options)
         return connectionFactory
     }

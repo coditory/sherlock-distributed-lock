@@ -41,9 +41,9 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
         expectNonNull(connectionFactory, "connectionFactory");
         expectNonNull(bindingMapper, "bindingMapper");
         return builder()
-                .withConnectionFactory(connectionFactory)
-                .withBindingMapper(bindingMapper)
-                .build();
+            .withConnectionFactory(connectionFactory)
+            .withBindingMapper(bindingMapper)
+            .build();
     }
 
     private SqlSherlock() {
@@ -108,7 +108,7 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
         expectNonNull(bindingMapper, "bindingParameterMapper");
         BindingMapper bindingMapper = PrecomputedBindingParameterMapper.from(this.bindingMapper);
         SqlDistributedLockConnector connector = new SqlDistributedLockConnector(
-                connectionFactory, tableName, clock, bindingMapper);
+            connectionFactory, tableName, clock, bindingMapper);
         return super.build(connector);
     }
 }

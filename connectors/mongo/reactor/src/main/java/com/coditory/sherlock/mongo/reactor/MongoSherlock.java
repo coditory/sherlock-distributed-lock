@@ -16,7 +16,7 @@ import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
  * Builds {@link Sherlock} that uses MongoDB for locking mechanism.
  */
 public final class MongoSherlock extends
-        SherlockWithConnectorBuilder<MongoSherlock> {
+    SherlockWithConnectorBuilder<MongoSherlock> {
     private MongoCollection<Document> collection;
     private Clock clock = DEFAULT_CLOCK;
 
@@ -36,8 +36,8 @@ public final class MongoSherlock extends
     public static Sherlock create(@NotNull MongoCollection<Document> collection) {
         expectNonNull(collection, "collection");
         return builder()
-                .withLocksCollection(collection)
-                .build();
+            .withLocksCollection(collection)
+            .build();
     }
 
     private MongoSherlock() {
@@ -70,7 +70,7 @@ public final class MongoSherlock extends
     public Sherlock build() {
         expectNonNull(collection, "collection");
         MongoDistributedLockConnector connector = new MongoDistributedLockConnector(
-                collection, clock);
+            collection, clock);
         return build(connector);
     }
 }

@@ -1,8 +1,6 @@
 package com.coditory.sherlock.inmem.rxjava;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -28,7 +26,7 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     @Override
     @NotNull
     public Single<InitializationResult> initialize() {
-        return Single.just(InitializationResult.of(true));
+        return Single.just(InitializationResult.initialized());
     }
 
     @Override
@@ -36,7 +34,7 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Single.fromCallable(() -> storage.acquire(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -44,7 +42,7 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Single.just(storage.acquireOrProlong(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -52,31 +50,31 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Single.fromCallable(() -> storage.forceAcquire(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Single<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         return Single.fromCallable(() -> storage.release(lockId, now(), ownerId))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Single<ReleaseResult> forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         return Single.fromCallable(() -> storage.forceRelease(lockId, now()))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     @Override
     @NotNull
     public Single<ReleaseResult> forceReleaseAll() {
         return Single.fromCallable(() -> storage.forceReleaseAll(now()))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     private Instant now() {

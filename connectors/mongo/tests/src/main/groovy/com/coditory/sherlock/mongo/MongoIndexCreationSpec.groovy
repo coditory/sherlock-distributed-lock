@@ -21,8 +21,8 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
     Sherlock locks
 
     MongoCollection<Document> collection = MongoHolder.getClient()
-            .getDatabase(databaseName)
-            .getCollection(collectionName)
+        .getDatabase(databaseName)
+        .getCollection(collectionName)
 
     def setup() {
         locks = createSherlock(ownerId, defaultLockDuration, fixedClock, collectionName)
@@ -46,7 +46,7 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
             assertNoIndexes()
         when:
             locks.createLock("some-acquire")
-                    .acquire()
+                .acquire()
         then:
             assertIndexesCreated()
     }
@@ -66,10 +66,10 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
 
     String getCollectionIndexes() {
         List<String> indexes = collection
-                .listIndexes()
-                .asList()
-                .collect { it.toJson() }
-                .sort()
+            .listIndexes()
+            .asList()
+            .collect { it.toJson() }
+            .sort()
         return "[" + indexes.join(",\n") + "]"
     }
 }

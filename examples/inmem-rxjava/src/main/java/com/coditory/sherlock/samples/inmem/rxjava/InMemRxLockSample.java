@@ -13,7 +13,7 @@ public class InMemRxLockSample {
     public static void main(String[] args) {
         Sherlock sherlock = InMemorySherlock.create();
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(Single.fromCallable(() -> {
+        lock.runLocked(Single.fromCallable(() -> {
             logger.info("Lock acquired!");
             return true;
         })).blockingGet();

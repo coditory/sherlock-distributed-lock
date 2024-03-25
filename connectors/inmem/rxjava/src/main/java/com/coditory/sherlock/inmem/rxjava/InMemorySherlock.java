@@ -27,7 +27,7 @@ public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemor
     public static InMemorySherlock builder() {
         return new InMemorySherlock();
     }
-
+ 
     /**
      * @return new instance of in-memory sherlock with default configuration
      */
@@ -61,8 +61,7 @@ public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemor
     @Override
     @NotNull
     public Sherlock build() {
-        InMemoryDistributedLockConnector connector = new InMemoryDistributedLockConnector(
-                clock, storage);
+        InMemoryDistributedLockConnector connector = new InMemoryDistributedLockConnector(clock, storage);
         return super.build(connector);
     }
 }

@@ -1,9 +1,6 @@
 package com.coditory.sherlock.inmem;
 
-import com.coditory.sherlock.LockDuration;
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -17,21 +14,20 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 final class InMemoryDistributedLock {
     @NotNull
     static InMemoryDistributedLock fromLockRequest(
-            @NotNull LockRequest lockRequest,
-            @NotNull Instant acquiredAt
+        @NotNull LockRequest lockRequest,
+        @NotNull Instant acquiredAt
     ) {
         expectNonNull(lockRequest, "lockRequest");
         expectNonNull(acquiredAt, "acquiredAt");
-        Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
-                .map(LockDuration::getValue)
-                .map(acquiredAt::plus)
-                .map(InMemoryDistributedLock::truncateToMillis)
-                .orElse(null);
+        Instant releaseAt = Optional.ofNullable(lockRequest.duration())
+            .map(acquiredAt::plus)
+            .map(InMemoryDistributedLock::truncateToMillis)
+            .orElse(null);
         return new InMemoryDistributedLock(
-                lockRequest.getLockId(),
-                lockRequest.getOwnerId(),
-                truncateToMillis(acquiredAt),
-                releaseAt
+            lockRequest.lockId(),
+            lockRequest.ownerId(),
+            truncateToMillis(acquiredAt),
+            releaseAt
         );
     }
 
@@ -39,16 +35,16 @@ final class InMemoryDistributedLock {
         return instant.truncatedTo(ChronoUnit.MILLIS);
     }
 
-    private final LockId id;
-    private final OwnerId ownerId;
+    private final String id;
+    private final String ownerId;
     private final Instant acquiredAt;
     private final Instant expiresAt;
 
     private InMemoryDistributedLock(
-            @NotNull LockId id,
-            @NotNull OwnerId ownerId,
-            @NotNull Instant createdAt,
-            @Nullable Instant expiresAt
+        @NotNull String id,
+        @NotNull String ownerId,
+        @NotNull Instant createdAt,
+        @Nullable Instant expiresAt
     ) {
         this.id = expectNonNull(id, "id");
         this.ownerId = expectNonNull(ownerId, "ownerId");
@@ -57,31 +53,31 @@ final class InMemoryDistributedLock {
     }
 
     @NotNull
-    LockId getId() {
+    String getId() {
         return id;
     }
 
     boolean isActive(@NotNull Instant now) {
         return expiresAt == null
-                || expiresAt.isAfter(now);
+            || expiresAt.isAfter(now);
     }
 
     boolean isExpired(@NotNull Instant now) {
         return !isActive(now);
     }
 
-    boolean isOwnedBy(@NotNull OwnerId ownerId) {
+    boolean isOwnedBy(@NotNull String ownerId) {
         return this.ownerId.equals(ownerId);
     }
 
     @Override
     public String toString() {
         return "InMemoryDistributedLock{" +
-                "id=" + id +
-                ", ownerId=" + ownerId +
-                ", acquiredAt=" + acquiredAt +
-                ", expiresAt=" + expiresAt +
-                '}';
+            "id=" + id +
+            ", ownerId=" + ownerId +
+            ", acquiredAt=" + acquiredAt +
+            ", expiresAt=" + expiresAt +
+            '}';
     }
 
     @Override
@@ -94,9 +90,9 @@ final class InMemoryDistributedLock {
         }
         InMemoryDistributedLock that = (InMemoryDistributedLock) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(ownerId, that.ownerId) &&
-                Objects.equals(acquiredAt, that.acquiredAt) &&
-                Objects.equals(expiresAt, that.expiresAt);
+            Objects.equals(ownerId, that.ownerId) &&
+            Objects.equals(acquiredAt, that.acquiredAt) &&
+            Objects.equals(expiresAt, that.expiresAt);
     }
 
     @Override

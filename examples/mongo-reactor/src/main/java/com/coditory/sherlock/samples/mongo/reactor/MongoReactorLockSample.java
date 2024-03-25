@@ -17,14 +17,14 @@ public class MongoReactorLockSample {
         String database = "sherlock";
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
         return mongoClient
-                .getDatabase("sherlock")
-                .getCollection("locks");
+            .getDatabase("sherlock")
+            .getCollection("locks");
     }
 
     public static void main(String[] args) {
         Sherlock sherlock = MongoSherlock.create(getCollection());
-        DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"))
-                .block();
+        DistributedLock lock = sherlock.createLock("sample-lock2");
+        lock.runLocked(() -> logger.info("Lock acquired!"))
+            .block();
     }
 }

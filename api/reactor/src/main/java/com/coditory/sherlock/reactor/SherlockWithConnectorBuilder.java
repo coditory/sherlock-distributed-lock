@@ -1,6 +1,5 @@
 package com.coditory.sherlock.reactor;
 
-import com.coditory.sherlock.LockDuration;
 import com.coditory.sherlock.OwnerIdPolicy;
 import com.coditory.sherlock.SherlockDefaults;
 import org.jetbrains.annotations.NotNull;
@@ -8,12 +7,11 @@ import org.jetbrains.annotations.NotNull;
 import java.time.Duration;
 
 import static com.coditory.sherlock.OwnerIdPolicy.staticOwnerId;
-import static com.coditory.sherlock.Preconditions.expectNonEmpty;
-import static com.coditory.sherlock.Preconditions.expectNonNull;
+import static com.coditory.sherlock.Preconditions.*;
 import static com.coditory.sherlock.SherlockDefaults.DEFAULT_LOCK_DURATION;
 
 public abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnectorBuilder<?>> {
-    private LockDuration duration = DEFAULT_LOCK_DURATION;
+    private Duration duration = DEFAULT_LOCK_DURATION;
     private OwnerIdPolicy ownerIdPolicy = OwnerIdPolicy.defaultOwnerIdPolicy();
 
     /**
@@ -24,7 +22,8 @@ public abstract class SherlockWithConnectorBuilder<T extends SherlockWithConnect
     @NotNull
     public T withLockDuration(@NotNull Duration duration) {
         expectNonNull(duration, "duration");
-        this.duration = LockDuration.of(duration);
+        expectTruncatedToMillis(duration, "duration");
+        this.duration = duration;
         return instance();
     }
 

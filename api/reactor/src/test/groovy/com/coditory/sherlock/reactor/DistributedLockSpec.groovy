@@ -1,6 +1,7 @@
 package com.coditory.sherlock.reactor
 
 import com.coditory.sherlock.base.SpecSimulatedException
+import com.coditory.sherlock.reactor.test.DistributedLockMock
 import reactor.core.publisher.Mono
 import spock.lang.Shared
 import spock.lang.Specification
@@ -8,8 +9,8 @@ import spock.lang.Unroll
 
 import java.time.Duration
 
-import static DistributedLockMock.acquiredInMemoryLock
-import static DistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.reactor.test.DistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.reactor.test.DistributedLockMock.releasedInMemoryLock
 
 class DistributedLockSpec extends Specification {
     @Shared
@@ -32,9 +33,8 @@ class DistributedLockSpec extends Specification {
             result == 1
         where:
             action << [
-                    { it.acquireAndExecute(counter.incrementAndGet()) },
-                    { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
-                    { it.acquireForeverAndExecute(counter.incrementAndGet()) },
+                { it.runLocked(counter.incrementAndGet()) },
+                { it.runLocked(Duration.ofHours(1), counter.incrementAndGet()) },
             ]
     }
 
@@ -51,9 +51,8 @@ class DistributedLockSpec extends Specification {
             result == null
         where:
             action << [
-                    { it.acquireAndExecute(counter.incrementAndGet()) },
-                    { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndGet()) },
-                    { it.acquireForeverAndExecute(counter.incrementAndGet()) },
+                { it.runLocked(counter.incrementAndGet()) },
+                { it.runLocked(Duration.ofHours(1), counter.incrementAndGet()) },
             ]
     }
 
@@ -72,36 +71,9 @@ class DistributedLockSpec extends Specification {
             result == null
         where:
             action << [
-                    { it.acquireAndExecute(counter.incrementAndThrow()) },
-                    { it.acquireAndExecute(Duration.ofHours(1), counter.incrementAndThrow()) },
-                    { it.acquireForeverAndExecute(counter.incrementAndThrow()) },
+                { it.runLocked(counter.incrementAndThrow()) },
+                { it.runLocked(Duration.ofHours(1), counter.incrementAndThrow()) },
             ]
-    }
-
-    def "should execute action on lock release"() {
-        given:
-            DistributedLockMock lock = acquiredInMemoryLock("sample-lock")
-        when:
-            Integer result = lock.releaseAndExecute(counter.incrementAndGet())
-                    .block()
-        then:
-            lock.acquisitions() == 0
-            lock.releases() == 1
-            counter.value == 1
-            result == 1
-    }
-
-    def "should not execute action when lock was not released"() {
-        given:
-            DistributedLockMock lock = releasedInMemoryLock("sample-lock")
-        when:
-            Integer result = lock.releaseAndExecute(counter.incrementAndGet())
-                    .block()
-        then:
-            lock.acquisitions() == 0
-            lock.releases() == 1
-            counter.value == 0
-            result == null
     }
 
     class Counter {
@@ -117,7 +89,7 @@ class DistributedLockSpec extends Specification {
 
         Mono<Integer> incrementAndThrow() {
             return Mono.fromCallable({ ++value })
-                    .then(Mono.error(new SpecSimulatedException()))
+                .then(Mono.error(new SpecSimulatedException()))
         }
     }
 }

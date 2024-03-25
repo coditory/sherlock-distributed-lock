@@ -1,15 +1,15 @@
 package com.coditory.sherlock.coroutines
 
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.acquiredInMemoryLock
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.acquiredReentrantInMemoryLock
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.lockStub
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.releasedInMemoryLock
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.releasedReentrantInMemoryLock
-import com.coditory.sherlock.coroutines.DistributedLockMock.Companion.sequencedLock
 import com.coditory.sherlock.coroutines.base.TestTuple1
 import com.coditory.sherlock.coroutines.base.TestTuple3
 import com.coditory.sherlock.coroutines.base.runDynamicTest
 import com.coditory.sherlock.coroutines.base.testTuple
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.acquiredInMemoryLock
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.acquiredReentrantInMemoryLock
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.lockStub
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.releasedInMemoryLock
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.releasedReentrantInMemoryLock
+import com.coditory.sherlock.coroutines.test.DistributedLockMock.Companion.sequencedLock
 import kotlinx.coroutines.test.runTest
 import org.junit.jupiter.api.Assertions.assertEquals
 import org.junit.jupiter.api.Assertions.assertFalse

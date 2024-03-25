@@ -22,7 +22,7 @@ object MongoKtLockSample {
     private suspend fun sample() {
         val sherlock = MongoSherlock.create(getCollection())
         val lock = sherlock.createLock("sample-lock")
-        lock.acquireAndExecute { logger.info("Lock acquired!") }
+        lock.runLocked { logger.info("Lock acquired!") }
     }
 
     @JvmStatic

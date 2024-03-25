@@ -29,39 +29,39 @@ final class SqlTableInitializer {
 
     Mono<Connection> getInitializedConnection() {
         return initialized.compareAndSet(false, true)
-                ? initialize()
-                : createConnectionWithRetry();
+            ? initialize()
+            : createConnectionWithRetry();
     }
 
     private Mono<Connection> initialize() {
         return createConnectionWithRetry()
-                .flatMap(this::createTable)
-                .flatMap(this::createIndex);
+            .flatMap(this::createTable)
+            .flatMap(this::createIndex);
     }
 
     private Mono<Connection> createTable(Connection connection) {
         Statement createTableStatement = connection.createStatement(sqlQueries.createLocksTable());
         return Mono.<Result>from(createTableStatement.execute())
-                .flatMap(__ -> Mono.from(connection.commitTransaction()).thenReturn(connection))
-                .onErrorResume(e -> {
-                    Statement checkTableStatement = connection.createStatement(sqlQueries.checkTableExits());
-                    return Mono.from(checkTableStatement.execute())
-                            .flatMap(r -> Mono.from(r.getRowsUpdated()).thenReturn(connection));
-                })
-                .onErrorMap(e -> {
-                    initialized.set(false);
-                    return new SherlockException("Could not initialize locks table", e);
-                });
+            .flatMap(__ -> Mono.from(connection.commitTransaction()).thenReturn(connection))
+            .onErrorResume(e -> {
+                Statement checkTableStatement = connection.createStatement(sqlQueries.checkTableExits());
+                return Mono.from(checkTableStatement.execute())
+                    .flatMap(r -> Mono.from(r.getRowsUpdated()).thenReturn(connection));
+            })
+            .onErrorMap(e -> {
+                initialized.set(false);
+                return new SherlockException("Could not initialize locks table", e);
+            });
     }
 
     private Mono<Connection> createIndex(Connection connection) {
         Statement createIndexStatement = connection.createStatement(sqlQueries.createLocksIndex());
         return Mono.<Result>from(createIndexStatement.execute())
-                .flatMap(__ -> Mono.from(connection.commitTransaction()).thenReturn(connection))
-                .onErrorMap(e -> {
-                    initialized.set(false);
-                    return new SherlockException("Could not initialize locks table index", e);
-                });
+            .flatMap(__ -> Mono.from(connection.commitTransaction()).thenReturn(connection))
+            .onErrorMap(e -> {
+                initialized.set(false);
+                return new SherlockException("Could not initialize locks table index", e);
+            });
     }
 
     private Mono<Connection> createConnectionWithRetry() {
@@ -69,10 +69,10 @@ final class SqlTableInitializer {
         // https://github.com/r2dbc/r2dbc-pool/issues/164
         // it seems that retrying connection once solves the issue
         return Mono.<Connection>from(connectionFactory.create())
-                .onErrorResume(e -> {
-                    logger.debug("Could not create connection. Retrying one more time", e);
-                    return Mono.from(connectionFactory.create());
-                })
-                .doOnNext(c -> c.setAutoCommit(true));
+            .onErrorResume(e -> {
+                logger.debug("Could not create connection. Retrying one more time", e);
+                return Mono.from(connectionFactory.create());
+            })
+            .doOnNext(c -> c.setAutoCommit(true));
     }
 }

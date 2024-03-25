@@ -1,9 +1,6 @@
 package com.coditory.sherlock.rxjava;
 
-import com.coditory.sherlock.LockDuration;
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.LockResultLogger;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -16,40 +13,40 @@ import static com.coditory.sherlock.Preconditions.expectNonNull;
 
 class DelegatingDistributedLock implements DistributedLock {
     private final LockResultLogger lockResultLogger;
-    private final LockId lockId;
-    private final OwnerId ownerId;
-    private final LockDuration duration;
+    private final String lockId;
+    private final String ownerId;
+    private final Duration duration;
     private final AcquireAction acquireAction;
     private final ReleaseAction releaseAction;
 
     DelegatingDistributedLock(
-            AcquireAction acquireAction,
-            ReleaseAction releaseAction,
-            LockId lockId,
-            OwnerId ownerId,
-            LockDuration duration
+        AcquireAction acquireAction,
+        ReleaseAction releaseAction,
+        String lockId,
+        String ownerId,
+        Duration duration
     ) {
         this.lockId = expectNonNull(lockId, "lockId");
         this.ownerId = expectNonNull(ownerId, "ownerId");
-        this.duration = expectNonNull(duration, "duration");
+        this.duration = duration;
         this.acquireAction = expectNonNull(acquireAction, "acquireAction");
         this.releaseAction = expectNonNull(releaseAction, "releaseAction");
-        this.lockResultLogger = new LockResultLogger(lockId.getValue(), getClass());
+        this.lockResultLogger = new LockResultLogger(lockId, getClass());
     }
 
     @Override
     @NotNull
     public String getId() {
-        return lockId.getValue();
+        return lockId;
     }
 
     @Override
     public String toString() {
         return "DelegatingDistributedLock{" +
-                "lockId=" + lockId +
-                ", ownerId=" + ownerId +
-                ", duration=" + duration +
-                '}';
+            "lockId=" + lockId +
+            ", ownerId=" + ownerId +
+            ", duration=" + duration +
+            '}';
     }
 
     @Override
@@ -61,8 +58,7 @@ class DelegatingDistributedLock implements DistributedLock {
     @Override
     @NotNull
     public Single<AcquireResult> acquire(@NotNull Duration duration) {
-        LockDuration lockDuration = LockDuration.of(duration);
-        return acquire(new LockRequest(lockId, ownerId, lockDuration));
+        return acquire(new LockRequest(lockId, ownerId, duration));
     }
 
     @Override
@@ -75,18 +71,18 @@ class DelegatingDistributedLock implements DistributedLock {
     @NotNull
     public Single<ReleaseResult> release() {
         return releaseAction.release(lockId, ownerId)
-                .doAfterSuccess(lockResultLogger::logResult);
+            .doAfterSuccess(lockResultLogger::logResult);
     }
 
     private Single<AcquireResult> acquire(LockRequest lockRequest) {
         return acquireAction.acquire(lockRequest)
-                .doAfterSuccess(lockResultLogger::logResult);
+            .doAfterSuccess(lockResultLogger::logResult);
     }
 
     @FunctionalInterface
     public interface ReleaseAction {
         @NotNull
-        Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
+        Single<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId);
     }
 
     @FunctionalInterface

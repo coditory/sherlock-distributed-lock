@@ -7,16 +7,16 @@ import com.coditory.sherlock.InfiniteAcquireLockSpec
 import com.coditory.sherlock.ReleaseLockSpec
 
 class RxMySqlReleaseLockSpec extends ReleaseLockSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}
 
 class RxMySqlAcquireLockSpec extends AcquireLockSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}
 
 class RxMySqlAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}
 
 class RxMySqlInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}
 
 class RxMySqlHandleDbFailureSpec extends HandleDbFailureSpec
-        implements UsesRxSqlSherlock, MySqlConnectionProvider {}
+    implements UsesRxSqlSherlock, MySqlConnectionProvider {}

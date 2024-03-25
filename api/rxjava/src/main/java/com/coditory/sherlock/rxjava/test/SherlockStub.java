@@ -1,14 +1,14 @@
-package com.coditory.sherlock.rxjava;
+package com.coditory.sherlock.rxjava.test;
 
 import com.coditory.sherlock.DistributedLockBuilder;
-import com.coditory.sherlock.LockDuration;
-import com.coditory.sherlock.LockId;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
+import com.coditory.sherlock.rxjava.DistributedLock;
+import com.coditory.sherlock.rxjava.Sherlock;
 import io.reactivex.Single;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -29,7 +29,7 @@ public final class SherlockStub implements Sherlock {
     @NotNull
     static public SherlockStub withReleasedLocks() {
         return new SherlockStub()
-                .withDefaultAcquireResult(true);
+            .withDefaultAcquireResult(true);
     }
 
     /**
@@ -40,7 +40,7 @@ public final class SherlockStub implements Sherlock {
     @NotNull
     static public SherlockStub withAcquiredLocks() {
         return new SherlockStub()
-                .withDefaultAcquireResult(false);
+            .withDefaultAcquireResult(false);
     }
 
     /**
@@ -64,7 +64,7 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Single<InitializationResult> initialize() {
-        return Single.just(InitializationResult.of(true));
+        return Single.just(InitializationResult.initialized());
     }
 
     @Override
@@ -88,17 +88,15 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Single<ReleaseResult> forceReleaseAllLocks() {
-        return Single.just(ReleaseResult.of(false));
+        return Single.just(ReleaseResult.skipped());
     }
 
     private DistributedLockBuilder<DistributedLock> getLockOrDefault() {
         return new DistributedLockBuilder<>(this::getLockOrDefault);
     }
 
-    private DistributedLock getLockOrDefault(
-            LockId id, LockDuration duration, OwnerId ownerId) {
-        DistributedLockMock defaultLock = DistributedLockMock
-                .lockStub(id.getValue(), defaultLockResult);
-        return locksById.getOrDefault(id.getValue(), defaultLock);
+    private DistributedLock getLockOrDefault(String id, Duration duration, String ownerId) {
+        DistributedLockMock defaultLock = DistributedLockMock.lockStub(id, defaultLockResult);
+        return locksById.getOrDefault(id, defaultLock);
     }
 }

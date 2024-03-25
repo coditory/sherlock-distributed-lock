@@ -15,13 +15,13 @@ trait UsesKtMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         MongoCollection<Document> collection = MongoOperations.INSTANCE.getLocksCollection(
-                MongoClientHolder.getClient(), MongoHolder.databaseName, collectionName)
+            MongoClientHolder.getClient(), MongoHolder.databaseName, collectionName)
         com.coditory.sherlock.coroutines.Sherlock coroutinesLocks = MongoSherlock.builder()
-                .withLocksCollection(collection)
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withLocksCollection(collection)
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingKtSherlockWrapper(coroutinesLocks)
     }
 

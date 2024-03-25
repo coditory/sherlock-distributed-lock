@@ -26,7 +26,7 @@ class MongoCollectionInitializer {
             return Single.just(collection);
         }
         return Single.fromPublisher(collection.createIndex(INDEX, INDEX_OPTIONS))
-                .map(result -> collection);
+            .map(result -> collection);
     }
 
     private void validateConnection(MongoCollection<Document> collection) {

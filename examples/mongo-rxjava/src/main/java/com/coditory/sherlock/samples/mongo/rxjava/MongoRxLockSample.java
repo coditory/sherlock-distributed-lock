@@ -24,7 +24,7 @@ public class MongoRxLockSample {
     public static void main(String[] args) {
         Sherlock sherlock = MongoSherlock.create(getCollection());
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"))
+        lock.runLocked(() -> logger.info("Lock acquired!"))
                 .blockingGet();
     }
 }

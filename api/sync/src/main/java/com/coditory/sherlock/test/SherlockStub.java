@@ -1,7 +1,11 @@
-package com.coditory.sherlock;
+package com.coditory.sherlock.test;
 
+import com.coditory.sherlock.DistributedLock;
+import com.coditory.sherlock.DistributedLockBuilder;
+import com.coditory.sherlock.Sherlock;
 import org.jetbrains.annotations.NotNull;
 
+import java.time.Duration;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -22,7 +26,7 @@ public final class SherlockStub implements Sherlock {
     @NotNull
     public static SherlockStub withReleasedLocks() {
         return new SherlockStub()
-                .withDefaultAcquireResult(true);
+            .withDefaultAcquireResult(true);
     }
 
     /**
@@ -33,7 +37,7 @@ public final class SherlockStub implements Sherlock {
     @NotNull
     public static SherlockStub withAcquiredLocks() {
         return new SherlockStub()
-                .withDefaultAcquireResult(false);
+            .withDefaultAcquireResult(false);
     }
 
     /**
@@ -87,9 +91,8 @@ public final class SherlockStub implements Sherlock {
         return new DistributedLockBuilder<>(this::getLockOrDefault);
     }
 
-    private DistributedLock getLockOrDefault(LockId id, LockDuration duration, OwnerId ownerId) {
-        DistributedLockMock defaultLock = DistributedLockMock
-                .lockStub(id.getValue(), defaultLockResult);
-        return locksById.getOrDefault(id.getValue(), defaultLock);
+    private DistributedLock getLockOrDefault(String id, Duration duration, String ownerId) {
+        DistributedLockMock defaultLock = DistributedLockMock.lockStub(id, defaultLockResult);
+        return locksById.getOrDefault(id, defaultLock);
     }
 }

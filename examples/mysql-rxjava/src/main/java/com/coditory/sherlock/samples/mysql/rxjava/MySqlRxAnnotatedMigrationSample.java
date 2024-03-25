@@ -11,42 +11,31 @@ import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MySqlRxAnnotatedMigrationSample {
-    private final Sherlock sherlock = SqlSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withConnectionFactory(getConnectionFactory())
-            .withBindingMapper(BindingMapper.MYSQL_MAPPER)
-            .withLocksTable("LOCKS")
-            .build();
-
     private ConnectionFactory getConnectionFactory() {
         String database = "test";
         ConnectionFactoryOptions options = ConnectionFactoryOptions
-                .parse("r2dbc:mysql://localhost:3306/" + database)
-                .mutate()
-                .option(ConnectionFactoryOptions.USER, "mysql")
-                .option(ConnectionFactoryOptions.PASSWORD, "mysql")
-                .option(ConnectionFactoryOptions.DATABASE, database)
-                .build();
+            .parse("r2dbc:mysql://localhost:3306/" + database)
+            .mutate()
+            .option(ConnectionFactoryOptions.USER, "mysql")
+            .option(ConnectionFactoryOptions.PASSWORD, "mysql")
+            .option(ConnectionFactoryOptions.DATABASE, database)
+            .build();
         return ConnectionFactories.get(options);
     }
 
     void sample() {
+        Sherlock sherlock = SqlSherlock.create(getConnectionFactory(), BindingMapper.MYSQL_MAPPER);
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration())
-                .migrate()
-                .blockingGet();
+            .addAnnotatedChangeSets(new AnnotatedMigration())
+            .migrate()
+            .blockingGet();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration2())
-                .migrate()
-                .blockingGet();
+            .addAnnotatedChangeSets(new AnnotatedMigration2())
+            .migrate()
+            .blockingGet();
     }
 
     public static void main(String[] args) {

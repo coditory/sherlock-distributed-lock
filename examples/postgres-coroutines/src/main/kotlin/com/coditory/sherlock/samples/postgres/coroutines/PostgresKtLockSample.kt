@@ -29,7 +29,7 @@ object PostgresKtLockSample {
         val sherlock = SqlSherlock.create(getConnectionFactory(), POSTGRES_MAPPER)
         val lock = sherlock.createLock("sample-lock")
         lock
-            .acquireAndExecute { logger.info("Lock acquired!") }
+            .runLocked { logger.info("Lock acquired!") }
     }
 
     @JvmStatic

@@ -1,8 +1,6 @@
 package com.coditory.sherlock.mongo.coroutines
 
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.LockRequest
-import com.coditory.sherlock.OwnerId
 import com.coditory.sherlock.SherlockException
 import com.coditory.sherlock.coroutines.SuspendingDistributedLockConnector
 import com.coditory.sherlock.mongo.MongoDistributedLock
@@ -71,22 +69,19 @@ internal class MongoDistributedLockConnector(
         }
     }
 
-    override suspend fun release(
-        lockId: LockId,
-        ownerId: OwnerId,
-    ): Boolean {
+    override suspend fun release(lockId: String, ownerId: String): Boolean {
         return try {
             delete(queryAcquired(lockId, ownerId))
         } catch (e: Throwable) {
-            throw SherlockException("Could not release lock: " + lockId.value + ", owner: " + ownerId, e)
+            throw SherlockException("Could not release lock: $lockId, owner: $ownerId", e)
         }
     }
 
-    override suspend fun forceRelease(lockId: LockId): Boolean {
+    override suspend fun forceRelease(lockId: String): Boolean {
         return try {
             delete(queryById(lockId))
         } catch (e: Throwable) {
-            throw SherlockException("Could not force release lock: " + lockId.value, e)
+            throw SherlockException("Could not force release lock: $lockId", e)
         }
     }
 
@@ -108,10 +103,7 @@ internal class MongoDistributedLockConnector(
         return deleted != null && fromDocument(deleted).isActive(now())
     }
 
-    private suspend fun upsert(
-        query: Bson,
-        lock: MongoDistributedLock,
-    ): Boolean {
+    private suspend fun upsert(query: Bson, lock: MongoDistributedLock): Boolean {
         val documentToUpsert = lock.toDocument()
         return try {
             val current =

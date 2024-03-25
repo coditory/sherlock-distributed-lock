@@ -24,7 +24,7 @@ class BlockingReactorSherlockWrapper implements Sherlock {
     @Override
     void initialize() {
         sherlock.initialize()
-                .single().block()
+            .single().block()
     }
 
     @Override
@@ -48,13 +48,13 @@ class BlockingReactorSherlockWrapper implements Sherlock {
     @Override
     boolean forceReleaseAllLocks() {
         return sherlock.forceReleaseAllLocks()
-                .single().block().released
+            .single().block().released
     }
 
     @Override
     boolean forceReleaseLock(@NotNull String lockId) {
         return createOverridingLock(lockId)
-                .release()
+            .release()
     }
 
     private DistributedLockBuilder blockingLockBuilder(DistributedLockBuilder<com.coditory.sherlock.reactor.DistributedLock> reactiveBuilder) {
@@ -80,24 +80,24 @@ class BlockingReactorDistributedLock implements DistributedLock {
     @Override
     boolean acquire() {
         return lock.acquire()
-                .single().block().acquired
+            .single().block().acquired
     }
 
     @Override
     boolean acquire(@NotNull Duration duration) {
         return lock.acquire(duration)
-                .single().block().acquired
+            .single().block().acquired
     }
 
     @Override
     boolean acquireForever() {
         return lock.acquireForever()
-                .single().block().acquired
+            .single().block().acquired
     }
 
     @Override
     boolean release() {
         return lock.release()
-                .single().block().released
+            .single().block().released
     }
 }

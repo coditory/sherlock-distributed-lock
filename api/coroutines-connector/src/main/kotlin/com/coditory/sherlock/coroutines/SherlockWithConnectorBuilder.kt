@@ -1,9 +1,9 @@
 package com.coditory.sherlock.coroutines
 
-import com.coditory.sherlock.LockDuration
 import com.coditory.sherlock.OwnerIdPolicy
 import com.coditory.sherlock.Preconditions.expectNonEmpty
 import com.coditory.sherlock.Preconditions.expectNonNull
+import com.coditory.sherlock.Preconditions.expectTruncatedToMillis
 import com.coditory.sherlock.SherlockDefaults
 import java.time.Duration
 
@@ -18,7 +18,8 @@ abstract class SherlockWithConnectorBuilder<T : SherlockWithConnectorBuilder<T>>
      */
     fun withLockDuration(duration: Duration): T {
         expectNonNull(duration, "duration")
-        this.duration = LockDuration.of(duration)
+        expectTruncatedToMillis(duration, "duration")
+        this.duration = duration
         return instance()
     }
 

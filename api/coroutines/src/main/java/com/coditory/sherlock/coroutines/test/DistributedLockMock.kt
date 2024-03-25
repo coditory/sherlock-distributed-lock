@@ -1,9 +1,9 @@
-package com.coditory.sherlock.coroutines
+package com.coditory.sherlock.coroutines.test
 
-import com.coditory.sherlock.LockId
 import com.coditory.sherlock.Preconditions.expectNonEmpty
 import com.coditory.sherlock.Preconditions.expectNonNull
 import com.coditory.sherlock.UuidGenerator
+import com.coditory.sherlock.coroutines.DistributedLock
 import java.time.Duration
 import java.util.concurrent.ConcurrentLinkedQueue
 import java.util.concurrent.atomic.AtomicBoolean
@@ -147,13 +147,13 @@ class DistributedLockMock private constructor(
     }
 
     private class InMemoryDistributedLockStub private constructor(
-        lockId: LockId,
+        lockId: String,
         private val reentrant: Boolean,
         acquired: Boolean,
     ) : DistributedLock {
         private val acquired = AtomicBoolean(acquired)
 
-        override val id: String = lockId.value
+        override val id: String = lockId
 
         override suspend fun acquire(): Boolean {
             return acquireSync()
@@ -186,14 +186,14 @@ class DistributedLockMock private constructor(
 
         companion object {
             fun reentrantInMemoryLock(
-                lockId: LockId,
+                lockId: String,
                 acquired: Boolean,
             ): InMemoryDistributedLockStub {
                 return InMemoryDistributedLockStub(lockId, true, acquired)
             }
 
             fun inMemoryLock(
-                lockId: LockId,
+                lockId: String,
                 acquired: Boolean,
             ): InMemoryDistributedLockStub {
                 return InMemoryDistributedLockStub(lockId, false, acquired)
@@ -201,8 +201,8 @@ class DistributedLockMock private constructor(
         }
     }
 
-    internal class SequencedDistributedLockStub private constructor(
-        lockId: LockId,
+    internal class SequencedDistributedLockStub(
+        override val id: String,
         acquireResults: List<Boolean>,
         releaseResults: List<Boolean>,
     ) : DistributedLock {
@@ -210,14 +210,6 @@ class DistributedLockMock private constructor(
         private val releaseResults = ConcurrentLinkedQueue(releaseResults)
         private val defaultAcquireResult = acquireResults[acquireResults.size - 1]
         private val defaultReleaseResult = releaseResults[releaseResults.size - 1]
-
-        constructor(
-            lockId: String,
-            acquireResults: List<Boolean>,
-            releaseResults: List<Boolean>,
-        ) : this(LockId.of(lockId), acquireResults, releaseResults)
-
-        override val id: String = lockId.value
 
         override suspend fun acquire(): Boolean {
             return acquireResults.poll() ?: defaultAcquireResult
@@ -254,7 +246,7 @@ class DistributedLockMock private constructor(
             state: Boolean,
         ): DistributedLockMock {
             expectNonEmpty(lockId, "lockId")
-            return of(InMemoryDistributedLockStub.inMemoryLock(LockId.of(lockId), state))
+            return of(InMemoryDistributedLockStub.inMemoryLock(lockId, state))
         }
 
         @JvmOverloads
@@ -274,7 +266,7 @@ class DistributedLockMock private constructor(
             state: Boolean,
         ): DistributedLockMock {
             expectNonEmpty(lockId, "lockId")
-            return of(InMemoryDistributedLockStub.reentrantInMemoryLock(LockId.of(lockId), state))
+            return of(InMemoryDistributedLockStub.reentrantInMemoryLock(lockId, state))
         }
 
         fun lockStub(result: Boolean): DistributedLockMock {

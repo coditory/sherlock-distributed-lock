@@ -1,7 +1,5 @@
 package com.coditory.sherlock.sql;
 
-import com.coditory.sherlock.sql.SqlLockQueries;
-
 import javax.sql.DataSource;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
@@ -25,8 +23,8 @@ class SqlTableInitializer {
 
     Connection getInitializedConnection() throws SQLException {
         return initialized.compareAndSet(false, true)
-                ? initialize()
-                : getConnection();
+            ? initialize()
+            : getConnection();
     }
 
     private Connection initialize() throws SQLException {
@@ -38,7 +36,7 @@ class SqlTableInitializer {
             initialized.set(true);
         } catch (SQLException e) {
             try (PreparedStatement statement = connection
-                    .prepareStatement(sqlQueries.checkTableExits())) {
+                .prepareStatement(sqlQueries.checkTableExits())) {
                 statement.executeQuery();
                 // no error means that the table exists
                 initialized.set(true);

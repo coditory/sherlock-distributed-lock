@@ -1,8 +1,6 @@
 package com.coditory.sherlock.inmem.reactor;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -28,7 +26,7 @@ class ReactorInMemoryDistributedLockConnector implements DistributedLockConnecto
     @Override
     @NotNull
     public Mono<InitializationResult> initialize() {
-        return Mono.just(InitializationResult.of(true));
+        return Mono.just(InitializationResult.initialized());
     }
 
     @Override
@@ -36,7 +34,7 @@ class ReactorInMemoryDistributedLockConnector implements DistributedLockConnecto
     public Mono<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Mono.fromCallable(() -> storage.acquire(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -44,7 +42,7 @@ class ReactorInMemoryDistributedLockConnector implements DistributedLockConnecto
     public Mono<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Mono.just(storage.acquireOrProlong(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -52,31 +50,31 @@ class ReactorInMemoryDistributedLockConnector implements DistributedLockConnecto
     public Mono<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         expectNonNull(lockRequest, "lockRequest");
         return Mono.fromCallable(() -> storage.forceAcquire(lockRequest, now()))
-                .map(AcquireResult::of);
+            .map(AcquireResult::of);
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Mono<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId) {
         expectNonNull(lockId, "lockId");
         expectNonNull(ownerId, "ownerId");
         return Mono.fromCallable(() -> storage.release(lockId, now(), ownerId))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     @Override
     @NotNull
-    public Mono<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Mono<ReleaseResult> forceRelease(@NotNull String lockId) {
         expectNonNull(lockId, "lockId");
         return Mono.fromCallable(() -> storage.forceRelease(lockId, now()))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     @Override
     @NotNull
     public Mono<ReleaseResult> forceReleaseAll() {
         return Mono.fromCallable(() -> storage.forceReleaseAll(now()))
-                .map(ReleaseResult::of);
+            .map(ReleaseResult::of);
     }
 
     private Instant now() {

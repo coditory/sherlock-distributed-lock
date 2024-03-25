@@ -4,37 +4,39 @@ import com.coditory.sherlock.DistributedLockBuilder
 import com.coditory.sherlock.Preconditions.expectNonEmpty
 
 /**
- * Manages distributed locks using Reactor API.
+ * Manages distributed locks using Kotlin Coroutines API.
  */
 interface Sherlock {
     /**
      * Initializes underlying infrastructure. If this method is not invoked explicitly then it can be
      * invoked implicitly when acquiring or releasing a lock for the first time.
-     *
-     *
-     * Most often initialization is related with creating indexes and tables.
+     * <p>
+     * Initialization creates indexes and tables.
      *
      * @return true if initialization was successful, otherwise false is returned
      */
     suspend fun initialize()
 
     /**
-     * Creates a distributed lock. Created lock may be acquired only once by the same owner:
+     * Creates a distributed single-entrant lock builder.
+     * Single-entrant lock can be acquired only once.
+     * Even the same owner cannot acquire the same lock again.
      *
-     * <pre>`assert lock.acquire() == true
+     * <pre>{@code
+     * assert lock.acquire() == true
      * assert lock.acquire() == false
-     * `</pre>
+     * }</pre>
      *
      * @return the lock builder
      */
     fun createLock(): DistributedLockBuilder<DistributedLock>
 
     /**
-     * Creates a lock with default configuration.
+     * Creates a single-entrant lock with default configuration.
      *
      * @param lockId lock identifier
      * @return the lock
-     * @see Sherlock.createLock
+     * @see Sherlock#createLock()
      */
     fun createLock(lockId: String): DistributedLock {
         expectNonEmpty(lockId, "lockId")
@@ -42,12 +44,14 @@ interface Sherlock {
     }
 
     /**
-     * Creates a distributed reentrant lock. Reentrant lock may be acquired multiple times by the same
+     * Creates a distributed reentrant lock.
+     * Reentrant lock may be acquired multiple times by the same
      * owner:
      *
-     * <pre>`assert reentrantLock.acquire() == true
+     * <pre>{@code
      * assert reentrantLock.acquire() == true
-     * `</pre>
+     * assert reentrantLock.acquire() == true
+     * }</pre>
      *
      * @return the reentrant lock builder
      */
@@ -58,7 +62,7 @@ interface Sherlock {
      *
      * @param lockId lock identifier
      * @return the reentrant lock
-     * @see Sherlock.createReentrantLock
+     * @see Sherlock#createReentrantLock()
      */
     fun createReentrantLock(lockId: String): DistributedLock {
         expectNonEmpty(lockId, "lockId")
@@ -66,14 +70,15 @@ interface Sherlock {
     }
 
     /**
-     * Create a distributed overriding lock. Returned lock may acquire or release any other lock
+     * Create a distributed overriding lock.
+     * Returned lock may acquire or release any other lock
      * without checking its state:
      *
-     * <pre>`assert someLock.acquire() == true
+     * <pre>{@code
+     * assert someLock.acquire() == true
      * assert overridingLock.acquire() == true
-     * `</pre>
-     *
-     *
+     * }</pre>
+     * <p>
      * It could be used for administrative actions.
      *
      * @return the overriding lock builder
@@ -85,7 +90,7 @@ interface Sherlock {
      *
      * @param lockId lock identifier
      * @return the overriding lock
-     * @see Sherlock.createOverridingLock
+     * @see Sherlock#createOverridingLock()
      */
     fun createOverridingLock(lockId: String): DistributedLock {
         expectNonEmpty(lockId, "lockId")
@@ -94,8 +99,7 @@ interface Sherlock {
 
     /**
      * Force releases all acquired locks.
-     *
-     *
+     * <p>
      * It could be used for administrative actions.
      *
      * @return true if lock was released, otherwise false is returned
@@ -104,8 +108,7 @@ interface Sherlock {
 
     /**
      * Force releases a lock.
-     *
-     *
+     * <p>
      * It could be used for administrative actions.
      *
      * @param lockId lock identifier

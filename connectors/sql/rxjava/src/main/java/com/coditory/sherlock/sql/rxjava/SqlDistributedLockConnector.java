@@ -1,6 +1,7 @@
 package com.coditory.sherlock.sql.rxjava;
 
-import com.coditory.sherlock.*;
+import com.coditory.sherlock.LockRequest;
+import com.coditory.sherlock.SherlockException;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -15,6 +16,7 @@ import io.reactivex.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
+import java.time.Duration;
 import java.time.Instant;
 import java.util.function.Function;
 
@@ -28,10 +30,10 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     private final BindingMapper bindingMapper;
 
     SqlDistributedLockConnector(
-            @NotNull ConnectionFactory connectionFactory,
-            @NotNull String tableName,
-            @NotNull Clock clock,
-            @NotNull BindingMapper bindingMapper
+        @NotNull ConnectionFactory connectionFactory,
+        @NotNull String tableName,
+        @NotNull Clock clock,
+        @NotNull BindingMapper bindingMapper
     ) {
         expectNonNull(connectionFactory, "connectionFactory");
         expectNonEmpty(tableName, "tableName");
@@ -47,8 +49,8 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     @NotNull
     public Single<InitializationResult> initialize() {
         return sqlTableInitializer.getInitializedConnection()
-                .flatMap(c -> closeConnection(c).map(__ -> InitializationResult.of(true)))
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not initialize SQL table", e)));
+            .flatMap(c -> closeConnection(c).map(__ -> InitializationResult.of(true)))
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not initialize SQL table", e)));
     }
 
     @Override
@@ -56,13 +58,13 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> acquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
-                updateReleasedLock(connection, lockRequest, now)
-                        .flatMap(updated -> updated
-                                ? Single.just(true)
-                                : insertLock(connection, lockRequest, now))
+            updateReleasedLock(connection, lockRequest, now)
+                .flatMap(updated -> updated
+                    ? Single.just(true)
+                    : insertLock(connection, lockRequest, now))
         )
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire lock: " + lockRequest, e)))
-                .map(AcquireResult::of);
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire lock: " + lockRequest, e)))
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -70,13 +72,13 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> acquireOrProlong(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
-                updateAcquiredOrReleasedLock(connection, lockRequest, now)
-                        .flatMap(updated -> updated
-                                ? Single.just(true)
-                                : insertLock(connection, lockRequest, now))
+            updateAcquiredOrReleasedLock(connection, lockRequest, now)
+                .flatMap(updated -> updated
+                    ? Single.just(true)
+                    : insertLock(connection, lockRequest, now))
         )
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)))
-                .map(AcquireResult::of);
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not acquire or prolong lock: " + lockRequest, e)))
+            .map(AcquireResult::of);
     }
 
     @Override
@@ -84,90 +86,90 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
     public Single<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest) {
         Instant now = now();
         return connectionFlatMap(connection ->
-                updateLockById(connection, lockRequest, now)
-                        .flatMap(updated -> updated
-                                ? Single.just(true)
-                                : insertLock(connection, lockRequest, now))
+            updateLockById(connection, lockRequest, now)
+                .flatMap(updated -> updated
+                    ? Single.just(true)
+                    : insertLock(connection, lockRequest, now))
         )
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force acquire lock: " + lockRequest, e)))
-                .map(AcquireResult::of);
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force acquire lock: " + lockRequest, e)))
+            .map(AcquireResult::of);
     }
 
     private Single<Boolean> updateReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
-        String lockId = lockRequest.getLockId().getValue();
-        Instant expiresAt = expiresAt(now, lockRequest.getDuration());
+        String lockId = lockRequest.lockId();
+        Instant expiresAt = expiresAt(now, lockRequest.duration());
         return statementBinder(connection, sqlQueries.updateReleasedLock())
-                .bindOwnerId(lockRequest.getOwnerId().getValue())
-                .bindNow(now)
-                .bindExpiresAt(expiresAt)
-                .bindLockId(lockId)
-                .bindNow(now)
-                .executeAndGetUpdated()
-                .map(updatedRows -> updatedRows > 0);
+            .bindOwnerId(lockRequest.ownerId())
+            .bindNow(now)
+            .bindExpiresAt(expiresAt)
+            .bindLockId(lockId)
+            .bindNow(now)
+            .executeAndGetUpdated()
+            .map(updatedRows -> updatedRows > 0);
     }
 
     private Single<Boolean> updateAcquiredOrReleasedLock(Connection connection, LockRequest lockRequest, Instant now) {
-        String lockId = lockRequest.getLockId().getValue();
-        Instant expiresAt = expiresAt(now, lockRequest.getDuration());
+        String lockId = lockRequest.lockId();
+        Instant expiresAt = expiresAt(now, lockRequest.duration());
         return statementBinder(connection, sqlQueries.updateAcquiredOrReleasedLock())
-                .bindOwnerId(lockRequest.getOwnerId().getValue())
-                .bindNow(now)
-                .bindExpiresAt(expiresAt)
-                .bindLockId(lockId)
-                .bindOwnerId(lockRequest.getOwnerId().getValue())
-                .bindNow(now)
-                .executeAndGetUpdated()
-                .map(updatedRows -> updatedRows > 0);
+            .bindOwnerId(lockRequest.ownerId())
+            .bindNow(now)
+            .bindExpiresAt(expiresAt)
+            .bindLockId(lockId)
+            .bindOwnerId(lockRequest.ownerId())
+            .bindNow(now)
+            .executeAndGetUpdated()
+            .map(updatedRows -> updatedRows > 0);
     }
 
     private Single<Boolean> updateLockById(Connection connection, LockRequest lockRequest, Instant now) {
-        String lockId = lockRequest.getLockId().getValue();
-        Instant expiresAt = expiresAt(now, lockRequest.getDuration());
+        String lockId = lockRequest.lockId();
+        Instant expiresAt = expiresAt(now, lockRequest.duration());
         return statementBinder(connection, sqlQueries.updateLockById())
-                .bindOwnerId(lockRequest.getOwnerId().getValue())
-                .bindNow(now)
-                .bindExpiresAt(expiresAt)
-                .bindLockId(lockId)
-                .executeAndGetUpdated()
-                .map(updatedRows -> updatedRows > 0);
+            .bindOwnerId(lockRequest.ownerId())
+            .bindNow(now)
+            .bindExpiresAt(expiresAt)
+            .bindLockId(lockId)
+            .executeAndGetUpdated()
+            .map(updatedRows -> updatedRows > 0);
     }
 
     private Single<Boolean> insertLock(Connection connection, LockRequest lockRequest, Instant now) {
-        String lockId = lockRequest.getLockId().getValue();
-        Instant expiresAt = expiresAt(now, lockRequest.getDuration());
+        String lockId = lockRequest.lockId();
+        Instant expiresAt = expiresAt(now, lockRequest.duration());
         return statementBinder(connection, sqlQueries.insertLock())
-                .bindLockId(lockId)
-                .bindOwnerId(lockRequest.getOwnerId().getValue())
-                .bindNow(now)
-                .bindExpiresAt(expiresAt)
-                .executeAndGetUpdated()
-                .map(updatedRows -> updatedRows > 0)
-                .onErrorResumeNext(e -> Single.just(false));
+            .bindLockId(lockId)
+            .bindOwnerId(lockRequest.ownerId())
+            .bindNow(now)
+            .bindExpiresAt(expiresAt)
+            .executeAndGetUpdated()
+            .map(updatedRows -> updatedRows > 0)
+            .onErrorResumeNext(e -> Single.just(false));
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId) {
+    public Single<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId) {
         return statementBinder(sqlQueries.deleteAcquiredByIdAndOwnerId(), binder ->
-                binder
-                        .bindLockId(lockId.getValue())
-                        .bindOwnerId(ownerId.getValue())
-                        .bindNow(now())
-                        .executeAndGetUpdated()
-                        .map(updated -> ReleaseResult.of(updated > 0))
-        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not release lock: " + lockId.getValue() + ", owner: " + ownerId, e)));
+            binder
+                .bindLockId(lockId)
+                .bindOwnerId(ownerId)
+                .bindNow(now())
+                .executeAndGetUpdated()
+                .map(updated -> ReleaseResult.of(updated > 0))
+        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not release lock: " + lockId + ", owner: " + ownerId, e)));
     }
 
     @Override
     @NotNull
-    public Single<ReleaseResult> forceRelease(@NotNull LockId lockId) {
+    public Single<ReleaseResult> forceRelease(@NotNull String lockId) {
         return statementBinder(sqlQueries.deleteAcquiredById(), binder ->
-                binder
-                        .bindOwnerId(lockId.getValue())
-                        .bindNow(now())
-                        .executeAndGetUpdated()
-                        .map(updated -> ReleaseResult.of(updated > 0))
-        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release lock: " + lockId.getValue(), e)));
+            binder
+                .bindOwnerId(lockId)
+                .bindNow(now())
+                .executeAndGetUpdated()
+                .map(updated -> ReleaseResult.of(updated > 0))
+        ).onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release lock: " + lockId, e)));
     }
 
     @Override
@@ -176,21 +178,21 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         return connectionFlatMap(connection -> {
             Statement statement = connection.createStatement(sqlQueries.deleteAll());
             return Single.fromPublisher(statement.execute())
-                    .flatMap(result -> Single.fromPublisher(result.getRowsUpdated()))
-                    .map(updated -> ReleaseResult.of(updated > 0));
+                .flatMap(result -> Single.fromPublisher(result.getRowsUpdated()))
+                .map(updated -> ReleaseResult.of(updated > 0));
         })
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release all locks", e)));
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not force release all locks", e)));
     }
 
     private Instant now() {
         return clock.instant();
     }
 
-    private Instant expiresAt(Instant now, LockDuration duration) {
-        if (duration == null || duration.getValue() == null) {
+    private Instant expiresAt(Instant now, Duration duration) {
+        if (duration == null) {
             return null;
         }
-        return now.plus(duration.getValue());
+        return now.plus(duration);
     }
 
     private <T> Single<T> statementBinder(String sql, Function<SqlStatementBinder, Single<T>> action) {
@@ -207,18 +209,18 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
 
     private <T> Single<T> connectionFlatMap(Function<Connection, Single<T>> action) {
         return sqlTableInitializer.getInitializedConnection()
-                .flatMap(connection ->
-                        action.apply(connection)
-                                .flatMap(v -> closeConnection(connection).map(__ -> v))
-                                .onErrorResumeNext(e -> closeConnection(connection).flatMap(wer -> Single.error(e)))
-                );
+            .flatMap(connection ->
+                action.apply(connection)
+                    .flatMap(v -> closeConnection(connection).map(__ -> v))
+                    .onErrorResumeNext(e -> closeConnection(connection).flatMap(wer -> Single.error(e)))
+            );
     }
 
     private Single<Boolean> closeConnection(Connection connection) {
         return Flowable.fromPublisher(connection.close())
-                .firstElement()
-                .map(__ -> true)
-                .toSingle(true)
-                .onErrorResumeNext(e -> Single.error(new SherlockException("Could not close connection", e)));
+            .firstElement()
+            .map(__ -> true)
+            .toSingle(true)
+            .onErrorResumeNext(e -> Single.error(new SherlockException("Could not close connection", e)));
     }
 }

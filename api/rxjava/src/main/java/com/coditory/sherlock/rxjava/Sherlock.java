@@ -9,23 +9,24 @@ import org.jetbrains.annotations.NotNull;
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 
 /**
- * Manages distributed locks using RxJava API.
+ * Manages distributed locks using Kotlin Coroutines API.
  */
 public interface Sherlock {
     /**
      * Initializes underlying infrastructure. If this method is not invoked explicitly then it can be
      * invoked implicitly when acquiring or releasing a lock for the first time.
      * <p>
-     * Most often initialization is related with creating indexes and tables.
+     * Initialization creates indexes and tables.
      *
-     * @return {@link InitializationResult#SUCCESS} if initialization was successful, otherwise {@link
-     * InitializationResult#FAILURE} is returned
+     * @return {@link InitializationResult}
      */
     @NotNull
     Single<InitializationResult> initialize();
 
     /**
-     * Creates a distributed lock. Created lock may be acquired only once by the same owner:
+     * Creates a distributed single-entrant lock builder.
+     * Single-entrant lock can be acquired only once.
+     * Even the same owner cannot acquire the same lock again.
      *
      * <pre>{@code
      * assert lock.acquire() == true
@@ -38,7 +39,7 @@ public interface Sherlock {
     DistributedLockBuilder<DistributedLock> createLock();
 
     /**
-     * Creates a lock with default configuration.
+     * Creates a single-entrant lock with default configuration.
      *
      * @param lockId lock identifier
      * @return the lock
@@ -51,7 +52,8 @@ public interface Sherlock {
     }
 
     /**
-     * Creates a distributed reentrant lock. Reentrant lock may be acquired multiple times by the same
+     * Creates a distributed reentrant lock.
+     * Reentrant lock may be acquired multiple times by the same
      * owner:
      *
      * <pre>{@code
@@ -78,7 +80,8 @@ public interface Sherlock {
     }
 
     /**
-     * Create a distributed overriding lock. Returned lock may acquire or release any other lock
+     * Create a distributed overriding lock.
+     * Returned lock may acquire or release any other lock
      * without checking its state:
      *
      * <pre>{@code
@@ -111,8 +114,7 @@ public interface Sherlock {
      * <p>
      * It could be used for administrative actions.
      *
-     * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
-     * ReleaseResult#FAILURE} is returned
+     * @return {@link ReleaseResult}
      */
     @NotNull
     Single<ReleaseResult> forceReleaseAllLocks();
@@ -123,8 +125,7 @@ public interface Sherlock {
      * It could be used for administrative actions.
      *
      * @param lockId lock identifier
-     * @return {@link ReleaseResult#SUCCESS} if lock was released, otherwise {@link
-     * ReleaseResult#FAILURE} is returned
+     * @return {@link ReleaseResult}
      */
     @NotNull
     default Single<ReleaseResult> forceReleaseLock(@NotNull String lockId) {

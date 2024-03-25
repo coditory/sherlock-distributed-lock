@@ -14,17 +14,17 @@ trait UsesMongoSherlock implements DistributedLocksCreator, DatabaseManager {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String collectionName) {
         return MongoSherlock.builder()
-                .withLocksCollection(getLocksCollection(collectionName))
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withLocksCollection(getLocksCollection(collectionName))
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
     }
 
     MongoCollection<Document> getLocksCollection(String collectionName) {
         return MongoHolder.getClient()
-                .getDatabase(MongoHolder.databaseName)
-                .getCollection(collectionName)
+            .getDatabase(MongoHolder.databaseName)
+            .getCollection(collectionName)
     }
 
     @Override

@@ -1,8 +1,9 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.test.SherlockStub
 import spock.lang.Specification
 
-import static com.coditory.sherlock.DistributedLockMock.lockStub
+import static com.coditory.sherlock.test.DistributedLockMock.lockStub
 
 class SherlockStubSpec extends Specification {
     def "should create sherlock returning always opened locks"() {
@@ -31,7 +32,7 @@ class SherlockStubSpec extends Specification {
         given:
             String lockId = "some-lock"
             Sherlock sherlock = SherlockStub.withAcquiredLocks()
-                    .withLock(lockStub(lockId, true))
+                .withLock(lockStub(lockId, true))
         expect:
             sherlock.createLock("other-lock").acquire() == false
         and:

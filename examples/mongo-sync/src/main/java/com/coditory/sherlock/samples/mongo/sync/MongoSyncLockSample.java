@@ -10,9 +10,6 @@ import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Clock;
-import java.time.Duration;
-
 public class MongoSyncLockSample {
     private static final Logger logger = LoggerFactory.getLogger(MongoSyncLockSample.class);
 
@@ -21,20 +18,13 @@ public class MongoSyncLockSample {
         String connectionString = "mongodb://localhost:27017/" + database;
         MongoClient mongoClient = MongoClients.create(connectionString);
         return mongoClient
-                .getDatabase("sherlock")
-                .getCollection("locks");
+            .getDatabase("sherlock")
+            .getCollection("locks");
     }
 
     public static void main(String[] args) {
-        MongoSherlock.builder()
-                .withClock(Clock.systemUTC())
-                .withLockDuration(Duration.ofMinutes(5))
-                .withUniqueOwnerId()
-                .withUniqueOwnerId()
-                .withLocksCollection(getCollection())
-                .build();
         Sherlock sherlock = MongoSherlock.create(getCollection());
         DistributedLock lock = sherlock.createLock("sample-lock");
-        lock.acquireAndExecute(() -> logger.info("Lock acquired!"));
+        lock.runLocked(() -> logger.info("Lock acquired!"));
     }
 }

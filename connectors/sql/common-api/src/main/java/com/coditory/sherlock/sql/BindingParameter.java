@@ -43,8 +43,8 @@ public final class BindingParameter {
     @Override
     public String toString() {
         return "BindingParameter{" +
-                "index=" + index +
-                ", name='" + name + '\'' +
-                '}';
+            "index=" + index +
+            ", name='" + name + '\'' +
+            '}';
     }
 }

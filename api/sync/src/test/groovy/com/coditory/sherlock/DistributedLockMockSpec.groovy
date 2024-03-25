@@ -1,14 +1,15 @@
 package com.coditory.sherlock
 
+import com.coditory.sherlock.test.DistributedLockMock
 import spock.lang.Specification
 import spock.lang.Unroll
 
-import static com.coditory.sherlock.DistributedLockMock.acquiredInMemoryLock
-import static com.coditory.sherlock.DistributedLockMock.acquiredReentrantInMemoryLock
-import static com.coditory.sherlock.DistributedLockMock.lockStub
-import static com.coditory.sherlock.DistributedLockMock.releasedInMemoryLock
-import static com.coditory.sherlock.DistributedLockMock.releasedReentrantInMemoryLock
-import static com.coditory.sherlock.DistributedLockMock.sequencedLock
+import static com.coditory.sherlock.test.DistributedLockMock.acquiredInMemoryLock
+import static com.coditory.sherlock.test.DistributedLockMock.acquiredReentrantInMemoryLock
+import static com.coditory.sherlock.test.DistributedLockMock.lockStub
+import static com.coditory.sherlock.test.DistributedLockMock.releasedInMemoryLock
+import static com.coditory.sherlock.test.DistributedLockMock.releasedReentrantInMemoryLock
+import static com.coditory.sherlock.test.DistributedLockMock.sequencedLock
 
 class DistributedLockMockSpec extends Specification {
     private static final String lockId = "sample-lock"
@@ -47,10 +48,10 @@ class DistributedLockMockSpec extends Specification {
             lock.acquire() == true
         where:
             lock << [
-                    releasedInMemoryLock(),
-                    releasedReentrantInMemoryLock(),
-                    releasedInMemoryLock(lockId),
-                    releasedReentrantInMemoryLock(lockId)
+                releasedInMemoryLock(),
+                releasedReentrantInMemoryLock(),
+                releasedInMemoryLock(lockId),
+                releasedReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -62,8 +63,8 @@ class DistributedLockMockSpec extends Specification {
             lock.acquire() == true
         where:
             lock << [
-                    acquiredReentrantInMemoryLock(),
-                    acquiredReentrantInMemoryLock(lockId)
+                acquiredReentrantInMemoryLock(),
+                acquiredReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -75,8 +76,8 @@ class DistributedLockMockSpec extends Specification {
             lock.acquire() == false
         where:
             lock << [
-                    acquiredInMemoryLock(),
-                    acquiredInMemoryLock(lockId)
+                acquiredInMemoryLock(),
+                acquiredInMemoryLock(lockId)
             ]
     }
 

@@ -2,7 +2,7 @@ package com.coditory.sherlock.samples.mysql.coroutines
 
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator
 import com.coditory.sherlock.migrator.ChangeSet
-import com.coditory.sherlock.sql.BindingMapper
+import com.coditory.sherlock.sql.BindingMapper.MYSQL_MAPPER
 import com.coditory.sherlock.sql.coroutines.SqlSherlock
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
@@ -10,20 +10,8 @@ import io.r2dbc.spi.ConnectionFactoryOptions
 import kotlinx.coroutines.runBlocking
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
-import java.time.Clock
-import java.time.Duration
 
 object MySqlKtAnnotatedMigrationSample {
-    private val sherlock =
-        SqlSherlock.builder()
-            .withClock(Clock.systemUTC())
-            .withLockDuration(Duration.ofMinutes(5))
-            .withUniqueOwnerId()
-            .withConnectionFactory(getConnectionFactory())
-            .withBindingMapper(BindingMapper.MYSQL_MAPPER)
-            .withLocksTable("LOCKS")
-            .build()
-
     private fun getConnectionFactory(): ConnectionFactory {
         val database = "test"
         val options =
@@ -38,11 +26,12 @@ object MySqlKtAnnotatedMigrationSample {
     }
 
     private suspend fun sample() {
+        val sherlock =
+            SqlSherlock.create(getConnectionFactory(), MYSQL_MAPPER)
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration())
             .migrate()
-
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
             .addAnnotatedChangeSets(AnnotatedMigration2())

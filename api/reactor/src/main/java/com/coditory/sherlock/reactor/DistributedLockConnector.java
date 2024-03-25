@@ -1,8 +1,6 @@
 package com.coditory.sherlock.reactor;
 
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
@@ -21,37 +19,37 @@ public interface DistributedLockConnector {
     Mono<InitializationResult> initialize();
 
     /**
-     * Acquire a lock.
+     * Acquires a lock.
      */
     @NotNull
     Mono<AcquireResult> acquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Acquire a lock or prolong it if it was acquired by the same instance.
+     * Acquires a lock or prolongs it if it was acquired by the same instance.
      */
     @NotNull
     Mono<AcquireResult> acquireOrProlong(LockRequest lockRequest);
 
     /**
-     * Acquire a lock even if it was already acquired by someone else
+     * Acquires a lock even if it was already acquired by someone else.
      */
     @NotNull
     Mono<AcquireResult> forceAcquire(@NotNull LockRequest lockRequest);
 
     /**
-     * Unlock a lock if wat acquired by the same instance.
+     * Unlocks a lock if wat acquired by the same instance.
      */
     @NotNull
-    Mono<ReleaseResult> release(@NotNull LockId lockId, @NotNull OwnerId ownerId);
+    Mono<ReleaseResult> release(@NotNull String lockId, @NotNull String ownerId);
 
     /**
-     * Release a lock without checking its owner or release date.
+     * Releases a lock without checking its owner or release date.
      */
     @NotNull
-    Mono<ReleaseResult> forceRelease(@NotNull LockId lockId);
+    Mono<ReleaseResult> forceRelease(@NotNull String lockId);
 
     /**
-     * Release all locks without checking their owners or release dates.
+     * Releases all locks without checking their owners or release dates.
      */
     @NotNull
     Mono<ReleaseResult> forceReleaseAll();

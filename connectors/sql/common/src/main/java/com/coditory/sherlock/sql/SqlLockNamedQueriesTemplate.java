@@ -21,20 +21,20 @@ public final class SqlLockNamedQueriesTemplate {
     private String expectValidTableName(String tableName) {
         if (!tableName.matches("[a-zA-Z0-9_]+")) {
             throw new IllegalArgumentException(
-                    "Expected table name consisting of a-z, A-Z, 0-9, _. Got: " + tableName);
+                "Expected table name consisting of a-z, A-Z, 0-9, _. Got: " + tableName);
         }
         return tableName;
     }
 
     public String createLocksTable() {
         return "CREATE TABLE " + tableName
-                + "("
-                + "  ID VARCHAR(100) NOT NULL,"
-                + "  ACQUIRED_BY VARCHAR(100) NOT NULL,"
-                + "  ACQUIRED_AT TIMESTAMP(3) NOT NULL,"
-                + "  EXPIRES_AT TIMESTAMP(3),"
-                + "  PRIMARY KEY (ID)"
-                + ")";
+            + "("
+            + "  ID VARCHAR(100) NOT NULL,"
+            + "  ACQUIRED_BY VARCHAR(100) NOT NULL,"
+            + "  ACQUIRED_AT TIMESTAMP(3) NOT NULL,"
+            + "  EXPIRES_AT TIMESTAMP(3),"
+            + "  PRIMARY KEY (ID)"
+            + ")";
     }
 
     public String createLocksIndex() {
@@ -51,73 +51,73 @@ public final class SqlLockNamedQueriesTemplate {
 
     public String deleteAcquiredByIdAndOwnerId() {
         return String.format(
-                "DELETE FROM %s"
-                        + " WHERE ID = %s AND ACQUIRED_BY = %s AND (EXPIRES_AT IS NULL OR EXPIRES_AT > %s)",
-                tableName,
-                getMarker(0, ParameterNames.LOCK_ID),
-                getMarker(1, ParameterNames.OWNER_ID),
-                getMarker(2, ParameterNames.NOW)
+            "DELETE FROM %s"
+                + " WHERE ID = %s AND ACQUIRED_BY = %s AND (EXPIRES_AT IS NULL OR EXPIRES_AT > %s)",
+            tableName,
+            getMarker(0, ParameterNames.LOCK_ID),
+            getMarker(1, ParameterNames.OWNER_ID),
+            getMarker(2, ParameterNames.NOW)
         );
     }
 
     public String deleteAcquiredById() {
         return String.format(
-                "DELETE FROM %s"
-                        + " WHERE ID = %s AND (EXPIRES_AT IS NULL OR EXPIRES_AT > %s)",
-                tableName,
-                getMarker(0, ParameterNames.LOCK_ID),
-                getMarker(1, ParameterNames.NOW)
+            "DELETE FROM %s"
+                + " WHERE ID = %s AND (EXPIRES_AT IS NULL OR EXPIRES_AT > %s)",
+            tableName,
+            getMarker(0, ParameterNames.LOCK_ID),
+            getMarker(1, ParameterNames.NOW)
         );
     }
 
     public String updateLockById() {
         return String.format("UPDATE %s"
-                        + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
-                        + " WHERE ID = %s",
-                tableName,
-                getMarker(0, ParameterNames.OWNER_ID),
-                getMarker(1, ParameterNames.NOW),
-                getMarker(2, ParameterNames.EXPIRES_AT),
-                getMarker(3, ParameterNames.LOCK_ID)
+                + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
+                + " WHERE ID = %s",
+            tableName,
+            getMarker(0, ParameterNames.OWNER_ID),
+            getMarker(1, ParameterNames.NOW),
+            getMarker(2, ParameterNames.EXPIRES_AT),
+            getMarker(3, ParameterNames.LOCK_ID)
         );
     }
 
     public String updateAcquiredOrReleasedLock() {
         return String.format("UPDATE %s"
-                        + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
-                        + " WHERE ID = %s AND (ACQUIRED_BY = %s OR EXPIRES_AT <= %s)",
-                tableName,
-                getMarker(0, ParameterNames.OWNER_ID),
-                getMarker(1, ParameterNames.NOW),
-                getMarker(2, ParameterNames.EXPIRES_AT),
-                getMarker(3, ParameterNames.LOCK_ID),
-                getMarker(4, ParameterNames.OWNER_ID),
-                getMarker(5, ParameterNames.NOW)
+                + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
+                + " WHERE ID = %s AND (ACQUIRED_BY = %s OR EXPIRES_AT <= %s)",
+            tableName,
+            getMarker(0, ParameterNames.OWNER_ID),
+            getMarker(1, ParameterNames.NOW),
+            getMarker(2, ParameterNames.EXPIRES_AT),
+            getMarker(3, ParameterNames.LOCK_ID),
+            getMarker(4, ParameterNames.OWNER_ID),
+            getMarker(5, ParameterNames.NOW)
         );
     }
 
     public String updateReleasedLock() {
         return String.format("UPDATE %s"
-                        + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
-                        + " WHERE ID = %s AND EXPIRES_AT <= %s",
-                tableName,
-                getMarker(0, ParameterNames.OWNER_ID),
-                getMarker(1, ParameterNames.NOW),
-                getMarker(2, ParameterNames.EXPIRES_AT),
-                getMarker(3, ParameterNames.LOCK_ID),
-                getMarker(4, ParameterNames.NOW)
+                + " SET ACQUIRED_BY = %s, ACQUIRED_AT = %s, EXPIRES_AT = %s"
+                + " WHERE ID = %s AND EXPIRES_AT <= %s",
+            tableName,
+            getMarker(0, ParameterNames.OWNER_ID),
+            getMarker(1, ParameterNames.NOW),
+            getMarker(2, ParameterNames.EXPIRES_AT),
+            getMarker(3, ParameterNames.LOCK_ID),
+            getMarker(4, ParameterNames.NOW)
         );
     }
 
     public String insertLock() {
         return String.format("INSERT INTO %s"
-                        + " (ID, ACQUIRED_BY, ACQUIRED_AT, EXPIRES_AT)"
-                        + " VALUES (%s, %s, %s, %s)",
-                tableName,
-                getMarker(0, ParameterNames.LOCK_ID),
-                getMarker(1, ParameterNames.OWNER_ID),
-                getMarker(2, ParameterNames.NOW),
-                getMarker(3, ParameterNames.EXPIRES_AT)
+                + " (ID, ACQUIRED_BY, ACQUIRED_AT, EXPIRES_AT)"
+                + " VALUES (%s, %s, %s, %s)",
+            tableName,
+            getMarker(0, ParameterNames.LOCK_ID),
+            getMarker(1, ParameterNames.OWNER_ID),
+            getMarker(2, ParameterNames.NOW),
+            getMarker(3, ParameterNames.EXPIRES_AT)
         );
     }
 
@@ -131,7 +131,7 @@ public final class SqlLockNamedQueriesTemplate {
         public static final String EXPIRES_AT = "expiresAt";
         public static final String NOW = "now";
         public static final List<String> ALL_PARAMS = List.of(
-                LOCK_ID, OWNER_ID, EXPIRES_AT, NOW
+            LOCK_ID, OWNER_ID, EXPIRES_AT, NOW
         );
     }
 }

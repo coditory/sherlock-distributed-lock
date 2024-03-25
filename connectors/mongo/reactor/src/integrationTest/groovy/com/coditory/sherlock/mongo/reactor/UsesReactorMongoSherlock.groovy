@@ -17,18 +17,18 @@ trait UsesReactorMongoSherlock implements DistributedLocksCreator, DatabaseManag
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         com.coditory.sherlock.reactor.Sherlock reactorLocks = MongoSherlock.builder()
-                .withLocksCollection(getLocksCollection(collectionName))
-                .withOwnerId(ownerId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withLocksCollection(getLocksCollection(collectionName))
+            .withOwnerId(ownerId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingReactorSherlockWrapper(reactorLocks)
     }
 
     MongoCollection<Document> getLocksCollection(String collectionName) {
         return MongoClientHolder.getClient()
-                .getDatabase(databaseName)
-                .getCollection(collectionName)
+            .getDatabase(databaseName)
+            .getCollection(collectionName)
     }
 
     @Override

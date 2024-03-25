@@ -1,9 +1,6 @@
 package com.coditory.sherlock.mongo;
 
-import com.coditory.sherlock.LockDuration;
-import com.coditory.sherlock.LockId;
 import com.coditory.sherlock.LockRequest;
-import com.coditory.sherlock.OwnerId;
 import com.mongodb.client.model.IndexOptions;
 import com.mongodb.client.model.Indexes;
 import org.bson.Document;
@@ -17,6 +14,7 @@ import java.util.Date;
 import java.util.Objects;
 import java.util.Optional;
 
+import static com.coditory.sherlock.Preconditions.expectNonEmpty;
 import static com.coditory.sherlock.Preconditions.expectNonNull;
 import static com.coditory.sherlock.mongo.MongoDistributedLock.Fields.*;
 
@@ -29,7 +27,7 @@ public final class MongoDistributedLock {
     }
 
     public static final Bson INDEX = Indexes
-            .ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, EXPIRES_AT_FIELD);
+        .ascending(LOCK_ID_FIELD, ACQUIRED_BY_FIELD, EXPIRES_AT_FIELD);
 
     public static final IndexOptions INDEX_OPTIONS = new IndexOptions().background(true);
 
@@ -38,10 +36,10 @@ public final class MongoDistributedLock {
         expectNonNull(document, "document");
         try {
             return new MongoDistributedLock(
-                    LockId.of(document.getString(LOCK_ID_FIELD)),
-                    OwnerId.of(document.getString(ACQUIRED_BY_FIELD)),
-                    dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
-                    dateToInstant(document.getDate(EXPIRES_AT_FIELD))
+                document.getString(LOCK_ID_FIELD),
+                document.getString(ACQUIRED_BY_FIELD),
+                dateToInstant(document.getDate(ACQUIRED_AT_FIELD)),
+                dateToInstant(document.getDate(EXPIRES_AT_FIELD))
             );
         } catch (Exception exception) {
             throw new IllegalStateException("Could not deserialize lock document", exception);
@@ -50,8 +48,8 @@ public final class MongoDistributedLock {
 
     private static Instant dateToInstant(Date date) {
         return date != null
-                ? truncateToMillis(date.toInstant())
-                : null;
+            ? truncateToMillis(date.toInstant())
+            : null;
     }
 
     private static Instant truncateToMillis(Instant instant) {
@@ -60,36 +58,35 @@ public final class MongoDistributedLock {
 
     @NotNull
     public static MongoDistributedLock fromLockRequest(
-            @NotNull LockRequest lockRequest,
-            @NotNull Instant acquiredAt
+        @NotNull LockRequest lockRequest,
+        @NotNull Instant acquiredAt
     ) {
         expectNonNull(lockRequest, "lockRequest");
         expectNonNull(acquiredAt, "acquiredAt");
-        Instant releaseAt = Optional.ofNullable(lockRequest.getDuration())
-                .map(LockDuration::getValue)
-                .map(acquiredAt::plus)
-                .map(MongoDistributedLock::truncateToMillis)
-                .orElse(null);
+        Instant releaseAt = Optional.ofNullable(lockRequest.duration())
+            .map(acquiredAt::plus)
+            .map(MongoDistributedLock::truncateToMillis)
+            .orElse(null);
         return new MongoDistributedLock(
-                lockRequest.getLockId(),
-                lockRequest.getOwnerId(),
-                truncateToMillis(acquiredAt),
-                releaseAt
+            lockRequest.lockId(),
+            lockRequest.ownerId(),
+            truncateToMillis(acquiredAt),
+            releaseAt
         );
     }
 
-    private final LockId id;
-    private final OwnerId ownerId;
+    private final String id;
+    private final String ownerId;
     private final Instant acquiredAt;
     private final Instant expiresAt;
 
     private MongoDistributedLock(
-            @NotNull LockId id,
-            @NotNull OwnerId ownerId,
-            @NotNull Instant createdAt,
-            @Nullable Instant expiresAt) {
-        this.id = expectNonNull(id, "id");
-        this.ownerId = expectNonNull(ownerId, "ownerId");
+        @NotNull String id,
+        @NotNull String ownerId,
+        @NotNull Instant createdAt,
+        @Nullable Instant expiresAt) {
+        this.id = expectNonEmpty(id, "id");
+        this.ownerId = expectNonEmpty(ownerId, "ownerId");
         this.acquiredAt = expectNonNull(createdAt, "createdAt");
         this.expiresAt = expiresAt;
     }
@@ -97,9 +94,9 @@ public final class MongoDistributedLock {
     @NotNull
     public Document toDocument() {
         Document result = new Document()
-                .append(LOCK_ID_FIELD, id.getValue())
-                .append(ACQUIRED_BY_FIELD, ownerId.getValue())
-                .append(ACQUIRED_AT_FIELD, acquiredAt);
+            .append(LOCK_ID_FIELD, id)
+            .append(ACQUIRED_BY_FIELD, ownerId)
+            .append(ACQUIRED_AT_FIELD, acquiredAt);
         if (expiresAt != null) {
             result = result.append(EXPIRES_AT_FIELD, expiresAt);
         }
@@ -116,17 +113,17 @@ public final class MongoDistributedLock {
 
     public boolean isActive(@NotNull Instant now) {
         return expiresAt == null
-                || expiresAt.isAfter(now);
+            || expiresAt.isAfter(now);
     }
 
     @Override
     public String toString() {
         return "MongoDistributedLock{" +
-                "id=" + id +
-                ", ownerId=" + ownerId +
-                ", acquiredAt=" + acquiredAt +
-                ", expiresAt=" + expiresAt +
-                '}';
+            "id=" + id +
+            ", ownerId=" + ownerId +
+            ", acquiredAt=" + acquiredAt +
+            ", expiresAt=" + expiresAt +
+            '}';
     }
 
     @Override
@@ -139,9 +136,9 @@ public final class MongoDistributedLock {
         }
         MongoDistributedLock that = (MongoDistributedLock) o;
         return Objects.equals(id, that.id) &&
-                Objects.equals(ownerId, that.ownerId) &&
-                Objects.equals(acquiredAt, that.acquiredAt) &&
-                Objects.equals(expiresAt, that.expiresAt);
+            Objects.equals(ownerId, that.ownerId) &&
+            Objects.equals(acquiredAt, that.acquiredAt) &&
+            Objects.equals(expiresAt, that.expiresAt);
     }
 
     @Override
