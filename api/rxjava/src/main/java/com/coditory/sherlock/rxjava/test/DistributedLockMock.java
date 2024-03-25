@@ -3,7 +3,7 @@ package com.coditory.sherlock.rxjava.test;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;

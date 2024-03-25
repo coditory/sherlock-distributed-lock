@@ -2,8 +2,8 @@ package com.coditory.sherlock.rxjava;
 
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.ReleaseResult;
-import io.reactivex.Maybe;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Maybe;
+import io.reactivex.rxjava3.core.Single;
 
 import java.util.function.Supplier;
 

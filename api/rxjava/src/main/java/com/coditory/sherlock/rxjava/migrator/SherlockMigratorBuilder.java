@@ -5,7 +5,7 @@ import com.coditory.sherlock.migrator.MigrationResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
 import com.coditory.sherlock.rxjava.migrator.SherlockMigrator.MigrationChangeSet;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
@@ -72,28 +72,28 @@ public final class SherlockMigratorBuilder {
     public SherlockMigratorBuilder addAnnotatedChangeSets(@NotNull Object object) {
         expectNonNull(object, "object containing change sets");
         ChangeSetMethodExtractor.extractChangeSets(object, (action, returnType) -> {
-                    if (returnType == void.class) {
-                        return () -> Single.fromCallable(() -> {
-                            action.get();
-                            return true;
-                        });
-                    }
-                    if (Single.class.isAssignableFrom(returnType)) {
-                        return () -> Single.fromCallable(action::get);
-                    }
-                    throw new IllegalArgumentException("Expected method to declare void or Single as return types");
-                })
-                .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
+                if (returnType == void.class) {
+                    return () -> Single.fromCallable(() -> {
+                        action.get();
+                        return true;
+                    });
+                }
+                if (Single.class.isAssignableFrom(returnType)) {
+                    return () -> Single.fromCallable(action::get);
+                }
+                throw new IllegalArgumentException("Expected method to declare void or Single as return types");
+            })
+            .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
         return this;
     }
 
     @NotNull
     public SherlockMigrator build() {
         DistributedLock migrationLock = sherlock.createLock()
-                .withLockId(migrationId)
-                .withPermanentLockDuration()
-                .withStaticUniqueOwnerId()
-                .build();
+            .withLockId(migrationId)
+            .withPermanentLockDuration()
+            .withStaticUniqueOwnerId()
+            .build();
         return new SherlockMigrator(migrationLock, migrationChangeSets);
     }
 
@@ -104,16 +104,16 @@ public final class SherlockMigratorBuilder {
 
     private DistributedLock createChangeSetLock(String migrationId) {
         return sherlock.createLock()
-                .withLockId(migrationId)
-                .withPermanentLockDuration()
-                .withStaticUniqueOwnerId()
-                .build();
+            .withLockId(migrationId)
+            .withPermanentLockDuration()
+            .withStaticUniqueOwnerId()
+            .build();
     }
 
     private void ensureUniqueChangeSetId(String changeSetId) {
         if (migrationLockIds.contains(changeSetId)) {
             throw new IllegalArgumentException(
-                    "Expected unique change set ids. Duplicated id: " + changeSetId);
+                "Expected unique change set ids. Duplicated id: " + changeSetId);
         }
     }
 }

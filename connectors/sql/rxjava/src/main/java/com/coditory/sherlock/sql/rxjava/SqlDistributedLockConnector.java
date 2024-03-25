@@ -11,8 +11,8 @@ import com.coditory.sherlock.sql.SqlLockQueries;
 import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Statement;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;
@@ -220,7 +220,7 @@ class SqlDistributedLockConnector implements DistributedLockConnector {
         return Flowable.fromPublisher(connection.close())
             .firstElement()
             .map(__ -> true)
-            .toSingle(true)
+            .defaultIfEmpty(true)
             .onErrorResumeNext(e -> Single.error(new SherlockException("Could not close connection", e)));
     }
 }

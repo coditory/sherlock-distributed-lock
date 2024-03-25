@@ -6,7 +6,7 @@ import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import com.coditory.sherlock.inmem.InMemoryDistributedLockStorage;
 import com.coditory.sherlock.rxjava.DistributedLockConnector;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Clock;

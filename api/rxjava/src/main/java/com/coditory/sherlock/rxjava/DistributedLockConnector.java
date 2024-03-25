@@ -4,7 +4,7 @@ import com.coditory.sherlock.LockRequest;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 public interface DistributedLockConnector {
@@ -17,7 +17,7 @@ public interface DistributedLockConnector {
      */
     @NotNull
     Single<InitializationResult> initialize();
- 
+
     /**
      * Acquire a lock.
      */

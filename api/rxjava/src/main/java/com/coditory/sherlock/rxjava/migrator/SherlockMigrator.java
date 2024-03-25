@@ -5,7 +5,7 @@ import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.migrator.MigrationResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +54,7 @@ public final class SherlockMigrator {
         return migrationLock
             .runLocked(runMigrations())
             .defaultIfEmpty(AcquireResult.notAcquired())
-            .flatMapSingle(acquireResult -> {
+            .flatMap(acquireResult -> {
                 if (!acquireResult.isAcquired()) {
                     logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
                 }

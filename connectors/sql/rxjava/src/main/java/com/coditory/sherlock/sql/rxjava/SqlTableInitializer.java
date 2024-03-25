@@ -6,8 +6,8 @@ import io.r2dbc.spi.Connection;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.Result;
 import io.r2dbc.spi.Statement;
-import io.reactivex.Flowable;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Single;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,6 +81,6 @@ final class SqlTableInitializer {
         return Flowable.fromPublisher(connection.commitTransaction())
             .firstElement()
             .map(__ -> connection)
-            .toSingle(connection);
+            .defaultIfEmpty(connection);
     }
 }

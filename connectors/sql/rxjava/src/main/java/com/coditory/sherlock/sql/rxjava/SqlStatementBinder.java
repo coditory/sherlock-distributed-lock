@@ -2,7 +2,7 @@ package com.coditory.sherlock.sql.rxjava;
 
 import com.coditory.sherlock.sql.BindingMapper;
 import io.r2dbc.spi.Statement;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 
 import java.time.Instant;
 

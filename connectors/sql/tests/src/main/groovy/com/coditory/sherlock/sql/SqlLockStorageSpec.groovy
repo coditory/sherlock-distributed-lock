@@ -25,10 +25,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec {
             lock.acquire()
         then:
             getLockRow() == [
-                    "id"         : LocksBaseSpec.sampleLockId,
-                    "acquired_by": LocksBaseSpec.sampleOwnerId,
-                    "acquired_at": timestamp(),
-                    "expires_at" : timestamp(LocksBaseSpec.defaultLockDuration)
+                "id"         : sampleLockId,
+                "acquired_by": sampleOwnerId,
+                "acquired_at": timestamp(),
+                "expires_at" : timestamp(defaultLockDuration)
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -43,10 +43,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec {
             lock.acquire(duration)
         then:
             getLockRow() == [
-                    "id"         : LocksBaseSpec.sampleLockId,
-                    "acquired_by": LocksBaseSpec.sampleOwnerId,
-                    "acquired_at": timestamp(),
-                    "expires_at" : timestamp(duration)
+                "id"         : sampleLockId,
+                "acquired_by": sampleOwnerId,
+                "acquired_at": timestamp(),
+                "expires_at" : timestamp(duration)
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -60,10 +60,10 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec {
             lock.acquireForever()
         then:
             getLockRow() == [
-                    "id"         : LocksBaseSpec.sampleLockId,
-                    "acquired_by": LocksBaseSpec.sampleOwnerId,
-                    "acquired_at": timestamp(),
-                    "expires_at" : null
+                "id"         : sampleLockId,
+                "acquired_by": sampleOwnerId,
+                "acquired_at": timestamp(),
+                "expires_at" : null
             ]
         where:
             type << LockTypes.allLockTypes()
@@ -82,12 +82,12 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec {
             type << LockTypes.allLockTypes()
     }
 
-    private Map<String, Object> getLockRow(String lockId = LocksBaseSpec.sampleLockId) {
+    private Map<String, Object> getLockRow(String lockId = sampleLockId) {
         Map<String, Object> result
         try (
-                Connection connection = dataSource.getConnection()
-                Statement statement = connection.createStatement()
-                ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
+            Connection connection = dataSource.getConnection()
+            Statement statement = connection.createStatement()
+            ResultSet resultSet = statement.executeQuery("SELECT * FROM locks WHERE ID = '$lockId';")
         ) {
             result = resultSetToList(resultSet)[0]
         }
@@ -109,7 +109,7 @@ abstract class SqlLockStorageSpec extends LocksBaseSpec {
     }
 
     private Timestamp timestamp(Duration duration = Duration.ZERO) {
-        Instant instant = LocksBaseSpec.fixedClock.instant().plus(duration)
+        Instant instant = fixedClock.instant().plus(duration)
         return new Timestamp(instant.toEpochMilli())
     }
 }

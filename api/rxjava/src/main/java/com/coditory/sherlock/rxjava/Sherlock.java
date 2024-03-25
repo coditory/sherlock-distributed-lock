@@ -3,7 +3,7 @@ package com.coditory.sherlock.rxjava;
 import com.coditory.sherlock.DistributedLockBuilder;
 import com.coditory.sherlock.connector.InitializationResult;
 import com.coditory.sherlock.connector.ReleaseResult;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import static com.coditory.sherlock.Preconditions.expectNonEmpty;

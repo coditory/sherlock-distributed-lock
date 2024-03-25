@@ -1,7 +1,7 @@
 package com.coditory.sherlock.mongo.rxjava;
 
 import com.mongodb.reactivestreams.client.MongoCollection;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.bson.Document;
 
 import java.util.concurrent.atomic.AtomicBoolean;

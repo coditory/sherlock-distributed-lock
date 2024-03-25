@@ -4,7 +4,7 @@ import com.coditory.sherlock.LockRequest;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.LockResultLogger;
 import com.coditory.sherlock.connector.ReleaseResult;
-import io.reactivex.Single;
+import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;

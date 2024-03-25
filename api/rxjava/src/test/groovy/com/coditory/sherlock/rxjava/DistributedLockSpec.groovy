@@ -2,7 +2,7 @@ package com.coditory.sherlock.rxjava
 
 import com.coditory.sherlock.base.SpecSimulatedException
 import com.coditory.sherlock.rxjava.test.DistributedLockMock
-import io.reactivex.Single
+import io.reactivex.rxjava3.core.Single
 import spock.lang.Shared
 import spock.lang.Specification
 import spock.lang.Unroll
