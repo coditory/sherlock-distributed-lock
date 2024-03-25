@@ -17,7 +17,7 @@ Look for details in the [documentation](https://coditory.github.io/sherlock-dist
 Add dependency to `build.gradle`:
 ```groovy
 dependencies {
-  implementation "com.coditory.sherlock:sherlock-mongo-sync:$version"
+  implementation "com.coditory.sherlock:sherlock-mongo:$version"
 }
 ```
 
@@ -30,15 +30,13 @@ MongoCollection<Document> collection = mongoClient
     .getCollection("locks");
 
 // Create sherlock
-Sherlock sherlock = MongoSherlock.builder()
-    .withLocksCollection(collection)
-    .build();
+Sherlock sherlock = MongoSherlock.create(collection);
 
 // Create a lock
 DistributedLock lock = sherlock.createLock("sample-lock");
 
-// Acquire a lock
-lock.acquireAndExecute(() -> {
+// Acquire a lock, run action and finally release the lock
+lock.runLocked(() -> {
     System.out.println("Lock granted!");
 });
 ```
