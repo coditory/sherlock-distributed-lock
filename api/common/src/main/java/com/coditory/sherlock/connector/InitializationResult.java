@@ -7,11 +7,11 @@ public final class InitializationResult {
         return initialized ? INITIALIZED : SKIPPED;
     }
 
-    public static InitializationResult initialized() {
+    public static InitializationResult initializedResult() {
         return INITIALIZED;
     }
 
-    public static InitializationResult skipped() {
+    public static InitializationResult skippedResult() {
         return SKIPPED;
     }
 
@@ -24,7 +24,7 @@ public final class InitializationResult {
         this.initialized = initialized;
     }
 
-    public boolean isInitialized() {
+    public boolean initialized() {
         return initialized;
     }
 

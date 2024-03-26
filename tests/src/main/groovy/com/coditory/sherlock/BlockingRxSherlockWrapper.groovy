@@ -49,7 +49,7 @@ class BlockingRxSherlockWrapper implements Sherlock {
     @NotNull
     boolean forceReleaseAllLocks() {
         return sherlock.forceReleaseAllLocks()
-            .blockingGet().released
+            .blockingGet().released()
     }
 
     @Override
@@ -82,24 +82,24 @@ class BlockingRxDistributedLock implements DistributedLock {
     @Override
     boolean acquire() {
         return lock.acquire()
-            .blockingGet().acquired
+            .blockingGet().acquired()
     }
 
     @Override
     boolean acquire(@NotNull Duration duration) {
         return lock.acquire(duration)
-            .blockingGet().acquired
+            .blockingGet().acquired()
     }
 
     @Override
     boolean acquireForever() {
         return lock.acquireForever()
-            .blockingGet().acquired
+            .blockingGet().acquired()
     }
 
     @Override
     boolean release() {
         return lock.release()
-            .blockingGet().released
+            .blockingGet().released()
     }
 }

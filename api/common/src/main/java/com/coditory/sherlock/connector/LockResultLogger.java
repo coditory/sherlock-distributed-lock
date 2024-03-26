@@ -19,7 +19,7 @@ public final class LockResultLogger {
 
     public void logResult(@NotNull AcquireResult result) {
         expectNonNull(result, "result");
-        if (result.isAcquired()) {
+        if (result.acquired()) {
             logger.debug("Lock acquired: {}", lockId);
         } else {
             logger.debug("Lock not acquired: {}", lockId);
@@ -28,7 +28,7 @@ public final class LockResultLogger {
 
     public void logResult(@NotNull ReleaseResult result) {
         expectNonNull(result, "result");
-        if (result.isReleased()) {
+        if (result.released()) {
             logger.debug("Lock released: {}", lockId);
         } else {
             logger.debug("Lock not released: {}", lockId);

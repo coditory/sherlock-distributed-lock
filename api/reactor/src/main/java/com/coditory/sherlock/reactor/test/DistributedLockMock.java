@@ -167,7 +167,7 @@ public final class DistributedLockMock implements DistributedLock {
     private AcquireResult incrementAcquireCounters(AcquireResult result) {
         expectNonNull(result, "result");
         acquisitions.incrementAndGet();
-        if (result.isAcquired()) {
+        if (result.acquired()) {
             successfulAcquisitions.incrementAndGet();
         }
         return result;
@@ -183,7 +183,7 @@ public final class DistributedLockMock implements DistributedLock {
     private ReleaseResult incrementReleaseCounters(ReleaseResult result) {
         expectNonNull(result, "result");
         releases.incrementAndGet();
-        if (result.isReleased()) {
+        if (result.released()) {
             successfulReleases.incrementAndGet();
         }
         return result;

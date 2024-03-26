@@ -41,7 +41,7 @@ class MongoDistributedLockConnector implements DistributedLockConnector {
     @NotNull
     public Mono<InitializationResult> initialize() {
         return collectionInitializer.getInitializedCollection()
-            .map(collection -> InitializationResult.initialized())
+            .map(collection -> InitializationResult.initializedResult())
             .onErrorMap(e -> new SherlockException("Could not initialize Mongo collection", e));
     }
 

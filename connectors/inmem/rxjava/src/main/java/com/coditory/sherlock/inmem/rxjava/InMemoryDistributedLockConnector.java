@@ -26,7 +26,7 @@ class InMemoryDistributedLockConnector implements DistributedLockConnector {
     @Override
     @NotNull
     public Single<InitializationResult> initialize() {
-        return Single.just(InitializationResult.initialized());
+        return Single.just(InitializationResult.initializedResult());
     }
 
     @Override

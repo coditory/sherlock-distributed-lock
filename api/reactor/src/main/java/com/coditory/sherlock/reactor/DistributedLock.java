@@ -1,6 +1,7 @@
 package com.coditory.sherlock.reactor;
 
 import com.coditory.sherlock.connector.AcquireResult;
+import com.coditory.sherlock.connector.LockedActionResult;
 import com.coditory.sherlock.connector.ReleaseResult;
 import org.jetbrains.annotations.NotNull;
 import reactor.core.publisher.Mono;
@@ -70,13 +71,23 @@ public interface DistributedLock {
      *
      * @param <T>  type emitted when lock is acquired
      * @param mono subscribed on lock acquisition
-     * @return {@code Mono<T>} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default <T> Mono<T> runLocked(@NotNull Mono<T> mono) {
+    default <T> Mono<LockedActionResult<T>> runLocked(@NotNull Mono<T> mono) {
         expectNonNull(mono, "mono");
-        return DistributedLockExecutor.executeOnAcquired(acquire(), mono, this::release);
+        return acquire()
+            .flatMap(acquireResult -> {
+                if (!acquireResult.acquired()) {
+                    return Mono.just(LockedActionResult.notAcquiredResult());
+                }
+                return mono.map(LockedActionResult::acquiredResult)
+                    .defaultIfEmpty(LockedActionResult.acquiredEmptyResult())
+                    .flatMap(result -> release().map(__ -> result))
+                    .onErrorResume(throwable -> release().flatMap(r -> Mono.error(throwable)));
+            });
     }
 
     /**
@@ -84,11 +95,12 @@ public interface DistributedLock {
      *
      * @param callable executed when lock is acquired
      * @param <T>      type emitted when lock is acquired
-     * @return {@code Mono<T>} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default <T> Mono<T> runLocked(@NotNull Callable<? extends T> callable) {
+    default <T> Mono<LockedActionResult<T>> runLocked(@NotNull Callable<? extends T> callable) {
         expectNonNull(callable, "callable");
         return runLocked(Mono.fromCallable(callable));
     }
@@ -97,16 +109,17 @@ public interface DistributedLock {
      * Tries to acquire the lock and releases it after action is executed.
      *
      * @param runnable executed when lock is acquired
-     * @return {@code Mono.just(true)} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default Mono<Boolean> runLocked(@NotNull Runnable runnable) {
+    default Mono<AcquireResult> runLocked(@NotNull Runnable runnable) {
         expectNonNull(runnable, "runnable");
         return runLocked(() -> {
             runnable.run();
             return true;
-        });
+        }).map(LockedActionResult::toAcquireResult);
     }
 
     /**
@@ -115,28 +128,38 @@ public interface DistributedLock {
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param mono     subscribed on lock acquisition
-     * @return {@code Mono<T>} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default <T> Mono<T> runLocked(@NotNull Duration duration, @NotNull Mono<T> mono) {
+    default <T> Mono<LockedActionResult<T>> runLocked(@NotNull Duration duration, @NotNull Mono<T> mono) {
         expectNonNull(duration, "duration");
         expectNonNull(mono, "mono");
-        return DistributedLockExecutor
-            .executeOnAcquired(acquire(duration), mono, this::release);
+        return acquire(duration)
+            .flatMap(acquireResult -> {
+                if (!acquireResult.acquired()) {
+                    return Mono.just(LockedActionResult.notAcquiredResult());
+                }
+                return mono.map(LockedActionResult::acquiredResult)
+                    .defaultIfEmpty(LockedActionResult.acquiredEmptyResult())
+                    .flatMap(result -> release().map(__ -> result))
+                    .onErrorResume(throwable -> release().flatMap(r -> Mono.error(throwable)));
+            });
     }
- 
+
     /**
      * Tries to acquire the lock for a given duration and releases it after action is executed.
      *
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param callable executed when lock is acquired
-     * @return {@code Mono<T>} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default <T> Mono<T> runLocked(@NotNull Duration duration, @NotNull Callable<? extends T> callable) {
+    default <T> Mono<LockedActionResult<T>> runLocked(@NotNull Duration duration, @NotNull Callable<? extends T> callable) {
         expectNonNull(duration, "duration");
         expectNonNull(callable, "callable");
         return runLocked(duration, Mono.fromCallable(callable));
@@ -147,16 +170,17 @@ public interface DistributedLock {
      *
      * @param duration lock expiration time when release is not executed
      * @param runnable executed when lock is acquired
-     * @return {@code Mono.just(true)} when lock is acquired, {@code Mono.empty()} otherwise
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default Mono<Boolean> runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
+    default Mono<AcquireResult> runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
         expectNonNull(duration, "duration");
         expectNonNull(runnable, "runnable");
         return runLocked(duration, () -> {
             runnable.run();
             return true;
-        });
+        }).map(LockedActionResult::toAcquireResult);
     }
 }

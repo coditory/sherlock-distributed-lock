@@ -64,7 +64,7 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Single<InitializationResult> initialize() {
-        return Single.just(InitializationResult.initialized());
+        return Single.just(InitializationResult.initializedResult());
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Single<ReleaseResult> forceReleaseAllLocks() {
-        return Single.just(ReleaseResult.skipped());
+        return Single.just(ReleaseResult.skippedResult());
     }
 
     private DistributedLockBuilder<DistributedLock> getLockOrDefault() {

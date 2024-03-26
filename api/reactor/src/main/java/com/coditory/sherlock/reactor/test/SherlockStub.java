@@ -64,7 +64,7 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Mono<InitializationResult> initialize() {
-        return Mono.just(InitializationResult.initialized());
+        return Mono.just(InitializationResult.initializedResult());
     }
 
     @Override
@@ -88,7 +88,7 @@ public final class SherlockStub implements Sherlock {
     @Override
     @NotNull
     public Mono<ReleaseResult> forceReleaseAllLocks() {
-        return Mono.just(ReleaseResult.skipped());
+        return Mono.just(ReleaseResult.skippedResult());
     }
 
     private DistributedLockBuilder<DistributedLock> getLockOrDefault() {

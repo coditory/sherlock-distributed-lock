@@ -33,7 +33,7 @@ public final class SherlockMigrator {
         AcquireResult acquireResult = migrationLock
             .runLocked(this::runMigrations)
             .onNotAcquired(() -> logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId()));
-        return new MigrationResult(acquireResult.isAcquired());
+        return new MigrationResult(acquireResult.acquired());
     }
 
     private void runMigrations() {

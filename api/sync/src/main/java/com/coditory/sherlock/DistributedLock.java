@@ -1,7 +1,7 @@
 package com.coditory.sherlock;
 
 import com.coditory.sherlock.connector.AcquireResult;
-import com.coditory.sherlock.connector.AcquireResultWithValue;
+import com.coditory.sherlock.connector.LockedActionResult;
 import org.jetbrains.annotations.NotNull;
 
 import java.time.Duration;
@@ -66,27 +66,27 @@ public interface DistributedLock {
      *
      * @param supplier executed when lock is acquired
      * @param <T>      type emitted when lock is acquired
-     * @return {@link AcquireResultWithValue#acquired(T)} if lock was acquired
+     * @return {@link LockedActionResult#acquiredResult(T)} if lock was acquired
      * @see DistributedLock#acquire()
      */
-    default <T> AcquireResultWithValue<T> runLocked(@NotNull Supplier<? extends T> supplier) {
+    default <T> LockedActionResult<T> runLocked(@NotNull Supplier<? extends T> supplier) {
         expectNonNull(supplier, "supplier");
         if (acquire()) {
             try {
                 T value = supplier.get();
-                return AcquireResultWithValue.acquired(value);
+                return LockedActionResult.acquiredResult(value);
             } finally {
                 release();
             }
         }
-        return AcquireResultWithValue.notAcquired();
+        return LockedActionResult.notAcquiredResult();
     }
 
     /**
      * Tries to acquire the lock and releases it after action is executed.
      *
      * @param runnable executed when lock is acquired
-     * @return {@link AcquireResult#acquired()} if lock was acquired
+     * @return {@link AcquireResult#acquiredResult()} if lock was acquired
      * @see DistributedLock#acquire()
      */
     default AcquireResult runLocked(@NotNull Runnable runnable) {
@@ -94,12 +94,12 @@ public interface DistributedLock {
         if (acquire()) {
             try {
                 runnable.run();
-                return AcquireResult.acquired();
+                return AcquireResult.acquiredResult();
             } finally {
                 release();
             }
         }
-        return AcquireResult.notAcquired();
+        return AcquireResult.notAcquiredResult();
     }
 
     /**
@@ -110,7 +110,7 @@ public interface DistributedLock {
      *
      * @param duration how much time must pass to release the lock
      * @param runnable to be executed when lock is acquired
-     * @return {@link AcquireResult#acquired()} if lock was acquired
+     * @return {@link AcquireResult#acquiredResult()} if lock was acquired
      * @see DistributedLock#acquire(Duration)
      */
     default AcquireResult runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
@@ -119,12 +119,12 @@ public interface DistributedLock {
         if (acquire(duration)) {
             try {
                 runnable.run();
-                return AcquireResult.acquired();
+                return AcquireResult.acquiredResult();
             } finally {
                 release();
             }
         }
-        return AcquireResult.notAcquired();
+        return AcquireResult.notAcquiredResult();
     }
 
     /**
@@ -133,20 +133,20 @@ public interface DistributedLock {
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param supplier executed when lock is acquired
-     * @return {@link AcquireResultWithValue#acquired(T)} if lock was acquired
+     * @return {@link LockedActionResult#acquiredResult(T)} if lock was acquired
      * @see DistributedLock#acquire(Duration)
      */
-    default <T> AcquireResultWithValue<T> runLocked(@NotNull Duration duration, @NotNull Supplier<? extends T> supplier) {
+    default <T> LockedActionResult<T> runLocked(@NotNull Duration duration, @NotNull Supplier<? extends T> supplier) {
         expectNonNull(duration, "duration");
         expectNonNull(supplier, "supplier");
         if (acquire(duration)) {
             try {
                 T value = supplier.get();
-                return AcquireResultWithValue.acquired(value);
+                return LockedActionResult.acquiredResult(value);
             } finally {
                 release();
             }
         }
-        return AcquireResultWithValue.notAcquired();
+        return LockedActionResult.notAcquiredResult();
     }
 }

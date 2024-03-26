@@ -1,17 +1,18 @@
 package com.coditory.sherlock.connector;
 
 import java.util.Objects;
+import java.util.function.Supplier;
 
 public final class AcquireResult {
     public static AcquireResult of(boolean acquired) {
         return acquired ? ACQUIRED : NOT_ACQUIRED;
     }
 
-    public static AcquireResult acquired() {
+    public static AcquireResult acquiredResult() {
         return ACQUIRED;
     }
 
-    public static AcquireResult notAcquired() {
+    public static AcquireResult notAcquiredResult() {
         return NOT_ACQUIRED;
     }
 
@@ -24,7 +25,7 @@ public final class AcquireResult {
         this.acquired = acquired;
     }
 
-    public boolean isAcquired() {
+    public boolean acquired() {
         return acquired;
     }
 
@@ -40,6 +41,14 @@ public final class AcquireResult {
             action.run();
         }
         return this;
+    }
+
+    public <T> LockedActionResult<T> onAcquired(Supplier<T> action) {
+        if (acquired) {
+            T value = action.get();
+            return LockedActionResult.acquiredResult(value);
+        }
+        return LockedActionResult.notAcquiredResult();
     }
 
     @Override

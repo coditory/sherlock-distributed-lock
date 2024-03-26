@@ -7,11 +7,11 @@ public final class ReleaseResult {
         return released ? RELEASED : SKIPPED;
     }
 
-    public static ReleaseResult released() {
+    public static ReleaseResult releasedResult() {
         return RELEASED;
     }
 
-    public static ReleaseResult skipped() {
+    public static ReleaseResult skippedResult() {
         return SKIPPED;
     }
 
@@ -24,7 +24,7 @@ public final class ReleaseResult {
         this.released = released;
     }
 
-    public boolean isReleased() {
+    public boolean released() {
         return released;
     }
 

@@ -53,19 +53,18 @@ public final class SherlockMigrator {
     public Mono<MigrationResult> migrate() {
         return migrationLock
             .runLocked(runMigrations())
-            .defaultIfEmpty(AcquireResult.notAcquired())
             .map(acquireResult -> {
-                if (!acquireResult.isAcquired()) {
+                if (!acquireResult.acquired()) {
                     logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
                 }
-                return new MigrationResult(acquireResult.isAcquired());
+                return new MigrationResult(acquireResult.acquired());
             });
     }
 
     private Mono<AcquireResult> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        Mono<AcquireResult> result = Mono.just(AcquireResult.acquired());
+        Mono<AcquireResult> result = Mono.just(AcquireResult.acquiredResult());
         for (MigrationChangeSet changeSet : migrationChangeSets) {
             result = result.flatMap(r -> changeSet.execute());
         }
@@ -90,7 +89,7 @@ public final class SherlockMigrator {
             Timer timer = Timer.start();
             return lock.acquire()
                 .flatMap((result) -> {
-                    if (!result.isAcquired()) {
+                    if (!result.acquired()) {
                         logger.info("Migration change set skipped: {}", id);
                         return Mono.just(result);
                     }
@@ -103,7 +102,7 @@ public final class SherlockMigrator {
             return action.get()
                 .flatMap((result) -> {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                    return Mono.just(AcquireResult.acquired());
+                    return Mono.just(AcquireResult.acquiredResult());
                 })
                 .onErrorResume((e) -> {
                     logger.warn(

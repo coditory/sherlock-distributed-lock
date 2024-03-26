@@ -27,7 +27,7 @@ class DistributedLockSpec extends Specification {
         when:
             boolean result = action(lock)
                 .onNotAcquired({ assertNever() })
-                .acquired()
+                .acquiredResult()
         then:
             counter.value == 1
             result == true
@@ -48,7 +48,7 @@ class DistributedLockSpec extends Specification {
         when:
             boolean result = action(lock)
                 .onNotAcquired({ counter.increment() })
-                .isAcquired()
+                .acquired()
         then:
             counter.value == 1
             result == false
@@ -69,7 +69,7 @@ class DistributedLockSpec extends Specification {
         when:
             Boolean result = action(lock)
                 .onNotAcquired({ assertNever() })
-                .acquired()
+                .acquiredResult()
         then:
             thrown(SpecSimulatedException)
             result == null

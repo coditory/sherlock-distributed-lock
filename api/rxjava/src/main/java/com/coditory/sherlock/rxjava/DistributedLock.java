@@ -1,8 +1,8 @@
 package com.coditory.sherlock.rxjava;
 
 import com.coditory.sherlock.connector.AcquireResult;
+import com.coditory.sherlock.connector.LockedActionResult;
 import com.coditory.sherlock.connector.ReleaseResult;
-import io.reactivex.rxjava3.core.Maybe;
 import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
@@ -71,13 +71,22 @@ public interface DistributedLock {
      *
      * @param <T>    type emitted when lock is acquired
      * @param single subscribed on lock acquisition
-     * @return {@code Maybe<T>} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default <T> Maybe<T> runLocked(@NotNull Single<T> single) {
+    default <T> Single<LockedActionResult<T>> runLocked(@NotNull Single<T> single) {
         expectNonNull(single, "single");
-        return DistributedLockExecutor.executeOnAcquired(acquire(), single, this::release);
+        return acquire()
+            .flatMap(acquireResult -> {
+                if (!acquireResult.acquired()) {
+                    return Single.just(LockedActionResult.notAcquiredResult());
+                }
+                return single.map(LockedActionResult::acquiredResult)
+                    .flatMap(result -> release().flatMap(__ -> Single.just(result)))
+                    .onErrorResumeNext((Throwable throwable) -> release().flatMap(r -> Single.error(throwable)));
+            });
     }
 
     /**
@@ -85,11 +94,12 @@ public interface DistributedLock {
      *
      * @param callable executed when lock is acquired
      * @param <T>      type emitted when lock is acquired
-     * @return {@code Maybe<T>} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default <T> Maybe<T> runLocked(@NotNull Callable<? extends T> callable) {
+    default <T> Single<LockedActionResult<T>> runLocked(@NotNull Callable<T> callable) {
         expectNonNull(callable, "callable");
         return runLocked(Single.fromCallable(callable));
     }
@@ -98,16 +108,17 @@ public interface DistributedLock {
      * Tries to acquire the lock and releases it after action is executed.
      *
      * @param runnable executed when lock is acquired
-     * @return {@code Maybe.just(true)} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire()
      */
     @NotNull
-    default Maybe<Boolean> runLocked(@NotNull Runnable runnable) {
+    default Single<AcquireResult> runLocked(@NotNull Runnable runnable) {
         expectNonNull(runnable, "runnable");
         return runLocked(Single.fromCallable(() -> {
             runnable.run();
             return true;
-        }));
+        })).map(LockedActionResult::toAcquireResult);
     }
 
     /**
@@ -116,15 +127,23 @@ public interface DistributedLock {
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param single   subscribed on lock acquisition
-     * @return {@code Maybe<T>} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default <T> Maybe<T> runLocked(@NotNull Duration duration, @NotNull Single<T> single) {
+    default <T> Single<LockedActionResult<T>> runLocked(@NotNull Duration duration, @NotNull Single<T> single) {
         expectNonNull(duration, "duration");
         expectNonNull(single, "single");
-        return DistributedLockExecutor
-            .executeOnAcquired(acquire(duration), single, this::release);
+        return acquire(duration)
+            .flatMap(acquireResult -> {
+                if (!acquireResult.acquired()) {
+                    return Single.just(LockedActionResult.notAcquiredResult());
+                }
+                return single.map(LockedActionResult::acquiredResult)
+                    .flatMap(result -> release().flatMap(__ -> Single.just(result)))
+                    .onErrorResumeNext((Throwable throwable) -> release().flatMap(r -> Single.error(throwable)));
+            });
     }
 
     /**
@@ -133,11 +152,12 @@ public interface DistributedLock {
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param callable executed when lock is acquired
-     * @return {@code Maybe<T>} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link LockedActionResult#acquiredResult(T)} when lock is acquired,
+     * {@link LockedActionResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default <T> Maybe<T> runLocked(@NotNull Duration duration, @NotNull Callable<? extends T> callable) {
+    default <T> Single<LockedActionResult<T>> runLocked(@NotNull Duration duration, @NotNull Callable<T> callable) {
         expectNonNull(duration, "duration");
         expectNonNull(callable, "callable");
         return runLocked(duration, Single.fromCallable(callable));
@@ -148,16 +168,17 @@ public interface DistributedLock {
      *
      * @param duration lock expiration time when release is not executed
      * @param runnable executed when lock is acquired
-     * @return {@code Maybe.just(true)} when lock is acquired, {@code Maybe.empty()} otherwise
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#notAcquiredResult()} otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     @NotNull
-    default Maybe<Boolean> runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
+    default Single<AcquireResult> runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
         expectNonNull(duration, "duration");
         expectNonNull(runnable, "runnable");
         return runLocked(duration, Single.fromCallable(() -> {
             runnable.run();
             return true;
-        }));
+        })).map(LockedActionResult::toAcquireResult);
     }
 }

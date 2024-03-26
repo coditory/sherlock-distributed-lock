@@ -53,19 +53,18 @@ public final class SherlockMigrator {
     public Single<MigrationResult> migrate() {
         return migrationLock
             .runLocked(runMigrations())
-            .defaultIfEmpty(AcquireResult.notAcquired())
             .flatMap(acquireResult -> {
-                if (!acquireResult.isAcquired()) {
+                if (!acquireResult.acquired()) {
                     logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
                 }
-                return Single.just(new MigrationResult(acquireResult.isAcquired()));
+                return Single.just(new MigrationResult(acquireResult.acquired()));
             });
     }
 
     private Single<AcquireResult> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        Single<AcquireResult> result = Single.just(AcquireResult.acquired());
+        Single<AcquireResult> result = Single.just(AcquireResult.acquiredResult());
         for (MigrationChangeSet changeSet : migrationChangeSets) {
             result = result.flatMap(r -> changeSet.execute());
         }
@@ -90,7 +89,7 @@ public final class SherlockMigrator {
             Timer timer = Timer.start();
             return lock.acquire()
                 .flatMap((result) -> {
-                    if (!result.isAcquired()) {
+                    if (!result.acquired()) {
                         logger.info("Migration change set skipped: {}", id);
                         return Single.just(result);
                     }
@@ -103,7 +102,7 @@ public final class SherlockMigrator {
             return action.get()
                 .flatMap((result) -> {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                    return Single.just(AcquireResult.acquired());
+                    return Single.just(AcquireResult.acquiredResult());
                 })
                 .onErrorResumeNext((e) -> {
                     logger.warn(

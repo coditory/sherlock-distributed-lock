@@ -26,7 +26,7 @@ class ReactorInMemoryDistributedLockConnector implements DistributedLockConnecto
     @Override
     @NotNull
     public Mono<InitializationResult> initialize() {
-        return Mono.just(InitializationResult.initialized());
+        return Mono.just(InitializationResult.initializedResult());
     }
 
     @Override
