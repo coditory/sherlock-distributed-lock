@@ -1,23 +1,22 @@
 package com.coditory.sherlock.connector;
 
 import java.util.Objects;
-import java.util.function.Supplier;
 
 public final class AcquireResult {
     public static AcquireResult of(boolean acquired) {
-        return acquired ? ACQUIRED : NOT_ACQUIRED;
+        return acquired ? ACQUIRED : REJECTED;
     }
 
     public static AcquireResult acquiredResult() {
         return ACQUIRED;
     }
 
-    public static AcquireResult notAcquiredResult() {
-        return NOT_ACQUIRED;
+    public static AcquireResult rejectedResult() {
+        return REJECTED;
     }
 
     private static final AcquireResult ACQUIRED = new AcquireResult(true);
-    private static final AcquireResult NOT_ACQUIRED = new AcquireResult(false);
+    private static final AcquireResult REJECTED = new AcquireResult(false);
 
     private final boolean acquired;
 
@@ -29,7 +28,11 @@ public final class AcquireResult {
         return acquired;
     }
 
-    public AcquireResult onNotAcquired(Runnable action) {
+    public boolean rejected() {
+        return !acquired;
+    }
+
+    public AcquireResult onRejected(Runnable action) {
         if (!acquired) {
             action.run();
         }
@@ -43,12 +46,16 @@ public final class AcquireResult {
         return this;
     }
 
-    public <T> LockedActionResult<T> onAcquired(Supplier<T> action) {
+    public AcquireResult onFinished(Runnable action) {
+        action.run();
+        return this;
+    }
+
+    public <T> AcquireResultWithValue<T> toAcquiredWithValue(T value) {
         if (acquired) {
-            T value = action.get();
-            return LockedActionResult.acquiredResult(value);
+            return AcquireResultWithValue.acquiredResult(value);
         }
-        return LockedActionResult.notAcquiredResult();
+        return AcquireResultWithValue.rejectedResult();
     }
 
     @Override

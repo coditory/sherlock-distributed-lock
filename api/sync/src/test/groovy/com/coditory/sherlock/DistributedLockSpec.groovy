@@ -26,7 +26,7 @@ class DistributedLockSpec extends Specification {
             DistributedLockMock lock = releasedInMemoryLock()
         when:
             boolean result = action(lock)
-                .onNotAcquired({ assertNever() })
+                .onRejected({ assertNever() })
                 .acquiredResult()
         then:
             counter.value == 1
@@ -47,7 +47,7 @@ class DistributedLockSpec extends Specification {
             DistributedLockMock lock = acquiredInMemoryLock()
         when:
             boolean result = action(lock)
-                .onNotAcquired({ counter.increment() })
+                .onRejected({ counter.increment() })
                 .acquired()
         then:
             counter.value == 1
@@ -68,7 +68,7 @@ class DistributedLockSpec extends Specification {
 
         when:
             Boolean result = action(lock)
-                .onNotAcquired({ assertNever() })
+                .onRejected({ assertNever() })
                 .acquiredResult()
         then:
             thrown(SpecSimulatedException)

@@ -1,49 +1,82 @@
 package com.coditory.sherlock.migrator;
 
-import org.jetbrains.annotations.NotNull;
-
-import static com.coditory.sherlock.Preconditions.expectNonNull;
+import java.util.List;
+import java.util.Objects;
+import java.util.function.Consumer;
 
 public final class MigrationResult {
-    // TODO: add fields: migration lock acquired, executed changesets
-    private final boolean migrated;
-
-    public MigrationResult(boolean migrated) {
-        this.migrated = migrated;
+    public static MigrationResult acquiredResult(List<String> executedChangeSets) {
+        return new MigrationResult(true, executedChangeSets);
     }
 
-    public boolean isMigrated() {
-        return migrated;
+    public static MigrationResult acquiredEmptyResult() {
+        return ACQUIRED_EMPTY;
     }
 
-    /**
-     * Executes the action when migration process finishes. The action is only executed by the
-     * migrator instance that started the migration process.
-     *
-     * @param action the action to be executed after migration
-     * @return migration result for chaining
-     */
-    @NotNull
-    public MigrationResult onFinish(@NotNull Runnable action) {
-        expectNonNull(action, "action");
-        if (migrated) {
+    public static MigrationResult rejectedResult() {
+        return REJECTED;
+    }
+
+    private static final MigrationResult REJECTED = new MigrationResult(false, List.of());
+    private static final MigrationResult ACQUIRED_EMPTY = new MigrationResult(true, List.of());
+
+    private final boolean acquired;
+    private final List<String> executedChangeSets;
+
+    private MigrationResult(boolean acquired, List<String> executedChangeSets) {
+        this.acquired = acquired;
+        this.executedChangeSets = List.copyOf(executedChangeSets);
+    }
+
+    public boolean acquired() {
+        return acquired;
+    }
+
+    public boolean rejected() {
+        return !acquired;
+    }
+
+    public List<String> executedChangeSets() {
+        return executedChangeSets;
+    }
+
+    public MigrationResult onAcquired(Consumer<List<String>> action) {
+        if (acquired) {
+            action.accept(executedChangeSets);
+        }
+        return this;
+    }
+
+    public MigrationResult onRejected(Runnable action) {
+        if (!acquired) {
             action.run();
         }
         return this;
     }
 
-    /**
-     * Executes the action when migration lock was not acquired.
-     *
-     * @param action the action to be executed when migration lock was not acquired
-     * @return migration result for chaining
-     */
-    @NotNull
-    public MigrationResult onRejected(@NotNull Runnable action) {
-        expectNonNull(action, "action");
-        if (!migrated) {
-            action.run();
-        }
+    public MigrationResult onFinished(Runnable action) {
+        action.run();
         return this;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MigrationResult that = (MigrationResult) o;
+        return acquired == that.acquired && Objects.equals(executedChangeSets, that.executedChangeSets);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(acquired, executedChangeSets);
+    }
+
+    @Override
+    public String toString() {
+        return "MigrationResult{" +
+            "acquired=" + acquired +
+            ", executedChangeSets=" + executedChangeSets +
+            '}';
     }
 }

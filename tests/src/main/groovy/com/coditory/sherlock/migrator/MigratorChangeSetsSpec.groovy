@@ -19,9 +19,9 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addAnnotatedChangeSets(twoMigrations)
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addAnnotatedChangeSets(twoMigrations)
+                .migrate()
         then:
             executed == [TwoChangeSets.firstChangeSetId, TwoChangeSets.secondChangeSetId]
         and:
@@ -35,17 +35,17 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
-                    .addAnnotatedChangeSets(twoMigrations)
-                    .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
+                .addAnnotatedChangeSets(twoMigrations)
+                .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
+                .migrate()
         then:
             executed == [
-                    firstChangeSetId,
-                    TwoChangeSets.firstChangeSetId,
-                    TwoChangeSets.secondChangeSetId,
-                    secondChangeSetId
+                firstChangeSetId,
+                TwoChangeSets.firstChangeSetId,
+                TwoChangeSets.secondChangeSetId,
+                secondChangeSetId
             ]
         and:
             assertReleased(migrationId)
@@ -60,10 +60,10 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
             TwoChangeSets twoMigrations = new TwoChangeSets()
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(TwoChangeSets.firstChangeSetId, { throwSpecSimulatedException() })
-                    .addAnnotatedChangeSets(twoMigrations)
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addChangeSet(TwoChangeSets.firstChangeSetId, { throwSpecSimulatedException() })
+                .addAnnotatedChangeSets(twoMigrations)
+                .migrate()
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
             exception.message.startsWith("Expected unique change set ids")
@@ -73,9 +73,9 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
     def "should throw error #expectedMessage"() {
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addAnnotatedChangeSets(changeSets)
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addAnnotatedChangeSets(changeSets)
+                .migrate()
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
             exception.message.startsWith(expectedMessage) || exception.cause?.message?.startsWith(expectedMessage)
@@ -84,7 +84,8 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
             new ChangeSetWithDuplicatedOrders() | "Expected unique change set order values. Duplicated order value: 1"
             new ChangeSetWithParameters()       | "Expected no declared parameters for method addIndex"
             new ChangeSetWithReturnType()       | "Expected method to declare"
-            new PrivateChangeSet()              | "Expected at least one changeset method annotated with @ChangeSet"
+            new NoChangeSet()                   | "Expected at least one changeset method annotated with @ChangeSet"
+            new PrivateChangeSet()              | "Method annotated with @ChangeSet should be public. Method: "
     }
 
     void assertAcquired(String lockId) {
@@ -98,10 +99,10 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
 
     boolean acquire(String lockId) {
         return sherlock.createLock()
-                .withLockId(lockId)
-                .withOwnerId(uuid())
-                .build()
-                .acquireForever()
+            .withLockId(lockId)
+            .withOwnerId(uuid())
+            .build()
+            .acquireForever()
     }
 
     class TwoChangeSets {
@@ -133,8 +134,7 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
         }
     }
 
-    class PrivateChangeSet {
-        @ChangeSet(order = 1, id = firstChangeSetId)
+    class NoChangeSet {
         private void addIndex() {
             executed.add(firstChangeSetId)
         }
@@ -149,6 +149,13 @@ abstract class MigratorChangeSetsSpec extends MigratorBaseSpec {
         @ChangeSet(order = 1, id = secondChangeSetId)
         void removeIndex() {
             executed.add(secondChangeSetId)
+        }
+    }
+
+    class PrivateChangeSet {
+        @ChangeSet(order = 1, id = firstChangeSetId)
+        private void addIndex() {
+            executed.add(firstChangeSetId)
         }
     }
 }

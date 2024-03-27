@@ -1,7 +1,7 @@
 package com.coditory.sherlock.coroutines
 
 import com.coditory.sherlock.connector.AcquireResult
-import com.coditory.sherlock.connector.LockedActionResult
+import com.coditory.sherlock.connector.AcquireResultWithValue
 import java.time.Duration
 
 /**
@@ -60,7 +60,7 @@ interface DistributedLock {
      *
      * @param action executed when lock is acquired
      * @return [AcquireResult.acquiredResult] when lock is acquired,
-     * [AcquireResult.notAcquiredResult] otherwise.
+     * [AcquireResult.rejectedResult] otherwise.
      * @see DistributedLock#acquire()
      */
     suspend fun runLocked(action: suspend () -> Unit): AcquireResult {
@@ -72,7 +72,7 @@ interface DistributedLock {
                 release()
             }
         } else {
-            AcquireResult.notAcquiredResult()
+            AcquireResult.rejectedResult()
         }
     }
 
@@ -81,20 +81,20 @@ interface DistributedLock {
      *
      * @param action executed when lock is acquired
      * @param <T>      type emitted when lock is acquired
-     * @return [LockedActionResult.acquiredResult] when lock is acquired,
-     * [LockedActionResult.notAcquiredResult] otherwise.
+     * @return [AcquireResultWithValue.acquiredResult] when lock is acquired,
+     * [AcquireResultWithValue.rejectedResult] otherwise.
      * @see DistributedLock#acquire()
      */
-    suspend fun <T> callLocked(action: suspend () -> T): LockedActionResult<T> {
+    suspend fun <T> callLocked(action: suspend () -> T): AcquireResultWithValue<T> {
         return if (acquire()) {
             try {
                 val result = action()
-                LockedActionResult.acquiredResult(result)
+                AcquireResultWithValue.acquiredResult(result)
             } finally {
                 release()
             }
         } else {
-            LockedActionResult.notAcquiredResult()
+            AcquireResultWithValue.rejectedResult()
         }
     }
 
@@ -104,7 +104,7 @@ interface DistributedLock {
      * @param duration lock expiration time when release is not executed
      * @param action executed when lock is acquired
      * @return [AcquireResult.acquiredResult] when lock is acquired,
-     * [AcquireResult.notAcquiredResult] otherwise.
+     * [AcquireResult.rejectedResult] otherwise.
      * @see DistributedLock#acquire(Duration)
      */
     suspend fun <T : Any> runLocked(duration: Duration, action: suspend () -> Unit): AcquireResult {
@@ -116,7 +116,7 @@ interface DistributedLock {
                 release()
             }
         } else {
-            AcquireResult.notAcquiredResult()
+            AcquireResult.rejectedResult()
         }
     }
 
@@ -126,20 +126,20 @@ interface DistributedLock {
      * @param <T>      type emitted when lock is acquired
      * @param duration lock expiration time when release is not executed
      * @param action executed when lock is acquired
-     * @return [LockedActionResult.acquiredResult] when lock is acquired,
-     * [LockedActionResult.notAcquiredResult] otherwise.
+     * @return [AcquireResultWithValue.acquiredResult] when lock is acquired,
+     * [AcquireResultWithValue.rejectedResult] otherwise.
      * @see DistributedLock#acquire(Duration)
      */
-    suspend fun <T : Any> callLocked(duration: Duration, action: suspend () -> T): LockedActionResult<T> {
+    suspend fun <T : Any> callLocked(duration: Duration, action: suspend () -> T): AcquireResultWithValue<T> {
         return if (acquire(duration)) {
             try {
                 val result = action()
-                LockedActionResult.acquiredResult(result)
+                AcquireResultWithValue.acquiredResult(result)
             } finally {
                 release()
             }
         } else {
-            LockedActionResult.notAcquiredResult()
+            AcquireResultWithValue.rejectedResult()
         }
     }
 }

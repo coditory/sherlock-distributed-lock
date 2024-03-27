@@ -2,9 +2,11 @@ package com.coditory.sherlock.rxjava.migrator;
 
 import com.coditory.sherlock.Timer;
 import com.coditory.sherlock.connector.AcquireResult;
+import com.coditory.sherlock.connector.AcquireResultWithValue;
 import com.coditory.sherlock.migrator.MigrationResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
+import io.reactivex.rxjava3.core.Flowable;
 import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
@@ -53,24 +55,26 @@ public final class SherlockMigrator {
     public Single<MigrationResult> migrate() {
         return migrationLock
             .runLocked(runMigrations())
-            .flatMap(acquireResult -> {
+            .map(acquireResult -> {
                 if (!acquireResult.acquired()) {
                     logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.getId());
+                    return MigrationResult.rejectedResult();
                 }
-                return Single.just(new MigrationResult(acquireResult.acquired()));
+                return MigrationResult.acquiredResult(acquireResult.value());
             });
     }
 
-    private Single<AcquireResult> runMigrations() {
+    private Single<List<String>> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        Single<AcquireResult> result = Single.just(AcquireResult.acquiredResult());
-        for (MigrationChangeSet changeSet : migrationChangeSets) {
-            result = result.flatMap(r -> changeSet.execute());
-        }
-        return result.doOnSuccess((r) -> {
-            logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed());
-        });
+        return Flowable.fromIterable(migrationChangeSets)
+            .flatMapSingle(MigrationChangeSet::execute)
+            .filter(AcquireResultWithValue::acquired)
+            .map(AcquireResultWithValue::value)
+            .toList()
+            .doOnSuccess((r) -> {
+                logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed());
+            });
     }
 
     static class MigrationChangeSet {
@@ -85,7 +89,7 @@ public final class SherlockMigrator {
             this.action = action;
         }
 
-        Single<AcquireResult> execute() {
+        Single<AcquireResultWithValue<String>> execute() {
             Timer timer = Timer.start();
             return lock.acquire()
                 .flatMap((result) -> {
@@ -95,7 +99,8 @@ public final class SherlockMigrator {
                     }
                     logger.debug("Executing migration change set: {}", id);
                     return executeChangeSet(timer);
-                });
+                })
+                .map(r -> r.toAcquiredWithValue(id));
         }
 
         private Single<AcquireResult> executeChangeSet(Timer timer) {

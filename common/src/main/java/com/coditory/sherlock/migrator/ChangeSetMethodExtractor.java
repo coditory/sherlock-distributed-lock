@@ -1,5 +1,6 @@
 package com.coditory.sherlock.migrator;
 
+import java.lang.reflect.AccessFlag;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.*;
@@ -9,10 +10,10 @@ import static com.coditory.sherlock.Preconditions.*;
 
 public class ChangeSetMethodExtractor {
     public static <R> List<MigrationChangeSet<R>> extractChangeSets(
-            Object object, Class<R> expectedReturnType) {
+        Object object, Class<R> expectedReturnType) {
         List<MigrationChangeSet<R>> result = new ArrayList<>();
         Map<ChangeSet, Method> changeSetMethods = extractAnnotatedChangeSetMethods(
-                object, expectedReturnType);
+            object, expectedReturnType);
         expectNonEmpty(changeSetMethods, "Expected at least one changeset method annotated with @ChangeSet");
         List<ChangeSet> annotations = new ArrayList<>(changeSetMethods.keySet());
         annotations.sort(Comparator.comparingInt(ChangeSet::order));
@@ -20,11 +21,11 @@ public class ChangeSetMethodExtractor {
         for (ChangeSet changeSet : annotations) {
             if (lastChangeSet != null) {
                 expect(
-                        lastChangeSet.order() < changeSet.order(),
-                        "Expected unique change set order values. Duplicated order value: " + changeSet.order());
+                    lastChangeSet.order() < changeSet.order(),
+                    "Expected unique change set order values. Duplicated order value: " + changeSet.order());
             }
             Supplier<R> action = invokeMethod(
-                    changeSetMethods.get(changeSet), object, expectedReturnType);
+                changeSetMethods.get(changeSet), object, expectedReturnType);
             result.add(new MigrationChangeSet<>(changeSet.id(), action));
             lastChangeSet = changeSet;
         }
@@ -41,8 +42,8 @@ public class ChangeSetMethodExtractor {
         for (ChangeSet changeSet : annotations) {
             if (lastChangeSet != null) {
                 expect(
-                        lastChangeSet.order() < changeSet.order(),
-                        "Expected unique change set order values. Duplicated order value: " + changeSet.order());
+                    lastChangeSet.order() < changeSet.order(),
+                    "Expected unique change set order values. Duplicated order value: " + changeSet.order());
             }
             Method method = changeSetMethods.get(changeSet);
             Supplier<Object> action = invokeMethod(method, object, null);
@@ -52,19 +53,22 @@ public class ChangeSetMethodExtractor {
                 lastChangeSet = changeSet;
             } catch (Throwable e) {
                 throw new IllegalArgumentException("Invalid migration method return type. "
-                        + "Method:" + method.getName()
-                        + " return type: " + method.getReturnType(), e);
+                    + "Method:" + method.getName()
+                    + " return type: " + method.getReturnType(), e);
             }
         }
         return result;
     }
 
     private static Map<ChangeSet, Method> extractAnnotatedChangeSetMethods(
-            Object object, Class<?> expectedReturnType) {
+        Object object, Class<?> expectedReturnType) {
         Map<ChangeSet, Method> changeSetMethods = new HashMap<>();
-        Method[] methods = object.getClass().getMethods();
+        Method[] methods = object.getClass().getDeclaredMethods();
         for (Method method : methods) {
             if (method.isAnnotationPresent(ChangeSet.class)) {
+                if (!method.accessFlags().contains(AccessFlag.PUBLIC)) {
+                    throw new IllegalArgumentException("Method annotated with @ChangeSet should be public. Method: " + method);
+                }
                 ChangeSet changeSet = method.getAnnotation(ChangeSet.class);
                 validateAnnotatedChangeSet(changeSet, method, expectedReturnType);
                 changeSetMethods.put(changeSet, method);
@@ -74,34 +78,34 @@ public class ChangeSetMethodExtractor {
     }
 
     private static void validateAnnotatedChangeSet(
-            ChangeSet changeSet, Method method, Class<?> expectedReturnType) {
+        ChangeSet changeSet, Method method, Class<?> expectedReturnType) {
         expectEqual(
-                method.getParameterCount(), 0,
-                "Expected no declared parameters for method " + method.getName());
+            method.getParameterCount(), 0,
+            "Expected no declared parameters for method " + method.getName());
         if (expectedReturnType != null) {
             expect(
-                    expectedReturnType.isAssignableFrom(method.getReturnType()),
-                    "Expected method to declare " + method.getReturnType() + " as return type. "
-                            + "Method:" + method.getName()
-                            + " return type: " + method.getReturnType());
+                expectedReturnType.isAssignableFrom(method.getReturnType()),
+                "Expected method to declare " + method.getReturnType() + " as return type. "
+                    + "Method:" + method.getName()
+                    + " return type: " + method.getReturnType());
         }
         expect(
-                changeSet.order() >= 0,
-                "Expected changeset order >= 0. Method:" + method.getName());
+            changeSet.order() >= 0,
+            "Expected changeset order >= 0. Method:" + method.getName());
         expectNonEmpty(
-                changeSet.id(),
-                "Expected non-empty changeset id. Method:" + method.getName());
+            changeSet.id(),
+            "Expected non-empty changeset id. Method:" + method.getName());
     }
 
     @SuppressWarnings("unchecked")
     static private <R> Supplier<R> invokeMethod(
-            Method method, Object object, Class<R> expectedReturnType) {
+        Method method, Object object, Class<R> expectedReturnType) {
         return () -> {
             try {
                 return (R) method.invoke(object);
             } catch (IllegalAccessException | InvocationTargetException e) {
                 throw new IllegalStateException(
-                        "Could not invoke changeset method: " + method.getName(), e);
+                    "Could not invoke changeset method: " + method.getName(), e);
             }
         };
     }

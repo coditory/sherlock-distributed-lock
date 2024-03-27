@@ -19,10 +19,10 @@ abstract class MigratorSpec extends MigratorBaseSpec {
     def "should run migration with 2 change sets in order"() {
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
-                    .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
+                .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
+                .migrate()
         then:
             executed == [firstChangeSetId, secondChangeSetId]
         and:
@@ -34,16 +34,16 @@ abstract class MigratorSpec extends MigratorBaseSpec {
     def "should execute only the not applied change set"() {
         given:
             BlockingMigratorBuilder migratorBuilder = createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
-                    .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
+                .setMigrationId(migrationId)
+                .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
+                .addChangeSet(secondChangeSetId, { executed.add(secondChangeSetId) })
         and:
             migratorBuilder.migrate()
             executed.clear()
         when:
             migratorBuilder
-                    .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
-                    .migrate()
+                .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
+                .migrate()
         then:
             executed == [thirdChangeSetId]
         and:
@@ -58,9 +58,9 @@ abstract class MigratorSpec extends MigratorBaseSpec {
             acquire(migrationId)
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
+                .migrate()
         then:
             executed == []
     }
@@ -68,11 +68,11 @@ abstract class MigratorSpec extends MigratorBaseSpec {
     def "should break migration on first change set error"() {
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
-                    .addChangeSet(secondChangeSetId, { throwSpecSimulatedException() })
-                    .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
-                    .migrate()
+                .setMigrationId(migrationId)
+                .addChangeSet(firstChangeSetId, { executed.add(firstChangeSetId) })
+                .addChangeSet(secondChangeSetId, { throwSpecSimulatedException() })
+                .addChangeSet(thirdChangeSetId, { executed.add(thirdChangeSetId) })
+                .migrate()
         then:
             thrown(SpecSimulatedException)
         and:
@@ -86,16 +86,19 @@ abstract class MigratorSpec extends MigratorBaseSpec {
 
     def "should return migration result for successful migration"() {
         given:
-            int migrationFinishExecutions = 0
+            int migrationFinishedExecutions = 0
+            int migrationAcquiredExecutions = 0
             int migrationRejectedExecutions = 0
         when:
             MigrationResult result = createMigratorBuilder(sherlock)
-                    .migrate()
-                    .onFinish({ migrationFinishExecutions++ })
-                    .onRejected({ migrationRejectedExecutions++ })
+                .migrate()
+                .onFinished { migrationFinishedExecutions++ }
+                .onAcquired { migrationAcquiredExecutions++ }
+                .onRejected { migrationRejectedExecutions++ }
         then:
-            result.migrated == true
-            migrationFinishExecutions == 1
+            result.acquired() == true
+            migrationFinishedExecutions == 1
+            migrationAcquiredExecutions == 1
             migrationRejectedExecutions == 0
     }
 
@@ -103,25 +106,28 @@ abstract class MigratorSpec extends MigratorBaseSpec {
         given:
             acquire(migrationId)
         and:
-            int migrationFinishExecutions = 0
+            int migrationFinishedExecutions = 0
+            int migrationAcquiredExecutions = 0
             int migrationRejectedExecutions = 0
         when:
             MigrationResult result = createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .migrate()
-                    .onFinish({ migrationFinishExecutions++ })
-                    .onRejected({ migrationRejectedExecutions++ })
+                .setMigrationId(migrationId)
+                .migrate()
+                .onFinished { migrationFinishedExecutions++ }
+                .onAcquired { migrationAcquiredExecutions++ }
+                .onRejected { migrationRejectedExecutions++ }
         then:
-            result.migrated == false
-            migrationFinishExecutions == 0
+            result.acquired() == false
+            migrationFinishedExecutions == 1
+            migrationAcquiredExecutions == 0
             migrationRejectedExecutions == 1
     }
 
     def "should throw error on duplicated change set id"() {
         when:
             createMigratorBuilder(sherlock)
-                    .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
-                    .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
+                .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
+                .addChangeSet(firstChangeSetId, { throwSpecSimulatedException() })
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
             exception.message.startsWith("Expected unique change set ids")
@@ -130,8 +136,8 @@ abstract class MigratorSpec extends MigratorBaseSpec {
     def "should throw error on change set id same as migration id"() {
         when:
             createMigratorBuilder(sherlock)
-                    .setMigrationId(migrationId)
-                    .addChangeSet(migrationId, { throwSpecSimulatedException() })
+                .setMigrationId(migrationId)
+                .addChangeSet(migrationId, { throwSpecSimulatedException() })
         then:
             IllegalArgumentException exception = thrown(IllegalArgumentException)
             exception.message.startsWith("Expected unique change set ids")
@@ -148,9 +154,9 @@ abstract class MigratorSpec extends MigratorBaseSpec {
 
     boolean acquire(String lockId) {
         return sherlock.createLock()
-                .withLockId(lockId)
-                .withOwnerId(uuid())
-                .build()
-                .acquireForever()
+            .withLockId(lockId)
+            .withOwnerId(uuid())
+            .build()
+            .acquireForever()
     }
 }

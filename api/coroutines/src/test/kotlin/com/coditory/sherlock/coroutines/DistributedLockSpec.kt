@@ -1,7 +1,7 @@
 package com.coditory.sherlock.coroutines
 
 import com.coditory.sherlock.base.SpecSimulatedException
-import com.coditory.sherlock.connector.LockedActionResult
+import com.coditory.sherlock.connector.AcquireResultWithValue
 import com.coditory.sherlock.coroutines.base.TestTuple1
 import com.coditory.sherlock.coroutines.base.assertThrows
 import com.coditory.sherlock.coroutines.base.runDynamicTest
@@ -21,7 +21,7 @@ class DistributedLockSpec {
 
     @TestFactory
     fun `should release the lock after executing the action`() =
-        listOf<TestTuple1<suspend (DistributedLock) -> LockedActionResult<Int>>>(
+        listOf<TestTuple1<suspend (DistributedLock) -> AcquireResultWithValue<Int>>>(
             testTuple("acquireAndExecute") { it.callLocked { counter.incrementAndGet() } },
             testTuple("acquireAndExecute(duration)") { it.callLocked(Duration.ofHours(1)) { counter.incrementAndGet() } },
         ).runDynamicTest {
@@ -36,7 +36,7 @@ class DistributedLockSpec {
             val result =
                 action(lock)
                     .onAcquired { doOnAcquiredExecuteCount++ }
-                    .onNotAcquired { doOnNotAcquiredExecuteCount++ }
+                    .onRejected { doOnNotAcquiredExecuteCount++ }
                     .acquired()
             // then
             assertEquals(1, lock.acquisitions())
@@ -49,7 +49,7 @@ class DistributedLockSpec {
 
     @TestFactory
     fun `should not execute action if lock was not acquired`() =
-        listOf<TestTuple1<suspend (DistributedLock) -> LockedActionResult<Int>>>(
+        listOf<TestTuple1<suspend (DistributedLock) -> AcquireResultWithValue<Int>>>(
             testTuple("acquireAndExecute") { it.callLocked { counter.incrementAndGet() } },
             testTuple("acquireAndExecute(duration)") { it.callLocked(Duration.ofHours(1)) { counter.incrementAndGet() } },
         ).runDynamicTest {
@@ -64,7 +64,7 @@ class DistributedLockSpec {
             val result =
                 action(lock)
                     .onAcquired { doOnAcquiredExecuteCount++ }
-                    .onNotAcquired { doOnNotAcquiredExecuteCount++ }
+                    .onRejected { doOnNotAcquiredExecuteCount++ }
                     .acquired()
             // then
             assertEquals(1, lock.acquisitions())
@@ -77,7 +77,7 @@ class DistributedLockSpec {
 
     @TestFactory
     fun `should release the lock after action error`() =
-        listOf<TestTuple1<suspend (DistributedLock) -> LockedActionResult<Int>>>(
+        listOf<TestTuple1<suspend (DistributedLock) -> AcquireResultWithValue<Int>>>(
             testTuple("acquireAndExecute") { it.callLocked { throw SpecSimulatedException() } },
             testTuple(
                 "acquireAndExecute(duration)",

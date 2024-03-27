@@ -14,28 +14,36 @@ class SherlockMigrator internal constructor(
     private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
     suspend fun migrate(): MigrationResult {
-        val acquireResult = migrationLock.runLocked { runMigrations() }
-            .onNotAcquired { logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.id) }
-        return MigrationResult(acquireResult.acquired())
+        val acquireResult = migrationLock.callLocked { runMigrations() }
+        return if (acquireResult.acquired()) {
+            MigrationResult.acquiredResult(acquireResult.value())
+        } else {
+            logger.debug("Migration skipped: {}. Migration lock was refused.", migrationLock.id)
+            MigrationResult.rejectedResult()
+        }
     }
 
-    private suspend fun runMigrations() {
+    private suspend fun runMigrations(): List<String> {
         val timer = Timer.start()
         logger.info("Migration started: {}", migrationLock.id)
-        migrationChangeSets.forEach { it.execute() }
+        val executed = migrationChangeSets
+            .filter { it.execute() }
+            .map { it.id }
         logger.info("Migration finished successfully: {} [{}]", migrationLock.id, timer.elapsed())
+        return executed
     }
 
-    internal class MigrationChangeSet(private val id: String, private val lock: DistributedLock, private val action: suspend () -> Any?) {
+    internal class MigrationChangeSet(val id: String, private val lock: DistributedLock, private val action: suspend () -> Any?) {
         private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
-        suspend fun execute() {
+        suspend fun execute(): Boolean {
             val timer = Timer.start()
-            if (lock.acquire()) {
+            return if (lock.acquire()) {
                 logger.debug("Executing migration change set: {}", id)
                 try {
                     action()
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed())
+                    true
                 } catch (exception: Throwable) {
                     logger.warn(
                         "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",
@@ -48,6 +56,7 @@ class SherlockMigrator internal constructor(
                 }
             } else {
                 logger.info("Migration change set skipped: {}", id)
+                false
             }
         }
     }

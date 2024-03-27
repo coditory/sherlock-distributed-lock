@@ -25,7 +25,7 @@ class DistributedLockSpec extends Specification {
         given:
             DistributedLockMock lock = releasedInMemoryLock("sample-lock")
         when:
-            Integer result = action(lock).blockingGet()
+            Integer result = action(lock).blockingGet().value()
         then:
             lock.acquisitions() == 1
             lock.releases() == 1
@@ -43,7 +43,7 @@ class DistributedLockSpec extends Specification {
         given:
             DistributedLockMock lock = acquiredInMemoryLock("sample-lock")
         when:
-            Integer result = action(lock).blockingGet()
+            Integer result = action(lock).blockingGet().value()
         then:
             lock.acquisitions() == 1
             lock.releases() == 0
