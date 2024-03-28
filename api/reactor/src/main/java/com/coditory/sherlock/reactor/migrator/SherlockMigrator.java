@@ -105,9 +105,9 @@ public final class SherlockMigrator {
 
         private Mono<AcquireResult> executeChangeSet(Timer timer) {
             return action.get()
-                .flatMap((result) -> {
+                .map((result) -> {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                    return Mono.just(AcquireResult.acquiredResult());
+                    return AcquireResult.acquiredResult();
                 })
                 .onErrorResume((e) -> {
                     logger.warn(

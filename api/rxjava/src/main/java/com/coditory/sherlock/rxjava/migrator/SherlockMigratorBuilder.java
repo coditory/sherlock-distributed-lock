@@ -79,7 +79,7 @@ public final class SherlockMigratorBuilder {
                     });
                 }
                 if (Single.class.isAssignableFrom(returnType)) {
-                    return () -> Single.fromCallable(action::get);
+                    return () -> (Single<?>) action.get();
                 }
                 throw new IllegalArgumentException("Expected method to declare void or Single as return types");
             })

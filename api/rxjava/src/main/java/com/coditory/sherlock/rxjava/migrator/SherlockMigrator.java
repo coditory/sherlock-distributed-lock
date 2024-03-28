@@ -105,9 +105,9 @@ public final class SherlockMigrator {
 
         private Single<AcquireResult> executeChangeSet(Timer timer) {
             return action.get()
-                .flatMap((result) -> {
+                .map((result) -> {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
-                    return Single.just(AcquireResult.acquiredResult());
+                    return AcquireResult.acquiredResult();
                 })
                 .onErrorResumeNext((e) -> {
                     logger.warn(
