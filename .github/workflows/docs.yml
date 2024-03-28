@@ -5,9 +5,9 @@ on:
   push:
     branches: [main]
     paths:
-      - "docs/**"
-      - "mkdocs.yml"
-      - "mkdocs-requirements.txt"
+      - "docs/site/**"
+      - "docs/mkdocs.yml"
+      - "docs/mkdocs-requirements.txt"
   workflow_run:
     workflows: [Release]
     branches: [main]
@@ -26,7 +26,7 @@ jobs:
           python-version: 3.x
 
       - name: Install mkdocs
-        run: pip install mkdocs -r mkdocs-requirements.txt
+        run: cd docs && pip install mkdocs -r mkdocs-requirements.txt
 
       - name: Deploy docs
-        run: mkdocs gh-deploy --force
+        run: cd docs && mkdocs gh-deploy --force

@@ -2,14 +2,15 @@ site_name: Sherlock Distributed Lock
 site_description: Distributed lock library for JVM
 site_author: coditory
 site_url: https://coditory.github.io/sherlock-distributed-lock
-site_dir: build/docs
+site_dir: build
+docs_dir: site
 
 repo_name: coditory/sherlock-distributed-lock
 repo_url: https://github.com/coditory/sherlock-distributed-lock
 
 theme:
   name: 'material'
-  custom_dir: 'docs/theme'
+  custom_dir: 'theme'
   logo: assets/img/icon.png
   static_templates:
     - 404.html

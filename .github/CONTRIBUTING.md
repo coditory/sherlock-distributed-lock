@@ -72,5 +72,6 @@ update [documentation](https://github.com/coditory/sherlock-distributed-lock/tre
 
 To run documentation server locally:
 - Install python3 locally
-- Install dependencies `pip install -r mkdocs-requirements.txt` from project directory
+- Go to `cd docs`
+- Install dependencies `pip install -r mkdocs-requirements.txt`
 - Run `mkdocs serve`
