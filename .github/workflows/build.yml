@@ -100,6 +100,7 @@ jobs:
             -H "Accept: application/vnd.github+json" \
             /repos/${{ github.repository }}/releases/generate-notes \
             -f target_commitish='main' \
+            -f tag_name=${GITHUB_REF_NAME:1} \
             | jq -r '.body')"
           declare -r ESCAPED="${NOTES//$'\n'/'%0A'}"
           echo "notes=$ESCAPED" >> $GITHUB_OUTPUT
