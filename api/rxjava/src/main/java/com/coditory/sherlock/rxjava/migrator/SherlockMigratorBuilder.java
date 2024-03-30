@@ -5,6 +5,7 @@ import com.coditory.sherlock.migrator.MigrationResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
 import com.coditory.sherlock.rxjava.migrator.SherlockMigrator.MigrationChangeSet;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
@@ -38,14 +39,19 @@ public final class SherlockMigratorBuilder {
         return this;
     }
 
+    /**
+     * Adds change set to migration process.
+     *
+     * @param changeSetId unique change set id used. This is used as a lock id in migration
+     *                    process.
+     * @param changeSet   change set action that should be run if change set was not already applied
+     * @return the migrator
+     */
     @NotNull
     public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, @NotNull Runnable changeSet) {
         expectNonEmpty(changeSetId, "changeSetId");
         expectNonNull(changeSet, "changeSet");
-        return this.addChangeSet(changeSetId, () -> Single.fromCallable(() -> {
-            changeSet.run();
-            return true;
-        }));
+        return this.addChangeSet(changeSetId, () -> Completable.fromRunnable(changeSet));
     }
 
     /**
@@ -57,7 +63,22 @@ public final class SherlockMigratorBuilder {
      * @return the migrator
      */
     @NotNull
-    public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, @NotNull Supplier<Single<?>> changeSet) {
+    public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, @NotNull Completable changeSet) {
+        expectNonEmpty(changeSetId, "changeSetId");
+        expectNonNull(changeSet, "changeSet");
+        return addChangeSet(changeSetId, () -> changeSet);
+    }
+
+    /**
+     * Adds change set to migration process.
+     *
+     * @param changeSetId unique change set id used. This is used as a lock id in migration
+     *                    process.
+     * @param changeSet   change set action that should be run if change set was not already applied
+     * @return the migrator
+     */
+    @NotNull
+    public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, @NotNull Supplier<Completable> changeSet) {
         expectNonEmpty(changeSetId, "changeSetId");
         expectNonNull(changeSet, "changeSet");
         ensureUniqueChangeSetId(changeSetId);
@@ -73,15 +94,12 @@ public final class SherlockMigratorBuilder {
         expectNonNull(object, "object containing change sets");
         ChangeSetMethodExtractor.extractChangeSets(object, (action, returnType) -> {
                 if (returnType == void.class) {
-                    return () -> Single.fromCallable(() -> {
-                        action.get();
-                        return true;
-                    });
+                    return () -> Completable.fromRunnable(action::get);
                 }
-                if (Single.class.isAssignableFrom(returnType)) {
-                    return () -> (Single<?>) action.get();
+                if (Completable.class.isAssignableFrom(returnType)) {
+                    return () -> (Completable) action.get();
                 }
-                throw new IllegalArgumentException("Expected method to declare void or Single as return types");
+                throw new IllegalArgumentException("Expected method to declare void or Completable as return types");
             })
             .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
         return this;

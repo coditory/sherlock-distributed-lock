@@ -67,7 +67,7 @@ Create sherlock instance and distributed lock:
 
 ## Configuration
 
-Configuration is available via sherlock builder: 
+Configuration is available via sherlock builder:
 === "Sync"
     ```java
     MongoSherlock.builder()
@@ -116,7 +116,7 @@ Parameters:
 - `locksCollection` - MongoDb collection used to store the locks.
 
 ## Locks collection
- 
+
 Sample lock document:
 
 ```json

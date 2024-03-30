@@ -57,6 +57,21 @@ public final class SherlockMigratorBuilder {
      * @return the migrator
      */
     @NotNull
+    public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, Mono<?> changeSet) {
+        expectNonEmpty(changeSetId, "changeSetId");
+        expectNonNull(changeSet, "changeSet");
+        return addChangeSet(changeSetId, () -> changeSet);
+    }
+
+    /**
+     * Adds change set to migration process.
+     *
+     * @param changeSetId unique change set id used. This is used as a lock id in migration
+     *                    process.
+     * @param changeSet   change set action that should be run if change set was not already applied
+     * @return the migrator
+     */
+    @NotNull
     public SherlockMigratorBuilder addChangeSet(@NotNull String changeSetId, @NotNull Supplier<Mono<?>> changeSet) {
         expectNonEmpty(changeSetId, "changeSetId");
         expectNonNull(changeSet, "changeSet");

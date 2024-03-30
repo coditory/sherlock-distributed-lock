@@ -4,13 +4,13 @@ import com.coditory.sherlock.inmem.rxjava.InMemorySherlock
 import com.coditory.sherlock.migrator.ChangeSet
 import com.coditory.sherlock.migrator.MigrationResult
 import com.coditory.sherlock.rxjava.Sherlock
-import io.reactivex.rxjava3.core.Single
+import io.reactivex.rxjava3.core.Completable
 import spock.lang.Specification
 
 class MigratorRxJavaSpec extends Specification {
     Sherlock sherlock = InMemorySherlock.create()
 
-    def "should execute single"() {
+    def "should execute completable"() {
         given:
             RxMigration migration = new RxMigration()
         when:
@@ -19,12 +19,12 @@ class MigratorRxJavaSpec extends Specification {
                 .migrate().blockingGet()
         then:
             result.acquired() == true
-            result.executedChangeSets() == ["returning-single"]
+            result.executedChangeSets() == ["returning-completable"]
             migration.executedMethod
-            migration.executedSingle
+            migration.executedCompletable
     }
 
-    def "should not execute single when changeset was executed"() {
+    def "should not execute completable when changeset was executed"() {
         given:
             SherlockMigrator.builder(sherlock)
                 .addAnnotatedChangeSets(new RxMigration())
@@ -39,7 +39,7 @@ class MigratorRxJavaSpec extends Specification {
             result.acquired() == true
             result.executedChangeSets() == []
             migration.executedMethod == false
-            migration.executedSingle == false
+            migration.executedCompletable == false
     }
 
     def "should execute changesets in order skipping one"() {
@@ -55,19 +55,18 @@ class MigratorRxJavaSpec extends Specification {
         then:
             result.acquired() == true
             result.executedChangeSets() == ["a", "c"]
-            migration.actions == ["a-method", "a-single", "c-method", "c-single"]
+            migration.actions == ["a-method", "a-completable", "c-method", "c-completable"]
     }
 
     class RxMigration {
         boolean executedMethod = false
-        boolean executedSingle = false
+        boolean executedCompletable = false
 
-        @ChangeSet(order = 1, id = "returning-single")
-        Single<String> returningSingle() {
+        @ChangeSet(order = 1, id = "returning-completable")
+        Completable returningCompletable() {
             executedMethod = true
-            return Single.fromCallable {
-                executedSingle = true
-                return "abc"
+            return Completable.fromRunnable {
+                executedCompletable = true
             }
         }
     }
@@ -76,29 +75,26 @@ class MigratorRxJavaSpec extends Specification {
         List<String> actions = new ArrayList<>()
 
         @ChangeSet(order = 1, id = "a")
-        Single<String> changeA() {
+        Completable changeA() {
             actions.add("a-method")
-            return Single.fromCallable {
-                actions.add("a-single")
-                return "a"
+            return Completable.fromRunnable {
+                actions.add("a-completable")
             }
         }
 
         @ChangeSet(order = 2, id = "b")
-        Single<String> changeB() {
+        Completable changeB() {
             actions.add("b-method")
-            return Single.fromCallable {
-                actions.add("b-single")
-                return "b"
+            return Completable.fromRunnable {
+                actions.add("b-completable")
             }
         }
 
         @ChangeSet(order = 3, id = "c")
-        Single<String> changeC() {
+        Completable changeC() {
             actions.add("c-method")
-            return Single.fromCallable {
-                actions.add("c-single")
-                return "c"
+            return Completable.fromRunnable {
+                actions.add("c-completable")
             }
         }
     }

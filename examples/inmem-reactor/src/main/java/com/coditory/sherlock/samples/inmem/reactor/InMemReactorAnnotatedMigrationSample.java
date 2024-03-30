@@ -6,6 +6,7 @@ import com.coditory.sherlock.reactor.Sherlock;
 import com.coditory.sherlock.reactor.migrator.SherlockMigrator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 public class InMemReactorAnnotatedMigrationSample {
     public static void main(String[] args) {
@@ -26,13 +27,13 @@ public class InMemReactorAnnotatedMigrationSample {
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @ChangeSet(order = 0, id = "change-set-a")
-        public void changeSetA() {
-            logger.info("Annotated change-set: A");
+        public Mono<?> changeSetA() {
+            return Mono.fromRunnable(() -> logger.info("Annotated change-set: A"));
         }
 
         @ChangeSet(order = 1, id = "change-set-b")
-        public void changeSetB() {
-            logger.info("Annotated change-set: B");
+        public Mono<?> changeSetB() {
+            return Mono.fromRunnable(() -> logger.info("Annotated change-set: B"));
         }
     }
 

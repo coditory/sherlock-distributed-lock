@@ -6,12 +6,13 @@ import com.coditory.sherlock.connector.AcquireResultWithValue;
 import com.coditory.sherlock.migrator.MigrationResult;
 import com.coditory.sherlock.rxjava.DistributedLock;
 import com.coditory.sherlock.rxjava.Sherlock;
-import io.reactivex.rxjava3.core.Flowable;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -67,23 +68,30 @@ public final class SherlockMigrator {
     private Single<List<String>> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        return Flowable.fromIterable(migrationChangeSets)
-            .flatMapSingle(MigrationChangeSet::execute)
-            .filter(AcquireResultWithValue::acquired)
-            .map(AcquireResultWithValue::value)
-            .toList()
-            .doOnSuccess((r) -> {
-                logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed());
-            });
+        Single<List<String>> result = Single.just(List.of());
+        for (MigrationChangeSet changeSet : migrationChangeSets) {
+            result = result.flatMap(ids ->
+                changeSet.execute().map(acquired -> {
+                    if (acquired.rejected()) {
+                        return ids;
+                    }
+                    ArrayList<String> copy = new ArrayList<>(ids);
+                    copy.add(acquired.value());
+                    return copy;
+                })
+            );
+        }
+        return result
+            .doOnSuccess((r) -> logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed()));
     }
 
     static class MigrationChangeSet {
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
         private final String id;
         private final DistributedLock lock;
-        private final Supplier<Single<?>> action;
+        private final Supplier<Completable> action;
 
-        MigrationChangeSet(String id, DistributedLock lock, Supplier<Single<?>> action) {
+        MigrationChangeSet(String id, DistributedLock lock, Supplier<Completable> action) {
             this.id = id;
             this.lock = lock;
             this.action = action;
@@ -105,10 +113,10 @@ public final class SherlockMigrator {
 
         private Single<AcquireResult> executeChangeSet(Timer timer) {
             return action.get()
-                .map((result) -> {
+                .andThen(Single.fromCallable(() -> {
                     logger.info("Migration change set applied: {} [{}]", id, timer.elapsed());
                     return AcquireResult.acquiredResult();
-                })
+                }))
                 .onErrorResumeNext((e) -> {
                     logger.warn(
                         "Migration change set failure: {} [{}]. Stopping migration process. Fix problem and rerun the migration.",

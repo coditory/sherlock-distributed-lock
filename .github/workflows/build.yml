@@ -48,13 +48,13 @@ jobs:
       - name: Publish Coverage Report
         uses: codecov/codecov-action@v4
         if: github.repository == 'coditory/sherlock-distributed-lock' && github.ref == 'refs/heads/main'
-        continue-on-error: true
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
           override_commit: ${{ github.event.workflow_run.head_sha }}
           override_branch: ${{ github.event.workflow_run.head_branch }}
           override_build: ${{ github.event.workflow_run.id }}
-          files: 'build/reports/jacoco/coverage/coverage.xml'
+          disable_search: true
+          files: build/reports/jacoco/coverage/coverage.xml
 
       - name: Import GPG Key
         id: gpg

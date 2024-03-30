@@ -8,6 +8,7 @@ import com.coditory.sherlock.sql.rxjava.SqlSherlock;
 import io.r2dbc.spi.ConnectionFactories;
 import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
+import io.reactivex.rxjava3.core.Completable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,13 +43,13 @@ public class PostgresRxAnnotatedMigrationSample {
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @ChangeSet(order = 0, id = "change-set-a")
-        public void changeSetA() {
-            logger.info("Annotated change-set: A");
+        public Completable changeSetA() {
+            return Completable.fromRunnable(() -> logger.info("Annotated change-set: A"));
         }
 
         @ChangeSet(order = 1, id = "change-set-b")
-        public void changeSetB() {
-            logger.info("Annotated change-set: B");
+        public Completable changeSetB() {
+            return Completable.fromRunnable(() -> logger.info("Annotated change-set: B"));
         }
     }
 

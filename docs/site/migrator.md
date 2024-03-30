@@ -14,7 +14,7 @@ Sherlock migrator enforces following migration rules:
     See full source code examples on  [Github]({{ vcs_baseurl }}/sample/src/main/java/com/coditory/sherlock/example/).
 
 ## Annotated migration
-Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors).
+Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors/index.md).
 
 === "Sync"
     ```java
@@ -35,7 +35,7 @@ Below example uses MongoDB, but sherlock migrator is available for all [connecto
 
 ## Functional migration
 
-Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors).
+Below example uses MongoDB, but sherlock migrator is available for all [connectors](connectors/index.md).
 === "Sync"
     ```java
     --8<-- "examples/mongo-sync/src/main/java/com/coditory/sherlock/samples/mongo/sync/MongoSyncMigrationSample.java:2"

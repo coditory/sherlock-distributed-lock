@@ -9,9 +9,9 @@ import com.coditory.sherlock.reactor.Sherlock;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Supplier;
 
@@ -67,14 +67,21 @@ public final class SherlockMigrator {
     private Mono<List<String>> runMigrations() {
         Timer timer = Timer.start();
         logger.info("Migration started: {}", migrationLock.getId());
-        return Flux.fromIterable(migrationChangeSets)
-            .flatMap(MigrationChangeSet::execute)
-            .filter(AcquireResultWithValue::acquired)
-            .map(AcquireResultWithValue::value)
-            .collectList()
-            .doOnNext((r) -> {
-                logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed());
-            });
+        Mono<List<String>> result = Mono.just(List.of());
+        for (MigrationChangeSet changeSet : migrationChangeSets) {
+            result = result.flatMap(ids ->
+                changeSet.execute().map(acquired -> {
+                    if (acquired.rejected()) {
+                        return ids;
+                    }
+                    ArrayList<String> copy = new ArrayList<>(ids);
+                    copy.add(acquired.value());
+                    return copy;
+                })
+            );
+        }
+        return result
+            .doOnNext((r) -> logger.info("Migration finished successfully: {} [{}]", migrationLock.getId(), timer.elapsed()));
     }
 
     static class MigrationChangeSet {

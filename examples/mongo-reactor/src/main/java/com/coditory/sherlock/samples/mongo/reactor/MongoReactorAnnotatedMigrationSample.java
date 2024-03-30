@@ -10,41 +10,42 @@ import com.mongodb.reactivestreams.client.MongoCollection;
 import org.bson.Document;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 public class MongoReactorAnnotatedMigrationSample {
     private static MongoCollection<Document> locksCollection() {
         String database = "sherlock";
         MongoClient mongoClient = MongoClients.create("mongodb://localhost:27017/" + database);
         return mongoClient
-                .getDatabase("sherlock")
-                .getCollection("locks");
+            .getDatabase("sherlock")
+            .getCollection("locks");
     }
 
     public static void main(String[] args) {
         Sherlock sherlock = MongoSherlock.create(locksCollection());
         // first commit - all migrations are executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration())
-                .migrate()
-                .block();
+            .addAnnotatedChangeSets(new AnnotatedMigration())
+            .migrate()
+            .block();
         // second commit - only new change-set is executed
         SherlockMigrator.builder(sherlock)
-                .addAnnotatedChangeSets(new AnnotatedMigration2())
-                .migrate()
-                .block();
+            .addAnnotatedChangeSets(new AnnotatedMigration2())
+            .migrate()
+            .block();
     }
 
     public static class AnnotatedMigration {
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @ChangeSet(order = 0, id = "change-set-a")
-        public void changeSetA() {
-            logger.info("Annotated change-set: A");
+        public Mono<?> changeSetA() {
+            return Mono.fromRunnable(() -> logger.info("Annotated change-set: A"));
         }
 
         @ChangeSet(order = 1, id = "change-set-b")
-        public void changeSetB() {
-            logger.info("Annotated change-set: B");
+        public Mono<?> changeSetB() {
+            return Mono.fromRunnable(() -> logger.info("Annotated change-set: B"));
         }
     }
 

@@ -4,6 +4,7 @@ import com.coditory.sherlock.inmem.rxjava.InMemorySherlock;
 import com.coditory.sherlock.migrator.ChangeSet;
 import com.coditory.sherlock.rxjava.Sherlock;
 import com.coditory.sherlock.rxjava.migrator.SherlockMigrator;
+import io.reactivex.rxjava3.core.Completable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,13 +27,13 @@ public class InMemRxAnnotatedMigrationSample {
         private final Logger logger = LoggerFactory.getLogger(this.getClass());
 
         @ChangeSet(order = 0, id = "change-set-a")
-        public void changeSetA() {
-            logger.info("Annotated change-set: A");
+        public Completable changeSetA() {
+            return Completable.fromRunnable(() -> logger.info("Annotated change-set: A"));
         }
 
         @ChangeSet(order = 1, id = "change-set-b")
-        public void changeSetB() {
-            logger.info("Annotated change-set: B");
+        public Completable changeSetB() {
+            return Completable.fromRunnable(() -> logger.info("Annotated change-set: B"));
         }
     }
 

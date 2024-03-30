@@ -9,6 +9,7 @@ import io.r2dbc.spi.ConnectionFactory;
 import io.r2dbc.spi.ConnectionFactoryOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import reactor.core.publisher.Mono;
 
 public class MySqlReactorMigrationSample {
     private static final Logger logger = LoggerFactory.getLogger(MySqlReactorMigrationSample.class);
@@ -28,9 +29,10 @@ public class MySqlReactorMigrationSample {
     public static void main(String[] args) {
         Sherlock sherlock = SqlSherlock.create(getConnectionFactory(), BindingMapper.MYSQL_MAPPER);
         // first commit - all migrations are executed
+        // acceptable changesets types: () -> {}, Mono<?>, () -> Mono<?>
         SherlockMigrator.builder(sherlock)
-            .addChangeSet("change-set-1", () -> logger.info("Change-set 1"))
-            .addChangeSet("change-set-2", () -> logger.info("Change-set 2"))
+            .addChangeSet("change-set-1", Mono.fromRunnable(() -> logger.info("Change-set 1")))
+            .addChangeSet("change-set-2", () -> Mono.fromRunnable(() -> logger.info("Change-set 2")))
             .migrate()
             .block();
         // second commit - only new change-set is executed
