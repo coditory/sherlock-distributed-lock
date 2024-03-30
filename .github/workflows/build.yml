@@ -54,7 +54,7 @@ jobs:
           override_commit: ${{ github.event.workflow_run.head_sha }}
           override_branch: ${{ github.event.workflow_run.head_branch }}
           override_build: ${{ github.event.workflow_run.id }}
-          files: 'build/reports/kover/report.xml'
+          files: 'build/reports/jacoco/coverage/coverage.xml'
 
       - name: Import GPG Key
         id: gpg
