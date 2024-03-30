@@ -68,6 +68,9 @@ markdown_extensions:
       permalink: true
   - pymdownx.tabbed:
       alternate_style: true
+      slugify: !!python/object/apply:pymdownx.slugs.slugify
+        kwds:
+          case: lower
   - pymdownx.arithmatex
   - pymdownx.betterem:
       smart_enable: all
