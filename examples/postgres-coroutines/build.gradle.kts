@@ -7,5 +7,4 @@ dependencies {
     implementation(libs.r2dbc.postgresql)
     implementation(libs.hikaricp)
     implementation(libs.logback.classic)
-    implementation(libs.kotlinx.coroutines.core)
 }

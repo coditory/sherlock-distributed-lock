@@ -7,7 +7,7 @@ plugins {
 dependencies {
     api(projects.api.apiCoroutines)
     api(projects.api.apiCoroutinesConnector)
+    api(libs.mongodb.coroutine)
     implementation(projects.connectors.mongo.mongoCommon)
-    implementation(libs.mongodb.coroutine)
     integrationTestImplementation(projects.connectors.mongo.mongoTests)
 }

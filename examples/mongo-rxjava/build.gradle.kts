@@ -4,6 +4,5 @@ plugins {
 
 dependencies {
     implementation(projects.connectors.mongo.mongoRxjava)
-    implementation(libs.mongodb.reactivestreams)
     implementation(libs.logback.classic)
 }

@@ -6,7 +6,7 @@ plugins {
 
 dependencies {
     api(projects.api.apiSync)
-    implementation(libs.mongodb.sync)
+    api(libs.mongodb.sync)
     implementation(projects.connectors.mongo.mongoCommon)
     integrationTestImplementation(projects.connectors.mongo.mongoTests)
 }

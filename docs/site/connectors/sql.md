@@ -27,7 +27,6 @@ Add dependencies to `build.gradle.kts`:
         implementation("org.postgresql:postgresql:$versions.postgres")
         implementation("com.zaxxer:HikariCP:$versions.hikaricp")
         implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines")
     }
     ```
 === "Reactor"
@@ -63,7 +62,7 @@ Create sherlock instance and distributed lock:
     --8<-- "examples/postgres-reactor/src/main/java/com/coditory/sherlock/samples/postgres/reactor/PostgresReactorLockSample.java:2"
     ```
 === "RxJava"
-    ```java 
+    ```java
     --8<-- "examples/postgres-rxjava/src/main/java/com/coditory/sherlock/samples/postgres/rxjava/PostgresRxLockSample.java:2"
     ```
 

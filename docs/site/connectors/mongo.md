@@ -18,29 +18,24 @@ Add dependencies to `build.gradle.kts`:
     ```kotlin
     dependencies {
         implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
-        implementation("org.mongodb:mongodb-driver-sync:$versions.mongodb")
     }
     ```
 === "Coroutines"
     ```kotlin
     dependencies {
         implementation("com.coditory.sherlock:sherlock-mongo-coroutines:{{ version }}")
-        implementation("org.mongodb:mongodb-driver-kotlin-coroutine:$versions.mongodb")
-        implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$versions.coroutines")
     }
     ```
 === "Reactor"
     ```kotlin
     dependencies {
         implementation("com.coditory.sherlock:sherlock-mongo-reactor:{{ version }}")
-        implementation("org.mongodb:mongodb-driver-reactivestreams:$versions.mongodb")
     }
     ```
 === "RxJava"
     ```kotlin
     dependencies {
         implementation("com.coditory.sherlock:sherlock-mongo-rxjava:{{ version }}")
-        implementation("org.mongodb:mongodb-driver-reactivestreams:$versions.mongodb")
     }
     ```
 

@@ -6,8 +6,8 @@ plugins {
 
 dependencies {
     api(projects.api.apiCommon)
+    api(libs.kotlinx.coroutines.core)
     implementation(projects.common)
-    implementation(libs.kotlinx.coroutines.core)
     implementation(libs.kotlinx.coroutines.reactive)
     testImplementation(libs.kotlinx.coroutines.test)
     testImplementation(projects.tests)
