@@ -3,6 +3,7 @@ package com.coditory.sherlock.rxjava;
 import com.coditory.sherlock.connector.AcquireResult;
 import com.coditory.sherlock.connector.AcquireResultWithValue;
 import com.coditory.sherlock.connector.ReleaseResult;
+import io.reactivex.rxjava3.core.Completable;
 import io.reactivex.rxjava3.core.Single;
 import org.jetbrains.annotations.NotNull;
 
@@ -107,6 +108,21 @@ public interface DistributedLock {
     /**
      * Tries to acquire the lock and releases it after action is executed.
      *
+     * @param completable executed when lock is acquired
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#rejectedResult()} otherwise.
+     * @see DistributedLock#acquire()
+     */
+    @NotNull
+    default Single<AcquireResult> runLocked(@NotNull Completable completable) {
+        expectNonNull(completable, "completable");
+        return runLocked(completable.andThen(Single.just(true)))
+            .map(AcquireResultWithValue::toAcquireResult);
+    }
+
+    /**
+     * Tries to acquire the lock and releases it after action is executed.
+     *
      * @param runnable executed when lock is acquired
      * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
      * {@link AcquireResult#rejectedResult()} otherwise.
@@ -115,10 +131,7 @@ public interface DistributedLock {
     @NotNull
     default Single<AcquireResult> runLocked(@NotNull Runnable runnable) {
         expectNonNull(runnable, "runnable");
-        return runLocked(Single.fromCallable(() -> {
-            runnable.run();
-            return true;
-        })).map(AcquireResultWithValue::toAcquireResult);
+        return runLocked(Completable.fromRunnable(runnable));
     }
 
     /**
@@ -176,9 +189,23 @@ public interface DistributedLock {
     default Single<AcquireResult> runLocked(@NotNull Duration duration, @NotNull Runnable runnable) {
         expectNonNull(duration, "duration");
         expectNonNull(runnable, "runnable");
-        return runLocked(duration, Single.fromCallable(() -> {
-            runnable.run();
-            return true;
-        })).map(AcquireResultWithValue::toAcquireResult);
+        return runLocked(duration, Completable.fromRunnable(runnable));
+    }
+
+    /**
+     * Tries to acquire the lock for a given duration and releases it after action is executed.
+     *
+     * @param duration    lock expiration time when release is not executed
+     * @param completable executed when lock is acquired
+     * @return {@link AcquireResult#acquiredResult()} when lock is acquired,
+     * {@link AcquireResult#rejectedResult()} otherwise.
+     * @see DistributedLock#acquire(Duration)
+     */
+    @NotNull
+    default Single<AcquireResult> runLocked(@NotNull Duration duration, @NotNull Completable completable) {
+        expectNonNull(duration, "duration");
+        expectNonNull(completable, "completable");
+        return runLocked(duration, completable.andThen(Single.just(true)))
+            .map(AcquireResultWithValue::toAcquireResult);
     }
 }
