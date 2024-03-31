@@ -5,7 +5,7 @@ kotlin = "1.9.22"
 ktlint = "1.2.0"
 jacoco = "0.8.11"
 # dependencies
-mongodb = "4.11.1"
+mongodb = "5.0.0"
 logback = "1.5.0"
 r2dbc = "1.0.0.RELEASE"
 coroutines = "1.8.0"
@@ -29,7 +29,7 @@ mongodb-sync = { module = "org.mongodb:mongodb-driver-sync", version.ref = "mong
 slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.12" }
 logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
-postgresql = { module = "org.postgresql:postgresql", version = "42.7.2" }
+postgresql = { module = "org.postgresql:postgresql", version = "42.7.3" }
 mysql = { module = "com.mysql:mysql-connector-j", version = "8.3.0" }
 r2dbc-spi = { module = "io.r2dbc:r2dbc-spi", version.ref = "r2dbc" }
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc" }
