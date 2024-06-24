@@ -1,7 +1,7 @@
 [versions]
 # build tools
 java = "21"
-kotlin = "1.9.24"
+kotlin = "2.0.0"
 ktlint = "1.2.0"
 jacoco = "0.8.11"
 # dependencies
