@@ -47,5 +47,5 @@ testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = 
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
 kotlinx-coroutines-test = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-test", version.ref = "coroutines" }
-jsonassert = { module = "org.skyscreamer:jsonassert", version = "1.5.2" }
+jsonassert = { module = "org.skyscreamer:jsonassert", version = "1.5.3" }
 awaitility = { module = "org.awaitility:awaitility", version = "4.2.1" }
