@@ -10,7 +10,7 @@ logback = "1.5.8"
 r2dbc = "1.0.0.RELEASE"
 coroutines = "1.9.0"
 # test dependencies
-junit = "5.11.1"
+junit = "5.11.2"
 spock = "2.4-M4-groovy-4.0"
 testcontainers = "1.20.1"
 
