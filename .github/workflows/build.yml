@@ -46,7 +46,7 @@ jobs:
           reporter: java-junit
 
       - name: Publish Coverage Report
-        uses: codecov/codecov-action@v4
+        uses: codecov/codecov-action@v5
         if: github.repository == 'coditory/sherlock-distributed-lock' && github.ref == 'refs/heads/main'
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
