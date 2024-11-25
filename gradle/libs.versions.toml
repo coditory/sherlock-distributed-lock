@@ -30,7 +30,7 @@ slf4j-api = { module = "org.slf4j:slf4j-api", version = "2.0.16" }
 logback-core = { module = "ch.qos.logback:logback-core", version.ref = "logback" }
 logback-classic = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 postgresql = { module = "org.postgresql:postgresql", version = "42.7.4" }
-mysql = { module = "com.mysql:mysql-connector-j", version = "8.4.0" }
+mysql = { module = "com.mysql:mysql-connector-j", version = "9.1.0" }
 r2dbc-spi = { module = "io.r2dbc:r2dbc-spi", version.ref = "r2dbc" }
 r2dbc-pool = { module = "io.r2dbc:r2dbc-pool", version.ref = "r2dbc" }
 r2dbc-postgresql = { module = "org.postgresql:r2dbc-postgresql", version = "1.0.7.RELEASE" }
