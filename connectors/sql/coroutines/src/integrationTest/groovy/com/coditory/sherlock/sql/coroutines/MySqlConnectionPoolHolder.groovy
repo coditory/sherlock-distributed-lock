@@ -5,6 +5,7 @@ import groovy.transform.CompileStatic
 import io.r2dbc.spi.ConnectionFactories
 import io.r2dbc.spi.ConnectionFactory
 import io.r2dbc.spi.ConnectionFactoryOptions
+import io.r2dbc.spi.Option
 
 @CompileStatic
 class MySqlConnectionPoolHolder {
@@ -18,6 +19,7 @@ class MySqlConnectionPoolHolder {
         ConnectionFactoryOptions options = ConnectionFactoryOptions
             .parse(MySqlHolder.getJdbcUrl().replace("jdbc:", "r2dbc:"))
             .mutate()
+            .option(Option.valueOf("connectionTimeZone"), "UTC")
             .option(ConnectionFactoryOptions.USER, MySqlHolder.getUsername())
             .option(ConnectionFactoryOptions.PASSWORD, MySqlHolder.getPassword())
             .option(ConnectionFactoryOptions.DATABASE, MySqlHolder.getDatabaseName())
