@@ -21,14 +21,15 @@ final class MongoHolder {
             return mongoClient
         }
         startDb()
-        String url = db.getConnectionString()
+        String url = getConnectionString()
         mongoClient = MongoClients.create(url)
         return mongoClient
     }
 
     synchronized static String getConnectionString() {
         if (db == null) return null
-        return db.getConnectionString()
+        // modifying timeouts for faster tests of DB failures
+        return db.getConnectionString() + "?serverSelectionTimeoutMS=10000&heartbeatFrequencyMS=1000"
     }
 
     synchronized static void startDb() {
