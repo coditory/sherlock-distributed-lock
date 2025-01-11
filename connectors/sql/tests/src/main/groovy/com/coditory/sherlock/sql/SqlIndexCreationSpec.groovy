@@ -30,8 +30,8 @@ abstract class SqlIndexCreationSpec extends Specification implements Distributed
 
     void cleanup() {
         try (
-                Connection connection = dataSource.getConnection()
-                Statement statement = connection.createStatement()
+            Connection connection = dataSource.getConnection()
+            Statement statement = connection.createStatement()
         ) {
             statement.executeUpdate("DROP TABLE " + tableName)
         }
@@ -51,7 +51,7 @@ abstract class SqlIndexCreationSpec extends Specification implements Distributed
             assertNoIndexes()
         when:
             locks.createLock("some-acquire")
-                    .acquire()
+                .acquire()
         then:
             assertIndexesCreated()
     }

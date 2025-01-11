@@ -7,13 +7,13 @@ import com.coditory.sherlock.ReleaseLockSpec
 import com.coditory.sherlock.rxjava.base.UsesRxSherlock
 
 class RxInMemoryReleaseLockSpec extends ReleaseLockSpec
-        implements UsesRxSherlock {}
+    implements UsesRxSherlock {}
 
 class RxInMemoryAcquireLockSpec extends AcquireLockSpec
-        implements UsesRxSherlock {}
+    implements UsesRxSherlock {}
 
 class RxInMemoryAcquireLockMultipleTimesSpec extends AcquireLockMultipleTimesSpec
-        implements UsesRxSherlock {}
+    implements UsesRxSherlock {}
 
 class RxInMemoryInfiniteAcquireLockSpec extends InfiniteAcquireLockSpec
-        implements UsesRxSherlock {}
+    implements UsesRxSherlock {}

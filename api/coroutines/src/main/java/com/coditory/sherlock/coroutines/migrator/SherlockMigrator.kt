@@ -33,7 +33,11 @@ class SherlockMigrator internal constructor(
         return executed
     }
 
-    internal class MigrationChangeSet(val id: String, private val lock: DistributedLock, private val action: suspend () -> Any?) {
+    internal class MigrationChangeSet(
+        val id: String,
+        private val lock: DistributedLock,
+        private val action: suspend () -> Any?,
+    ) {
         private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
         suspend fun execute(): Boolean {

@@ -7,10 +7,9 @@ class BlockingKtSherlockWrapper(
 ) : Sherlock {
     fun unwrap(): com.coditory.sherlock.coroutines.Sherlock = sherlock
 
-    override fun initialize() =
-        runBlocking {
-            sherlock.initialize()
-        }
+    override fun initialize() = runBlocking {
+        sherlock.initialize()
+    }
 
     override fun createLock(): DistributedLockBuilder<DistributedLock> {
         return blockingLockBuilder(sherlock.createLock())
@@ -24,10 +23,9 @@ class BlockingKtSherlockWrapper(
         return blockingLockBuilder(sherlock.createOverridingLock())
     }
 
-    override fun forceReleaseAllLocks(): Boolean =
-        runBlocking {
-            sherlock.forceReleaseAllLocks()
-        }
+    override fun forceReleaseAllLocks(): Boolean = runBlocking {
+        sherlock.forceReleaseAllLocks()
+    }
 
     override fun forceReleaseLock(lockId: String): Boolean {
         return createOverridingLock(lockId)

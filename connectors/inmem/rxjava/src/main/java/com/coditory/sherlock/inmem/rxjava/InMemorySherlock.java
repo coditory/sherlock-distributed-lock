@@ -27,7 +27,7 @@ public final class InMemorySherlock extends SherlockWithConnectorBuilder<InMemor
     public static InMemorySherlock builder() {
         return new InMemorySherlock();
     }
- 
+
     /**
      * @return new instance of in-memory sherlock with default configuration
      */

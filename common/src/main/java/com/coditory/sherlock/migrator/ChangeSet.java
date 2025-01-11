@@ -9,7 +9,10 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 public @interface ChangeSet {
     int order();
+
     String id();
+
     String description() default "";
+
     String author() default "";
 }

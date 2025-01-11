@@ -11,38 +11,35 @@ class SherlockStubSpec {
     private val lockId = "some-lock"
 
     @Test
-    fun `should create sherlock returning always opened locks`() =
-        runTest {
-            // given
-            val sherlock = SherlockStub.withReleasedLocks()
-            // expect
-            assertAlwaysOpenedLock(sherlock.createLock(lockId))
-            assertAlwaysOpenedLock(sherlock.createReentrantLock(lockId))
-            assertAlwaysOpenedLock(sherlock.createOverridingLock(lockId))
-        }
+    fun `should create sherlock returning always opened locks`() = runTest {
+        // given
+        val sherlock = SherlockStub.withReleasedLocks()
+        // expect
+        assertAlwaysOpenedLock(sherlock.createLock(lockId))
+        assertAlwaysOpenedLock(sherlock.createReentrantLock(lockId))
+        assertAlwaysOpenedLock(sherlock.createOverridingLock(lockId))
+    }
 
     @Test
-    fun `should create sherlock returning always closed locks`() =
-        runTest {
-            // given
-            val sherlock = SherlockStub.withAcquiredLocks()
-            // expect
-            assertAlwaysClosedLock(sherlock.createLock(lockId), lockId)
-            assertAlwaysClosedLock(sherlock.createReentrantLock(lockId), lockId)
-            assertAlwaysClosedLock(sherlock.createOverridingLock(lockId), lockId)
-        }
+    fun `should create sherlock returning always closed locks`() = runTest {
+        // given
+        val sherlock = SherlockStub.withAcquiredLocks()
+        // expect
+        assertAlwaysClosedLock(sherlock.createLock(lockId), lockId)
+        assertAlwaysClosedLock(sherlock.createReentrantLock(lockId), lockId)
+        assertAlwaysClosedLock(sherlock.createOverridingLock(lockId), lockId)
+    }
 
     @Test
-    fun `should create sherlock returning closed locks by default and opened lock for specific id`() =
-        runTest {
-            // given
-            val sherlock =
-                SherlockStub.withAcquiredLocks()
-                    .withLock(lockStub(lockId, true))
-            // expect
-            assertAlwaysClosedLock(sherlock.createLock("other-lock"))
-            assertAlwaysOpenedLock(sherlock.createLock(lockId))
-        }
+    fun `should create sherlock returning closed locks by default and opened lock for specific id`() = runTest {
+        // given
+        val sherlock =
+            SherlockStub.withAcquiredLocks()
+                .withLock(lockStub(lockId, true))
+        // expect
+        assertAlwaysClosedLock(sherlock.createLock("other-lock"))
+        assertAlwaysOpenedLock(sherlock.createLock(lockId))
+    }
 
     private suspend fun assertAlwaysOpenedLock(
         lock: DistributedLock,
