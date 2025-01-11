@@ -3,30 +3,13 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [ main ]
     paths:
-      - "docs/site/**"
+      - "docs/src/**"
       - "docs/mkdocs.yml"
       - "docs/mkdocs-requirements.txt"
-  workflow_run:
-    workflows: [Release]
-    branches: [main]
-    types: [completed]
 
 jobs:
   docs:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v3
-
-      - name: Setup Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: 3.x
-
-      - name: Install mkdocs
-        run: cd docs && pip install mkdocs -r mkdocs-requirements.txt
-
-      - name: Deploy docs
-        run: cd docs && mkdocs gh-deploy --force
+    uses: coditory/workflows/.github/workflows/docs.yml@v1
+    secrets: inherit

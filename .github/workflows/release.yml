@@ -3,73 +3,58 @@ name: Release
 on:
   workflow_dispatch:
     inputs:
+      branch:
+        type: string
+        description: Branch name to release
+        required: true
+        default: main
       section:
         type: choice
-        description: Create release tag by incrementing sem-ver section.
+        description: Version section to increment
         options:
-          - PATCH
-          - MINOR
-          - MAJOR
-          - RERUN
-          - MANUAL
+          - patch
+          - minor
+          - major
         required: true
-        default: PATCH
+        default: patch
       version:
         type: string
-        description: |
-          Manually setup version (like: 1.2.3).
+        description: ...or manually define version like 1.2.3, 1.2.3-suffix
         required: false
+      snapshot:
+        type: boolean
+        description: Snapshot version
+        required: true
+        default: false
+  # Called from release-auto
+  workflow_call:
+    inputs:
+      branch:
+        type: string
+        required: false
+        default: main
+      section:
+        type: string
+        required: false
+        default: patch
+      version:
+        type: string
+        required: false
+      snapshot:
+        type: boolean
+        required: false
+        default: false
 
 jobs:
   release:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 0
-          token: ${{ secrets.CI_TOKEN }}
-
-      - name: Get versions
-        id: versions
-        env:
-          MANUAL_VERSION: ${{ inputs.version }}
-          INCREMENT_SECTION: ${{ inputs.section }}
-        run: |
-          declare -r GIT_VERSION="$(git tag -l 'v[0-9]*.[0-9]*.[0-9]*' --sort=-v:refname | head -n 1 | cut -c2-)"
-          declare -r VERSION=${GIT_VERSION:-0.0.0}
-          declare -r MAJOR="$(echo "$VERSION" | cut -d. -f1)"
-          declare -r MINOR="$(echo "$VERSION" | cut -d. -f2)"
-          declare -r PATCH="$(echo "$VERSION" | cut -d. -f3)"
-          declare NEXT_VERSION=""
-          if [ "$INCREMENT_SECTION" == "MANUAL" ]; then
-            if [ "$MANUAL_VERSION" =~ ^[0-9]+\.[0-9]+\.[0-9]+ ]; then
-              NEXT_VERSION="$MANUAL_VERSION"
-            else
-              echo "Invalid manual version: $MANUAL_VERSION" >&2
-              return 1
-            fi
-          elif [ "$INCREMENT_SECTION" == "PATCH" ]; then
-            NEXT_VERSION="$MAJOR.$MINOR.$(( PATCH + 1 ))"
-          elif [ "$INCREMENT_SECTION" == "MINOR" ]; then
-            NEXT_VERSION="$MAJOR.$(( MINOR + 1 )).0"
-          elif [ "$INCREMENT_SECTION" == "MAJOR" ]; then
-            NEXT_VERSION="$(( MAJOR + 1 )).0.0"
-          elif [ "$INCREMENT_SECTION" == "RERUN" ]; then
-            NEXT_VERSION="$VERSION"
-            git tag -d "v$NEXT_VERSION" || echo "Local tag does not exist: v$NEXT_VERSION"
-            git push --delete origin "v$NEXT_VERSION" || echo "Remote tag does not exist: v$NEXT_VERSION"
-          else
-            echo "Unrecognized option: $INCREMENT_SECTION" >&2
-            return 1
-          fi
-          echo "next_version=$NEXT_VERSION" >> $GITHUB_OUTPUT
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
-          echo -e "VERSION: $VERSION\nNEXT_VERSION: $NEXT_VERSION"
-
-      - name: Create Release Tag
-        env:
-          NEXT_VERSION: ${{ steps.versions.outputs.next_version }}
-        run: |
-          git tag "v$NEXT_VERSION"
-          git push origin "v$NEXT_VERSION"
+    uses: coditory/workflows/.github/workflows/release.yml@v1
+    secrets: inherit
+    with:
+      branch: ${{ inputs.branch }}
+      section: ${{ inputs.section }}
+      version: ${{ inputs.version }}
+      snapshot: ${{ inputs.snapshot }}
+      java-version: 21
+      release-command: ./gradlew publishToSonatype closeAndReleaseSonatypeStagingRepository -Pversion=$NEXT_VERSION
+      snapshot-command: ./gradlew publishToSonatype -Pversion=$NEXT_VERSION
+      version-command: ./gradlew version --quiet --no-scan

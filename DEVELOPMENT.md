@@ -1,10 +1,23 @@
-# Contributing
+# Development
+
+This is a development focused supplement
+to [CONTRIBUTING.md](https://github.com/coditory/.github/blob/main/CONTRIBUTING.md).
+
+## Pre commit hook (optional)
+
+Installing pre-commit hook is optional but can save you some headache when pushing unformatted code.
+
+Installing git pre-commit hook that formats code with [Ktlint](https://pinterest.github.io/ktlint):
+
+```sh
+cp scripts/git/pre-commit .git/hooks/pre-commit
+```
 
 ## Build
 
 Before pushing any changes make sure project builds without errors with:
 
-```
+```sh
 ./gradlew build
 ```
 
@@ -25,8 +38,8 @@ Before submitting a pull request test your changes locally on a sample project.
 There are few ways for local testing:
 
 - Use one of the [sample subprojects](https://github.com/coditory/sherlock-distributed-lock/tree/main/examples).
-Samples projects require databases running on localhost. You can use docker compose file stored in `./scripts/docker`
-to start with `docker-compose up -d` all of the supported databases at once.
+  Samples projects require databases running on localhost. You can use docker compose file stored in `./scripts/docker`
+  to start with `docker-compose up -d` all the supported databases at once.
 - Publish library to maven local repository with `./gradlew publishToMavenLocal` and use it in any project
   via [`mavenLocal()`](https://docs.gradle.org/current/userguide/declaring_repositories.html#sub:maven_local) repository
 
@@ -56,7 +69,7 @@ Kotlin codestyle is enforced by [Ktlint](https://pinterest.github.io/ktlint/).
 Ktlint rules are already propagated to `.idea/codeStyles`.
 You can validate Kotlin code style in command line with:
 
-```
+```sh
 ./gradlew ktlintCheck
 ```
 
@@ -71,6 +84,7 @@ update [documentation](https://github.com/coditory/sherlock-distributed-lock/tre
 [examples](https://github.com/coditory/sherlock-distributed-lock/tree/main/examples).
 
 To run documentation server locally:
+
 - Install python3 locally
 - Go to `cd docs`
 - Install dependencies `pip install -r mkdocs-requirements.txt`
