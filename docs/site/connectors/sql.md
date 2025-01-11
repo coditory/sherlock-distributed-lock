@@ -14,58 +14,58 @@ and [MySQL v9]({{ vcs_baseurl }}/sql/src/integration/groovy/com/coditory/sherloc
 Add dependencies to `build.gradle.kts`:
 
 === "Sync"
-```kotlin
-dependencies {
-    implementation("com.coditory.sherlock:sherlock-sql:{{ version }}")
-    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
-    implementation("org.postgresql:postgresql:$versions.postgresql")
-}
-```
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql:{{ version }}")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:postgresql:$versions.postgresql")
+    }
+    ```
 === "Coroutines"
-```kotlin
-dependencies {
-    implementation("com.coditory.sherlock:sherlock-sql-coroutines:{{ version }}")
-    implementation("org.postgresql:postgresql:$versions.postgres")
-    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
-    implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
-}
-```
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-coroutines:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+    }
+    ```
 === "Reactor"
-```kotlin
-dependencies {
-    implementation("com.coditory.sherlock:sherlock-sql-reactor:{{ version }}")
-    implementation("org.postgresql:postgresql:$versions.postgres")
-    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
-    implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
-}
-```
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-reactor:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+    }
+    ```
 === "RxJava"
-```kotlin
-dependencies {
-    implementation("com.coditory.sherlock:sherlock-sql-rxjava:{{ version }}")
-    implementation("org.postgresql:postgresql:$versions.postgres")
-    implementation("com.zaxxer:HikariCP:$versions.hikaricp")
-    implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
-}
-```
+    ```kotlin
+    dependencies {
+        implementation("com.coditory.sherlock:sherlock-sql-rxjava:{{ version }}")
+        implementation("org.postgresql:postgresql:$versions.postgres")
+        implementation("com.zaxxer:HikariCP:$versions.hikaricp")
+        implementation("org.postgresql:r2dbc-postgresql:$versions.r2dbc")
+    }
+    ```
 
 Create sherlock instance and distributed lock:
 === "Sync"
-```java
---8<-- "examples/postgres-sync/src/main/java/com/coditory/sherlock/samples/postgres/sync/PostgresSyncLockSample.java:2"
-```
+    ```java
+    --8<-- "examples/postgres-sync/src/main/java/com/coditory/sherlock/samples/postgres/sync/PostgresSyncLockSample.java:2"
+    ```
 === "Coroutines"
-```kotlin
---8<-- "examples/postgres-coroutines/src/main/kotlin/com/coditory/sherlock/samples/postgres/coroutines/PostgresKtLockSample.kt:2"
-```
+    ```kotlin
+    --8<-- "examples/postgres-coroutines/src/main/kotlin/com/coditory/sherlock/samples/postgres/coroutines/PostgresKtLockSample.kt:2"
+    ```
 === "Reactor"
-```java
---8<-- "examples/postgres-reactor/src/main/java/com/coditory/sherlock/samples/postgres/reactor/PostgresReactorLockSample.java:2"
-```
+    ```java
+    --8<-- "examples/postgres-reactor/src/main/java/com/coditory/sherlock/samples/postgres/reactor/PostgresReactorLockSample.java:2"
+    ```
 === "RxJava"
-```java
---8<-- "examples/postgres-rxjava/src/main/java/com/coditory/sherlock/samples/postgres/rxjava/PostgresRxLockSample.java:2"
-```
+    ```java
+    --8<-- "examples/postgres-rxjava/src/main/java/com/coditory/sherlock/samples/postgres/rxjava/PostgresRxLockSample.java:2"
+    ```
 
 These examples use [Hikari Connection Pool](https://github.com/brettwooldridge/HikariCP), but any implementation
 of `java.sql.DataSource` will suffice.
@@ -77,48 +77,48 @@ See full source code example on [Github]({{ vcs_baseurl }}/sample/src/main/java/
 
 Configuration is available via sherlock builder:
 === "Sync"
-```java
-SqlSherlock.builder()
-    .withClock(Clock.systemUTC())
-    .withLockDuration(Duration.ofMinutes(5))
-    .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
-    .withDataSource(dataSource())
-    .withLocksTable("LOCKS")
-    .build();
-```
+    ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withDataSource(dataSource())
+        .withLocksTable("LOCKS")
+        .build();
+    ```
 === "Coroutines"
-```kotlin
-SqlSherlock.builder()
-    .withClock(Clock.systemUTC())
-    .withLockDuration(Duration.ofMinutes(5))
-    .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
-    .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
-    .withConnectionFactory(getConnectionFactory())
-    .withLocksTable("LOCKS")
-    .build()
-```
+    ```kotlin
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build()
+    ```
 === "Reactor"
-```java
-SqlSherlock.builder()
-    .withClock(Clock.systemUTC())
-    .withLockDuration(Duration.ofMinutes(5))
-    .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
-    .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
-    .withConnectionFactory(getConnectionFactory())
-    .withLocksTable("LOCKS")
-    .build();
-```
+    ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build();
+    ```
 === "RxJava"
-```java
-SqlSherlock.builder()
-    .withClock(Clock.systemUTC())
-    .withLockDuration(Duration.ofMinutes(5))
-    .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
-    .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
-    .withConnectionFactory(getConnectionFactory())
-    .withLocksTable("LOCKS")
-    .build();
-```
+    ```java
+    SqlSherlock.builder()
+        .withClock(Clock.systemUTC())
+        .withLockDuration(Duration.ofMinutes(5))
+        .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+        .withBindingMapper(BindingMapper.POSTGRES_MAPPER)
+        .withConnectionFactory(getConnectionFactory())
+        .withLocksTable("LOCKS")
+        .build();
+    ```
 
 Parameters:
 
