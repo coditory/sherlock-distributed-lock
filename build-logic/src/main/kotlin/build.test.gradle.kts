@@ -70,5 +70,6 @@ tasks.withType<GroovyCompile>().configureEach {
 dependencies {
     testImplementation(libs.junit.api)
     testRuntimeOnly(libs.junit.engine)
+    testRuntimeOnly(libs.junit.launcher)
     testImplementation(libs.spock.core)
 }

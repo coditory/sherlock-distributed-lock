@@ -50,7 +50,7 @@ class MySqlHolder {
     synchronized static void startDb() {
         if (db != null && started) return
         if (db == null) {
-            db = new ResumableMySQLContainer("mysql:9", Ports.nextAvailablePort())
+            db = new ResumableMySQLContainer("mysql:9", Ports.getNextAvailable())
             db.start()
         } else {
             db.resume()

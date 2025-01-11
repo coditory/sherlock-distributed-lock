@@ -34,7 +34,7 @@ final class MongoHolder {
     synchronized static void startDb() {
         if (db != null && started) return
         if (db == null) {
-            db = new ResumableMongoDBContainer("mongo:8.0", Ports.nextAvailablePort())
+            db = new ResumableMongoDBContainer("mongo:8.0", Ports.getNextAvailable())
             db.start()
         } else {
             db.resume()

@@ -50,7 +50,7 @@ class PostgresHolder {
     synchronized static void startDb() {
         if (db != null && started) return
         if (db == null) {
-            db = new ResumablePostgreSQLContainer("postgres:17", Ports.nextAvailablePort())
+            db = new ResumablePostgreSQLContainer("postgres:17", Ports.getNextAvailable())
             db.start()
         } else {
             db.resume()
