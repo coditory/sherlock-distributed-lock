@@ -99,7 +99,7 @@ markdown_extensions:
   - pymdownx.superfences
 
 extra:
-  version: '0.4.19'
+  version: '1.0.2'
   examples_dir: '../examples'
   vcs_baseurl: https://github.com/coditory/sherlock-distributed-lock/blob/master
   social:
@@ -111,7 +111,7 @@ extra:
       link: https://twitter.com/coditory
   analytics:
     provider: google
-    property: !!python/object/apply:os.getenv ["GOOGLE_ANALYTICS_ID"]
+    property: !!python/object/apply:os.getenv [ "GOOGLE_ANALYTICS_ID" ]
 
 # Site navigation
 nav:
