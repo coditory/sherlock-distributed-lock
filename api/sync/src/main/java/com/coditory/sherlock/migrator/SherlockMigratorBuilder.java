@@ -56,7 +56,7 @@ public final class SherlockMigratorBuilder {
     public SherlockMigratorBuilder addAnnotatedChangeSets(@NotNull Object object) {
         expectNonNull(object, "object containing change sets");
         ChangeSetMethodExtractor.extractChangeSets(object, void.class)
-            .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
+            .forEach(changeSet -> addChangeSet(changeSet.id(), changeSet::execute));
         return this;
     }
 

@@ -101,7 +101,7 @@ public final class SherlockMigratorBuilder {
                 }
                 throw new IllegalArgumentException("Expected method to declare void or Mono as return types");
             })
-            .forEach(changeSet -> addChangeSet(changeSet.getId(), changeSet::execute));
+            .forEach(changeSet -> addChangeSet(changeSet.id(), changeSet::execute));
         return this;
     }
 

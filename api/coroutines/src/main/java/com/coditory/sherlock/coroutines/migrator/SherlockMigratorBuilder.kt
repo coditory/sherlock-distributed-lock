@@ -7,7 +7,10 @@ import com.coditory.sherlock.coroutines.DistributedLock
 import com.coditory.sherlock.coroutines.Sherlock
 import com.coditory.sherlock.coroutines.migrator.SherlockMigrator.MigrationChangeSet
 import com.coditory.sherlock.migrator.ChangeSetMethodExtractor
+import com.coditory.sherlock.migrator.MigrationChangeSetMethod
 import com.coditory.sherlock.migrator.MigrationResult
+import java.lang.reflect.InvocationTargetException
+import kotlin.coroutines.intrinsics.suspendCoroutineUninterceptedOrReturn
 
 class SherlockMigratorBuilder internal constructor(private val sherlock: Sherlock) {
     private val migrationChangeSets = mutableListOf<MigrationChangeSet>()
@@ -33,11 +36,54 @@ class SherlockMigratorBuilder internal constructor(private val sherlock: Sherloc
         return this
     }
 
+    fun addChangeSet(
+        changeSetId: String,
+        changeSet: suspend () -> Unit,
+    ): SherlockMigratorBuilder {
+        ensureUniqueChangeSetId(changeSetId)
+        val changeSetLock = createChangeSetLock(changeSetId)
+        val migrationChangeSet = MigrationChangeSet(changeSetId, changeSetLock, changeSet)
+        migrationChangeSets.add(migrationChangeSet)
+        return this
+    }
+
     fun addAnnotatedChangeSets(annotated: Any): SherlockMigratorBuilder {
         Preconditions.expectNonNull(annotated, "object containing change sets")
-        ChangeSetMethodExtractor.extractChangeSets(annotated, Void.TYPE)
-            .forEach { changeSet -> addChangeSet(changeSet.id) { changeSet.execute() } }
+        ChangeSetMethodExtractor.extractChangeSetMethods(annotated, Void.TYPE)
+            .forEach { changeSet ->
+                if (ChangeSetMethodExtractor.isCoroutine(changeSet.method())) {
+                    addChangeSet(changeSet.id()) { runSuspendedChangeSetMethod(changeSet) }
+                } else {
+                    addChangeSet(changeSet.id()) { runNonSuspendedChangeSetMethod(changeSet) }
+                }
+            }
         return this
+    }
+
+    private suspend fun runSuspendedChangeSetMethod(changeSet: MigrationChangeSetMethod<Void>) = suspendCoroutineUninterceptedOrReturn<Void> { cont ->
+        try {
+            changeSet.method.invoke(changeSet.`object`(), cont)
+        } catch (e: InvocationTargetException) {
+            throw IllegalStateException(
+                "Could not invoke suspended changeset method: " + changeSet.method.name,
+                e,
+            )
+        } catch (e: IllegalAccessException) {
+            throw IllegalStateException(
+                "Could not invoke suspended changeset method: " + changeSet.method.name,
+                e,
+            )
+        }
+    }
+
+    private fun runNonSuspendedChangeSetMethod(changeSet: MigrationChangeSetMethod<Void>) {
+        try {
+            changeSet.method().invoke(changeSet.`object`())
+        } catch (e: InvocationTargetException) {
+            throw IllegalStateException("Could not invoke changeset method: " + changeSet.method.name, e)
+        } catch (e: IllegalAccessException) {
+            throw IllegalStateException("Could not invoke changeset method: " + changeSet.method.name, e)
+        }
     }
 
     fun build(): SherlockMigrator {
