@@ -19,10 +19,10 @@ trait UsesRxInMemorySherlock implements MigratorCreator {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         com.coditory.sherlock.rxjava.Sherlock rxLocks = InMemorySherlock.builder()
-                .withOwnerId(ownerId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withOwnerId(ownerId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
         return new BlockingRxSherlockWrapper(rxLocks)
     }
 

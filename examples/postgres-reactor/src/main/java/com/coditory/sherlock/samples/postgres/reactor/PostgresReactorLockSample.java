@@ -17,12 +17,12 @@ public class PostgresReactorLockSample {
     private static ConnectionFactory getConnectionFactory() {
         String database = "test";
         ConnectionFactoryOptions options = ConnectionFactoryOptions
-                .parse("r2dbc:postgresql://localhost:5432/" + database)
-                .mutate()
-                .option(ConnectionFactoryOptions.USER, "postgres")
-                .option(ConnectionFactoryOptions.PASSWORD, "postgres")
-                .option(ConnectionFactoryOptions.DATABASE, database)
-                .build();
+            .parse("r2dbc:postgresql://localhost:5432/" + database)
+            .mutate()
+            .option(ConnectionFactoryOptions.USER, "postgres")
+            .option(ConnectionFactoryOptions.PASSWORD, "postgres")
+            .option(ConnectionFactoryOptions.DATABASE, database)
+            .build();
         return ConnectionFactories.get(options);
     }
 
@@ -30,6 +30,6 @@ public class PostgresReactorLockSample {
         Sherlock sherlock = SqlSherlock.create(getConnectionFactory(), POSTGRES_MAPPER);
         DistributedLock lock = sherlock.createLock("sample-lock");
         lock.runLocked(() -> logger.info("Lock acquired!"))
-                .block();
+            .block();
     }
 }

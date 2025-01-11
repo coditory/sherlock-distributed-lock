@@ -34,21 +34,21 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
 
     def "should create mongo indexes on initialize"() {
         expect:
-        assertNoIndexes()
+            assertNoIndexes()
         when:
-        locks.initialize()
+            locks.initialize()
         then:
-        assertIndexesCreated()
+            assertIndexesCreated()
     }
 
     def "should create mongo indexes on first lock"() {
         expect:
-        assertNoIndexes()
+            assertNoIndexes()
         when:
-        locks.createLock("some-acquire")
-            .acquire()
+            locks.createLock("some-acquire")
+                .acquire()
         then:
-        assertIndexesCreated()
+            assertIndexesCreated()
     }
 
     boolean assertNoIndexes() {

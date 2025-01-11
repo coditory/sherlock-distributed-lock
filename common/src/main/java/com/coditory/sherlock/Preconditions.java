@@ -23,7 +23,7 @@ public final class Preconditions {
 
     public static <T> T expectEqual(T value, T expected) {
         return expectEqual(
-                value, expected, String.format("Expected %s to be equal %s", value, expected));
+            value, expected, String.format("Expected %s to be equal %s", value, expected));
     }
 
     public static <T> T expectEqual(T value, T expected, String message) {
@@ -72,9 +72,9 @@ public final class Preconditions {
         Duration truncated = value.truncatedTo(ChronoUnit.MILLIS);
         if (value != truncated) {
             String message = message(
-                    "Expected duration truncated to millis",
-                    !Objects.equals(name, "duration") ? name : null,
-                    value
+                "Expected duration truncated to millis",
+                !Objects.equals(name, "duration") ? name : null,
+                value
             );
             throw new IllegalArgumentException(message);
         }
@@ -84,8 +84,8 @@ public final class Preconditions {
     private static String message(String expectation, String fieldName, Object value) {
         String field = fieldName != null ? (": " + fieldName) : "";
         String stringValue = value instanceof String
-                ? ("\"" + value + "\"")
-                : Objects.toString(value);
+            ? ("\"" + value + "\"")
+            : Objects.toString(value);
         return expectation + field + ". Got: " + stringValue;
     }
 

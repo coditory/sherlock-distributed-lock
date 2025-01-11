@@ -17,7 +17,7 @@ import static com.coditory.sherlock.SherlockDefaults.DEFAULT_CLOCK;
  * Designed for testing purposes only.
  */
 public final class InMemorySherlock extends
-        SherlockWithConnectorBuilder<InMemorySherlock> {
+    SherlockWithConnectorBuilder<InMemorySherlock> {
     private InMemoryDistributedLockStorage storage = new InMemoryDistributedLockStorage();
     private Clock clock = DEFAULT_CLOCK;
 
@@ -62,7 +62,7 @@ public final class InMemorySherlock extends
     @Override
     public @NotNull Sherlock build() {
         ReactorInMemoryDistributedLockConnector connector =
-                new ReactorInMemoryDistributedLockConnector(clock, storage);
+            new ReactorInMemoryDistributedLockConnector(clock, storage);
         return super.build(connector);
     }
 }

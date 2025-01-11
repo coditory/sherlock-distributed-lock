@@ -22,9 +22,9 @@ trait UsesInMemorySherlock implements MigratorCreator {
     @Override
     Sherlock createSherlock(String ownerId, Duration duration, Clock clock, String collectionName) {
         return InMemorySherlock.builder()
-                .withOwnerId(ownerId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withOwnerId(ownerId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
     }
 }

@@ -15,18 +15,18 @@ trait UsesSqlSherlock implements SqlDistributedLocksCreator {
     @Override
     Sherlock createSherlock(String instanceId, Duration duration, Clock clock, String tableName) {
         return SqlSherlock.builder()
-                .withDataSource(dataSource)
-                .withLocksTable(tableName)
-                .withOwnerId(instanceId)
-                .withLockDuration(duration)
-                .withClock(clock)
-                .build()
+            .withDataSource(dataSource)
+            .withLocksTable(tableName)
+            .withOwnerId(instanceId)
+            .withLockDuration(duration)
+            .withClock(clock)
+            .build()
     }
 
     @Override
     Sherlock createSherlock(DataSourceConfigurer configurer) {
         return SqlSherlock.builder()
-                .withDataSource(getDataSource(configurer))
-                .build()
+            .withDataSource(getDataSource(configurer))
+            .build()
     }
 }

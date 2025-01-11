@@ -12,6 +12,6 @@ public final class UuidGenerator {
     @NotNull
     public static String uuid() {
         return UUID.randomUUID()
-                .toString();
+            .toString();
     }
 }

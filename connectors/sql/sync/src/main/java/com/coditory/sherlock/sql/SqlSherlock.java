@@ -37,8 +37,8 @@ public final class SqlSherlock extends SherlockWithConnectorBuilder<SqlSherlock>
     public static Sherlock create(@NotNull DataSource dataSource) {
         expectNonNull(dataSource, "dataSource");
         return builder()
-                .withDataSource(dataSource)
-                .build();
+            .withDataSource(dataSource)
+            .build();
     }
 
     private SqlSherlock() {

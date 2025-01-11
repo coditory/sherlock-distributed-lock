@@ -48,10 +48,10 @@ class DistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                    releasedInMemoryLock(),
-                    releasedReentrantInMemoryLock(),
-                    releasedInMemoryLock(lockId),
-                    releasedReentrantInMemoryLock(lockId)
+                releasedInMemoryLock(),
+                releasedReentrantInMemoryLock(),
+                releasedInMemoryLock(lockId),
+                releasedReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -63,8 +63,8 @@ class DistributedLockMockSpec extends Specification {
             acquire(lock) == true
         where:
             lock << [
-                    acquiredReentrantInMemoryLock(),
-                    acquiredReentrantInMemoryLock(lockId)
+                acquiredReentrantInMemoryLock(),
+                acquiredReentrantInMemoryLock(lockId)
             ]
     }
 
@@ -76,8 +76,8 @@ class DistributedLockMockSpec extends Specification {
             acquire(lock) == false
         where:
             lock << [
-                    acquiredInMemoryLock(),
-                    acquiredInMemoryLock(lockId)
+                acquiredInMemoryLock(),
+                acquiredInMemoryLock(lockId)
             ]
     }
 

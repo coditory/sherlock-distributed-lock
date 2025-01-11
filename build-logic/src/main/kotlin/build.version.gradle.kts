@@ -41,7 +41,7 @@ data class Semver(
     fun nextPatchSnapshot(): Semver {
         return copy(
             patch = patch + 1,
-            suffix = "SNAPSHOT"
+            suffix = "SNAPSHOT",
         )
     }
 
@@ -84,7 +84,7 @@ data class Semver(
             command: String,
             workingDir: File = File("."),
             timeoutAmount: Long = 60,
-            timeoutUnit: TimeUnit = TimeUnit.SECONDS
+            timeoutUnit: TimeUnit = TimeUnit.SECONDS,
         ): String = ProcessBuilder("sh", "-c", command)
             .directory(workingDir)
             .redirectOutput(ProcessBuilder.Redirect.PIPE)

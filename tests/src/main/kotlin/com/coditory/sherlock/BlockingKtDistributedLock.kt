@@ -10,23 +10,19 @@ class BlockingKtDistributedLock(
         return lock.id
     }
 
-    override fun acquire(): Boolean =
-        runBlocking {
-            lock.acquire()
-        }
+    override fun acquire(): Boolean = runBlocking {
+        lock.acquire()
+    }
 
-    override fun acquire(duration: Duration): Boolean =
-        runBlocking {
-            lock.acquire(duration)
-        }
+    override fun acquire(duration: Duration): Boolean = runBlocking {
+        lock.acquire(duration)
+    }
 
-    override fun acquireForever(): Boolean =
-        runBlocking {
-            lock.acquireForever()
-        }
+    override fun acquireForever(): Boolean = runBlocking {
+        lock.acquireForever()
+    }
 
-    override fun release(): Boolean =
-        runBlocking {
-            lock.release()
-        }
+    override fun release(): Boolean = runBlocking {
+        lock.release()
+    }
 }
