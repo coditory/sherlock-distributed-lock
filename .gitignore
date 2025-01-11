@@ -3,6 +3,7 @@
 .gradle
 !gradle-wrapper.jar
 build
+.kotlin
 
 # IntelliJ
 *.iml

@@ -50,7 +50,7 @@ class MySqlHolder {
     synchronized static void startDb() {
         if (db != null && started) return
         if (db == null) {
-            db = new ResumableMySQLContainer("mysql:8", Ports.nextAvailablePort())
+            db = new ResumableMySQLContainer("mysql:9", Ports.nextAvailablePort())
             db.start()
         } else {
             db.resume()
@@ -67,8 +67,8 @@ class MySqlHolder {
         while (retries > 0 && !connected) {
             Thread.sleep(1000)
             try (
-                    Connection connection = getConnection()
-                    Statement statement = connection.createStatement()
+                Connection connection = getConnection()
+                Statement statement = connection.createStatement()
             ) {
                 String result = statement.execute("SELECT 1").toString()
                 connected = result == "true"
