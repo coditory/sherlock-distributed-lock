@@ -5,43 +5,36 @@ It was [tested on MongoDB v8.0]({{ vcs_baseurl
 }}/mongo/sync/src/integration/groovy/com/coditory/sherlock/MongoHolder.groovy).
 
 !!! info "Mongo Client"
-There is no need for a special MongoClient configuration. Default settings, where all writes use master node, are
-sufficient.
-Sherlock uses no read queries and only the following modification operations:
-[`findOneAndReplace`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndReplace/),
-[`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/),
-[`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/).
+    There is no need for a special MongoClient configuration. Default settings, where all writes use master node, are
+    sufficient.
+    Sherlock uses no read queries and only the following modification operations:
+    [`findOneAndReplace`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndReplace/),
+    [`findOneAndDelete`](https://docs.mongodb.com/manual/reference/method/db.collection.findOneAndDelete/),
+    [`deleteMany`](https://docs.mongodb.com/manual/reference/method/db.collection.deleteMany/).
 
 ## Usage
 
 Add dependencies to `build.gradle.kts`:
 
 === "Sync"
-
 ```kotlin
 dependencies {
     implementation("com.coditory.sherlock:sherlock-mongo:{{ version }}")
 }
 ```
-
 === "Coroutines"
-
 ```kotlin
 dependencies {
     implementation("com.coditory.sherlock:sherlock-mongo-coroutines:{{ version }}")
 }
 ```
-
 === "Reactor"
-
 ```kotlin
 dependencies {
     implementation("com.coditory.sherlock:sherlock-mongo-reactor:{{ version }}")
 }
 ```
-
 === "RxJava"
-
 ```kotlin
 dependencies {
     implementation("com.coditory.sherlock:sherlock-mongo-rxjava:{{ version }}")
@@ -50,27 +43,20 @@ dependencies {
 
 Create sherlock instance and distributed lock:
 === "Sync"
-
 ```java
---8<--"examples/mongo-sync/src/main/java/com/coditory/sherlock/samples/mongo/sync/MongoSyncLockSample.java:2"
+--8<-- "examples/mongo-sync/src/main/java/com/coditory/sherlock/samples/mongo/sync/MongoSyncLockSample.java:2"
 ```
-
 === "Coroutines"
-
 ```kotlin
---8 < --"examples/mongo-coroutines/src/main/kotlin/com/coditory/sherlock/samples/mongo/coroutines/MongoKtLockSample.kt:2"
+--8<-- "examples/mongo-coroutines/src/main/kotlin/com/coditory/sherlock/samples/mongo/coroutines/MongoKtLockSample.kt:2"
 ```
-
 === "Reactor"
-
 ```java
---8<--"examples/mongo-reactor/src/main/java/com/coditory/sherlock/samples/mongo/reactor/MongoReactorLockSample.java:2"
+--8<-- "examples/mongo-reactor/src/main/java/com/coditory/sherlock/samples/mongo/reactor/MongoReactorLockSample.java:2"
 ```
-
 === "RxJava"
-
 ```java
---8<--"examples/mongo-rxjava/src/main/java/com/coditory/sherlock/samples/mongo/rxjava/MongoRxLockSample.java:2"
+--8<-- "examples/mongo-rxjava/src/main/java/com/coditory/sherlock/samples/mongo/rxjava/MongoRxLockSample.java:2"
 ```
 
 !!! info "Learn more"
@@ -80,28 +66,15 @@ See full source code example on  [Github]({{ vcs_baseurl }}/sample/src/main/java
 
 Configuration is available via sherlock builder:
 === "Sync"
-
 ```java
 MongoSherlock.builder()
-    .
-
-withClock(Clock.systemUTC())
-        .
-
-withLockDuration(Duration.ofMinutes(5))
-        .
-
-withUniqueOwnerId()
-    .
-
-withLocksCollection(getCollection())
-        .
-
-build();
+    .withClock(Clock.systemUTC())
+    .withLockDuration(Duration.ofMinutes(5))
+    .withUniqueOwnerId()
+    .withLocksCollection(getCollection())
+    .build();
 ```
-
 === "Coroutines"
-
 ```kotlin
 MongoSherlock.builder()
     .withClock(Clock.systemUTC())
@@ -110,47 +83,23 @@ MongoSherlock.builder()
     .withLocksCollection(getCollection())
     .build()
 ```
-
 === "Reactor"
-
 ```java
 MongoSherlock.builder()
-    .
-
-withClock(Clock.systemUTC())
-        .
-
-withLockDuration(Duration.ofMinutes(5))
-        .
-
-withUniqueOwnerId()
-    .
-
-withLocksCollection(getCollection())
-        .
-
-build();
+    .withClock(Clock.systemUTC())
+    .withLockDuration(Duration.ofMinutes(5))
+    .withUniqueOwnerId()
+    .withLocksCollection(getCollection())
+    .build();
 ```
-
 === "RxJava"
-
 ```java
 MongoSherlock.builder()
-    .
-
-withClock(Clock.systemUTC())
-        .
-
-withLockDuration(Duration.ofMinutes(5))
-        .
-
-withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
-        .
-
-withLocksCollection(getCollection())
-        .
-
-build();
+    .withClock(Clock.systemUTC())
+    .withLockDuration(Duration.ofMinutes(5))
+    .withOwnerIdPolicy(OwnerIdPolicy.uniqueOwnerId())
+    .withLocksCollection(getCollection())
+    .build();
 ```
 
 Parameters:
