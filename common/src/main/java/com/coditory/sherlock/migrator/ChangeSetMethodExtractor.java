@@ -9,9 +9,13 @@ import java.util.function.Supplier;
 import static com.coditory.sherlock.Preconditions.*;
 
 public class ChangeSetMethodExtractor {
-    public static <R> List<MigrationChangeSet<R>> extractChangeSets(
-        Object object, Class<R> expectedReturnType) {
-        List<MigrationChangeSet<R>> result = new ArrayList<>();
+    public static boolean isCoroutine(Method method) {
+        int params = method.getParameterCount();
+        return params >= 1 && Objects.equals(method.getParameterTypes()[params - 1].getCanonicalName(), "kotlin.coroutines.Continuation");
+    }
+
+    public static <R> List<MigrationChangeSetMethod<R>> extractChangeSetMethods(Object object, Class<R> expectedReturnType) {
+        List<MigrationChangeSetMethod<R>> result = new ArrayList<>();
         Map<ChangeSet, Method> changeSetMethods = extractAnnotatedChangeSetMethods(
             object, expectedReturnType);
         expectNonEmpty(changeSetMethods, "Expected at least one changeset method annotated with @ChangeSet");
@@ -24,12 +28,17 @@ public class ChangeSetMethodExtractor {
                     lastChangeSet.order() < changeSet.order(),
                     "Expected unique change set order values. Duplicated order value: " + changeSet.order());
             }
-            Supplier<R> action = invokeMethod(
-                changeSetMethods.get(changeSet), object, expectedReturnType);
-            result.add(new MigrationChangeSet<>(changeSet.id(), action));
+            result.add(new MigrationChangeSetMethod<>(changeSet.id(), object, changeSetMethods.get(changeSet), expectedReturnType));
             lastChangeSet = changeSet;
         }
         return result;
+    }
+
+    public static <R> List<MigrationChangeSet<R>> extractChangeSets(Object object, Class<R> expectedReturnType) {
+        return extractChangeSetMethods(object, expectedReturnType)
+            .stream()
+            .map(MigrationChangeSet::from)
+            .toList();
     }
 
     public static <R> List<MigrationChangeSet<R>> extractChangeSets(Object object, ChangeSetMapper<R> mapper) {
@@ -79,10 +88,15 @@ public class ChangeSetMethodExtractor {
 
     private static void validateAnnotatedChangeSet(
         ChangeSet changeSet, Method method, Class<?> expectedReturnType) {
+        int paramCount = method.getParameterCount();
+        boolean isCoroutine = ChangeSetMethodExtractor.isCoroutine(method);
+        if (isCoroutine) {
+            paramCount = paramCount - 1;
+        }
         expectEqual(
-            method.getParameterCount(), 0,
+            paramCount, 0,
             "Expected no declared parameters for method " + method.getName());
-        if (expectedReturnType != null) {
+        if (expectedReturnType != null && !isCoroutine) {
             expect(
                 expectedReturnType.isAssignableFrom(method.getReturnType()),
                 "Expected method to declare " + method.getReturnType() + " as return type. "
@@ -98,7 +112,7 @@ public class ChangeSetMethodExtractor {
     }
 
     @SuppressWarnings("unchecked")
-    static private <R> Supplier<R> invokeMethod(
+    public static <R> Supplier<R> invokeMethod(
         Method method, Object object, Class<R> expectedReturnType) {
         return () -> {
             try {

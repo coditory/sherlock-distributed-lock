@@ -5,6 +5,7 @@ import com.coditory.sherlock.migrator.ChangeSet
 import com.coditory.sherlock.mongo.coroutines.MongoSherlock
 import com.mongodb.kotlin.client.coroutine.MongoClient
 import com.mongodb.kotlin.client.coroutine.MongoCollection
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.runBlocking
 import org.bson.Document
 import org.slf4j.Logger
@@ -40,13 +41,15 @@ object MongoKtAnnotatedMigrationSample {
         private val logger: Logger = LoggerFactory.getLogger(this.javaClass)
 
         @ChangeSet(order = 0, id = "change-set-a")
-        fun changeSetA() {
+        suspend fun changeSetA() {
             logger.info("Annotated change-set: A")
+            delay(1)
         }
 
         @ChangeSet(order = 1, id = "change-set-b")
-        fun changeSetB() {
+        suspend fun changeSetB() {
             logger.info("Annotated change-set: B")
+            delay(1)
         }
     }
 
