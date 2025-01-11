@@ -3,11 +3,9 @@ name: Docs
 on:
   workflow_dispatch:
   push:
-    branches: [ main ]
+    branches: [main]
     paths:
-      - "docs/src/**"
-      - "docs/mkdocs.yml"
-      - "docs/mkdocs-requirements.txt"
+      - "docs/**"
 
 jobs:
   docs:
