@@ -65,6 +65,8 @@ tasks.withType<Test>().configureEach {
 
 tasks.withType<GroovyCompile>().configureEach {
     groovyOptions.encoding = "UTF-8"
+    options.incrementalAfterFailure = true
+    options.setIncremental(true)
 }
 
 dependencies {

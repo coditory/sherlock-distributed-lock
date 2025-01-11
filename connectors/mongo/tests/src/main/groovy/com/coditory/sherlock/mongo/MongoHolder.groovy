@@ -29,7 +29,7 @@ final class MongoHolder {
     synchronized static String getConnectionString() {
         if (db == null) return null
         // modifying timeouts for faster tests of DB failures
-        return db.getConnectionString() + "?serverSelectionTimeoutMS=10000&heartbeatFrequencyMS=1000"
+        return db.getConnectionString() + "?serverSelectionTimeoutMS=3000&heartbeatFrequencyMS=1000"
     }
 
     synchronized static void startDb() {
