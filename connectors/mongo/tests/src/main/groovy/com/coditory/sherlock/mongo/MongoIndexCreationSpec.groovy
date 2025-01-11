@@ -34,21 +34,21 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
 
     def "should create mongo indexes on initialize"() {
         expect:
-            assertNoIndexes()
+        assertNoIndexes()
         when:
-            locks.initialize()
+        locks.initialize()
         then:
-            assertIndexesCreated()
+        assertIndexesCreated()
     }
 
     def "should create mongo indexes on first lock"() {
         expect:
-            assertNoIndexes()
+        assertNoIndexes()
         when:
-            locks.createLock("some-acquire")
-                .acquire()
+        locks.createLock("some-acquire")
+            .acquire()
         then:
-            assertIndexesCreated()
+        assertIndexesCreated()
     }
 
     boolean assertNoIndexes() {
@@ -58,8 +58,8 @@ abstract class MongoIndexCreationSpec extends Specification implements Distribut
 
     boolean assertIndexesCreated() {
         assertJsonEqual(getCollectionIndexes(), """[
-        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "expiresAt": 1}, "name": "_id_1_acquiredBy_1_expiresAt_1", "ns": "$databaseName.$collectionName", "background": true},
-        {"v": 2, "key": {"_id": 1}, "name": "_id_", "ns": "$databaseName.$collectionName"}
+        {"v": 2, "key": {"_id": 1, "acquiredBy": 1, "expiresAt": 1}, "name": "_id_1_acquiredBy_1_expiresAt_1", "background": true},
+        {"v": 2, "key": {"_id": 1}, "name": "_id_"}
       ]""")
         return true
     }
