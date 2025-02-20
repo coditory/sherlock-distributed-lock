@@ -12,7 +12,7 @@ coroutines = "1.10.1"
 # test dependencies
 junit = "5.11.4"
 spock = "2.4-M5-groovy-4.0"
-testcontainers = "1.20.4"
+testcontainers = "1.20.5"
 
 [libraries]
 # build tools
