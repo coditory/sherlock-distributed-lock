@@ -6,7 +6,7 @@ ktlint = "1.5.0"
 jacoco = "0.8.12"
 # dependencies
 mongodb = "5.3.1"
-logback = "1.5.17"
+logback = "1.5.18"
 r2dbc = "1.0.0.RELEASE"
 coroutines = "1.10.1"
 # test dependencies
