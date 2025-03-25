@@ -43,7 +43,7 @@ junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "jun
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
 junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.12.1" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
-hikaricp = { module = "com.zaxxer:HikariCP", version = "6.2.1" }
+hikaricp = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
 testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
