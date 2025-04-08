@@ -8,7 +8,7 @@ jacoco = "0.8.12"
 mongodb = "5.4.0"
 logback = "1.5.18"
 r2dbc = "1.0.0.RELEASE"
-coroutines = "1.10.1"
+coroutines = "1.10.2"
 # test dependencies
 junit = "5.12.1"
 spock = "2.4-M5-groovy-4.0"
