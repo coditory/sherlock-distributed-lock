@@ -11,8 +11,8 @@ r2dbc = "1.0.0.RELEASE"
 coroutines = "1.10.2"
 # test dependencies
 junit = "5.12.2"
-spock = "2.4-M5-groovy-4.0"
-testcontainers = "1.20.6"
+spock = "2.4-M6-groovy-4.0"
+testcontainers = "1.21.0"
 
 [libraries]
 # build tools
