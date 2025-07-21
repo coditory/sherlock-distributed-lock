@@ -10,9 +10,9 @@ logback = "1.5.18"
 r2dbc = "1.0.0.RELEASE"
 coroutines = "1.10.2"
 # test dependencies
-junit = "5.12.2"
-spock = "2.4-M5-groovy-4.0"
-testcontainers = "1.20.6"
+junit = "5.13.4"
+spock = "2.4-M6-groovy-4.0"
+testcontainers = "1.21.3"
 
 [libraries]
 # build tools
@@ -41,9 +41,9 @@ jetbrains-annotations = { module = "org.jetbrains:annotations", version = "26.0.
 # test dependencies
 junit-api = { module = "org.junit.jupiter:junit-jupiter-api", version.ref = "junit" }
 junit-engine = { module = "org.junit.jupiter:junit-jupiter-engine", version.ref = "junit" }
-junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.12.2" }
+junit-launcher = { module = "org.junit.platform:junit-platform-launcher", version = "1.13.4" }
 spock-core = { module = "org.spockframework:spock-core", version.ref = "spock" }
-hikaricp = { module = "com.zaxxer:HikariCP", version = "6.3.0" }
+hikaricp = { module = "com.zaxxer:HikariCP", version = "6.3.1" }
 testcontainers-mongodb = { module = "org.testcontainers:mongodb", version.ref = "testcontainers" }
 testcontainers-mysql = { module = "org.testcontainers:mysql", version.ref = "testcontainers" }
 testcontainers-postgresql = { module = "org.testcontainers:postgresql", version.ref = "testcontainers" }
